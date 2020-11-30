@@ -2,7 +2,7 @@ name: "website"
 title: "Statistical Data Visualization"
 description: |
   Statistical Data Visualization
-output_dir: "_site"
+output_dir: "docs"
 navbar:
   right:
     - text: "Home"
