@@ -35,7 +35,7 @@ complex datasets and coaxing relevant data out of black boxes, for example.
 
 The official syllabus, which gives requirements, learning objectives, and
 grading mechanisms, is available
-[here](https://docs.google.com/document/d/1GCx9EJJpYg1pDp7kSK-deYO7VyTjnhvcZh-RWS0uvIw/edit).
+[here](https://drive.google.com/file/d/1UWK2-tZ5vn9Nc0fez791npFQqomZNs-7/view?usp=sharing).
 
 ## Homework
 
