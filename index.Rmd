@@ -32,7 +32,7 @@ interface can immediately highlight data quality issues.
 
 From here on out, we'll focus on exploratory analysis and model visualization.
 Weeks 6 - 8 consider data with temporal, geographic, or network structure --
-each comes with its own visual vocabulary. Weeks 9 - 11 focus on visualization
+each comes with its own visual conventions. Weeks 9 - 11 focus on visualization
 of high-dimensional data, drawing from ideas in unsupervised learning. Weeks 12
 and 13 describe the recent use of visualization to support inspection of complex
 supervised models. We close with a discussion about the possibilities of
