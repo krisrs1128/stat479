@@ -12,16 +12,16 @@ description: |
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This is a course about using visualization in data science workflows. We'll get
-hands-on experience with visualizations for,
+This course explores the role of visualization within data science workflows.
+We'll get hands-on experience how visualization can be used to support,
 
 * Data cleaning and tidying
 * Exploratory analysis
 * Model inspection
 * Scientific reporting
 
-The course is mostly use R, though occasionally we will use the vega-lite
-library in javascript. Prior experience with R, but not javascript, is expected.
+The course mostly uses R, though occasionally we will use the vega-lite library
+in javascript. Prior experience with R, but not javascript, is expected.
 
 In terms of content, we'll begin with a three week crash course on the
 fundamental principles of data visualization. This will provide a vocabulary for
