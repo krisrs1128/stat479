@@ -1997,7 +1997,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
   <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
   <script src="site_libs/anchor-4.2.2/anchor.min.js"></script>
   <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
@@ -2247,145 +2247,150 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <h3>Contents</h3>
 <ul>
 <li><a href="#syllabus">Syllabus</a></li>
+<li><a href="#live-sessions">Live Sessions</a></li>
 <li><a href="#homework">Homework</a></li>
-<li><a href="#project">Project</a></li>
 <li><a href="#readings">Readings</a></li>
+<li><a href="#lectures">Lectures</a></li>
 </ul>
 </nav>
 </div>
-<p>In this course, we’ll see how ideas from statistics and visualization can enhance our power of critical observation. We’ll develop a foundation for designing and implementing effective visualizations, and we’ll see how they can be integrated into the data science workflow, the day-to-day work of science.</p>
-<p>It’s something of a paradox, but statistics has two contradictory roles in science,</p>
+<p>This is a course about using visualization in data science workflows. We’ll get hands-on experience with visualizations for,</p>
 <ul>
-<li>Data summarization: Our brains are bad at processing large collections of numbers, but good at making visual comparisons. Statistics can compress a complicated dataset into a succinct representation, something that might be possible to visualize and hopefully wrap our heads around.</li>
-<li>Data generation: In a way, the results of a statistical analysis are themselves new data. A standard error gives information about the stability of an estimate; the results of a randomized experiment give new information about hypothetical manipulations.</li>
+<li>Data cleaning and tidying</li>
+<li>Exploratory analysis</li>
+<li>Model inspection</li>
+<li>Scientific reporting</li>
 </ul>
-<p>We’ll see these two themes throughout the semester, finding ways to navigate complex datasets and coaxing relevant data out of black boxes, for example.</p>
+<p>The course is mostly use R, though occasionally we will use the vega-lite library in javascript. Prior experience with R, but not javascript, is expected.</p>
+<p>In terms of content, we’ll begin with a three week crash course on the fundamental principles of data visualization. This will provide a vocabulary for designing and critiquing visualizations throughout the semester. Weeks 4 - 5 are focused on the connections between visualization and tidy data. Rearranging your data in the right way can make it much easier to visualize; conversely, a good interface can immediately highlight data quality issues.</p>
+<p>From here on out, we’ll focus on exploratory analysis and model visualization. Weeks 6 - 8 consider data with temporal, geographic, or network structure – each comes with its own visual vocabulary. Weeks 9 - 11 focus on visualization of high-dimensional data, drawing from ideas in unsupervised learning. Weeks 12 and 13 describe the recent use of visualization to support inspection of complex supervised models. We close with a discussion about the possibilities of visualization in the broader intellectual landscape.</p>
 <h2 id="syllabus">Syllabus</h2>
-<p>The official syllabus, which gives requirements, learning objectives, and grading mechanisms, is available <a href="https://docs.google.com/document/d/1GCx9EJJpYg1pDp7kSK-deYO7VyTjnhvcZh-RWS0uvIw/edit">here</a>.</p>
+<p>This will be an asynchronous class, with short video recordings released in advance. There will be an optional discussion every week, working through supplementary readings and examples. Online discussion on the course piazza is encouraged.</p>
+<p>Structurally, the main types of work in this class are</p>
+<ul>
+<li>Homeworks. These will be released every other Friday, and focus on practical skill development.</li>
+<li>Exams. There will be two midterms (open book, timed).</li>
+<li>Group Project. This is an opportunity to explore a dataset or visualization algorithm.</li>
+</ul>
+<p>The official syllabus, which gives requirements, learning objectives, and grading mechanisms, is available <a href="https://drive.google.com/file/d/1UWK2-tZ5vn9Nc0fez791npFQqomZNs-7/view?usp=sharing">here</a>.</p>
+<h2 id="live-sessions">Live Sessions</h2>
+<p>Office Hours: (Optional) Discussion:</p>
 <h2 id="homework">Homework</h2>
-<p>Assignments will be due every other Friday. Submissions must be made on <a href="tbd">Canvas</a>.</p>
+<p>Submissions must be made on <a href="tbd">Canvas</a>.</p>
 <ul>
 <li>Homework 1 (Due: )</li>
 </ul>
-<h2 id="project">Project</h2>
-<p>Your group projects will allow you to apply statistical data visualization techniques to a dataset or model of interest.</p>
-<ul>
-<li>Group formation (Due: )</li>
-<li>Milestone 1 (Due: )</li>
-<li>Milestone 2 (Due: )</li>
-<li>Milestone 3 (Due: )</li>
-<li>Milestone 4 (Due: )</li>
-</ul>
 <h2 id="readings">Readings</h2>
-<table style="width:100%;">
+<table>
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 50%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th>Week</th>
+<th>Topic</th>
 <th>Reading</th>
-<th>Notes</th>
-<th>Lectures</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>1 <br/> <img width=200 src="assets/vad5.png"/></td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 5 <br/> <a href="https://rafalab.github.io/dsbook">IDS</a>: Chapter 7</td>
-<td></td>
-<td></td>
+<td>1 <br/> <img width=200 src="assets/encoding.png"/></td>
+<td>Marks and Channels</td>
+<td>(1) <a href="https://rafalab.github.io/dsbook">Introduction to Data Science: Chapter 7</a> <br/> (2) <a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">Data Types, Graphical Marks, and Visual Encoding Channels</a></td>
 </tr>
 <tr class="even">
 <td>1 (optional)</td>
-<td><a href="http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold">Data Humanism</a> <br/>  <a href="https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/">As We May Think</a></td>
 <td></td>
-<td></td>
+<td>(1) <a href="http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold">Data Humanism</a><br/> (2) <a href="https://www.wsj.com/articles/automation-makes-us-dumb-1416589342">Automation Makes Us Dumb</a></td>
 </tr>
 <tr class="odd">
-<td>2 <br/> <img width=250 src="assets/encoding.png"/></td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 12 <br/> <a href="https://rafalab.github.io/dsbook">IDS</a>: Chapter 9 <br/> <a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">Data Types, Graphical Marks, and Visual Encoding Channels</a></td>
-<td></td>
-<td></td>
+<td>2 <br/> <img width=250 src="assets/faceting.png"/></td>
+<td>Faceting and Layout</td>
+<td>(1) <a href="https://rafalab.github.io/dsbook">Introduction to Data Science: Chapter 8</a><br/> (2) <a href="https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum">Multi-View Composition</a></td>
 </tr>
 <tr class="even">
-<td>3 <br/> <img width=250 src="assets/tidy.png"/></td>
-<td><a href="https://r4ds.had.co.nz">RDS</a>: Chapter 12 <br/> <a href="https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum">Multi-View Composition</a></td>
-<td></td>
-<td></td>
+<td>3 <br/> <img width=200 src="assets/interaction.png"/></td>
+<td>Interaction</td>
+<td>(1) <a href="https://search.library.wisc.edu/catalog/9911196629502121">Visualization Analysis and Design: Chapter 11</a><br/> (2) <a href="https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum">Interaction</a></td>
 </tr>
 <tr class="odd">
-<td>4</td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 7 <br/> <a href="https://observablehq.com/@uwdata/scales-axes-and-legends?collection=@uwdata/visualization-curriculum">Scales, Axes, and Legends</a></td>
+<td>3 (optional)</td>
 <td></td>
-<td></td>
+<td><a href="http://worrydream.com/LadderOfAbstraction/">Up and Down the Ladder of Abstraction</a></td>
 </tr>
 <tr class="even">
-<td>5</td>
-<td><a href="https://vita.had.co.nz/papers/model-vis.html">Visualizing statistical models: Removing the blindfold</a> <br/> <a href="https://distill.pub/2016/handwriting/">Four Experiments in Handwriting with a Neural Network</a></td>
-<td></td>
-<td></td>
+<td>4 <br/> <img width=200 src="assets/tidy.png"/></td>
+<td>Data Wrangling</td>
+<td><a href="https://r4ds.had.co.nz">R for Data Science: Chapter 12</a></td>
 </tr>
 <tr class="odd">
-<td>6</td>
-<td><a href="https://projecteuclid.org/euclid.aos/1176345513">Logistic Regression Diagnostics</a> <br/> <a href="https://arxiv.org/abs/2008.03703">What Neural Networks Memorize and Why: Discovering the Long Tail via Influence Estimation</a></td>
-<td></td>
-<td></td>
+<td>5 <br/> <img width=200 src="assets/diagnostics.png"/></td>
+<td>Quality Checking</td>
+<td>(1) <a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Getting Started with naniar</a> <br/> (2) <a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Profiler: Integrated Statistical Analysis and Visualization for Data Quality Assessment</a></td>
 </tr>
 <tr class="even">
-<td>7</td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 11 <br/> <a href="https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum">Interaction</a></td>
-<td></td>
-<td></td>
+<td>6 <br/> <img width=200 src="assets/ts.png"/></td>
+<td>Time Series</td>
+<td><a href="https://otexts.com/fpp3/graphics.html">Forecasting Principles and Practice: Chapter 2</a></td>
 </tr>
 <tr class="odd">
-<td>8</td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 14 <br/> <a href="http://worrydream.com/LadderOfAbstraction/">Up and Down the Ladder of Abstraction</a></td>
-<td></td>
-<td></td>
+<td>7 <br/> <img width=150 src="assets/geo.png"/></td>
+<td>Geographic Data</td>
+<td><a href="https://geocompr.robinlovelace.net/spatial-class.html">Geographic Data in R: Chapter 2</a></td>
 </tr>
 <tr class="even">
-<td>9</td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chapter 8 <br/> <a href="https://geocompr.robinlovelace.net/spatial-class.html">Geo</a>: Chapter 2</td>
-<td></td>
-<td></td>
+<td>8 <br/> <img width=200 src="assets/network.png"/></td>
+<td>Network Data</td>
+<td>(1) <a href="https://search.library.wisc.edu/catalog/9911196629502121">Visualization Analysis and Design: Chapter 9</a> <br/> (2) <a href="http://web.stanford.edu/class/bios221/book/Chap-Graphs.html">Modern Statistics for Modern Biology: Chapter 10.1 - 10.3</a></td>
 </tr>
 <tr class="odd">
-<td>10</td>
-<td><a href="https://search.library.wisc.edu/catalog/9911196629502121">VAD</a>: Chatper 9 <br/> <a href="http://web.stanford.edu/class/bios221/book/Chap-Graphs.html">MSMB</a>: Chapter 10.1 - 10.3</td>
-<td></td>
-<td></td>
+<td>9 <br/> <img width=200 src="assets/clusters.png"/></td>
+<td>Clustering</td>
+<td>(1) <a href="https://rafalab.github.io/dsbook">Intro to Data Science: Chapter 34</a><br/> (2) <a href="https://rlbarter.github.io/superheat/basic-usage.html">Superheat Vignette (2, 3 &amp; 6)</a> <br/> (3) <a href="http://users.umiacs.umd.edu/~hcorrada/CMSC702/readings/Solutions_ch13.pdf">Cluster Analysis of Genomic Data</a></td>
 </tr>
 <tr class="even">
-<td>11</td>
-<td><a href="https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/">Beginner’s Guide to Dimensionality Reduction</a> <br/> <a href="https://www.tidytextmining.com/topicmodeling.html">Topic Models</a> <br/> <a href="https://distill.pub/2016/misread-tsne/">How to use t-SNE effectively</a></td>
-<td></td>
-<td></td>
+<td>10 <br/> <img width=200 src="assets/dimred1.png"/></td>
+<td>Dimensionality Reduction I</td>
+<td>(1) <a href="https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/">Beginner’s Guide to Dimensionality Reduction</a> <br/> (2) <a href="https://github.com/oreillymedia/t-SNE-tutorial">An Illustrated Introduction to the t-SNE algorithm</a> <br/> (3) <a href="https://distill.pub/2016/misread-tsne/">How to use t-SNE effectively</a></td>
 </tr>
 <tr class="odd">
-<td>12</td>
-<td><a href="https://arxiv.org/abs/1311.2901">Visualizing and Understanding Convolutional Networks</a> <br/> <a href="https://arxiv.org/abs/1706.05806">SVCCA: Singular Vector Canonical Correlation Analysis for Deep Learning Dynamics and Interpretability</a></td>
-<td></td>
-<td></td>
+<td>11 <br/> <img width=200 src="assets/dimred2.png"/></td>
+<td>Dimensionality Reduction II</td>
+<td>(1) <a href="https://www.tidytextmining.com/topicmodeling.html">Text mining with R: Chapter 6</a> <br/> (2) <a href="https://d1wqtxts1xzle7.cloudfront.net/30738409/2012-Termite-AVI.pdf?1362144247=&amp;response-content-disposition=inline%3B+filename%3DTermite_Visualization_Techniques_for_Ass.pdf&amp;Expires=1608157711&amp;Signature=OiLaMpnhwGe~4yVIW4bQScUEjvFm-mH7wBqWjNKA47g4jdzWtyMdEE2X-WkuEUwVLb7IGQzy0MfV~oI8Y47XT33OopRWJLFPGjSq15dCjSCAoORTqQMcBkKMQ-rB84V-qJN40cP4nbF8DP7pYeUun8zAxnQzHY1tzd4t3tL~hY1HlVy05jedJfgMUdZwweKOW9G6SwALqsGEXPiixPV-FTdVOrwwcxedccDAAsGK~PXY0J4w3GlumFQJwY8o45bWjycIiUJ8WWKEjIfkat~Hefh85eDGlnXUl3BmjlUSAiayRBtqTtJL2YMM2puf-GZafTMW7XnTnzhBysz1GWBKvw__&amp;Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA">Termite: Visualization Techniques for Assessing Textual Topic Models</a> <br/> (3) <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599">Visualizing the structure of RNA-seq expression data using grade of membership models</a></td>
 </tr>
 <tr class="even">
-<td>13</td>
-<td><a href="https://arxiv.org/abs/1804.09299">Seq2Seq-Vis: A Visual Debugging Tool for Sequence-to-Sequence Models</a> <br/> <a href="https://arxiv.org/pdf/1906.04176.pdf">Human-Machine Collaboration for Fast Land Cover Mapping</a></td>
-<td></td>
-<td></td>
+<td>12 <br/> <img width=200 src="assets/supervised.png"/></td>
+<td>Visualizing Supervised Models</td>
+<td>(1) <a href="https://arxiv.org/abs/1702.01226">Towards better analysis of machine learning models: A visual analytics perspective</a> <br/> (2) <a href="https://josuakrause.github.io/info/prospector.html">Interacting with Predictions: Visual Inspection of Black-box Machine Learning Models</a></td>
 </tr>
 <tr class="odd">
-<td>13 (optional)</td>
-<td><a href="https://www.wsj.com/articles/automation-makes-us-dumb-1416589342">Automation Makes Us Dumb</a></td>
-<td></td>
-<td></td>
+<td>13 <br/> <img width=200 src="assets/dl.png"/></td>
+<td>Visualizing Deep Learning Models</td>
+<td>(1) <a href="https://distill.pub/2016/handwriting/">Four Experiments in Handwriting with a Neural Network</a> <br/> (2) <a href="https://arxiv.org/abs/1604.07043">Towards Better Analysis of Deep Convolutional Networks</a></td>
 </tr>
 <tr class="even">
-<td>14</td>
-<td><a href="http://www.datasketch.es/april/">DataSketches: Community</a> <br/> <a href="https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/">Tukey, Design Thinking, and Better Questions</a> <br/> <a href="https://www.callingbullshit.org/case_studies/case_study_musician_mortality.html">Musicians and mortality</a></td>
+<td>14 <br/> <img width=200 src="assets/community.png"/></td>
+<td>Conclusion</td>
+<td>(1) <a href="https://www.datasketch.es/project/655-frustrations-doing-data-visualization">655 Frustrations of Doing Data Visualization</a> <br/> (2) <a href="https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/">Tukey, Design Thinking, and Better Questions</a> <br/> (3) <a href="https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/">As We May Think</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="lectures">Lectures</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Week</th>
+<th>Topic</th>
+<th>Link</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 </tr>

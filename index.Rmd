@@ -12,38 +12,38 @@ description: |
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This is a course about the use of visualization in the data science workflow.
-You will gain hands-on experience with developing visualization to support,
+This is a course about using visualization in data science workflows. We'll get
+hands-on experience with visualizations for,
 
 * Data cleaning and tidying
 * Exploratory analysis
 * Model inspection
 * Scientific reporting
 
-We will mostly use R, though occasionally we will use the vega-lite library in
-javascript. Prior experience with R, but not javascript, is expected.
+The course is mostly use R, though occasionally we will use the vega-lite
+library in javascript. Prior experience with R, but not javascript, is expected.
 
 In terms of content, we'll begin with a three week crash course on the
-fundamental principles of data visualization. This will provide a vocabulary
-that we can use to design and critique visualizations throughout the semester.
-Weeks 4 - 5 are focused on the connections between visualization and tidy data.
-It's a two way street. Rearranging your data in the right way can make it much
-easier to visualize; conversely, a good interface can immediately highlight data
-quality issues.
+fundamental principles of data visualization. This will provide a vocabulary for
+designing and critiquing visualizations throughout the semester. Weeks 4 - 5 are
+focused on the connections between visualization and tidy data. Rearranging your
+data in the right way can make it much easier to visualize; conversely, a good
+interface can immediately highlight data quality issues.
 
-From here on, we'll focus on exploratory analysis and model visualization. Weeks
-6 - 8 consider data with temporal, geographic, or network structure -- each
-comes with its own visual vocabulary. Weeks 9 - 11 focus on visualization of
-high-dimensional data, especially those that leverage methods from unsupervised
-learning. Weeks 12 and 13 describe the recent use of visualization to support
-inspection of complex supervised models. We close on notes about the role of
-visualization within the wider (data) scientific enterprise.
+From here on out, we'll focus on exploratory analysis and model visualization.
+Weeks 6 - 8 consider data with temporal, geographic, or network structure --
+each comes with its own visual vocabulary. Weeks 9 - 11 focus on visualization
+of high-dimensional data, drawing from ideas in unsupervised learning. Weeks 12
+and 13 describe the recent use of visualization to support inspection of complex
+supervised models. We close with a discussion about the possibilities of
+visualization in the broader intellectual landscape.
 
 ## Syllabus
 
 This will be an asynchronous class, with short video recordings released in
-advance. There will be an optional discussion every week. Online discussion on
-the course piazza is encouraged.
+advance. There will be an optional discussion every week, working through
+supplementary readings and examples. Online discussion on the course piazza is
+encouraged.
 
 Structurally, the main types of work in this class are
 
@@ -70,21 +70,27 @@ Submissions must be made on [Canvas](tbd).
 
 ## Readings
 
-| Week | Topic | Reading | Notes | Lectures |
-| - | - | --- | - | - |
-| 1 <br/> <img width=250 src="assets/encoding.png"/> | Marks and Channels | [Introduction to Data Science: Chapter 7](https://rafalab.github.io/dsbook) <br/> [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum) | | |
-| 1 (optional) | | [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold)<br/> [Automation Makes Us Dumb](https://www.wsj.com/articles/automation-makes-us-dumb-1416589342)| | |
-| 2 <br/> <img width=250 src="assets/faceting.png"/>| Faceting and Layout | [Introduction to Data Science: Chapter 8](https://rafalab.github.io/dsbook)<br/> [Multi-View Composition](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum) | | |
-| 3 <br/> <img width=250 src="interaction.png"/> | Interaction | [Visualization Analysis and Design: Chapter 11](https://search.library.wisc.edu/catalog/9911196629502121)<br/> [Interaction](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum) | | |
-| 3 | (optional) | [Up and Down the Ladder of Abstraction](http://worrydream.com/LadderOfAbstraction/)  | | |
-| 4 <img width=250 src="assets/tidy.png"/> | Data Wrangling | [R for Data Science: Chapter 12](https://r4ds.had.co.nz)| | |
-| 5 <br/> <img width=250 src="assets/diagnostics.png"/> | Quality Checking | [Getting Started with naniar](https://naniar.njtierney.com/articles/getting-started-w-naniar.html) <br/> [Profiler: Integrated Statistical Analysis and Visualization for Data Quality Assessment](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf) | | |
-| 6 <br/> <img width=250 src="assets/ts.png"/> | Time Series | [Forecasting Principles and Practice: Chapter 2](https://otexts.com/fpp3/graphics.html) | | |
-| 7 <br/> <img width=250 src="assets/geo.png"/> | Geographic Data | [Geographic Data in R: Chapter 2](https://geocompr.robinlovelace.net/spatial-class.html) | | |
-| 8 <br/> <img width=250 src="assets/network.png"/>| Network Data | [Visualization Analysis and Design: Chapter 9](https://search.library.wisc.edu/catalog/9911196629502121) [Modern Statistics for Modern Biology: Chapter 10.1 - 10.3](http://web.stanford.edu/class/bios221/book/Chap-Graphs.html)::| | |
-| 9 <br/> <img width=250 src="assets/clusters.png"/> | Clustering | [Intro to Data Science: Chapter 34](https://rafalab.github.io/dsbook)<br/> [Superheat Vignette (2, 3 & 6)](https://rlbarter.github.io/superheat/basic-usage.html) <br/> [Cluster Analysis of Genomic Data](http://users.umiacs.umd.edu/~hcorrada/CMSC702/readings/Solutions_ch13.pdf) | | |
-| 10 <br/> <img width=250 src="assets/dimred1.png"/>| Dimensionality Reduction I | [Beginner's Guide to Dimensionality Reduction](https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/)  <br/> [An Illustrated Introduction to the t-SNE algorithm](https://github.com/oreillymedia/t-SNE-tutorial) <br/> [How to use t-SNE effectively](https://distill.pub/2016/misread-tsne/) | | |
-| 11 <br/> <img width=250 src="assets/dimred2.png"/>| Dimensionality Reduction II | [Text mining with R: Chapter 6](https://www.tidytextmining.com/topicmodeling.html) <br/> [Termite: Visualization Techniques for Assessing Textual Topic Models](https://d1wqtxts1xzle7.cloudfront.net/30738409/2012-Termite-AVI.pdf?1362144247=&response-content-disposition=inline%3B+filename%3DTermite_Visualization_Techniques_for_Ass.pdf&Expires=1608157711&Signature=OiLaMpnhwGe~4yVIW4bQScUEjvFm-mH7wBqWjNKA47g4jdzWtyMdEE2X-WkuEUwVLb7IGQzy0MfV~oI8Y47XT33OopRWJLFPGjSq15dCjSCAoORTqQMcBkKMQ-rB84V-qJN40cP4nbF8DP7pYeUun8zAxnQzHY1tzd4t3tL~hY1HlVy05jedJfgMUdZwweKOW9G6SwALqsGEXPiixPV-FTdVOrwwcxedccDAAsGK~PXY0J4w3GlumFQJwY8o45bWjycIiUJ8WWKEjIfkat~Hefh85eDGlnXUl3BmjlUSAiayRBtqTtJL2YMM2puf-GZafTMW7XnTnzhBysz1GWBKvw__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA) <br/> [Visualizing the structure of RNA-seq expression data using grade of membership models](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599) | | |
-| 12 <br/> <img width=250 src="assets/supervised.png"/>| Visualizing Supervised Models | [Towards better analysis of machine learning models: A visual analytics perspective](https://arxiv.org/abs/1702.01226) <br/> [Interacting with Predictions: Visual Inspection of Black-box Machine Learning Models](https://josuakrause.github.io/info/prospector.html) | | |
-| 13 <br/> <img width=250 src="assets/dl.png"/>| Visualizing Deep Learning Models | [Four Experiments in Handwriting with a Neural Network](https://distill.pub/2016/handwriting/) <br/> [Towards Better Analysis of Deep Convolutional Networks](https://arxiv.org/abs/1604.07043) | | |
-| 14 <br/> <img width=250 src="assets/community.png"/>| Conclusion | [655 Frustrations of Doing Data Visualization](https://www.datasketch.es/project/655-frustrations-doing-data-visualization) <br/> [Tukey, Design Thinking, and Better Questions](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/) <br/> [As We May Think](https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/) | | |
+| Week | Topic | Reading |
+| - | - | --- |
+| 1 <br/> <img width=200 src="assets/encoding.png"/> | Marks and Channels | (1) [Introduction to Data Science: Chapter 7](https://rafalab.github.io/dsbook) <br/> (2) [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum) |
+| 1 (optional) | | (1) [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold)<br/> (2) [Automation Makes Us Dumb](https://www.wsj.com/articles/automation-makes-us-dumb-1416589342) |
+| 2 <br/> <img width=250 src="assets/faceting.png"/> | Faceting and Layout | (1) [Introduction to Data Science: Chapter 8](https://rafalab.github.io/dsbook)<br/> (2) [Multi-View Composition](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum) |
+| 3 <br/> <img width=200 src="assets/interaction.png"/> | Interaction | (1) [Visualization Analysis and Design: Chapter 11](https://search.library.wisc.edu/catalog/9911196629502121)<br/> (2) [Interaction](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum) |
+| 3 (optional) | | [Up and Down the Ladder of Abstraction](http://worrydream.com/LadderOfAbstraction/) |
+| 4 <br/> <img width=200 src="assets/tidy.png"/> | Data Wrangling | [R for Data Science: Chapter 12](https://r4ds.had.co.nz) |
+| 5 <br/> <img width=200 src="assets/diagnostics.png"/> | Quality Checking | (1) [Getting Started with naniar](https://naniar.njtierney.com/articles/getting-started-w-naniar.html) <br/> (2) [Profiler: Integrated Statistical Analysis and Visualization for Data Quality Assessment](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf) |
+| 6 <br/> <img width=200 src="assets/ts.png"/> | Time Series | [Forecasting Principles and Practice: Chapter 2](https://otexts.com/fpp3/graphics.html) |
+| 7 <br/> <img width=150 src="assets/geo.png"/> | Geographic Data | [Geographic Data in R: Chapter 2](https://geocompr.robinlovelace.net/spatial-class.html) |
+| 8 <br/> <img width=200 src="assets/network.png"/>| Network Data | (1) [Visualization Analysis and Design: Chapter 9](https://search.library.wisc.edu/catalog/9911196629502121) <br/> (2) [Modern Statistics for Modern Biology: Chapter 10.1 - 10.3](http://web.stanford.edu/class/bios221/book/Chap-Graphs.html)|
+| 9 <br/> <img width=200 src="assets/clusters.png"/> | Clustering | (1) [Intro to Data Science: Chapter 34](https://rafalab.github.io/dsbook)<br/> (2) [Superheat Vignette (2, 3 & 6)](https://rlbarter.github.io/superheat/basic-usage.html) <br/> (3) [Cluster Analysis of Genomic Data](http://users.umiacs.umd.edu/~hcorrada/CMSC702/readings/Solutions_ch13.pdf) |
+| 10 <br/> <img width=200 src="assets/dimred1.png"/>| Dimensionality Reduction I | (1) [Beginner's Guide to Dimensionality Reduction](https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/)  <br/> (2) [An Illustrated Introduction to the t-SNE algorithm](https://github.com/oreillymedia/t-SNE-tutorial) <br/> (3) [How to use t-SNE effectively](https://distill.pub/2016/misread-tsne/) |
+| 11 <br/> <img width=200 src="assets/dimred2.png"/>| Dimensionality Reduction II | (1) [Text mining with R: Chapter 6](https://www.tidytextmining.com/topicmodeling.html) <br/> (2) [Termite: Visualization Techniques for Assessing Textual Topic Models](https://d1wqtxts1xzle7.cloudfront.net/30738409/2012-Termite-AVI.pdf?1362144247=&response-content-disposition=inline%3B+filename%3DTermite_Visualization_Techniques_for_Ass.pdf&Expires=1608157711&Signature=OiLaMpnhwGe~4yVIW4bQScUEjvFm-mH7wBqWjNKA47g4jdzWtyMdEE2X-WkuEUwVLb7IGQzy0MfV~oI8Y47XT33OopRWJLFPGjSq15dCjSCAoORTqQMcBkKMQ-rB84V-qJN40cP4nbF8DP7pYeUun8zAxnQzHY1tzd4t3tL~hY1HlVy05jedJfgMUdZwweKOW9G6SwALqsGEXPiixPV-FTdVOrwwcxedccDAAsGK~PXY0J4w3GlumFQJwY8o45bWjycIiUJ8WWKEjIfkat~Hefh85eDGlnXUl3BmjlUSAiayRBtqTtJL2YMM2puf-GZafTMW7XnTnzhBysz1GWBKvw__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA) <br/> (3) [Visualizing the structure of RNA-seq expression data using grade of membership models](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599) |
+| 12 <br/> <img width=200 src="assets/supervised.png"/>| Visualizing Supervised Models | (1) [Towards better analysis of machine learning models: A visual analytics perspective](https://arxiv.org/abs/1702.01226) <br/> (2) [Interacting with Predictions: Visual Inspection of Black-box Machine Learning Models](https://josuakrause.github.io/info/prospector.html) |
+| 13 <br/> <img width=200 src="assets/dl.png"/>| Visualizing Deep Learning Models | (1) [Four Experiments in Handwriting with a Neural Network](https://distill.pub/2016/handwriting/) <br/> (2) [Towards Better Analysis of Deep Convolutional Networks](https://arxiv.org/abs/1604.07043) |
+| 14 <br/> <img width=200 src="assets/community.png"/>| Conclusion | (1) [655 Frustrations of Doing Data Visualization](https://www.datasketch.es/project/655-frustrations-doing-data-visualization) <br/> (2) [Tukey, Design Thinking, and Better Questions](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/) <br/> (3) [As We May Think](https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/) |
+
+## Lectures
+
+| Week | Topic | Link | Notes |
+| - | - | - | - |
+|  | | | |
