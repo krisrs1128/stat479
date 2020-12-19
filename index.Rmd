@@ -73,7 +73,7 @@ Submissions must be made on [Canvas](tbd).
 | Week | Topic | Reading |
 | - | - | --- |
 | 1 <br/> <img width=200 src="assets/encoding.png"/> | Marks and Channels | (1) [Introduction to Data Science: Chapter 7](https://rafalab.github.io/dsbook) <br/> (2) [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum) |
-| 1 (optional) | | (1) [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold)<br/> (2) [Automation Makes Us Dumb](https://www.wsj.com/articles/automation-makes-us-dumb-1416589342) |
+| 1 (optional) | | (1) [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold)<br/> (2) [Automation Makes Us Dumb](https://www-proquest-com.ezproxy.library.wisc.edu/docview/1626773318/E4C6F4FD50AF4437PQ/1?accountid=465) |
 | 2 <br/> <img width=250 src="assets/faceting.png"/> | Faceting and Layout | (1) [Introduction to Data Science: Chapter 8](https://rafalab.github.io/dsbook)<br/> (2) [Multi-View Composition](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum) |
 | 3 <br/> <img width=200 src="assets/interaction.png"/> | Interaction | (1) [Visualization Analysis and Design: Chapter 11](https://search.library.wisc.edu/catalog/9911196629502121)<br/> (2) [Interaction](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum) |
 | 3 (optional) | | [Up and Down the Ladder of Abstraction](http://worrydream.com/LadderOfAbstraction/) |
