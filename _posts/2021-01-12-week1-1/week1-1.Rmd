@@ -1,0 +1,73 @@
+---
+title: "Orientation"
+description: |
+  Welcome to STAT479: Statistical Data Visualization!
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 01-12-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+This course curates some of my favorite topics at the intersection of data
+science and data visualization. I've tried selecting readings that are both
+intellectually stimulating and useful for real-world data science projects.
+
+### Course Goals
+
+The official learning objectives are,
+
+* Reshape and tidy data for use in data visualizations.
+* Use visual encodings and layout to support exploratory analysis and data
+communication.
+* Design visualizations to summarize the results of dimensionality reduction and
+clustering algorithms.
+* Implement visualizations of geospatial, tree-structured, and network data.
+* Use visualizations to diagnose and inspect complex statistical and machine
+learning models.
+* Prototype custom visualizations using the ggplot2 library in R and vega-lite
+library in javascript.
+* Spot and remove chartjunk.
+
+More informally, my intent is to help you gain hands-on experience working with
+different types visualization techniques, so that you emerge from this course
+with confidence in your data science problem solving skills.
+
+Something I believe strongly is that, to be an effective scientist, you don't
+have to be a genius, you just have to look and notice well (To be a great
+scientist, you also need to know where to look). In any case, in 2020, it can be
+powerful to be fluent in data visualization.
+
+### Recurring Tasks
+
+I will send a course announcement every Sunday through Canvas, giving upcoming
+tasks for the week, along with their deadlines. The recurring tasks include,
+
+* Readings: Each week has 2 - 3 readings from textbooks or papers, and
+  these are key to learning the course material well.
+* Lectures: My lectures will summarize the readings and give further examples.
+  They will be linked in the "Lectures" table on the home page.
+* Homeworks: These are due on Canvas every other Friday. It's not enough to
+  understand visualization abstractly -- the only way to improve is to practice
+  using different tools and visual idioms.
+* Group project: You will have four milestones, culminating in a final project
+  report.
+
+### Course Materials
+
+This website contains reading and lecture content. For interaction and feedback,
+we will use Canvas. Here are some links to keep in mind,
+
+* Website
+  - [Reading schedule](docs/index.html#readings)
+  - [Recordings and notes](docs/index.html#lectures)
+
+* Canvas
+  - Weekly announcements
+  - Homework and project assignments
+  - Piazza forum
+  - Office hour / Discussion links
+  - Midterms
+  - Grades
