@@ -1,19 +1,19 @@
 [
   {
-    "path": "posts/welcome/",
-    "title": "Welcome to Statistical Data Visualization",
-    "description": "Welcome to our new blog, Statistical Data Visualization. We hope you enjoy \nreading what we have to say!",
+    "path": "posts/2021-01-12-week1-1/",
+    "title": "Orientation",
+    "description": "Welcome to STAT479: Statistical Data Visualization!",
     "author": [
       {
-        "name": "Nora Jones",
-        "url": "https://example.com/norajones"
+        "name": "Kris Sankaran",
+        "url": {}
       }
     ],
-    "date": "2020-11-30",
+    "date": "2021-01-12",
     "categories": [],
-    "contents": "\n\n\n\n",
+    "contents": "\nThis course curates some of my favorite topics at the intersection of data science and data visualization. I’ve tried selecting readings that are both intellectually stimulating and useful for real-world data science projects.\nCourse Goals\nThe official learning objectives are,\nReshape and tidy data for use in data visualizations.\nUse visual encodings and layout to support exploratory analysis and data communication.\nDesign visualizations to summarize the results of dimensionality reduction and clustering algorithms.\nImplement visualizations of geospatial, tree-structured, and network data.\nUse visualizations to diagnose and inspect complex statistical and machine learning models.\nPrototype custom visualizations using the ggplot2 library in R and vega-lite library in javascript.\nSpot and remove chartjunk.\nMore informally, my intent is to help you gain hands-on experience working with different types visualization techniques, so that you emerge from this course with confidence in your data science problem solving skills.\nSomething I believe strongly is that, to be an effective scientist, you don’t have to be a genius, you just have to look and notice well (To be a great scientist, you also need to know where to look). In any case, in 2020, it can be powerful to be fluent in data visualization.\nRecurring Tasks\nI will send a course announcement every Sunday through Canvas, giving upcoming tasks for the week, along with their deadlines. The recurring tasks include,\nReadings: Each week has 2 - 3 readings from textbooks or papers, and these are key to learning the course material well.\nLectures: My lectures will summarize the readings and give further examples. They will be linked in the “Lectures” table on the home page.\nHomeworks: These are due on Canvas every other Friday. It’s not enough to understand visualization abstractly – the only way to improve is to practice using different tools and visual idioms.\nGroup project: You will have four milestones, culminating in a final project report.\nCourse Materials\nThis website contains reading and lecture content. For interaction and feedback, we will use Canvas. Here are some links to keep in mind,\nWebsite\nReading schedule\nRecordings and notes\n\nCanvas\nWeekly announcements\nHomework and project assignments\nPiazza forum\nOffice hour / Discussion links\nMidterms\nGrades\n\n",
     "preview": {},
-    "last_modified": "2020-11-30T16:00:40-06:00",
+    "last_modified": "2021-01-12T11:04:01-06:00",
     "input_file": {}
   }
 ]
