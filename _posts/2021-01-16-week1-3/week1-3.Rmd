@@ -1,0 +1,234 @@
+---
+title: "Introduction to Vega-Lite"
+description: |
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 01-25-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+You can think of vega-lite as the javascript equivalent of ggplot2. It also
+provides a grammar of graphics, where layers can be composed on top of one
+another. The main reason for knowing vega-lite (opposed to just using ggplot2
+for everything) is that it can support flexible interaction. Also, it’s a good
+gateway to understanding richer data visualization packages, like `d3`.
+
+I encourage you to follow along in a new observable
+[notebook](https://observablehq.com/@krisrs1128/introduction-to-vega-lite). 
+
+```{r}
+library("robservable")
+library("htmlwidgets")
+```
+
+### Components of a Graph
+
+We’re going to construct this graph, which is from this week's
+[reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum),
+step-by-step, just like in the ggplot2 lecture. I realize that this is a bit
+repetitive, but I want to make it obvious just how similar ggplot2 and vega-lite
+are.
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 4, height = 325)
+```
+
+## Data and Geometry
+
+First, let’s load up and preview the
+[data](https://uwmadison.box.com/s/dyz0qohqvgake2ghm4ngupbltkzpqb7t). We're
+using the arquero library (`aq`) to make it easier to manage data in javascript
+-- the filtering and printing steps would be more difficult without it.
+
+````js
+data = aq.fromCSV(await FileAttachment("gapminder.csv").text()) // I used the file upload button to add this file
+data2000 = data.filter(d => d.year == 2000) // filter to only 2000
+data2000.view()
+````
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 6, height = 250)
+```
+
+and create a basic visual mark, without any encodings. Like in our first
+`ggplot2` figure, the mark is collapsed into a single point at the origin.
+Notice the analogy betwen vega-lite's `markPoint()` and ggplot2's
+`geom_point()`.
+
+````js
+vl.markPoint()
+  .data(data2000)
+  .render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 7, height = 20)
+```
+
+## Encodings
+
+Let’s deconstruct the original figure and see how data fields associated with
+each country get mapped to which visual properties of the corresponding point.
+
+* Fertility <--> $x$-axis coordinate
+* Life expectancy <--> $y$-axis coordinate
+* Country cluster <--> Point color
+* Population <--> Point size
+
+We can build this up one step at a time. To encode the fertility and life
+expectancy fields, we use `vl.x()` and `vl.y()` in an `encode()` call. One
+subtlety is that it's necessary to specify the type of the field through the --
+`fieldQ` means that the field is "Quantitative". We'll get into more detail
+about specifying data types in the next lecture.
+
+````js
+vl.markPoint()
+  .data(data2000)
+  .encode(
+    vl.x().fieldQ("fertility"), // what happens if you change this to fieldN()?
+    vl.y().fieldQ("life_expect")
+  )
+  .render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 8)
+```
+
+The same idea can be used to encode the country cluster and population fields.
+Note that I use `fieldN` to specify that cluster is a Nominal variable.
+
+Hint: How do you know which commands encode which fields? Until it becomes
+second nature, it's good to keep the
+[vega-lite-api](https://vega.github.io/vega-lite-api/api/) and
+[vega-lite](https://vega.github.io/vega-lite/) documentation close at hand.
+
+````js
+vl.markPoint()
+  .data(data2000)
+  .encode(
+    vl.x().fieldQ("fertility"),
+    vl.y().fieldQ("life_expect"),
+    vl.color().fieldN("cluster"), // what happens if you change this to fieldO()?
+    vl.size().fieldQ("pop")
+  )
+  .render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 9)
+```
+
+## Finishing touches
+
+We've made headway in our visualization task, but a more critical eye will help
+us improve the display. It will also give us an initial look at interactivity.
+The main things we ought to improve in this display are,
+
+1. The open rings are a bit distracting. They violate the principle of [Smallest
+Effective
+Difference](https://sites.google.com/site/tufteondesign/home/practical-design-strategies).
+2. Some of the points are impossibly small.
+3. The axis labels are still the names from the data.frame.
+4. There are distractingly many levels in the legend for population size.
+5. We can't actually tell which country each point corresponds to. For this, we
+will add a tooltip (a label that appears when you mouseover the point).
+
+For (1), let's replace the open rings with filled circles. We can pass options
+to `markPoint` in the same way that we passed options outside of `aes` to ggplot
+`geom` layers. For (2), we can modify the default size range by adding on a
+`.scale()` to the `vl.size()` encoding -- this is similar to adding a custom
+scale in ggplot2.
+
+````js
+vl.markPoint({filled: true})
+.data(data2000)
+.encode(
+  vl.x().fieldQ("fertility"),
+  vl.y().fieldQ("life_expect"),
+  vl.color().fieldN("cluster"),
+  vl.size().fieldQ("pop").scale({range: [25, 1000]}) // try changing the ranges
+)
+.render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 10)
+```
+
+For (3), we can add a `.title()` to fields for which we want to customize
+titles, and for (4), we can modify the tick count in the `.legend()` for `size`.
+
+````js
+vl.markPoint({filled: true})
+.data(data2000)
+.encode(
+  vl.x().fieldQ("fertility").title("Fertility"),
+  vl.y().fieldQ("life_expect").title("Life Expectancy"),
+  vl.color().fieldN("cluster"),
+  vl.size().fieldQ("pop").scale({range: [25, 1000]}).legend({tickCount: 3}).title("Population"),
+)
+.render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 11)
+```
+
+Now to (5). The idea is to think of a tooltip as another type of encoding --
+just like coordinate positions and colors, a label is a way of transforming a
+field in an abstract dataset into a visual property we can observe on a screen.
+
+````js
+vl.markPoint({filled: true})
+.data(data2000)
+.encode(
+  vl.x().fieldQ("fertility").title("Fertility"),
+  vl.y().fieldQ("life_expect").title("Life Expectancy"),
+  vl.color().fieldN("cluster"),
+  vl.size().fieldQ("pop").scale({range: [25, 1000]}).legend({tickCount: 3}).title("Population"),
+  vl.tooltip().fieldN("country"),
+  vl.order().fieldQ('pop').sort('descending') // if you remove this, large points prevent mouseover on the points below them
+)
+.render()
+````
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 12)
+```
+
+Finally, for a taste of what's to come, here's a version of the same plot that
+let's us compare many years over time.
+
+```{r}
+robservable("@krisrs1128/introduction-to-vega-lite", include = 13)
+```
+
+Don't worry about the code implementation, but in case you're curious, it's only
+a few extra lines over what we've already implemented.
+
+````js
+{
+  // define a slider selector object
+  let selectYear = vl.selectSingle("select").fields("year")
+    .init({year: 1955})
+    .bind(vl.slider().min(1955).max(2005).step(5).name("Year"))
+  
+  // update the plot depending on the value of the slider
+  return vl.markPoint({filled: true})
+    .data(data)
+    .select(selectYear) // refers to the slider bar
+    .transform(vl.filter(selectYear))
+    .encode(
+      vl.x().fieldQ("fertility").title("Fertility").scale({domain: [0, 9]}), // hard code the axes ranges
+      vl.y().fieldQ("life_expect").title("Life Expectancy").scale({domain: [0, 90]}),
+      vl.color().fieldN("cluster"),
+      vl.size().fieldQ("pop").scale({domain: [0, 1200000000], range: [25, 1000]}).legend({tickCount: 3}).title("Population"),
+      vl.tooltip().fieldN("country"),
+      vl.order().fieldQ('pop').sort('descending')
+    )
+    .render()
+}
+````
