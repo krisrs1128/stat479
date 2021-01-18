@@ -12,10 +12,12 @@ output:
     self_contained: false
 ---
 
-Reading: Introduction to Data Science, [Chapter 7](https://rafalab.github.io/dsbook/ggplot2.html)
+```{r, echo = FALSE}
+library("knitr")
+knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
 
-* [Recording]
-* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)
+_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 [ggplot2](https://ggplot2.tidyverse.org/) is an R implementation of the _Grammar
 of Graphics_. The idea of the Grammar is to define the basic "words" from which

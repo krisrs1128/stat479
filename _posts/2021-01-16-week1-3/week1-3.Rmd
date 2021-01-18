@@ -11,11 +11,7 @@ output:
     self_contained: false
 ---
 
-Reading: [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum)
-
-* [Recording]
-* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd)
-* [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite). 
+_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd),  [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite)_
 
 You can think of vega-lite as the javascript equivalent of ggplot2. It also
 provides a grammar of graphics, where layers can be composed on top of one

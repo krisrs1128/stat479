@@ -12,61 +12,19 @@ description: |
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This course explores the role of visualization within data science workflows.
-We'll get hands-on experience how visualization can be used to support,
-
-* Data cleaning and tidying
-* Exploratory analysis
-* Model inspection
-* Scientific reporting
-
-The course mostly uses R, though occasionally we will use the vega-lite library
-in javascript. Prior experience with R, but not javascript, is expected.
-
-In terms of content, we'll begin with a three week crash course on the
-fundamental principles of data visualization. This will provide a vocabulary for
-designing and critiquing visualizations throughout the semester. Weeks 4 - 5 are
-focused on the connections between visualization and tidy data. Rearranging your
-data in the right way can make it much easier to visualize; conversely, a good
-interface can immediately highlight data quality issues.
-
-From here on out, we'll focus on exploratory analysis and model visualization.
-Weeks 6 - 8 consider data with temporal, geographic, or network structure --
-each comes with its own visual conventions. Weeks 9 - 11 focus on visualization
-of high-dimensional data, drawing from ideas in unsupervised learning. Weeks 12
-and 13 describe the recent use of visualization to support inspection of complex
-supervised models. We close with a discussion about the possibilities of
-visualization in the broader intellectual landscape.
-
-## Syllabus
-
-This will be an asynchronous class, with short video recordings released in
-advance. There will be an optional discussion every week, working through
-supplementary readings and examples. Online discussion on the course piazza is
-encouraged.
-
-Evaluation in this course will be based on,
-
-* Homeworks. These will be released every other Friday, and focus on practical
-  skill development.
-* Exams. There will be two midterms (open book, timed).
-* Group Project. This is an opportunity to explore a dataset or visualization
-  algorithm.
-
 The official syllabus, which gives requirements, learning objectives, and
 grading mechanisms, is available
-[here](https://drive.google.com/file/d/1UWK2-tZ5vn9Nc0fez791npFQqomZNs-7/view?usp=sharing).
-
-This website includes links to the reading and lecture content. Assignments and
-discussion will be hosted on Canvas. For details on how to navigate this course,
-see the [Course Orientation](posts/2021-01-12/week1-1/week1-1.html).
+[here](https://canvas.wisc.edu/courses/243146/files/17520097?module_item_id=3538748).
+This website only includes links to the reading and lecture content -- the
+course structure is mapped out fully on the [Canvas
+homepage](https://canvas.wisc.edu/courses/243146).
 
 ## Readings
 
 | Week | Topic | Reading |
 | - | - | --- |
 | 1 <br/> <img width=200 src="assets/encoding.png"/> | Marks and Channels | (1) [Introduction to Data Science: Chapter 7](https://rafalab.github.io/dsbook/ggplot2.html) <br/> (2) [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum) |
-| 1 (optional) | | (1) [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold)<br/> (2) [Automation Makes Us Dumb](https://www-proquest-com.ezproxy.library.wisc.edu/docview/1626773318/E4C6F4FD50AF4437PQ/1?accountid=465) |
+| 1 (optional) | | (1) [Data Humanism](http://giorgialupi.com/data-humanism-my-manifesto-for-a-new-data-wold) |
 | 2 <br/> <img width=250 src="assets/faceting.png"/> | Faceting and Layout | (1) [Introduction to Data Science: Chapter 9.1 - 9.3](https://rafalab.github.io/dsbook/gapminder.html)<br/> (2) [Multi-View Composition](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum) |
 | 3 <br/> <img width=200 src="assets/interaction.png"/> | Interaction | (1) [Visualization Analysis and Design: Chapter 11](https://search.library.wisc.edu/catalog/9911196629502121)<br/> (2) [Interaction](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum) |
 | 3 (optional) | | [Up and Down the Ladder of Abstraction](http://worrydream.com/LadderOfAbstraction/) |
@@ -80,10 +38,10 @@ see the [Course Orientation](posts/2021-01-12/week1-1/week1-1.html).
 | 11 <br/> <img width=200 src="assets/dimred2.png"/>| Dimensionality Reduction II | (1) [Text mining with R: Chapter 6](https://www.tidytextmining.com/topicmodeling.html) <br/> (2) [Termite: Visualization Techniques for Assessing Textual Topic Models](https://d1wqtxts1xzle7.cloudfront.net/30738409/2012-Termite-AVI.pdf?1362144247=&response-content-disposition=inline%3B+filename%3DTermite_Visualization_Techniques_for_Ass.pdf&Expires=1608157711&Signature=OiLaMpnhwGe~4yVIW4bQScUEjvFm-mH7wBqWjNKA47g4jdzWtyMdEE2X-WkuEUwVLb7IGQzy0MfV~oI8Y47XT33OopRWJLFPGjSq15dCjSCAoORTqQMcBkKMQ-rB84V-qJN40cP4nbF8DP7pYeUun8zAxnQzHY1tzd4t3tL~hY1HlVy05jedJfgMUdZwweKOW9G6SwALqsGEXPiixPV-FTdVOrwwcxedccDAAsGK~PXY0J4w3GlumFQJwY8o45bWjycIiUJ8WWKEjIfkat~Hefh85eDGlnXUl3BmjlUSAiayRBtqTtJL2YMM2puf-GZafTMW7XnTnzhBysz1GWBKvw__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA) <br/> (3) [Visualizing the structure of RNA-seq expression data using grade of membership models](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599) |
 | 12 <br/> <img width=200 src="assets/supervised.png"/>| Model Building | (1) [Towards better analysis of machine learning models: A visual analytics perspective](https://arxiv.org/abs/1702.01226) <br/> (2) [Visualization in Bayesian workflow](https://arxiv.org/abs/1709.01449) |
 | 13 <br/> <img width=200 src="assets/dl.png"/>| Visualizing Deep Learning Models | (1) [Four Experiments in Handwriting with a Neural Network](https://distill.pub/2016/handwriting/) <br/> (2) [Towards Better Analysis of Deep Convolutional Networks](https://arxiv.org/abs/1604.07043) |
+| 13 (optional) | | [Automation Makes Us Dumb](https://www-proquest-com.ezproxy.library.wisc.edu/docview/1626773318/E4C6F4FD50AF4437PQ/1?accountid=465) |
 | 14 <br/> <img width=200 src="assets/community.png"/>| Conclusion | (1) [655 Frustrations of Doing Data Visualization](https://www.datasketch.es/project/655-frustrations-doing-data-visualization) <br/> (2) [Tukey, Design Thinking, and Better Questions](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/) <br/> (3) [As We May Think](https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/) |
 
 ## Lectures
 
-| Week | Topic | Link | Notes |
-| - | - | - | - |
-|  | | | |
+Notes are listed [here](notes.html). Source code and links to recorded videos
+are listed at the top of each set of lecture notes.

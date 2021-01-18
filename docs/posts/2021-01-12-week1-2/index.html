@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week1-2_files/anchor-4.2.2/anchor.min.js","week1-2_files/bowser-1.9.3/bowser.min.js","week1-2_files/distill-2.2.21/template.v2.js","week1-2_files/figure-html5/unnamed-chunk-10-1.png","week1-2_files/figure-html5/unnamed-chunk-11-1.png","week1-2_files/figure-html5/unnamed-chunk-13-1.png","week1-2_files/figure-html5/unnamed-chunk-14-1.png","week1-2_files/figure-html5/unnamed-chunk-15-1.png","week1-2_files/figure-html5/unnamed-chunk-2-1.png","week1-2_files/figure-html5/unnamed-chunk-5-1.png","week1-2_files/figure-html5/unnamed-chunk-6-1.png","week1-2_files/figure-html5/unnamed-chunk-7-1.png","week1-2_files/figure-html5/unnamed-chunk-8-1.png","week1-2_files/figure-html5/unnamed-chunk-9-1.png","week1-2_files/header-attrs-2.6/header-attrs.js","week1-2_files/jquery-1.11.3/jquery.min.js","week1-2_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week1-2_files/anchor-4.2.2/anchor.min.js","week1-2_files/bowser-1.9.3/bowser.min.js","week1-2_files/distill-2.2.21/template.v2.js","week1-2_files/figure-html5/unnamed-chunk-10-1.png","week1-2_files/figure-html5/unnamed-chunk-11-1.png","week1-2_files/figure-html5/unnamed-chunk-12-1.png","week1-2_files/figure-html5/unnamed-chunk-13-1.png","week1-2_files/figure-html5/unnamed-chunk-14-1.png","week1-2_files/figure-html5/unnamed-chunk-15-1.png","week1-2_files/figure-html5/unnamed-chunk-16-1.png","week1-2_files/figure-html5/unnamed-chunk-2-1.png","week1-2_files/figure-html5/unnamed-chunk-3-1.png","week1-2_files/figure-html5/unnamed-chunk-5-1.png","week1-2_files/figure-html5/unnamed-chunk-6-1.png","week1-2_files/figure-html5/unnamed-chunk-7-1.png","week1-2_files/figure-html5/unnamed-chunk-8-1.png","week1-2_files/figure-html5/unnamed-chunk-9-1.png","week1-2_files/header-attrs-2.6/header-attrs.js","week1-2_files/jquery-1.11.3/jquery.min.js","week1-2_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2248,20 +2248,26 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p>Reading: Introduction to Data Science, <a href="https://rafalab.github.io/dsbook/ggplot2.html">Chapter 7</a></p>
-<ul>
-<li>[Recording]</li>
-<li><a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></li>
-</ul>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <p><a href="https://ggplot2.tidyverse.org/">ggplot2</a> is an R implementation of the <em>Grammar of Graphics</em>. The idea of the Grammar is to define the basic “words” from which visualizations are built, and then let users compose them in original ways. This is in contrast to systems with prespecified chart types, where the user is forced to pick from a limited dropdown menu of plots. Just like ordinary language, once you know how to speak the grammar of graphics, you will be able to express ideas that no one else has had before.</p>
 <p>These are libraries we’ll use in this lecture.</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"dslabs"</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://github.com/slowkow/ggrepel'>"ggrepel"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://scales.r-lib.org'>"scales"</a></span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <h3 id="components-of-a-graph">Components of a Graph</h3>
 <p>Your reading for this lecture constructs this plot, and we’re going to recreate it in these notes.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
 <p>Every ggplot2 plot is made from three components,</p>
 <ul>
@@ -2273,6 +2279,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p>Let’s load up the data. Each row is an observation, and each column is an attribute that describes the observation. This is important because each mark that you see on a ggplot – a line, a point, a tile, … – had to start out as a row within an R <code>data.frame</code>. The visual properties of the mark (e.g., color) are determined by the values along columns. These type of data are often referred to as “tidy” data, and we’ll have a full week discussing this topic.</p>
 <p>Here’s an example of the data above in tidy format,</p>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span>
+</code></pre>
+</div>
 <pre><code>       state abb region population total
 1    Alabama  AL  South    4779736   135
 2     Alaska  AK   West     710231    19
@@ -2283,6 +2294,13 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p>This is one example of how the same information might be stored in a non-tidy way, making visualization much harder.</p>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>non_tidy</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>non_tidy</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>non_tidy</span><span class='op'>[</span><span class='fl'>1</span>, <span class='op'>]</span>
+<span class='va'>non_tidy</span> <span class='op'>&lt;-</span> <span class='va'>non_tidy</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>]</span>
+<span class='va'>non_tidy</span>
+</code></pre>
+</div>
 <pre><code>            Alabama   Alaska  Arizona Arkansas California Colorado
 abb              AL       AK       AZ       AR         CA       CO
 region        South     West     West    South       West     West
@@ -2347,7 +2365,13 @@ total           250         93            27            97        5</code></pre>
 </blockquote>
 <p>For example, by deconstructing the plot above, we would expect to have point and text layers. For now, let’s just tell the plot to put all the <code>geom</code>’s at the origin.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fl'>0</span>, y <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fl'>0</span>, y <span class='op'>=</span> <span class='fl'>0</span>, label <span class='op'>=</span> <span class='st'>"test"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
 <p>You can see all the types of <code>geoms</code> in the <a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf">cheat sheet</a>. We’ll be experimenting with a few of these in the third lecture this week.</p>
 <h3 id="aesthetic-mappings">Aesthetic mappings</h3>
@@ -2360,24 +2384,63 @@ total           250         93            27            97        5</code></pre>
 </ul>
 <p>We can establish this mapping in the plot using the <code>aes</code> function. Notice that we don’t need to quote the column names within this command – it knows to refer back to the <code>murders</code> data frame in <code>ggplot(murders)</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span>, col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
 <p>The original plot used a log-scale. To transform the x and y axes, we can use <a href="https://ggplot2.tidyverse.org/reference/index.html#section-scales">scales</a>.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span>, col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
 </div>
 <p>Once nuance is that scales aren’t limited to these sort of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> transformations. They can be applied to modify any relationship between a data field and its appearance on the page. For example, this changes the mapping between the region field and circle color.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span>, col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_color_manual</a></span><span class='op'>(</span>values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#6a4078"</span>, <span class='st'>"#aa1518"</span>, <span class='st'>"#9ecaf8"</span>, <span class='st'>"#50838c"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># exercise: find better colors using https://imagecolorpicker.com/</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
 </div>
 <p>The problem with this graph is that it doesn’t allow us to compare individual states, only regions. For that visual task, we’ll need text labels. We can encode the coordinates for these marks again using <code>aes</code>, but this time within a <code>geom_text</code> layer.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span>, col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span>, label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>,
+    nudge_x <span class='op'>=</span> <span class='fl'>0.08</span> <span class='co'># what would happen if I remove this?</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
 </div>
 <p>Note that each type of layer uses different visual properties to encode the data – we could pass in <code>label</code> to a <code>geom_text</code> label, but that wouldn’t make sense for a <code>geom_point</code> layer.</p>
 <p>It’s usually a good thing to make your code as concise as possible. For ggplot2, one way you can accomplish this is by sharing elements from the <code>aes</code> mapping across layers (e.g., not having to type <code>population</code> and <code>total</code> twice). This can be done by defining a “global” aesthetic, putting it inside the top <code>ggplot</code> call.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>, nudge_x <span class='op'>=</span> <span class='fl'>0.08</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
 </div>
 <h2 id="finishing-touches">Finishing touches</h2>
 <p>How can we improve the readability of this plot? From the intro figure, you might already have ideas,</p>
@@ -2390,23 +2453,84 @@ total           250         93            27            97        5</code></pre>
 </ol>
 <p>For 1., the <code>ggrepel</code> package can handle the computation needed to find better state name positions.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>, segment.size <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># I moved it up so that the geom_point's appear on top of the lines</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
 <p>For 2., let’s first compute the national murder rate (per million),</p>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>r</span> <span class='op'>&lt;-</span> <span class='va'>murders</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>rate <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>total</span><span class='op'>)</span> <span class='op'>/</span>  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>population</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='op'>(</span><span class='va'>rate</span><span class='op'>)</span>
+<span class='va'>r</span>
+</code></pre>
+</div>
 <pre><code>[1] 3.034555e-05</code></pre>
 </div>
 <p>Now, we can use this as the slope in a <code>geom_abline</code> layer, which encodes a slope and intercept as a line on a graph.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_abline</a></span><span class='op'>(</span>intercept <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>r</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>0.4</span>, col <span class='op'>=</span> <span class='st'>"#b3b3b3"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>, segment.size <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
 </div>
 <p>For 3., we can add a <code>labs</code> layer to write labels and a <code>theme</code> to reposition the legend. I used <code>unit_format</code> from the <code>scales</code> package to change the scientific notation in the <span class="math inline">\(x\)</span>-axis labels to something more readable.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_abline</a></span><span class='op'>(</span>intercept <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>r</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>0.4</span>, col <span class='op'>=</span> <span class='st'>"#b3b3b3"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>, segment.size <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span>labels <span class='op'>=</span> <span class='fu'><a href='https://scales.r-lib.org//reference/unit_format.html'>unit_format</a></span><span class='op'>(</span>unit <span class='op'>=</span> <span class='st'>"million"</span>, scale <span class='op'>=</span> <span class='fl'>1e-6</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># used to convert scientific notation to readable labels</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='st'>"Population (log scale)"</span>,
+    y <span class='op'>=</span> <span class='st'>"Total number of murders (log scale)"</span>,
+    color <span class='op'>=</span> <span class='st'>"region"</span>,
+    title <span class='op'>=</span> <span class='st'>"US Gun Murders in 2010"</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>legend.position <span class='op'>=</span> <span class='st'>"top"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
 </div>
 <p>For 5., I find the gray background with reference lines a bit distracting. We can simplify the appearance using <code>theme_bw</code>. I also like the colorbrewer palette, which can be used by calling a different color scale.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week1-2_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_abline</a></span><span class='op'>(</span>intercept <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>r</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>0.4</span>, col <span class='op'>=</span> <span class='st'>"#b3b3b3"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>abb</span><span class='op'>)</span>, segment.size <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span>labels <span class='op'>=</span> <span class='fu'><a href='https://scales.r-lib.org//reference/unit_format.html'>unit_format</a></span><span class='op'>(</span>unit <span class='op'>=</span> <span class='st'>"million"</span>, scale <span class='op'>=</span> <span class='fl'>1e-6</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_log10</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='st'>"Population (log scale)"</span>,
+    y <span class='op'>=</span> <span class='st'>"Total number of murders (log scale)"</span>,
+    color <span class='op'>=</span> <span class='st'>"Region"</span>,
+    title <span class='op'>=</span> <span class='st'>"US Gun Murders in 2010"</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
+    legend.position <span class='op'>=</span> <span class='st'>"top"</span>,
+    panel.grid.minor <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>
+  <span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week1-2_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
 </div>
 <p>Some bonus exercises, which will train you to look at your graphics more carefully, as well as build your familiarity with ggplot2.</p>
 <ul>

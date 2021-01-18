@@ -11,13 +11,12 @@ output:
     self_contained: false
 ---
 
-Reading: [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum)
+```{r, echo = FALSE}
+library("knitr")
+knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
 
-* [Recording]
-* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd)
-* [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)
-
-## Vocabulary of encodings
+_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording], [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd), [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)_
 
 With this in mind, it can only ever help you to have a rich vocabulary of
 possible visual encodings. The more kinds of marks and encodings that are at
@@ -27,10 +26,8 @@ configuration that helps you achieve your purpose.
 So, let’s look at a few different types of marks and encodings in R and
 vega-lite.
 
-### Point Marks
-
-Point marks can encode data fields using their $x$ and $y$ positions, color,
-size, and shape.
+Before we get started, let's load up the libraries that will be used in these
+notes.
 
 ```{r}
 library("readr")
@@ -38,19 +35,34 @@ library("ggplot2")
 library("dplyr")
 library("robservable")
 theme_set(theme_bw())
-gapminder <- read_csv("https://uwmadison.box.com/shared/static/dyz0qohqvgake2ghm4ngupbltkzpqb7t.csv", col_types = cols()) %>%
-  mutate(cluster = as.factor(cluster)) # specify that cluster is nominal
 ```
 
+### Point Marks
+
+First, let's read in the gapminder dataset that we used in the introduction to
+vega-lite.
+
 ```{r}
+# load data
+gapminder <- read_csv("https://uwmadison.box.com/shared/static/dyz0qohqvgake2ghm4ngupbltkzpqb7t.csv", col_types = cols()) %>%
+  mutate(cluster = as.factor(cluster)) # specify that cluster is nominal
 gap2000 <- gapminder %>%
   filter(year == 2000) # keep only year 2000
+```
+
+Point marks can encode data fields using their $x$ and $y$ positions, color,
+size, and shape. Below, each mark is a country, and we're using shape and the
+$y$ position to distinguish between country clusters.
+
+```{r}
 
 ggplot(gap2000) +
   geom_point(aes(x = fertility, y = cluster, shape = cluster))
 ```
 
-The equivalent in vega-lite is
+Aside from some small differences in the encoding syntax and default styling,
+the result is almost identical in vega-lite.
+
 ````js
 vl.markPoint()
   .data(data2000)
@@ -62,6 +74,10 @@ vl.markPoint()
   .render()
 ````
 
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 5, height = 170)
+```
+
 We can specify different types of shapes using the "shape" parameter outside of
 the `aes` encoding.
 
@@ -69,6 +85,8 @@ the `aes` encoding.
 ggplot(gap2000) +
   geom_point(aes(x = fertility, y = cluster), shape = 15)
 ```
+
+For the equivalent in vega-lite, use `markSquare`,
 
 ````js
 vl.markSquare({size: 100})
@@ -79,6 +97,10 @@ vl.markSquare({size: 100})
   )
   .render()
 ````
+
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 6, height = 170)
+```
 
 ### Bar Marks
 
@@ -103,8 +125,13 @@ vl.markBar()
   .render()
 ````
 
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 7)
+```
+
 To make comparisons between countries with similar populations easier, we can
-order them by population. To compare clusters, we can shade the bars.
+order them by population (alphabetical ordering is not that meaningful). To
+compare clusters, we can color in the bars.
 
 ```{r}
 ggplot(gap2000) +
@@ -128,9 +155,13 @@ vl.markBar()
     vl.y().fieldQ('pop'),
     vl.color().field("cluster").scale({"scheme": "set2"})
   )
-  .width(700)
+  .width(500)
   .render()
 ````
+
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 8)
+```
 
 In the plot above, each bar is anchored at 0. Instead, we could have each
 rectangle encode *two* continuous values, a start and an end. To illustrate,
@@ -163,6 +194,8 @@ ggplot(life_ranges) +
   xlim(0, 85)
 ```
 
+Notice here that we can just specify `.min()` and `.max()` within the encoding,
+rather than precomputing these summary statistics.
 
 ````js
 vl.markBar()
@@ -174,6 +207,10 @@ vl.markBar()
   )
   .render()
 ````
+
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 9, height = 170)
+```
 
 ### Line Marks
 
@@ -204,6 +241,9 @@ vl.markLine({opacity: 0.7, size: 3})
   .render()
 ````
 
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 10, height = 330)
+```
 
 ### Area Marks
 
@@ -226,6 +266,11 @@ ggplot(population_sums) +
   scale_x_continuous(expand = c(0, 0))
 ```
 
+In the `vega-lite` version, we can add a tooltip that shows country names on
+mouseover. It's not so clear where one country begins and another starts, though
+-- it would be clearer if there were small lines demarcating the boundaries
+between countries.
+
 ````js
 vl.markArea()
   .data(data)
@@ -239,6 +284,10 @@ vl.markArea()
   .width(600)
   .render()
 ````
+
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 11)
+```
 
 Just like in bar marks, we don't necessarily need to anchor the $y$-axis at 0.
 For example, here the bottom and top of each area mark is given by the 30 and
@@ -261,10 +310,14 @@ ggplot(population_ranges) +
   scale_x_continuous(expand = c(0, 0))
 ```
 
+For the 30 and 70% quantiles, we can't use a built-in vega-lite function, like
+the `.min()` and `.max()` from above. Instead, we need the javascript equivalent
+of dplyr's `group_by` + `summarise`, which are called `groupby` and `rollup`.
+
 ````js
 population_ranges = data.groupby("year", "cluster")
   .rollup({ // equivalent of dplyr summarise
-    pop_low: op.quantile("pop", 0.4),
+    pop_low: op.quantile("pop", 0.3),
     pop_high: op.quantile("pop", 0.7)
   })
 ````
@@ -281,3 +334,7 @@ vl.markArea({"opacity": 0.7})
   .width(600)
   .render()
 ````
+
+```{r}
+robservable("@krisrs1128/vocabulary-of-marks", include = 13)
+```
