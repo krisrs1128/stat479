@@ -1,8 +1,7 @@
 ---
 title: "Introduction to Vega-Lite"
 description: | 
-  Link data and visual marks with vega-lite, and an initial exercise in
-  interactivity.
+  Week 1 [3]
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -12,6 +11,12 @@ output:
     self_contained: false
 ---
 
+Reading: [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum)
+
+* [Recording]
+* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd)
+* [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite). 
+
 You can think of vega-lite as the javascript equivalent of ggplot2. It also
 provides a grammar of graphics, where layers can be composed on top of one
 another. The main reason for knowing vega-lite (opposed to just using ggplot2
@@ -19,7 +24,6 @@ for everything) is that it can support flexible interaction. Also, it’s a good
 gateway to understanding richer data visualization packages, like `d3`.
 
 I encourage you to follow along in a new observable
-[notebook](https://observablehq.com/@krisrs1128/introduction-to-vega-lite). 
 
 ```{r}
 library("robservable")
@@ -200,6 +204,10 @@ vl.markPoint({filled: true})
 ```{r}
 robservable("@krisrs1128/introduction-to-vega-lite", include = 12)
 ```
+
+One point I want you to take away from both this and the ggplot2 introductions
+is that building a plot is an iterative process, similar in many ways to
+writing. Learn to read your plots critically and improve them step-by-step.
 
 Finally, for a taste of what's to come, here's a version of the same plot that
 let's us compare many years over time.

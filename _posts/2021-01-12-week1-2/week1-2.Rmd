@@ -1,8 +1,7 @@
 ---
 title: "Introduction to ggplot2"
 description: |
-  Link data with visual marks using the grammar of graphics, and learn to
-  critically refine an initial figure.
+  Week 1 [2]
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -11,6 +10,11 @@ output:
   distill::distill_article:
     self_contained: false
 ---
+
+Reading: Introduction to Data Science, [Chapter 7](https://rafalab.github.io/dsbook/ggplot2.html)
+
+* [Recording]
+* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)
 
 [ggplot2](https://ggplot2.tidyverse.org/) is an R implementation of the _Grammar
 of Graphics_. The idea of the Grammar is to define the basic "words" from which
