@@ -1,11 +1,12 @@
 ---
 title: "Introduction to ggplot2"
 description: |
-  Week 1 [2]
+  A discussion of the key terminology in ggplot2, and an example of iteratively
+  refining a simple scatterplot.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 01-25-2021
+date: 01-26-2021
 output:
   distill::distill_article:
     self_contained: false

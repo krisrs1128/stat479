@@ -1,11 +1,12 @@
 ---
 title: "Types, Marks, and Encodings"
 description: | 
-  Week 1 [4]
+  Tying together the introductions to ggplot2 and vega-lite, using the common
+  language of encodings.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 01-25-2021
+date: 01-28-2021
 output:
   distill::distill_article:
     self_contained: false

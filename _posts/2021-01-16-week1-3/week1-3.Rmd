@@ -1,11 +1,11 @@
 ---
 title: "Introduction to Vega-Lite"
 description: | 
-  Week 1 [3]
+  Building up a vega-lite plot from scratch, with a preview of interactivity.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 01-25-2021
+date: 01-27-2021
 output:
   distill::distill_article:
     self_contained: false

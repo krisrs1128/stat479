@@ -1,11 +1,11 @@
 ---
-title: "Examples: Marks and Encodings"
+title: "A Vocabulary of Marks"
 description: | 
-  Week 1 [5]
+  Examples of marks and their encodings in both ggplot2 and vega-lite.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 01-25-2021
+date: 01-29-2021
 output:
   distill::distill_article:
     self_contained: false
@@ -14,8 +14,8 @@ output:
 Reading: [Data Types, Graphical Marks, and Visual Encoding Channels](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum)
 
 * [Recording]
-* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/)
-* [Observable](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/)
+* [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd)
+* [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)
 
 ## Vocabulary of encodings
 
@@ -36,6 +36,7 @@ size, and shape.
 library("readr")
 library("ggplot2")
 library("dplyr")
+library("robservable")
 theme_set(theme_bw())
 gapminder <- read_csv("https://uwmadison.box.com/shared/static/dyz0qohqvgake2ghm4ngupbltkzpqb7t.csv", col_types = cols()) %>%
   mutate(cluster = as.factor(cluster)) # specify that cluster is nominal
@@ -237,7 +238,7 @@ vl.markArea()
   )
   .width(600)
   .render()
-```
+````
 
 Just like in bar marks, we don't necessarily need to anchor the $y$-axis at 0.
 For example, here the bottom and top of each area mark is given by the 30 and
