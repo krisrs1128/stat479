@@ -1,6 +1,8 @@
 ---
 title: "Introduction to Vega-Lite"
-description: |
+description: | 
+  Link data and visual marks with vega-lite, and an initial exercise in
+  interactivity.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
