@@ -1,1 +1,3 @@
 docs/site_libs*
+_posts/*week*/*.html
+_posts/*week*/*.png
