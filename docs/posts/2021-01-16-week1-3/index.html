@@ -87,7 +87,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
   <!--radix_placeholder_meta_tags-->
 <title>Statistical Data Visualization: Introduction to Vega-Lite</title>
 
-<meta property="description" itemprop="description" content="Building up a vega-lite plot from scratch, with a preview of interactivity."/>
+<meta property="description" itemprop="description" content="Learn the basic concepts for creating vega-lite plots, and see how the library&#10;supports interactivity."/>
 
 
 <!--  https://schema.org/Article -->
@@ -98,20 +98,20 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
 <meta property="og:title" content="Statistical Data Visualization: Introduction to Vega-Lite"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="Building up a vega-lite plot from scratch, with a preview of interactivity."/>
+<meta property="og:description" content="Learn the basic concepts for creating vega-lite plots, and see how the library&#10;supports interactivity."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
 <meta property="twitter:title" content="Statistical Data Visualization: Introduction to Vega-Lite"/>
-<meta property="twitter:description" content="Building up a vega-lite plot from scratch, with a preview of interactivity."/>
+<meta property="twitter:description" content="Learn the basic concepts for creating vega-lite plots, and see how the library&#10;supports interactivity."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Vega-Lite"]},{"type":"character","attributes":{},"value":["Building up a vega-lite plot from scratch, with a preview of interactivity."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["01-27-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Vega-Lite"]},{"type":"character","attributes":{},"value":["Learn the basic concepts for creating vega-lite plots, and see how the library\nsupports interactivity."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["01-27-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2217,7 +2217,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Introduction to Vega-Lite","description":"Building up a vega-lite plot from scratch, with a preview of interactivity.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-01-27T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
+{"title":"Introduction to Vega-Lite","description":"Learn the basic concepts for creating vega-lite plots, and see how the library\nsupports interactivity.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-01-27T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2243,7 +2243,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <h1>Introduction to Vega-Lite</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Building up a vega-lite plot from scratch, with a preview of interactivity.</p></p>
+<p><p>Learn the basic concepts for creating vega-lite plots, and see how the library supports interactivity.</p></p>
 </div>
 
 <div class="d-byline">
@@ -2254,16 +2254,15 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 
 <div class="d-article">
 <p><em><a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd">Rmarkdown</a>, <a href="https://observablehq.com/@krisrs1128/introduction-to-vega-lite">Observable</a></em></p>
-<p>You can think of vega-lite as the javascript equivalent of ggplot2. It also provides a grammar of graphics, where layers can be composed on top of one another. The main reason for knowing vega-lite (opposed to just using ggplot2 for everything) is that it can support flexible interaction. Also, it’s a good gateway to understanding richer data visualization packages, like <code>d3</code>.</p>
-<p>I encourage you to follow along in a new observable</p>
+<p>Vega-Lite is the javascript equivalent of ggplot2. It provides a grammar of graphics, where layers can be composed on top of one another. The main reason for knowing vega-lite (opposed to only ggplot2) is that it can support flexible interaction. Also, it’s a good gateway toward understanding richer data visualization packages, like <code>d3</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
 <h3 id="components-of-a-graph">Components of a Graph</h3>
-<p>We’re going to construct this graph, which is from this week’s <a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">reading</a>, step-by-step, just like in the ggplot2 lecture. I realize that this is a bit repetitive, but I want to make it obvious just how similar ggplot2 and vega-lite are.</p>
+<p>We’re going to construct this graph step-by-step, just like in the ggplot2 lecture. I realize that this is a bit repetitive, but I want to make it obvious just how similar ggplot2 and vega-lite are.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-fb7e570915cbd4d243ab" style="width:624px;height:325px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-fb7e570915cbd4d243ab">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1c3b685e89744ca7c9bd" style="width:624px;height:325px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1c3b685e89744ca7c9bd">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="data-and-geometry">Data and Geometry</h2>
 <p>First, let’s load up and preview the <a href="https://uwmadison.box.com/s/dyz0qohqvgake2ghm4ngupbltkzpqb7t">data</a>. We’re using the arquero library (<code>aq</code>) to make it easier to manage data in javascript – the filtering and printing steps would be more difficult without it.</p>
@@ -2271,26 +2270,26 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>data2000 <span class="op">=</span> data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">year</span> <span class="op">==</span> <span class="dv">2000</span>) <span class="co">// filter to only 2000</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>data2000<span class="op">.</span><span class="fu">view</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-b972e942c445be65bda7" style="width:624px;height:250px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b972e942c445be65bda7">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ae835dc47a1302dbfc76" style="width:624px;height:250px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ae835dc47a1302dbfc76">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>and create a basic visual mark, without any encodings. Like in our first <code>ggplot2</code> figure, the mark is collapsed into a single point at the origin. Notice the analogy betwen vega-lite’s <code>markPoint()</code> and ggplot2’s <code>geom_point()</code>.</p>
+<p>Let’s create a visual mark, without any encodings. Like in our first <code>ggplot2</code> figure, the mark is collapsed into a single point at the origin. Notice the analogy betwen vega-lite’s <code>markPoint()</code> and ggplot2’s <code>geom_point()</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-1ff416e94873934605fd" style="width:624px;height:20px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1ff416e94873934605fd">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d5b72273abf9e1031b51" style="width:624px;height:20px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d5b72273abf9e1031b51">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="encodings">Encodings</h2>
-<p>Let’s deconstruct the original figure and see how data fields associated with each country get mapped to which visual properties of the corresponding point.</p>
+<p>We can deconstruct the original figure to see data fields are mapped to visual properties,</p>
 <ul>
-<li>Fertility &lt;–&gt; <span class="math inline">\(x\)</span>-axis coordinate</li>
-<li>Life expectancy &lt;–&gt; <span class="math inline">\(y\)</span>-axis coordinate</li>
-<li>Country cluster &lt;–&gt; Point color</li>
-<li>Population &lt;–&gt; Point size</li>
+<li>Fertility → <span class="math inline">\(x\)</span>-axis coordinate</li>
+<li>Life expectancy → <span class="math inline">\(y\)</span>-axis coordinate</li>
+<li>Country cluster → Point color</li>
+<li>Population → Point size</li>
 </ul>
-<p>We can build this up one step at a time. To encode the fertility and life expectancy fields, we use <code>vl.x()</code> and <code>vl.y()</code> in an <code>encode()</code> call. One subtlety is that it’s necessary to specify the type of the field through the – <code>fieldQ</code> means that the field is “Quantitative”. We’ll get into more detail about specifying data types in the next lecture.</p>
+<p>We can build this up one step at a time. To encode the fertility and life expectancy fields, we use <code>vl.x()</code> and <code>vl.y()</code> in an <code>encode()</code> call. One subtlety is that it’s necessary to specify the data type of each field. <code>fieldQ</code> means that the field is “Quantitative”. We’ll review data types in the <a href="../2021-01-18-week1-4/index.html">next lecture</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2299,11 +2298,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>  )</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-54ed5d473ad760cf89f1" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-54ed5d473ad760cf89f1">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1fd5ac2b7910ae5306f9" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1fd5ac2b7910ae5306f9">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>The same idea can be used to encode the country cluster and population fields. Note that I use <code>fieldN</code> to specify that cluster is a Nominal variable.</p>
-<p>Hint: How do you know which commands encode which fields? Until it becomes second nature, it’s good to keep the <a href="https://vega.github.io/vega-lite-api/api/">vega-lite-api</a> and <a href="https://vega.github.io/vega-lite/">vega-lite</a> documentation close at hand.</p>
+<p>The same idea can be used to encode the country cluster and population fields. <code>fieldN</code> specifies that the cluster field is a Nominal (i.e., categorical) variable.</p>
+<p>Hint: How do you know which commands encode which fields? It’s often good to keep the <a href="https://vega.github.io/vega-lite-api/api/">vega-lite-api</a> and <a href="https://vega.github.io/vega-lite/">vega-lite</a> documentation close at hand.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2314,19 +2313,19 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>  )</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-90d470c99d7a1c450320" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-90d470c99d7a1c450320">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-309e12850b56e58bde22" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-309e12850b56e58bde22">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="finishing-touches">Finishing touches</h2>
 <p>We’ve made headway in our visualization task, but a more critical eye will help us improve the display. It will also give us an initial look at interactivity. The main things we ought to improve in this display are,</p>
 <ol type="1">
 <li>The open rings are a bit distracting. They violate the principle of <a href="https://sites.google.com/site/tufteondesign/home/practical-design-strategies">Smallest Effective Difference</a>.</li>
 <li>Some of the points are impossibly small.</li>
-<li>The axis labels are still the names from the data.frame.</li>
-<li>There are distractingly many levels in the legend for population size.</li>
-<li>We can’t actually tell which country each point corresponds to. For this, we will add a tooltip (a label that appears when you mouseover the point).</li>
+<li>The axis labels are not proper English words.</li>
+<li>There are distractingly many values in the legend for population size.</li>
+<li>We can’t actually tell which country each point corresponds to. It would be nice to add a tooltip (a label that appears when you mouseover the point).</li>
 </ol>
-<p>For (1), let’s replace the open rings with filled circles. We can pass options to <code>markPoint</code> in the same way that we passed options outside of <code>aes</code> to ggplot <code>geom</code> layers. For (2), we can modify the default size range by adding on a <code>.scale()</code> to the <code>vl.size()</code> encoding – this is similar to adding a custom scale in ggplot2.</p>
+<p>For (1), let’s replace the open rings with filled circles. We can pass options to <code>markPoint</code> in the same way that we passed options to ggplot <code>geom</code> layers. For (2), we can modify the default size range by adding on a <code>.scale()</code> to the <code>vl.size()</code> encoding – this is similar to adding a custom scale in ggplot2.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2337,8 +2336,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>)</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-ff1393ea8849aaeb27aa" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ff1393ea8849aaeb27aa">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":10,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ee939b89c915cc0257eb" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ee939b89c915cc0257eb">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":10,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>For (3), we can add a <code>.title()</code> to fields for which we want to customize titles, and for (4), we can modify the tick count in the <code>.legend()</code> for <code>size</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
@@ -2351,8 +2350,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-d5dd36d6885f426603ce" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d5dd36d6885f426603ce">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":11,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-057b386de19dc16b7bf8" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-057b386de19dc16b7bf8">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":11,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Now to (5). The idea is to think of a tooltip as another type of encoding – just like coordinate positions and colors, a label is a way of transforming a field in an abstract dataset into a visual property we can observe on a screen.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
@@ -2367,14 +2366,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>)</span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-7a59e762c85c515f1f70" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7a59e762c85c515f1f70">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":12,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-bdcb49be3b1cb0ae28b5" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-bdcb49be3b1cb0ae28b5">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":12,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>One point I want you to take away from both this and the ggplot2 introductions is that building a plot is an iterative process, similar in many ways to writing. Learn to read your plots critically and improve them step-by-step.</p>
+<p>One point I want you to take away from both this and the ggplot2 introductions is that building a plot is an iterative process. Once you develop your eye for good visual design, you will be able to take any initial plot and make it more effective.</p>
 <p>Finally, for a taste of what’s to come, here’s a version of the same plot that let’s us compare many years over time.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-1401a7809ee472414e08" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1401a7809ee472414e08">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":13,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e8357d81500cbbbe1867" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e8357d81500cbbbe1867">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":13,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Don’t worry about the code implementation, but in case you’re curious, it’s only a few extra lines over what we’ve already implemented.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>{</span>

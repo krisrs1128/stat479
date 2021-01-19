@@ -2249,38 +2249,44 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 
 <div class="d-article">
 <p><em><a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-4/week1-4.Rmd">Rmarkdown</a></em></p>
-<p>The reason that the ggplot2 and vega-lite packages feel similar to use is that they are based on the same fundamental concepts. Each observation (row) within a dataset corresponds to a geometric mark in a visualization. Important attributes (columns) of an observation within a dataset can be encoded by properties of visual marks.</p>
+<p>The reason that the ggplot2 and vega-lite packages feel similar is that they are based on the same underlying ideas,</p>
+<ul>
+<li>Each observation (row) within a dataset corresponds to a geometric mark in a visualization.</li>
+<li>Important attributes (columns) of an observation within a dataset can be encoded by properties of visual marks.</li>
+</ul>
 <p>In fact, we can roughly translate the function names between the two packages,</p>
 <ul>
-<li><code>geom_*</code> &lt;–&gt; <code>.mark*</code></li>
-<li><code>aes</code> &lt;–&gt; <code>vl.encode()</code></li>
-<li><code>scale_*</code> &lt;–&gt; <code>.scale()</code></li>
-<li><code>labs</code> &lt;–&gt; <code>.title()</code></li>
+<li><code>geom_*</code> → <code>mark*</code></li>
+<li><code>aes</code> → <code>vl.encode()</code></li>
+<li><code>scale_*</code> → <code>scale()</code></li>
+<li><code>labs</code> → <code>title()</code></li>
 </ul>
-<p>A good visualization makes it easy to visually compare the relevant attributes of the relevant observations. The difficulty of visualization is that there are often many choices for the marks and encodings to use for any given comparison. It’s also difficult to know which comparisons are actually of interest. For these reasons, we’re going to want to build up a vocabulary of marks and encodings.</p>
+<p>A good visualization makes it easy to visually compare the relevant attributes across observations. A challenge is that there are often many possible marks and encodings for any given comparison. It’s also difficult to know which comparisons are actually of interest. For these reasons, we’re going to want to build up a vocabulary of marks and encodings.</p>
 <p><img src="assets/example_encodings.png" /></p>
 <h2 id="field-types">Field types</h2>
-<p>One immediate restriction on the types of encodings that make sense for a given field comes from the “type” of that field.</p>
+<p>To identify good encodings, it can often help to first what the types of each field are.</p>
 <ul>
-<li>Nominal: These are fields that allow identity comparisons (is <span class="math inline">\(A = B\)</span>?) between observations, but don’t come with any notion of order.
+<li>Nominal: These are fields that allow identity comparisons between observations (is <span class="math inline">\(A = B\)</span>?), but don’t come with any notion of order.
 <ul>
 <li>City region, country name, movie genres, file types, …</li>
-<li>Encodings: Position, color hue, shape, motion</li>
 </ul></li>
-<li>Ordinal: These are fields that allow ordering comparisons (is <span class="math inline">\(A &gt; B\)</span>?) between observations, but don’t let you quantify the degree of difference.
+<li>Ordinal: These are fields that allow ordering comparisons between observations (is <span class="math inline">\(A &gt; B\)</span>?), but don’t let you quantify the degree of difference.
 <ul>
 <li>Shirt size, sports team rankings, order of appearance of characters on TV show</li>
-<li>Encodings: Position, size (radius, length, area), color brightness are candidates, though need to avoid inappropriate arithmetic comparisons</li>
 </ul></li>
 <li>Quantitative: These are field types that let you make distance comparisons between observations. For interval data, absolute comparisons can be made (<span class="math inline">\(A - B\)</span>), while for ratio data, only relative ones (<span class="math inline">\(\frac{A}{B}\)</span>) are possible.
 <ul>
 <li>Temperature, stock price, number of drinks sold in a coffee shop per day</li>
-<li>Encodings: Position, size (radius, length, area), color brightness</li>
 </ul></li>
 </ul>
-<p>This is not an exhaustive list, and there are subtleties, * The same field could be treated as nominal, ordinal, or quantitative depending on the context. Age could be nominal (underage or overage), ordinal (teenager, <span class="math inline">\(20 - 30\)</span>, …), or quantitative. * A given field might be thought of hierarchically. There might be interesting patterns at the city, county, or region level – what seems like a single field in your dataset can become the source for three derived fields. * Even though temporal fields can be thought of as quantitative, they come with their own language. For example, the hour - week - month hierarchy is a natural one for temporal data.</p>
+<p>This is not an exhaustive list, and there are subtleties,</p>
+<ul>
+<li>The same field could be treated as nominal, ordinal, or quantitative depending on the context. Age could be nominal (underage or overage), ordinal (gen Z, millenial, …), or quantitative.</li>
+<li>A given field might be thought of hierarchically. There might be interesting patterns at the city, county, or region level – what seems like a single column can become the source for multiple derived fields.</li>
+<li>Even though temporal fields can be thought of as quantitative, they come with their own conventions. For example, the hour - week - month hierarchy is a natural one for temporal data.</li>
+</ul>
 <p>It’s worth highlighting that, even if a particular encoding <em>could</em> be used for a given data type, different encodings have different effectiveness. When trying to encoding several data fields at once, a choice of one encoding over another will implicitly prioritize certain comparisons over others.</p>
-<p>For example, in the figure below, the same two numbers are encoded using many different visual properties – position on a shared <span class="math inline">\(y\)</span>-axis, position on distinct <span class="math inline">\(y\)</span>-axes, etc. – and study participants were asked to gauge the difference in the numbers. People were best at comparing positions on a common scale, and worst at distinguishing differences in areas.</p>
+<p>For example, in the figure below (Figure 5.8 <a href="https://search.library.wisc.edu/catalog/9911196629502121">here</a>), the same two numbers are encoded using many different visual properties – position on a shared <span class="math inline">\(y\)</span>-axis, position on distinct <span class="math inline">\(y\)</span>-axes, etc. – and study participants were asked to gauge the difference in the numbers. People were best at comparing positions on a common scale, and worst at distinguishing differences in areas.</p>
 <p><img src="assets/encoding_effectiveness.png" /></p>
 <p>Here is a similar example. In the left four panels, a nominal field is encoded using color (left two) and shape (middle two). The red circles are easiest to find in the left two. In the right two panels, two nominal fields are encoded, using both shape and color. It’s much harder to find the red circle – you have to scan over the entire image to find it, which you didn’t have to do at all for the first two panels.</p>
 <p><img src="assets/encoding_effectiveness_2.png" /></p>

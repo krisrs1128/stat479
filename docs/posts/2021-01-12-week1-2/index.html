@@ -2252,7 +2252,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 
 </div>
 <p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
-<p><a href="https://ggplot2.tidyverse.org/">ggplot2</a> is an R implementation of the <em>Grammar of Graphics</em>. The idea of the Grammar is to define the basic “words” from which visualizations are built, and then let users compose them in original ways. This is in contrast to systems with prespecified chart types, where the user is forced to pick from a limited dropdown menu of plots. Just like ordinary language, once you know how to speak the grammar of graphics, you will be able to express ideas that no one else has had before.</p>
+<p><a href="https://ggplot2.tidyverse.org/">ggplot2</a> is an R implementation of the <em>Grammar of Graphics</em>. The idea is to define the basic “words” from which visualizations are built, and then let users compose them in original ways. This is in contrast to systems with prespecified chart types, where the user is forced to pick from a limited dropdown menu of plots. Just like in ordinary language, the creative combination of simple building blocks can support a very wide range of expression.</p>
 <p>These are libraries we’ll use in this lecture.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2265,7 +2265,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <h3 id="components-of-a-graph">Components of a Graph</h3>
-<p>Your reading for this lecture constructs this plot, and we’re going to recreate it in these notes.</p>
+<p>We’re going to create this plot in these notes.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
@@ -2276,7 +2276,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Aesthetic Mapping: This links the data with the visual marks.</li>
 </ul>
 <h3 id="the-data">The Data</h3>
-<p>Let’s load up the data. Each row is an observation, and each column is an attribute that describes the observation. This is important because each mark that you see on a ggplot – a line, a point, a tile, … – had to start out as a row within an R <code>data.frame</code>. The visual properties of the mark (e.g., color) are determined by the values along columns. These type of data are often referred to as “tidy” data, and we’ll have a full week discussing this topic.</p>
+<p>Let’s load up the data. Each row is an observation, and each column is an attribute that describes the observation. This is important because each mark that you see on a ggplot – a line, a point, a tile, … – had to start out as a row within an R <code>data.frame</code>. The visual properties of the mark (e.g., color) are determined by the values along columns. These type of data are often referred to as tidy data, and we’ll have a full week discussing this topic.</p>
 <p>Here’s an example of the data above in tidy format,</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2298,64 +2298,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='va'>non_tidy</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>non_tidy</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>non_tidy</span><span class='op'>[</span><span class='fl'>1</span>, <span class='op'>]</span>
 <span class='va'>non_tidy</span> <span class='op'>&lt;-</span> <span class='va'>non_tidy</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>]</span>
-<span class='va'>non_tidy</span>
+<span class='va'>non_tidy</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>]</span>
 </code></pre>
 </div>
 <pre><code>            Alabama   Alaska  Arizona Arkansas California Colorado
 abb              AL       AK       AZ       AR         CA       CO
 region        South     West     West    South       West     West
 population  4779736   710231  6392017  2915918   37253956  5029196
-total           135       19      232       93       1257       65
-           Connecticut Delaware District of Columbia  Florida
-abb                 CT       DE                   DC       FL
-region       Northeast    South                South    South
-population     3574097   897934               601723 19687653
-total               97       38                   99      669
-            Georgia   Hawaii    Idaho      Illinois       Indiana
-abb              GA       HI       ID            IL            IN
-region        South     West     West North Central North Central
-population  9920000  1360301  1567582      12830632       6483802
-total           376        7       12           364           142
-                    Iowa        Kansas Kentucky Louisiana     Maine
-abb                   IA            KS       KY        LA        ME
-region     North Central North Central    South     South Northeast
-population       3046355       2853118  4339367   4533372   1328361
-total                 21            63      116       351        11
-           Maryland Massachusetts      Michigan     Minnesota
-abb              MD            MA            MI            MN
-region        South     Northeast North Central North Central
-population  5773552       6547629       9883640       5303925
-total           293           118           413            53
-           Mississippi      Missouri  Montana      Nebraska   Nevada
-abb                 MS            MO       MT            NE       NV
-region           South North Central     West North Central     West
-population     2967297       5988927   989415       1826341  2700551
-total              120           321       12            32       84
-           New Hampshire New Jersey New Mexico  New York
-abb                   NH         NJ         NM        NY
-region         Northeast  Northeast       West Northeast
-population       1316470    8791894    2059179  19378102
-total                  5        246         67       517
-           North Carolina  North Dakota          Ohio Oklahoma
-abb                    NC            ND            OH       OK
-region              South North Central North Central    South
-population        9535483        672591      11536504  3751351
-total                 286             4           310      111
-             Oregon Pennsylvania Rhode Island South Carolina
-abb              OR           PA           RI             SC
-region         West    Northeast    Northeast          South
-population  3831074     12702379      1052567        4625364
-total            36          457           16            207
-            South Dakota Tennessee    Texas     Utah   Vermont
-abb                   SD        TN       TX       UT        VT
-region     North Central     South    South     West Northeast
-population        814180   6346105 25145561  2763885    625741
-total                  8       219      805       22         2
-           Virginia Washington West Virginia     Wisconsin  Wyoming
-abb              VA         WA            WV            WI       WY
-region        South       West         South North Central     West
-population  8001024    6724540       1852994       5686986   563626
-total           250         93            27            97        5</code></pre>
+total           135       19      232       93       1257       65</code></pre>
 </div>
 <p>Often, one of the hardest parts in making a ggplot2 plot is not coming up with the right ggplot2 commands, but reshaping the data so that it’s in a tidy format.</p>
 <h3 id="geometry">Geometry</h3>
@@ -2373,16 +2323,15 @@ total           250         93            27            97        5</code></pre>
 </div>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
-<p>You can see all the types of <code>geoms</code> in the <a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf">cheat sheet</a>. We’ll be experimenting with a few of these in the third lecture this week.</p>
+<p>You can see all the types of <code>geoms</code> in the <a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf">cheat sheet</a>. We’ll be experimenting with a few of these in a <a href="../2021-01-18-week1-5/index.html">later lecture</a>.</p>
 <h3 id="aesthetic-mappings">Aesthetic mappings</h3>
-<p>Aesthetic mappings make the connection between the data and the geometry. The physical properties of a geom’s mark is determined by values in the corresponding observation’s data field, as specified by the aesthetic mapping.</p>
-<p>Deconstructing the original graph further, we recognize these links between the abstract data fields for each state and the circles’ visual properties,</p>
+<p>Aesthetic mappings make the connection between the data and the geometry. It’s the piece that translates abstract data fields into visual properties. Analyzing the original graph, we recognize these specific mappings,</p>
 <ul>
-<li>State Population &lt;–&gt; <span class="math inline">\(x\)</span>-axis coordinate</li>
-<li>Number of murders &lt;–&gt; <span class="math inline">\(y\)</span>-axis coordinate</li>
-<li>Geographical region &lt;–&gt; color</li>
+<li>State Population → <span class="math inline">\(x\)</span>-axis coordinate</li>
+<li>Number of murders → <span class="math inline">\(y\)</span>-axis coordinate</li>
+<li>Geographical region → color</li>
 </ul>
-<p>We can establish this mapping in the plot using the <code>aes</code> function. Notice that we don’t need to quote the column names within this command – it knows to refer back to the <code>murders</code> data frame in <code>ggplot(murders)</code>.</p>
+<p>To establish these mappings, we need to use the <code>aes</code> function. Notice that column names don’t have to be quoted – ggplot2 knows to refer back to the <code>murders</code> data frame in <code>ggplot(murders)</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2402,7 +2351,7 @@ total           250         93            27            97        5</code></pre>
 </div>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
 </div>
-<p>Once nuance is that scales aren’t limited to these sort of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> transformations. They can be applied to modify any relationship between a data field and its appearance on the page. For example, this changes the mapping between the region field and circle color.</p>
+<p>Once nuance is that scales aren’t limited to <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> transformations. They can be applied to modify any relationship between a data field and its appearance on the page. For example, this changes the mapping between the region field and circle color.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2414,7 +2363,7 @@ total           250         93            27            97        5</code></pre>
 </div>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
 </div>
-<p>The problem with this graph is that it doesn’t allow us to compare individual states, only regions. For that visual task, we’ll need text labels. We can encode the coordinates for these marks again using <code>aes</code>, but this time within a <code>geom_text</code> layer.</p>
+<p>A problem with this graph is that it doesn’t tell us which state each point corresponds to. For that, we’ll need text labels. We can encode the coordinates for these marks again using <code>aes</code>, but this time within a <code>geom_text</code> layer.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2429,8 +2378,8 @@ total           250         93            27            97        5</code></pre>
 </div>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
 </div>
-<p>Note that each type of layer uses different visual properties to encode the data – we could pass in <code>label</code> to a <code>geom_text</code> label, but that wouldn’t make sense for a <code>geom_point</code> layer.</p>
-<p>It’s usually a good thing to make your code as concise as possible. For ggplot2, one way you can accomplish this is by sharing elements from the <code>aes</code> mapping across layers (e.g., not having to type <code>population</code> and <code>total</code> twice). This can be done by defining a “global” aesthetic, putting it inside the top <code>ggplot</code> call.</p>
+<p>Note that each type of layer uses different visual properties to encode the data – the argument <code>label</code> is only available for the <code>geom_text</code> layer. You can see which aesthetic mappings are required for each type of <code>geom</code> by checking that <code>geom</code>’s documentation page, under the Aesthetics heading.</p>
+<p>It’s usually a good thing to make your code as concise as possible. For ggplot2, we can achieve this by sharing elements across <code>aes</code> calls (e.g., not having to type <code>population</code> and <code>total</code> twice). This can be done by defining a “global” aesthetic, putting it inside the initial <code>ggplot</code> call.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2443,7 +2392,7 @@ total           250         93            27            97        5</code></pre>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
 </div>
 <h2 id="finishing-touches">Finishing touches</h2>
-<p>How can we improve the readability of this plot? From the intro figure, you might already have ideas,</p>
+<p>How can we improve the readability of this plot? You might already have ideas,</p>
 <ol type="1">
 <li>Prevent labels from overlapping. It’s impossible to read some of the state names.</li>
 <li>Add a line showing the national rate. This serves as a point of reference, allowing us to see whether an individual state is above or below the national murder rate.</li>
@@ -2451,7 +2400,7 @@ total           250         93            27            97        5</code></pre>
 <li>Move the legend to the top of the figure. Right now, we’re wasting a lot of visual real estate in the right hand side, just to let people know what each color means.</li>
 <li>Use a better color theme.</li>
 </ol>
-<p>For 1., the <code>ggrepel</code> package can handle the computation needed to find better state name positions.</p>
+<p>For 1., the <code>ggrepel</code> package find better state name positions, drawing links when necessary.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>murders</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>population</span>, y <span class='op'>=</span> <span class='va'>total</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2463,7 +2412,7 @@ total           250         93            27            97        5</code></pre>
 </div>
 <p><img src="week1-2_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
-<p>For 2., let’s first compute the national murder rate (per million),</p>
+<p>For 2., let’s first compute the national murder rate,</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>r</span> <span class='op'>&lt;-</span> <span class='va'>murders</span> <span class='op'>%&gt;%</span> 
@@ -2536,8 +2485,8 @@ total           250         93            27            97        5</code></pre>
 <ul>
 <li>Try reducing the size of the text labels. Hint: use the <code>size</code> argument in <code>geom_text_repel</code>.</li>
 <li>Increase the size of the circles in the legend. Hint: Use <code>override.aes</code> within a <code>guide</code>.</li>
-<li>Re-order the regions in the legend. Hint: Reset the factor levels in the <code>region</code> field of the <code>murders</code> data.frame.</li>
-<li>Only show labels for a subset of states that are far from the national rate. Hint: Filter the <code>murders</code> data.frame, and use the <code>data</code> field specific to the <code>geom_text_repel</code> layer.</li>
+<li>Re-order the order of regions in the legend. Hint: Reset the factor levels in the <code>region</code> field of the <code>murders</code> data.frame.</li>
+<li>Only show labels for a subset of states that are far from the national rate. Hint: Filter the <code>murders</code> data.frame, and use a <code>data</code> field specific to the <code>geom_text_repel</code> layer.</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
