@@ -1,7 +1,8 @@
 ---
 title: "Introduction to Vega-Lite"
 description: | 
-  Building up a vega-lite plot from scratch, with a preview of interactivity.
+  Learn the basic concepts for creating vega-lite plots, and see how the library
+  supports interactivity.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -13,13 +14,11 @@ output:
 
 _[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd),  [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite)_
 
-You can think of vega-lite as the javascript equivalent of ggplot2. It also
-provides a grammar of graphics, where layers can be composed on top of one
-another. The main reason for knowing vega-lite (opposed to just using ggplot2
-for everything) is that it can support flexible interaction. Also, it’s a good
-gateway to understanding richer data visualization packages, like `d3`.
-
-I encourage you to follow along in a new observable
+Vega-Lite is the javascript equivalent of ggplot2. It provides a grammar of
+graphics, where layers can be composed on top of one another. The main reason
+for knowing vega-lite (opposed to only ggplot2) is that it can support flexible
+interaction. Also, it’s a good gateway toward understanding richer data
+visualization packages, like `d3`.
 
 ```{r}
 library("robservable")
@@ -28,11 +27,9 @@ library("htmlwidgets")
 
 ### Components of a Graph
 
-We’re going to construct this graph, which is from this week's
-[reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum),
-step-by-step, just like in the ggplot2 lecture. I realize that this is a bit
-repetitive, but I want to make it obvious just how similar ggplot2 and vega-lite
-are.
+We’re going to construct this graph step-by-step, just like in the ggplot2
+lecture. I realize that this is a bit repetitive, but I want to make it obvious
+just how similar ggplot2 and vega-lite are.
 
 ```{r}
 robservable("@krisrs1128/introduction-to-vega-lite", include = 4, height = 325)
@@ -54,10 +51,9 @@ data2000.view()
 robservable("@krisrs1128/introduction-to-vega-lite", include = 6, height = 250)
 ```
 
-and create a basic visual mark, without any encodings. Like in our first
-`ggplot2` figure, the mark is collapsed into a single point at the origin.
-Notice the analogy betwen vega-lite's `markPoint()` and ggplot2's
-`geom_point()`.
+Let's create a visual mark, without any encodings. Like in our first `ggplot2`
+figure, the mark is collapsed into a single point at the origin. Notice the
+analogy betwen vega-lite's `markPoint()` and ggplot2's `geom_point()`.
 
 ````js
 vl.markPoint()
@@ -71,19 +67,19 @@ robservable("@krisrs1128/introduction-to-vega-lite", include = 7, height = 20)
 
 ## Encodings
 
-Let’s deconstruct the original figure and see how data fields associated with
-each country get mapped to which visual properties of the corresponding point.
+We can deconstruct the original figure to see data fields are mapped to visual
+properties,
 
-* Fertility <--> $x$-axis coordinate
-* Life expectancy <--> $y$-axis coordinate
-* Country cluster <--> Point color
-* Population <--> Point size
+* Fertility &rarr; $x$-axis coordinate
+* Life expectancy &rarr; $y$-axis coordinate
+* Country cluster &rarr; Point color
+* Population &rarr; Point size
 
 We can build this up one step at a time. To encode the fertility and life
 expectancy fields, we use `vl.x()` and `vl.y()` in an `encode()` call. One
-subtlety is that it's necessary to specify the type of the field through the --
-`fieldQ` means that the field is "Quantitative". We'll get into more detail
-about specifying data types in the next lecture.
+subtlety is that it's necessary to specify the data type of each field. `fieldQ`
+means that the field is "Quantitative". We'll review data types in the [next
+lecture](../2021-01-18-week1-4/index.html).
 
 ````js
 vl.markPoint()
@@ -96,15 +92,15 @@ vl.markPoint()
 ````
 
 ```{r}
-robservable("@krisrs1128/introduction-to-vega-lite", include = 8)
+robservable("@krisrs1128/introduction-to-vega-lite", include = 8, height = 340)
 ```
 
 The same idea can be used to encode the country cluster and population fields.
-Note that I use `fieldN` to specify that cluster is a Nominal variable.
+`fieldN` specifies that the cluster field is a Nominal (i.e., categorical)
+variable.
 
-Hint: How do you know which commands encode which fields? Until it becomes
-second nature, it's good to keep the
-[vega-lite-api](https://vega.github.io/vega-lite-api/api/) and
+Hint: How do you know which commands encode which fields? It's often good to
+keep the [vega-lite-api](https://vega.github.io/vega-lite-api/api/) and
 [vega-lite](https://vega.github.io/vega-lite/) documentation close at hand.
 
 ````js
@@ -120,7 +116,7 @@ vl.markPoint()
 ````
 
 ```{r}
-robservable("@krisrs1128/introduction-to-vega-lite", include = 9)
+robservable("@krisrs1128/introduction-to-vega-lite", include = 9, height = 340)
 ```
 
 ## Finishing touches
@@ -133,16 +129,15 @@ The main things we ought to improve in this display are,
 Effective
 Difference](https://sites.google.com/site/tufteondesign/home/practical-design-strategies).
 2. Some of the points are impossibly small.
-3. The axis labels are still the names from the data.frame.
-4. There are distractingly many levels in the legend for population size.
-5. We can't actually tell which country each point corresponds to. For this, we
-will add a tooltip (a label that appears when you mouseover the point).
+3. The axis labels are not proper English words.
+4. There are distractingly many values in the legend for population size.
+5. We can't actually tell which country each point corresponds to. It would be
+nice to add a tooltip (a label that appears when you mouseover the point).
 
 For (1), let's replace the open rings with filled circles. We can pass options
-to `markPoint` in the same way that we passed options outside of `aes` to ggplot
-`geom` layers. For (2), we can modify the default size range by adding on a
-`.scale()` to the `vl.size()` encoding -- this is similar to adding a custom
-scale in ggplot2.
+to `markPoint` in the same way that we passed options to ggplot `geom` layers.
+For (2), we can modify the default size range by adding on a `.scale()` to the
+`vl.size()` encoding -- this is similar to adding a custom scale in ggplot2.
 
 ````js
 vl.markPoint({filled: true})
@@ -157,7 +152,7 @@ vl.markPoint({filled: true})
 ````
 
 ```{r}
-robservable("@krisrs1128/introduction-to-vega-lite", include = 10)
+robservable("@krisrs1128/introduction-to-vega-lite", include = 10, height = 340)
 ```
 
 For (3), we can add a `.title()` to fields for which we want to customize
@@ -176,7 +171,7 @@ vl.markPoint({filled: true})
 ````
 
 ```{r}
-robservable("@krisrs1128/introduction-to-vega-lite", include = 11)
+robservable("@krisrs1128/introduction-to-vega-lite", include = 11, height = 340)
 ```
 
 Now to (5). The idea is to think of a tooltip as another type of encoding --
@@ -198,12 +193,13 @@ vl.markPoint({filled: true})
 ````
 
 ```{r}
-robservable("@krisrs1128/introduction-to-vega-lite", include = 12)
+robservable("@krisrs1128/introduction-to-vega-lite", include = 12, height = 340)
 ```
 
 One point I want you to take away from both this and the ggplot2 introductions
-is that building a plot is an iterative process, similar in many ways to
-writing. Learn to read your plots critically and improve them step-by-step.
+is that building a plot is an iterative process. Once you develop your eye for
+good visual design, you will be able to take any initial plot and make it more
+effective.
 
 Finally, for a taste of what's to come, here's a version of the same plot that
 let's us compare many years over time.

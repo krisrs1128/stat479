@@ -20,12 +20,12 @@ knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRU
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 [ggplot2](https://ggplot2.tidyverse.org/) is an R implementation of the _Grammar
-of Graphics_. The idea of the Grammar is to define the basic "words" from which
-visualizations are built, and then let users compose them in original ways. This
-is in contrast to systems with prespecified chart types, where the user is
-forced to pick from a limited dropdown menu of plots. Just like ordinary
-language, once you know how to speak the grammar of graphics, you will be able
-to express ideas that no one else has had before.
+of Graphics_. The idea is to define the basic "words" from which visualizations
+are built, and then let users compose them in original ways. This is in contrast
+to systems with prespecified chart types, where the user is forced to pick from
+a limited dropdown menu of plots. Just like in ordinary language, the creative
+combination of simple building blocks can support a very wide range of
+expression.
 
 These are libraries we'll use in this lecture.
 
@@ -39,8 +39,7 @@ library("scales")
 
 ### Components of a Graph
 
-Your reading for this lecture constructs this plot, and we're going to recreate
-it in these notes.
+We're going to create this plot in these notes.
 
 ```{r, echo = FALSE}
 data(murders)
@@ -81,7 +80,7 @@ attribute that describes the observation. This is important because each mark
 that you see on a ggplot -- a line, a point, a tile, ... -- had to start out as
 a row within an R `data.frame`. The visual properties of the mark (e.g., color)
 are determined by the values along columns. These type of data are often
-referred to as "tidy" data, and we'll have a full week discussing this topic.
+referred to as tidy data, and we'll have a full week discussing this topic.
 
 Here's an example of the data above in tidy format,
 
@@ -97,7 +96,7 @@ way, making visualization much harder.
 non_tidy <- data.frame(t(murders))
 colnames(non_tidy) <- non_tidy[1, ]
 non_tidy <- non_tidy[-1, ]
-non_tidy
+non_tidy[, 1:6]
 ```
 
 Often, one of the hardest parts in making a ggplot2 plot is not coming up with
@@ -125,24 +124,22 @@ ggplot(murders) +
 
 You can see all the types of `geoms` in the [cheat
 sheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf).
-We'll be experimenting with a few of these in the third lecture this week.
+We'll be experimenting with a few of these in a [later
+lecture](../2021-01-18-week1-5/index.html).
 
 ### Aesthetic mappings
 
-Aesthetic mappings make the connection between the data and the geometry. The
-physical properties of a geom’s mark is determined by values in the
-corresponding observation's data field, as specified by the aesthetic mapping.
+Aesthetic mappings make the connection between the data and the geometry. It's
+the piece that translates abstract data fields into visual properties. Analyzing
+the original graph, we recognize these specific mappings,
 
-Deconstructing the original graph further, we recognize these links between the
-abstract data fields for each state and the circles' visual properties,
+* State Population &rarr; $x$-axis coordinate
+* Number of murders &rarr; $y$-axis coordinate
+* Geographical region &rarr; color
 
-* State Population <--> $x$-axis coordinate
-* Number of murders <--> $y$-axis coordinate
-* Geographical region <--> color
-
-We can establish this mapping in the plot using the `aes` function. Notice that
-we don't need to quote the column names within this command -- it knows to refer
-back to the `murders` data frame in `ggplot(murders)`.
+To establish these mappings, we need to use the `aes` function. Notice that
+column names don't have to be quoted -- ggplot2 knows to refer back to the
+`murders` data frame in `ggplot(murders)`.
 
 ```{r}
 ggplot(murders) +
@@ -158,10 +155,10 @@ ggplot(murders) +
   scale_y_log10()
 ```
 
-Once nuance is that scales aren't limited to these sort of $x$ and $y$
-transformations. They can be applied to modify any relationship between a data
-field and its appearance on the page. For example, this changes the mapping
-between the region field and circle color.
+Once nuance is that scales aren't limited to $x$ and $y$ transformations. They
+can be applied to modify any relationship between a data field and its
+appearance on the page. For example, this changes the mapping between the region
+field and circle color.
 
 ```{r}
 ggplot(murders) +
@@ -171,10 +168,9 @@ ggplot(murders) +
   scale_color_manual(values = c("#6a4078", "#aa1518", "#9ecaf8", "#50838c")) # exercise: find better colors using https://imagecolorpicker.com/
 ```
 
-The problem with this graph is that it doesn't allow us to compare individual
-states, only regions. For that visual task, we'll need text labels. We can
-encode the coordinates for these marks again using `aes`, but this time within
-a `geom_text` layer.
+A problem with this graph is that it doesn't tell us which state each point
+corresponds to. For that, we'll need text labels. We can encode the coordinates
+for these marks again using `aes`, but this time within a `geom_text` layer.
 
 ```{r}
 ggplot(murders) +
@@ -188,14 +184,14 @@ ggplot(murders) +
 ```
 
 Note that each type of layer uses different visual properties to encode the data
--- we could pass in `label` to a `geom_text` label, but that wouldn't make sense
-for a `geom_point` layer.
+-- the argument `label` is only available for the `geom_text` layer. You can see
+which aesthetic mappings are required for each type of `geom` by checking that
+`geom`'s documentation page, under the Aesthetics heading.
 
 It's usually a good thing to make your code as concise as possible. For ggplot2,
-one way you can accomplish this is by sharing elements from the `aes` mapping
-across layers (e.g., not having to type `population` and `total` twice). This
-can be done by defining a "global" aesthetic, putting it inside the top `ggplot`
-call.
+we can achieve this by sharing elements across `aes` calls (e.g., not having to
+type `population` and `total` twice). This can be done by defining a "global"
+aesthetic, putting it inside the initial `ggplot` call.
 
 ```{r}
 ggplot(murders, aes(x = population, y = total)) +
@@ -207,8 +203,7 @@ ggplot(murders, aes(x = population, y = total)) +
 
 ## Finishing touches
 
-How can we improve the readability of this plot? From the intro figure, you
-might already have ideas,
+How can we improve the readability of this plot? You might already have ideas,
 
 1. Prevent labels from overlapping. It's impossible to read some of the state names.
 2. Add a line showing the national rate. This serves as a point of reference,
@@ -220,8 +215,8 @@ visual real estate in the right hand side, just to let people know what each
 color means.
 5. Use a better color theme.
 
-For 1., the `ggrepel` package can handle the computation needed to find better
-state name positions.
+For 1., the `ggrepel` package find better state name positions, drawing links
+when necessary.
 
 ```{r}
 ggplot(murders, aes(x = population, y = total)) +
@@ -231,7 +226,7 @@ ggplot(murders, aes(x = population, y = total)) +
   scale_y_log10()
 ```
 
-For 2., let's first compute the national murder rate (per million),
+For 2., let's first compute the national murder rate,
 
 ```{r}
 r <- murders %>% 
@@ -304,8 +299,8 @@ carefully, as well as build your familiarity with ggplot2.
 `geom_text_repel`.
 * Increase the size of the circles in the legend. Hint: Use `override.aes`
 within a `guide`.
-* Re-order the regions in the legend. Hint: Reset the factor levels in the
-`region` field of the `murders` data.frame.
+* Re-order the order of regions in the legend. Hint: Reset the factor levels in
+the `region` field of the `murders` data.frame.
 * Only show labels for a subset of states that are far from the national rate.
-Hint: Filter the `murders` data.frame, and use the `data` field specific to the
+Hint: Filter the `murders` data.frame, and use a `data` field specific to the
 `geom_text_repel` layer.

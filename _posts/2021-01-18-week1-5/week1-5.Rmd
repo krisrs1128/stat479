@@ -18,16 +18,16 @@ knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRU
 
 _[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording], [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd), [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)_
 
-With this in mind, it can only ever help you to have a rich vocabulary of
-possible visual encodings. The more kinds of marks and encodings that are at
-your fingertips, the better your chances are that you’ll arrive at a
-configuration that helps you achieve your purpose.
+For a given visualization, we tend to gravitate towards some visual comparisons
+over others, simply due to choices at the encoding stage. With this in mind,
+it's in our best interest to build a rich vocabulary of possible visual
+encodings. The more kinds of marks and encodings that are at your fingertips,
+the better your chances are that you’ll arrive at a configuration that helps you
+achieve your purpose.
 
-So, let’s look at a few different types of marks and encodings in R and
-vega-lite.
-
-Before we get started, let's load up the libraries that will be used in these
-notes.
+So, let’s look at a few different types of marks and encodings in both ggplot2
+and vega-lite. Before we get started, let's load up the libraries that will be
+used in these notes.
 
 ```{r}
 library("readr")
@@ -39,7 +39,7 @@ theme_set(theme_bw())
 
 ### Point Marks
 
-First, let's read in the gapminder dataset that we used in the introduction to
+Let's read in the gapminder dataset that we used in the introduction to
 vega-lite.
 
 ```{r}
@@ -55,13 +55,12 @@ size, and shape. Below, each mark is a country, and we're using shape and the
 $y$ position to distinguish between country clusters.
 
 ```{r}
-
 ggplot(gap2000) +
   geom_point(aes(x = fertility, y = cluster, shape = cluster))
 ```
 
-Aside from some small differences in the encoding syntax and default styling,
-the result is almost identical in vega-lite.
+Aside from some small differences in the syntax and styling, the result is
+almost identical in vega-lite.
 
 ````js
 vl.markPoint()
@@ -147,6 +146,8 @@ ggplot(gap2000) +
   )
 ```
 
+Here is the same plot in vega-lite.
+
 ````js
 vl.markBar()
   .data(data2000)
@@ -163,15 +164,14 @@ vl.markBar()
 robservable("@krisrs1128/vocabulary-of-marks", include = 8)
 ```
 
-In the plot above, each bar is anchored at 0. Instead, we could have each
-rectangle encode *two* continuous values, a start and an end. To illustrate,
-let's compare the minimum and maximimum life expectancies within each country
-cluster.
+In the plot above, each bar is anchored at 0. Instead, we could have each bar
+encode *two* continuous values, a top and bottom. To illustrate, let's compare
+the minimum and maximimum life expectancies within each country cluster.
 
-`vega-lite` let's you compute the summary statistics within the encoding step.
-For ggplot2, we'll need to put the summary into its own data frame. For this, we
-`group_by` each cluster, so that a `summarise` call finds the minimum and
-maximum life expectancies restricted to each cluster.
+vega-lite lets you compute summary statistics within the encoding step (see
+below). For ggplot2, we'll need to create a new `data.frame` with just the
+summary information. For this, we `group_by` each cluster, so that a `summarise`
+call finds the minimum and maximum life expectancies restricted to each cluster.
 
 ```{r}
 # find summary statistics
@@ -195,7 +195,7 @@ ggplot(life_ranges) +
 ```
 
 Notice here that we can just specify `.min()` and `.max()` within the encoding,
-rather than precomputing these summary statistics.
+rather than precomputing the summary statistics.
 
 ````js
 vl.markBar()
@@ -226,6 +226,9 @@ ggplot(gapminder) +
   ) +
   scale_color_brewer(palette = "Set2")
 ```
+
+This is the equivalent code for vega-lite. You can get a country name by
+hovering over the lines.
 
 ````js
 vl.markLine({opacity: 0.7, size: 3})
@@ -266,7 +269,7 @@ ggplot(population_sums) +
   scale_x_continuous(expand = c(0, 0))
 ```
 
-In the `vega-lite` version, we can add a tooltip that shows country names on
+In the vega-lite version, we can add a tooltip that shows country names on
 mouseover. It's not so clear where one country begins and another starts, though
 -- it would be clearer if there were small lines demarcating the boundaries
 between countries.
@@ -290,8 +293,8 @@ robservable("@krisrs1128/vocabulary-of-marks", include = 11)
 ```
 
 Just like in bar marks, we don't necessarily need to anchor the $y$-axis at 0.
-For example, here the bottom and top of each area mark is given by the 30 and
-70% quartiles of population within each country cluster.
+For example, here the bottom and top of each area mark is given by the 30% and
+70% quantiles of population within each country cluster.
 
 ```{r}
 population_ranges <- gapminder %>%
@@ -310,7 +313,7 @@ ggplot(population_ranges) +
   scale_x_continuous(expand = c(0, 0))
 ```
 
-For the 30 and 70% quantiles, we can't use a built-in vega-lite function, like
+For these quantiles, we can't use a built-in vega-lite summary functions, like
 the `.min()` and `.max()` from above. Instead, we need the javascript equivalent
 of dplyr's `group_by` + `summarise`, which are called `groupby` and `rollup`.
 
@@ -322,13 +325,15 @@ population_ranges = data.groupby("year", "cluster")
   })
 ````
 
+These data can now be used to generate the equivalent vega-lite plot.
+
 ````js
 vl.markArea({"opacity": 0.7})
   .data(population_ranges)
   .encode(
     vl.x().fieldO('year'),
-    vl.y().q1('pop_low').title("Population"),
-    vl.y2().q3('pop_high'),
+    vl.y().fieldQ('pop_low').title("Population"),
+    vl.y2().fieldQ('pop_high'),
     vl.color().fieldN('cluster').scale({"scheme": "set2"})
   )
   .width(600)
