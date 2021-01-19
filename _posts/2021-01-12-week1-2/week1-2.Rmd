@@ -14,7 +14,7 @@ output:
 
 ```{r, echo = FALSE}
 library("knitr")
-knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_

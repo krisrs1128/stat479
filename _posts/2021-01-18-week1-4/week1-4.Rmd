@@ -22,6 +22,11 @@ visualization.
 * Important attributes (columns) of an observation within a dataset can be
 encoded by properties of visual marks.
 
+This encoding of rows as marks and columns as properties of the marks is
+illustrated in the toy diagram below.
+
+![](assets/encoding_illustration.png)
+
 In fact, we can roughly translate the function names between the two packages,
 
 * `geom_*` &rarr;  `mark*`
