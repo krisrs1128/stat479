@@ -2257,9 +2257,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 
 </div>
 <p><em><a href="https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd">Rmarkdown</a>, <a href="https://observablehq.com/@krisrs1128/vocabulary-of-marks">Observable</a></em></p>
-<p>With this in mind, it can only ever help you to have a rich vocabulary of possible visual encodings. The more kinds of marks and encodings that are at your fingertips, the better your chances are that you’ll arrive at a configuration that helps you achieve your purpose.</p>
-<p>So, let’s look at a few different types of marks and encodings in R and vega-lite.</p>
-<p>Before we get started, let’s load up the libraries that will be used in these notes.</p>
+<p>For a given visualization, we tend to gravitate towards some visual comparisons over others, simply due to choices at the encoding stage. With this in mind, it’s in our best interest to build a rich vocabulary of possible visual encodings. The more kinds of marks and encodings that are at your fingertips, the better your chances are that you’ll arrive at a configuration that helps you achieve your purpose.</p>
+<p>So, let’s look at a few different types of marks and encodings in both ggplot2 and vega-lite. Before we get started, let’s load up the libraries that will be used in these notes.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
@@ -2271,7 +2270,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <h3 id="point-marks">Point Marks</h3>
-<p>First, let’s read in the gapminder dataset that we used in the introduction to vega-lite.</p>
+<p>Let’s read in the gapminder dataset that we used in the introduction to vega-lite.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='co'># load data</span>
@@ -2291,7 +2290,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
 </div>
-<p>Aside from some small differences in the encoding syntax and default styling, the result is almost identical in vega-lite.</p>
+<p>Aside from some small differences in the syntax and styling, the result is almost identical in vega-lite.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2380,6 +2379,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
 </div>
+<p>Here is the same plot in vega-lite.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markBar</span>()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2397,8 +2397,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div id="htmlwidget-9726830ca7af23550531" style="width:624px;height:384px;" class="robservable html-widget"></div>
 <script type="application/json" data-for="htmlwidget-9726830ca7af23550531">{"x":{"notebook":"@krisrs1128/vocabulary-of-marks","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>In the plot above, each bar is anchored at 0. Instead, we could have each rectangle encode <em>two</em> continuous values, a start and an end. To illustrate, let’s compare the minimum and maximimum life expectancies within each country cluster.</p>
-<p><code>vega-lite</code> let’s you compute the summary statistics within the encoding step. For ggplot2, we’ll need to put the summary into its own data frame. For this, we <code>group_by</code> each cluster, so that a <code>summarise</code> call finds the minimum and maximum life expectancies restricted to each cluster.</p>
+<p>In the plot above, each bar is anchored at 0. Instead, we could have each bar encode <em>two</em> continuous values, a top and bottom. To illustrate, let’s compare the minimum and maximimum life expectancies within each country cluster.</p>
+<p>vega-lite lets you compute summary statistics within the encoding step (see below). For ggplot2, we’ll need to create a new <code>data.frame</code> with just the summary information. For this, we <code>group_by</code> each cluster, so that a <code>summarise</code> call finds the minimum and maximum life expectancies restricted to each cluster.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='co'># find summary statistics</span>
@@ -2434,7 +2434,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
-<p>Notice here that we can just specify <code>.min()</code> and <code>.max()</code> within the encoding, rather than precomputing these summary statistics.</p>
+<p>Notice here that we can just specify <code>.min()</code> and <code>.max()</code> within the encoding, rather than precomputing the summary statistics.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markBar</span>()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2465,6 +2465,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
 </div>
+<p>This is the equivalent code for vega-lite. You can get a country name by hovering over the lines.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markLine</span>({<span class="dt">opacity</span><span class="op">:</span> <span class="fl">0.7</span><span class="op">,</span> <span class="dt">size</span><span class="op">:</span> <span class="dv">3</span>})</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2517,7 +2518,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
 </div>
-<p>In the <code>vega-lite</code> version, we can add a tooltip that shows country names on mouseover. It’s not so clear where one country begins and another starts, though – it would be clearer if there were small lines demarcating the boundaries between countries.</p>
+<p>In the vega-lite version, we can add a tooltip that shows country names on mouseover. It’s not so clear where one country begins and another starts, though – it would be clearer if there were small lines demarcating the boundaries between countries.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markArea</span>()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2537,7 +2538,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div id="htmlwidget-c8dbc96bf1dc22531036" style="width:624px;height:384px;" class="robservable html-widget"></div>
 <script type="application/json" data-for="htmlwidget-c8dbc96bf1dc22531036">{"x":{"notebook":"@krisrs1128/vocabulary-of-marks","include":11,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>Just like in bar marks, we don’t necessarily need to anchor the <span class="math inline">\(y\)</span>-axis at 0. For example, here the bottom and top of each area mark is given by the 30 and 70% quartiles of population within each country cluster.</p>
+<p>Just like in bar marks, we don’t necessarily need to anchor the <span class="math inline">\(y\)</span>-axis at 0. For example, here the bottom and top of each area mark is given by the 30% and 70% quantiles of population within each country cluster.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>population_ranges</span> <span class='op'>&lt;-</span> <span class='va'>gapminder</span> <span class='op'>%&gt;%</span>
@@ -2570,18 +2571,19 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week1-5_files/figure-html5/unnamed-chunk-18-1.png" width="624" /></p>
 </div>
-<p>For the 30 and 70% quantiles, we can’t use a built-in vega-lite function, like the <code>.min()</code> and <code>.max()</code> from above. Instead, we need the javascript equivalent of dplyr’s <code>group_by</code> + <code>summarise</code>, which are called <code>groupby</code> and <code>rollup</code>.</p>
+<p>For these quantiles, we can’t use a built-in vega-lite summary functions, like the <code>.min()</code> and <code>.max()</code> from above. Instead, we need the javascript equivalent of dplyr’s <code>group_by</code> + <code>summarise</code>, which are called <code>groupby</code> and <code>rollup</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>population_ranges <span class="op">=</span> data<span class="op">.</span><span class="fu">groupby</span>(<span class="st">&quot;year&quot;</span><span class="op">,</span> <span class="st">&quot;cluster&quot;</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">rollup</span>({ <span class="co">// equivalent of dplyr summarise</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>    <span class="dt">pop_low</span><span class="op">:</span> op<span class="op">.</span><span class="fu">quantile</span>(<span class="st">&quot;pop&quot;</span><span class="op">,</span> <span class="fl">0.3</span>)<span class="op">,</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>    <span class="dt">pop_high</span><span class="op">:</span> op<span class="op">.</span><span class="fu">quantile</span>(<span class="st">&quot;pop&quot;</span><span class="op">,</span> <span class="fl">0.7</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>  })</span></code></pre></div>
+<p>These data can now be used to generate the equivalent vega-lite plot.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markArea</span>({<span class="st">&quot;opacity&quot;</span><span class="op">:</span> <span class="fl">0.7</span>})</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(population_ranges)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldO</span>(<span class="st">&#39;year&#39;</span>)<span class="op">,</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">q1</span>(<span class="st">&#39;pop_low&#39;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y2</span>()<span class="op">.</span><span class="fu">q3</span>(<span class="st">&#39;pop_high&#39;</span>)<span class="op">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop_low&#39;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y2</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop_high&#39;</span>)<span class="op">,</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&#39;cluster&#39;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="st">&quot;scheme&quot;</span><span class="op">:</span> <span class="st">&quot;set2&quot;</span>})</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>  )</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">width</span>(<span class="dv">600</span>)</span>
