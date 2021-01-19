@@ -2261,25 +2261,29 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <h3 id="components-of-a-graph">Components of a Graph</h3>
 <p>We’re going to construct this graph step-by-step, just like in the ggplot2 lecture. I realize that this is a bit repetitive, but I want to make it obvious just how similar ggplot2 and vega-lite are.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-a31c7587eb739f65ea7f" style="width:624px;height:325px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a31c7587eb739f65ea7f">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a44d6a9b344678243a2f" style="width:624px;height:325px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a44d6a9b344678243a2f">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="data-and-geometry">Data and Geometry</h2>
-<p>First, let’s load up and preview the <a href="https://uwmadison.box.com/s/dyz0qohqvgake2ghm4ngupbltkzpqb7t">data</a>. We’re using the arquero library (<code>aq</code>) to make it easier to manage data in javascript – the filtering and printing steps would be more difficult without it.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>data <span class="op">=</span> aq<span class="op">.</span><span class="fu">fromCSV</span>(<span class="cf">await</span> <span class="fu">FileAttachment</span>(<span class="st">&quot;gapminder.csv&quot;</span>)<span class="op">.</span><span class="fu">text</span>()) <span class="co">// I used the file upload button to add this file</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>data2000 <span class="op">=</span> data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">year</span> <span class="op">==</span> <span class="dv">2000</span>) <span class="co">// filter to only 2000</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>data2000<span class="op">.</span><span class="fu">view</span>()</span></code></pre></div>
+<p>The first thing to do is import the necessary libraries. The arquero library (<code>aq</code>) makes it easier to manage data in javascript – the filtering and printing steps would be more difficult without it.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="im">import</span> {vl} <span class="im">from</span> <span class="st">&#39;@vega/vega-lite-api&#39;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="im">import</span> { aq<span class="op">,</span> op } <span class="im">from</span> <span class="st">&#39;@uwdata/arquero&#39;</span></span></code></pre></div>
+<p>Now we can preview and filter the raw <a href="https://uwmadison.box.com/s/dyz0qohqvgake2ghm4ngupbltkzpqb7t">data</a>.<br />
+</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>data <span class="op">=</span> aq<span class="op">.</span><span class="fu">fromCSV</span>(<span class="cf">await</span> <span class="fu">FileAttachment</span>(<span class="st">&quot;gapminder.csv&quot;</span>)<span class="op">.</span><span class="fu">text</span>()) <span class="co">// I used the file upload button to add this file</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>data2000 <span class="op">=</span> data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">year</span> <span class="op">==</span> <span class="dv">2000</span>) <span class="co">// filter to only 2000</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>data2000<span class="op">.</span><span class="fu">view</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-afc6c41397dd74695be8" style="width:624px;height:250px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-afc6c41397dd74695be8">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dcdfaba9888b48ea92d9" style="width:624px;height:250px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dcdfaba9888b48ea92d9">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Let’s create a visual mark, without any encodings. Like in our first <code>ggplot2</code> figure, the mark is collapsed into a single point at the origin. Notice the analogy betwen vega-lite’s <code>markPoint()</code> and ggplot2’s <code>geom_point()</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-793c468fc52483c55218" style="width:624px;height:20px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-793c468fc52483c55218">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-27278025b65d504ca2c3" style="width:624px;height:20px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-27278025b65d504ca2c3">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="encodings">Encodings</h2>
 <p>We can deconstruct the original figure to see data fields are mapped to visual properties,</p>
@@ -2290,31 +2294,31 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Population → Point size</li>
 </ul>
 <p>We can build this up one step at a time. To encode the fertility and life expectancy fields, we use <code>vl.x()</code> and <code>vl.y()</code> in an <code>encode()</code> call. One subtlety is that it’s necessary to specify the data type of each field. <code>fieldQ</code> means that the field is “Quantitative”. We’ll review data types in the <a href="../2021-01-18-week1-4/index.html">next lecture</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span> <span class="co">// what happens if you change this to fieldN()?</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>  )</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-cd34cb238eeb1399ccb5" style="width:624px;height:340px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-cd34cb238eeb1399ccb5">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
-</div>
-<p>The same idea can be used to encode the country cluster and population fields. <code>fieldN</code> specifies that the cluster field is a Nominal (i.e., categorical) variable.</p>
-<p>Hint: How do you know which commands encode which fields? It’s often good to keep the <a href="https://vega.github.io/vega-lite-api/api/">vega-lite-api</a> and <a href="https://vega.github.io/vega-lite/">vega-lite</a> documentation close at hand.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">,</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span> <span class="co">// what happens if you change this to fieldO()?</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>  )</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span> <span class="co">// what happens if you change this to fieldN()?</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>  )</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-61e71679bad33099d918" style="width:624px;height:340px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-61e71679bad33099d918">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d43cf34b0f9eda43c252" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d43cf34b0f9eda43c252">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>The same idea can be used to encode the country cluster and population fields. <code>fieldN</code> specifies that the cluster field is a Nominal (i.e., categorical) variable.</p>
+<p>Hint: How do you know which commands encode which fields? It’s often good to keep the <a href="https://vega.github.io/vega-lite-api/api/">vega-lite-api</a> and <a href="https://vega.github.io/vega-lite/">vega-lite</a> documentation close at hand.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">data</span>(data2000)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">encode</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span> <span class="co">// what happens if you change this to fieldO()?</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>  )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>  <span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-03e61bf987f12e7179ba" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-03e61bf987f12e7179ba">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <h2 id="finishing-touches">Finishing touches</h2>
 <p>We’ve made headway in our visualization task, but a more critical eye will help us improve the display. It will also give us an initial look at interactivity. The main things we ought to improve in this display are,</p>
@@ -2326,34 +2330,20 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>We can’t actually tell which country each point corresponds to. It would be nice to add a tooltip (a label that appears when you mouseover the point).</li>
 </ol>
 <p>For (1), let’s replace the open rings with filled circles. We can pass options to <code>markPoint</code> in the same way that we passed options to ggplot <code>geom</code> layers. For (2), we can modify the default size range by adding on a <code>.scale()</code> to the <code>vl.size()</code> encoding – this is similar to adding a custom scale in ggplot2.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">.</span><span class="fu">data</span>(data2000)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">,</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]}) <span class="co">// try changing the ranges</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-57c873bf0309782d89a5" style="width:624px;height:340px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-57c873bf0309782d89a5">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":10,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
-</div>
-<p>For (3), we can add a <code>.title()</code> to fields for which we want to customize titles, and for (4), we can modify the tick count in the <code>.legend()</code> for <code>size</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Fertility&quot;</span>)<span class="op">,</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Life Expectancy&quot;</span>)<span class="op">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">,</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]})<span class="op">.</span><span class="fu">legend</span>({<span class="dt">tickCount</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]}) <span class="co">// try changing the ranges</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-e463919ac2b929607661" style="width:624px;height:340px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e463919ac2b929607661">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":11,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-cc01f38ceae4a2d4bded" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cc01f38ceae4a2d4bded">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":10,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>Now to (5). The idea is to think of a tooltip as another type of encoding – just like coordinate positions and colors, a label is a way of transforming a field in an abstract dataset into a visual property we can observe on a screen.</p>
+<p>For (3), we can add a <code>.title()</code> to fields for which we want to customize titles, and for (4), we can modify the tick count in the <code>.legend()</code> for <code>size</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="op">.</span><span class="fu">data</span>(data2000)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="op">.</span><span class="fu">encode</span>(</span>
@@ -2361,43 +2351,57 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Life Expectancy&quot;</span>)<span class="op">,</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]})<span class="op">.</span><span class="fu">legend</span>({<span class="dt">tickCount</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">tooltip</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;country&quot;</span>)<span class="op">,</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">order</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop&#39;</span>)<span class="op">.</span><span class="fu">sort</span>(<span class="st">&#39;descending&#39;</span>) <span class="co">// if you remove this, large points prevent mouseover on the points below them</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-390f0ace62438ed6c882" style="width:624px;height:340px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-390f0ace62438ed6c882">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":12,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dd23457802a54a231022" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dd23457802a54a231022">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":11,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>Now to (5). The idea is to think of a tooltip as another type of encoding – just like coordinate positions and colors, a label is a way of transforming a field in an abstract dataset into a visual property we can observe on a screen.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="op">.</span><span class="fu">data</span>(data2000)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="op">.</span><span class="fu">encode</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Fertility&quot;</span>)<span class="op">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Life Expectancy&quot;</span>)<span class="op">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]})<span class="op">.</span><span class="fu">legend</span>({<span class="dt">tickCount</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">tooltip</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;country&quot;</span>)<span class="op">,</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>  vl<span class="op">.</span><span class="fu">order</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop&#39;</span>)<span class="op">.</span><span class="fu">sort</span>(<span class="st">&#39;descending&#39;</span>) <span class="co">// if you remove this, large points prevent mouseover on the points below them</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a><span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-31f2e733e8e99ec5b812" style="width:624px;height:340px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-31f2e733e8e99ec5b812">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":12,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>One point I want you to take away from both this and the ggplot2 introductions is that building a plot is an iterative process. Once you develop your eye for good visual design, you will be able to take any initial plot and make it more effective.</p>
 <p>Finally, for a taste of what’s to come, here’s a version of the same plot that let’s us compare many years over time.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-4e35668982dd0fb05791" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4e35668982dd0fb05791">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":13,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a209902a36c6e4bdfa7f" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a209902a36c6e4bdfa7f">{"x":{"notebook":"@krisrs1128/introduction-to-vega-lite","include":13,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Don’t worry about the code implementation, but in case you’re curious, it’s only a few extra lines over what we’ve already implemented.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>{</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="co">// define a slider selector object</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  <span class="kw">let</span> selectYear <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectSingle</span>(<span class="st">&quot;select&quot;</span>)<span class="op">.</span><span class="fu">fields</span>(<span class="st">&quot;year&quot;</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">init</span>({<span class="dt">year</span><span class="op">:</span> <span class="dv">1955</span>})</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">bind</span>(vl<span class="op">.</span><span class="fu">slider</span>()<span class="op">.</span><span class="fu">min</span>(<span class="dv">1955</span>)<span class="op">.</span><span class="fu">max</span>(<span class="dv">2005</span>)<span class="op">.</span><span class="fu">step</span>(<span class="dv">5</span>)<span class="op">.</span><span class="fu">name</span>(<span class="st">&quot;Year&quot;</span>))</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>  </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>  <span class="co">// update the plot depending on the value of the slider</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">data</span>(data)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">select</span>(selectYear) <span class="co">// refers to the slider bar</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">transform</span>(vl<span class="op">.</span><span class="fu">filter</span>(selectYear))</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Fertility&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">9</span>]})<span class="op">,</span> <span class="co">// hard code the axes ranges</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Life Expectancy&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">90</span>]})<span class="op">,</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1200000000</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]})<span class="op">.</span><span class="fu">legend</span>({<span class="dt">tickCount</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">tooltip</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;country&quot;</span>)<span class="op">,</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">order</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop&#39;</span>)<span class="op">.</span><span class="fu">sort</span>(<span class="st">&#39;descending&#39;</span>)</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>    )</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>{</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  <span class="co">// define a slider selector object</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>  <span class="kw">let</span> selectYear <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectSingle</span>(<span class="st">&quot;select&quot;</span>)<span class="op">.</span><span class="fu">fields</span>(<span class="st">&quot;year&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">init</span>({<span class="dt">year</span><span class="op">:</span> <span class="dv">1955</span>})</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">bind</span>(vl<span class="op">.</span><span class="fu">slider</span>()<span class="op">.</span><span class="fu">min</span>(<span class="dv">1955</span>)<span class="op">.</span><span class="fu">max</span>(<span class="dv">2005</span>)<span class="op">.</span><span class="fu">step</span>(<span class="dv">5</span>)<span class="op">.</span><span class="fu">name</span>(<span class="st">&quot;Year&quot;</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>  <span class="co">// update the plot depending on the value of the slider</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">markPoint</span>({<span class="dt">filled</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">data</span>(data)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">select</span>(selectYear) <span class="co">// refers to the slider bar</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">transform</span>(vl<span class="op">.</span><span class="fu">filter</span>(selectYear))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">encode</span>(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;fertility&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Fertility&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">9</span>]})<span class="op">,</span> <span class="co">// hard code the axes ranges</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;life_expect&quot;</span>)<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Life Expectancy&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">90</span>]})<span class="op">,</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;cluster&quot;</span>)<span class="op">,</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">size</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&quot;pop&quot;</span>)<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1200000000</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="dv">25</span><span class="op">,</span> <span class="dv">1000</span>]})<span class="op">.</span><span class="fu">legend</span>({<span class="dt">tickCount</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">.</span><span class="fu">title</span>(<span class="st">&quot;Population&quot;</span>)<span class="op">,</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">tooltip</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&quot;country&quot;</span>)<span class="op">,</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a>      vl<span class="op">.</span><span class="fu">order</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;pop&#39;</span>)<span class="op">.</span><span class="fu">sort</span>(<span class="st">&#39;descending&#39;</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>    )</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
