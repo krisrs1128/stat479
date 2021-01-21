@@ -16,6 +16,8 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
+_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
 All of our small multiples so far have plotted the raw data. Each geometric mark
 corresponded to a single observation in the source `data.frame`. However, the
 idea can be usefully applied to summaries of the data as well. One form of
@@ -70,7 +72,8 @@ to understand the regions of higher density in the raw data plot.
 
 ```{r}
 ggplot(gapminder_subset, aes(dollars_per_day, group)) +
-  geom_point(shape = "|", size = 5)
+  geom_point(shape = "|", size = 5) +
+  scale_x_log10()
 ```
 
 A nice compromise is to include both the raw positions and the smoothed
@@ -82,7 +85,8 @@ ggplot(gapminder_subset, aes(dollars_per_day, group)) +
     jittered_points = TRUE, 
     position = position_points_jitter(height = 0),
     point_shape = '|', point_size = 5
-  )
+  ) +
+  scale_x_log10()
 ```
 
 To exercise our knowledge of both faceting and ridge plots, let’s study a
