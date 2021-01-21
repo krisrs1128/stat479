@@ -2248,6 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
+<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <p>All of our small multiples so far have plotted the raw data. Each geometric mark corresponded to a single observation in the source <code>data.frame</code>. However, the idea can be usefully applied to summaries of the data as well. One form of faceted summary is common enough to have its own name: ridge plots.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2296,7 +2297,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>gapminder_subset</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>dollars_per_day</span>, <span class='va'>group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>shape <span class='op'>=</span> <span class='st'>"|"</span>, size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>shape <span class='op'>=</span> <span class='st'>"|"</span>, size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="week2-4_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
@@ -2309,7 +2311,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
     jittered_points <span class='op'>=</span> <span class='cn'>TRUE</span>, 
     position <span class='op'>=</span> <span class='fu'><a href='https://wilkelab.org/ggridges/reference/position_points_jitter.html'>position_points_jitter</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>,
     point_shape <span class='op'>=</span> <span class='st'>'|'</span>, point_size <span class='op'>=</span> <span class='fl'>5</span>
-  <span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="week2-4_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
