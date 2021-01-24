@@ -2005,7 +2005,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!--/radix_placeholder_distill-->
   <script src="../../site_libs/header-attrs-2.6/header-attrs.js"></script>
-  <script src="../../site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+  <script src="../../site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
   <link href="../../site_libs/observable-runtime-4.7.2/inspector.css" rel="stylesheet" />
   <script src="../../site_libs/observable-runtime-4.7.2/runtime.umd.js"></script>
   <script src="../../site_libs/robservable-utils-0.1.0/utils.js"></script>
@@ -2303,8 +2303,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-3a6a06b35efdeac53f21" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3a6a06b35efdeac53f21">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e3758e2ab5aa2aa54f0c" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e3758e2ab5aa2aa54f0c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>This implementation is straightforward, but very clumsy. Whenever you find yourself copying and pasting code you should ask yourself whether there is a more elegant way to implement the same idea. In this case, there is, by reusing the same template for everything except the <span class="math inline">\(y\)</span>-axis encoding.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{</span>
@@ -2331,8 +2331,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-f4ef632c4045ea4ec52c" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f4ef632c4045ea4ec52c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-068abcd46ec6fd07ee6b" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-068abcd46ec6fd07ee6b">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>That’s better, but we can be even more concise, by using repetition. This lets us reuse the same template by referring to an abstract <code>vl.repeat()</code> object in the encoding.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>{</span>
@@ -2356,8 +2356,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-5f008dc1f95d3d749979" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5f008dc1f95d3d749979">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4312a3023396169a778c" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4312a3023396169a778c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Let’s use this idea to generate a scatterplot matrix, a type of plot that shows all pairs of scatterplots between columns in a dataset. This type of plot is often useful in revealing correlations between fields.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>{</span>
@@ -2384,8 +2384,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-c2e81851d2422be88fee" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c2e81851d2422be88fee">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7b939507d47242752bcc" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7b939507d47242752bcc">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">

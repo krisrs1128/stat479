@@ -16,7 +16,7 @@ library("knitr")
 knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording], [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd), [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)_
+_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_svnu2d3u), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-5/week1-5.Rmd), [Observable](https://observablehq.com/@krisrs1128/vocabulary-of-marks)_
 
 The choice of encodings can have a strong effect on (1) the types of comparisons
 that a visualization suggests and (2) the accuracy of the conclusions that

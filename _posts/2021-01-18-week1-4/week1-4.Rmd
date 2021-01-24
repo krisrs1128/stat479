@@ -12,7 +12,7 @@ output:
     self_contained: false
 ---
 
-_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording], [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-4/week1-4.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_ooup7c7n), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-18-week1-4/week1-4.Rmd)_
 
 The reason that the ggplot2 and vega-lite packages feel similar is that they are
 based on the same underlying ideas,
