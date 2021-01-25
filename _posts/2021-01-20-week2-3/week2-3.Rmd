@@ -14,6 +14,7 @@ output:
 
 
 ```{r setup, include=FALSE}
+library("robservable")
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 

@@ -14,13 +14,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
 ```
 
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
-
-```{r}
-library("robservable")
-```
 
 In these notes, we’re going to see how to facet using vega-lite. We’re going to
 look at the weather data, which shows the precipitation and temperature for NYC
