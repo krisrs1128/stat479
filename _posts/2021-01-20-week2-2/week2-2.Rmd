@@ -44,7 +44,7 @@ weather.
       vl.x().fieldQ('temp_max').title('Temperature (°C)'),
       vl.y().count().title("Number of Days"),
       vl.color().fieldN("weather").scale(colors),
-      vl.facet().fieldN("weather")
+      vl.column().fieldN("weather")
     )
     .width(175)
     .height(120)
