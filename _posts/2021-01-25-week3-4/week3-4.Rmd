@@ -1,0 +1,21 @@
+---
+title: "Dynamic Linking"
+description: |
+  Combining faceting with dynamic queries.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-12-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
