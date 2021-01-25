@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week2-3_files/anchor-4.2.2/anchor.min.js","week2-3_files/bowser-1.9.3/bowser.min.js","week2-3_files/distill-2.2.21/template.v2.js","week2-3_files/header-attrs-2.6/header-attrs.js","week2-3_files/htmlwidgets-1.5.1/htmlwidgets.js","week2-3_files/jquery-1.11.3/jquery.min.js","week2-3_files/observable-runtime-4.7.2/inspector.css","week2-3_files/observable-runtime-4.7.2/runtime.umd.js","week2-3_files/robservable-binding-0.2.0/robservable.js","week2-3_files/robservable-utils-0.1.0/robservable.js","week2-3_files/robservable-utils-0.1.0/robservable.yaml","week2-3_files/robservable-utils-0.1.0/runtime/inspector.css","week2-3_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week2-3_files/robservable-utils-0.1.0/utils.js","week2-3_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week2-3_files/anchor-4.2.2/anchor.min.js","week2-3_files/bowser-1.9.3/bowser.min.js","week2-3_files/distill-2.2.21/template.v2.js","week2-3_files/header-attrs-2.6/header-attrs.js","week2-3_files/htmlwidgets-1.5.1/htmlwidgets.js","week2-3_files/htmlwidgets-1.5.3/htmlwidgets.js","week2-3_files/jquery-1.11.3/jquery.min.js","week2-3_files/observable-runtime-4.7.2/inspector.css","week2-3_files/observable-runtime-4.7.2/runtime.umd.js","week2-3_files/robservable-binding-0.2.0/robservable.js","week2-3_files/robservable-utils-0.1.0/robservable.js","week2-3_files/robservable-utils-0.1.0/robservable.yaml","week2-3_files/robservable-utils-0.1.0/runtime/inspector.css","week2-3_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week2-3_files/robservable-utils-0.1.0/utils.js","week2-3_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2303,8 +2303,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-e3758e2ab5aa2aa54f0c" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e3758e2ab5aa2aa54f0c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-8f09d6a252bb58fef381" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8f09d6a252bb58fef381">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>This implementation is straightforward, but very clumsy. Whenever you find yourself copying and pasting code you should ask yourself whether there is a more elegant way to implement the same idea. In this case, there is, by reusing the same template for everything except the <span class="math inline">\(y\)</span>-axis encoding.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{</span>
@@ -2331,8 +2331,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-068abcd46ec6fd07ee6b" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-068abcd46ec6fd07ee6b">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-69be70d9e782011b553c" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-69be70d9e782011b553c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>That’s better, but we can be even more concise, by using repetition. This lets us reuse the same template by referring to an abstract <code>vl.repeat()</code> object in the encoding.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>{</span>
@@ -2356,8 +2356,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-4312a3023396169a778c" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4312a3023396169a778c">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f2c3c89db3f93c115b44" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f2c3c89db3f93c115b44">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Let’s use this idea to generate a scatterplot matrix, a type of plot that shows all pairs of scatterplots between columns in a dataset. This type of plot is often useful in revealing correlations between fields.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>{</span>
@@ -2384,8 +2384,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-7b939507d47242752bcc" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7b939507d47242752bcc">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-6df10f947e9bdf761ce5" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6df10f947e9bdf761ce5">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">

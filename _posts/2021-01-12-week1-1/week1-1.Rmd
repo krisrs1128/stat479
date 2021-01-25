@@ -39,4 +39,18 @@ visualization in the broader intellectual landscape.
 
 ## Following along
 
-You can really only learn visualization by practicing.
+You can really only learn visualization by practicing. For this reason, most of
+the homeworks are technical exercises in building pre-defined visualizations (I
+do hope you can exercise more creativity through your course project, though).
+The homeworks will be much more approachable if you have already run all the
+code accompanying the recordings. I recommend you have a window open for running
+code while watching the recordings, pausing whenever you want to tinker with how
+a particular line works.
+
+The `.Rmd` files discussed in each recording are linked at the top of the post.
+You should be able to run the `.Rmd` file directly on your computer -- if you
+encounter any issues, don't hesitate to reach out. Observable notebooks that
+reproduces figures discussed in the recordings are also linked at the top of
+each post. See the Introduction to Vega-Lite
+[lecture](https://mediaspace.wisc.edu/media/1_svnu2d3u) for a brief description
+of how to reproduce examples in your own Observable notebooks.
