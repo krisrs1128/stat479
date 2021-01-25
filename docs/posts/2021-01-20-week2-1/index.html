@@ -2286,7 +2286,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week2-1_files/figure-html5/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
-<p>In facet grid, you specify whether you want the plot to be repeated across rows or columns, depending on whether you put the variable before or after the tilde</p>
+<p>In facet grid, you specify whether you want the plot to be repeated across rows or columns, depending on whether you put the variable before or after the tilde.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>
@@ -2300,7 +2300,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week2-1_files/figure-html5/unnamed-chunk-3-1.png" width="288" /></p>
 </div>
-<p>You can also facet by more than one variable at a time, specifying which variables should go in rows and which should go in columns using the <code>~</code> operator.</p>
+<p>You can also facet by more than one variable at a time, specifying which variables should go in rows and which should go in columns again using the tilde.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>
@@ -2358,7 +2358,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week2-1_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
-<p>It seems like some of the species are much more abundant than others. In this situation, it <em>might</em> make sense to rescale the <span class="math inline">\(y\)</span>-axis. Though, this is always a risky decision – people might easily misinterpret the plot and conclude that the different species all have the same abundances. Nonetheless, it can’t hurt to try, using the <code>scale_y</code> argument to <code>facet_grid</code>.</p>
+<p>It seems like some of the species are much more abundant than others. In this situation, it <em>might</em> make sense to rescale the <span class="math inline">\(y\)</span>-axis. Though, this is always a risky decision – people might easily misinterpret the plot and conclude that the different species all have the same abundances. Nonetheless, it can’t hurt to try, using the <code>scale</code> argument to <code>facet_grid</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>antibiotic</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>time</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>

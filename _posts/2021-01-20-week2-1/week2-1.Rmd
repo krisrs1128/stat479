@@ -57,7 +57,7 @@ ggplot(
   theme(legend.position = "bottom")
 ```
 In facet grid, you specify whether you want the plot to be repeated across rows
-or columns, depending on whether you put the variable before or after the tilde
+or columns, depending on whether you put the variable before or after the tilde.
 
 ```{r, fig.width = 3, fig.height = 8}
 ggplot(
@@ -71,8 +71,8 @@ ggplot(
  
  
 You can also facet by more than one variable at a time, specifying which
-variables should go in rows and which should go in columns using the `~`
-operator.
+variables should go in rows and which should go in columns again using the
+tilde.
 
 ```{r}
 ggplot(
@@ -124,7 +124,7 @@ It seems like some of the species are much more abundant than others. In this
 situation, it *might* make sense to rescale the $y$-axis. Though, this is always
 a risky decision -- people might easily misinterpret the plot and conclude that
 the different species all have the same abundances. Nonetheless, it can't hurt
-to try, using the `scale_y` argument to `facet_grid`.
+to try, using the `scale` argument to `facet_grid`.
 
 ```{r}
 ggplot(antibiotic, aes(x = time)) +
