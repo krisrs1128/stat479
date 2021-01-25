@@ -12,7 +12,8 @@ output:
     self_contained: false
 ---
 
-_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_svnu2d3u),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd),  [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite)_
+_[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/Week+1+%5B3%5D+Introduction+to+Vega-Lite/1_mm4yv2c9),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd),  [Observable](https://observablehq.com/@krisrs1128/introduction-to-vega-lite)_
+
 
 Vega-Lite is the javascript equivalent of ggplot2. It provides a grammar of
 graphics, where layers can be composed on top of one another. The main reason

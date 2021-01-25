@@ -2300,11 +2300,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a>}</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-page">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-26dddb9e0cb1abef4af4" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-26dddb9e0cb1abef4af4">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dd99e1aa336787eadca5" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dd99e1aa336787eadca5">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>This implementation is straightforward, but very clumsy. Whenever you find yourself copying and pasting code you should ask yourself whether there is a more elegant way to implement the same idea. In this case, there is, by reusing the same template for everything except the <span class="math inline">\(y\)</span>-axis encoding.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{</span>
@@ -2328,11 +2328,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>}</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-page">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-359d6f7379cec67d7780" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-359d6f7379cec67d7780">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a77f7b89d6346b285333" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a77f7b89d6346b285333">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>That’s better, but we can be even more concise, by using repetition. This lets us reuse the same template by referring to an abstract <code>vl.repeat()</code> object in the encoding.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>{</span>
@@ -2353,11 +2353,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>}</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-page">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-59f852862abff2273226" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-59f852862abff2273226">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dcf851bf7f6778c64871" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dcf851bf7f6778c64871">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Let’s use this idea to generate a scatterplot matrix, a type of plot that shows all pairs of scatterplots between columns in a dataset. This type of plot is often useful in revealing correlations between fields.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>{</span>
@@ -2381,11 +2381,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>}</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-b8eaf8816bd689c9e468" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b8eaf8816bd689c9e468">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-80f07ff483e5bdabfd64" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-80f07ff483e5bdabfd64">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">

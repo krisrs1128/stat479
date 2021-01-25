@@ -19,3 +19,86 @@ library("robservable")
 
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
+1. One common type of dynamic query is to ask the identity of a particular observation. A generalization of this query is the _details-on-demand_ class of interactions. We will see examples of both in these notes.
+2. To reveal the identity of an observation, we can reveal a label on hover. This is essentially a tooltip, but we have re-implemented it manually using a selection. The reason is that this allows additional customization in the structure of the interaction and visual update.
+
+````js
+{
+  const hover = vl.selectSingle()
+    .on('mouseover') // select on mouseover
+    .nearest(true)   // select nearest point to mouse cursor
+    .empty('none');  // empty selection should match nothing
+  
+  const click = vl.selectMulti()
+    .empty('none');  // empty selection matches no points
+  
+  // scatter plot encodings shared by all marks
+  const plot = vl.markCircle().encode(
+    vl.x().fieldQ('Rotten_Tomatoes_Rating'),
+    vl.y().fieldQ('IMDB_Rating')
+  );
+  
+  // shared base for new layers
+  const base = plot.transform(
+    vl.filter(vl.or(hover, click)) // filter to points in either selection
+  );
+  
+  // mark properties for new layers
+  const halo = {size: 100, stroke: 'firebrick', strokeWidth: 1};
+  const label = {dx: 4, dy: -8, align: 'right'};
+  const white = {stroke: 'white', strokeWidth: 2};
+
+  // layer scatter plot points, halo annotations, and title labels
+  return vl.data(movies)
+    .layer(
+      plot.select(hover, click),
+      base.markPoint(halo),
+      base.markText(label, white).encode(vl.text().fieldN('Title')),
+      base.markText(label).encode(vl.text().fieldN('Title'))
+    )
+    .width(600)
+    .height(450)
+    .render();
+}
+````
+
+3. This kind of labeling is a good middle ground between overloading the user with all details (putting all labels in the plot) and hiding the information completely (no labels). This is one of the benefits of interactive visualization — we can adapt the complexity of a visualization based on user inputs. 
+
+3. Aside: Notice that we didn’t need to directly hover over a point in order for the label to be revealed. Behind the scenes, a the nearest-neighbor (Voronoi) tesselation has been computed, and the labels change as soon as you transition from one cell to another. This [article] provides a detailed description, if you are curious (we won’t refer to this again, though).
+
+[https://d33wubrfki0l68.cloudfront.net/09bc3659501928d56b59319b0cb3347d347c92ec/591df/img/blog/2015/voronoi-hover/tooltip\_attached\_to\_voronoi\_cell.png]
+
+4. Another example of details-on-demand is overview + detail^[Visualization people really like abstract compound words] time series visualization. The fine-grained structure in the time series might not be visible in the overview, but the user can zoom into features of interest using the selector. We can understand detail without losing our orientation in the overall time series.
+
+````js
+{
+  const selector = vl.selectInterval().encodings('x');
+  const x = vl.x().fieldT('date').title(null);
+  
+  // reusable time series encoding
+  const base = vl.markArea()
+    .encode(x, vl.y().fieldQ('price'))
+    .width(700);
+  
+  const overview = base.select(brush).height(60);
+  const detail = base.encode(
+    x.scale({domain: selector});
+
+  // return layered view
+  return vl.vconcat(detail, overview)
+    .data(sp500)
+    .render();
+}
+````
+
+5. The visualization is implemented by re-using the same base visual encoding (`markArea` time series) and (a) binding a selector to a smaller (60 pixel high) full time series and (b) adapting the scale of the larger time series, so that it only displays years within the current selection interval.
+
+6. Finally, we note that dynamic queries can be chained together in a sequence. They allow the user to navigate between static visualizations that display information across subsets and at different resolution.
+
+7. These visualizations are more complex to implement, but it’s worth sharing an example. One of the earliest examples of details on demand was the film finder app. 
+
+[https://infovis-wiki.net/wiki/File:FilmFinder.jpg]
+
+	It let’s you transition between an overview of all movies and details about selected ones. The key is that the transition is effortless — we can focus in on a few movies without losing our bearings in the broader context.
+
+	You can watch a whole (delightfully retro) video about this visualization [here].
