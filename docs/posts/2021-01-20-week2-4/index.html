@@ -2248,8 +2248,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
-<p>All of our small multiples so far have plotted the raw data. Each geometric mark corresponded to a single observation in the source <code>data.frame</code>. However, the idea can be usefully applied to summaries of the data as well. One form of faceted summary is common enough to have its own name: ridge plots.</p>
+<p><em><a href="https://rafalab.github.io/dsbook/gapminder.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-4/week2-4.Rmd">Rmarkdown</a></em></p>
+<p>Ridge plots are a special case of small multiples that are particularly suited to displaying multiple parallel time series or densities.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
@@ -2260,7 +2260,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 </div>
-<p>An example ridge plot for the gapminder dataset is shown below. The effectiveness of this plot comes from the fact that multiple densities can be plotted in close proximity to one another, making it possible to facet across many variables in a space-efficient way.</p>
+<p>An example ridge plot for the gapminder dataset is shown below. The effectiveness of this plot comes from the fact that multiple densities can be displayed in close proximity to one another, making it possible to facet across many variables in a space-efficient way.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>gapminder</span><span class='op'>)</span>
@@ -2293,7 +2293,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week2-4_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
-<p>You might wonder, why not plot the raw data? We do this using a <code>geom_point</code> below. The result isn’t as satisfying, because, while the shape of the ridges popped out immediately in the original plot, we have to invest a bit more effort to understand the regions of higher density in the raw data plot.</p>
+<p>You might wonder, why not plot the raw data? We do this using a <code>geom_point</code> below. The result isn’t as satisfying, because, while the shape of the ridges popped out immediately in the original plot, we have to invest a bit more effort to understand the regions of higher density in the raw data plot. Also, when there are many samples, the entire range might appeared covered in marks when in fact there are some intervals with higher density than others.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>gapminder_subset</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>dollars_per_day</span>, <span class='va'>group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2310,7 +2310,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://wilkelab.org/ggridges/reference/geom_density_ridges.html'>geom_density_ridges</a></span><span class='op'>(</span>
     jittered_points <span class='op'>=</span> <span class='cn'>TRUE</span>, 
     position <span class='op'>=</span> <span class='fu'><a href='https://wilkelab.org/ggridges/reference/position_points_jitter.html'>position_points_jitter</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>,
-    point_shape <span class='op'>=</span> <span class='st'>'|'</span>, point_size <span class='op'>=</span> <span class='fl'>5</span>
+    point_shape <span class='op'>=</span> <span class='st'>'|'</span>, point_size <span class='op'>=</span> <span class='fl'>3</span>
   <span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_log10</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
@@ -2318,7 +2318,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p><img src="week2-4_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
 </div>
 <p>To exercise our knowledge of both faceting and ridge plots, let’s study a particular question in depth: How did the gap between rich and poor countries change between 1970 and 2010?</p>
-<p>A first reasonable plot is to facet year and whether or not the country is developing. While the rich countries have become slightly richer, there is a larger shift in the incomes for the poorer countries.</p>
+<p>A first reasonable plot is to facet year and development status. While the rich countries have become slightly richer, there is a larger shift in the incomes for the poorer countries.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>past_year</span> <span class='op'>&lt;-</span> <span class='fl'>1970</span>
@@ -2336,7 +2336,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <p><img src="week2-4_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
-<p>We can express this message more compactly by overlaying densities for the rich and poor countries. But the attempt below is misleading, because it gives the same total area to both groups of countries, which doesn’t make sense, considering there are more than 4 times as many developing vs. western countries (87 vs. 21).</p>
+<p>We can express this message more compactly by overlaying densities, but the attempt below is misleading, because it gives the same total area to both groups of countries. This doesn’t make sense, considering there are more than 4 times as many developing vs. western countries (87 vs. 21).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>gapminder_subset</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>dollars_per_day</span>, fill <span class='op'>=</span> <span class='va'>west</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
