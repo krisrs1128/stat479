@@ -18,3 +18,20 @@ library("robservable")
 
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
+
+1. These notes consider real-world systems that use dynamic linking. They are less practical most of the notes in this course, but there are approaches that are good to know about, and which you might want to learn about from a hands-on point of view in your future projects.
+2. Overview + Detail: Google Maps. We can see details of a location without losing context of the surrounding area.
+3. Multi-form Display: Microarray Explorer
+	1. One encoding through a central scatterplot.
+	2. A complementary encoding through time series.
+	3. Detail names of the selected genes. This is more convenient than having to tooltip over all the individual genes.
+	4. Selections in one display update all the others.
+4. Multiple techniques: [Cerebral].
+	1. There are many pieces in this visualization. Let’s deconstruct the components, 
+		1. A gene network (known interactions)
+		2. Small multiples showing the same network colored in at different time points
+		3. Time series showing the individual genes over time. (value of multiform: time series make changes over time obvious, but network shows relationships between genes)
+	2. Let’s examine the visualization strategies being used,
+		1. Multi-form visualization: Time series and networks refer to the same underlying genes, but support different comparisons.
+		2. Small-multiples: One of the panels shows the same genes shaded in across many time points.
+		3. Overview + detail: The central display summaries the gene networks over time, and the small multiples can be used to understand the network at a particular timepoint.

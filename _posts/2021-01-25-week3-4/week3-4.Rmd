@@ -19,3 +19,16 @@ library("robservable")
 
 _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
+1. It is often useful to combine multi-view composition with dynamic queries. The basic idea is to (a) show different aspects of a dataset using different views, and then (b) link the views using dynamic queries. This strategy is sometimes called _dynamic linking_.
+2. To make this concrete, consider cross-filtering. In the visualization below, we can see how different fields of a flights dataset are related to one another.
+3. The implementation here is subtle. 
+	1. Three grey histograms are drawn using the `repeat` strategy. These serve as a reference and are never updated. 
+	2. A `selectInterval` is bound to each of these grey histograms. This is what lets us select ranges of values, with which we will update the blue histogram.
+	3. The blue histograms are then drawn using only the data that has passed through a filter defined by the above `selectInterval`. Every time the brush is moved, the histograms are recomputed and redrawn.
+4. Aside: Scented widgets are an other example of how coordinated views and dynamic queries are useful together. There, though, one of the views had a more central role.
+5. Considered abstractly, there are two axes along which we can think of coordinated views. The first is whether we are encoding the data in the same way. Second, are we sharing the same data across the different views? We can recover many of our earlier plots from this point of view, and it is a useful conceptual aid when exploring the space of design possibilities for a dataset.
+
+7. Why are these all effective?
+	1. Overview + detail: Transition between levels of complexity, without losing context.
+	2. Small multiples: Enable high information density by sharing the same encodings across many subsets.
+	3. Multi-form: Allows different encodings that are suited to complementary visual tasks.

@@ -15,7 +15,7 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/gapminder.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-1/week2-1.Rmd)_
+_[Reading](https://rafalab.github.io/dsbook/gapminder.html), [Recording](https://mediaspace.wisc.edu/media/1_g6qrvdjz),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-1/week2-1.Rmd)_
 
 It might seem like we’re limited with the total number of variables we can
 display at a time. While there are many types of encodings we could in theory

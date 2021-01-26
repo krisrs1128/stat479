@@ -2253,15 +2253,15 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-2/week2-2.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_o82g7gyk">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-2/week2-2.Rmd">Rmarkdown</a></em></p>
 <p>In these notes, we’re going to see how to facet using vega-lite. We’re going to look at the weather data, which shows the precipitation and temperature for NYC and Seattle over the course of a year.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>280</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-2f85d3f2356743c8e964" style="width:624px;height:280px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2f85d3f2356743c8e964">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9d26720a36a08919c272" style="width:624px;height:280px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9d26720a36a08919c272">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>The most direct way to facet is to use the row and column encoding types. For example, here we are faceting histograms of temperature across the type of weather.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
@@ -2288,8 +2288,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>200</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-aa6d13be5ee9eb9ad0f5" style="width:624px;height:200px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-aa6d13be5ee9eb9ad0f5">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-86187f06029064c1fd50" style="width:624px;height:200px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-86187f06029064c1fd50">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>If we want, we can facet by both weather and city, using <code>row</code> and <code>column</code> to distinguish between variations along rows and columns.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{</span>
@@ -2316,8 +2316,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-b756e8c253c849eb427b" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b756e8c253c849eb427b">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7e95b348473dae613d84" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7e95b348473dae613d84">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>There is an alternative approach which is more general. The approach above defined the facet within the encoding for the <code>markBar</code>. There are situations where we might want to facet a plot that is made from more than just one type of mark (e.g., a line overlaid on points). In this case, we will want to create a facet call that can be applied to a full plot specification. This is exactly analogous to <code>facet_wrap</code> and <code>facet_grid</code>, where the faceting operator can be applied to several geom layers simultaneously. Notice that we need to put the <code>data</code> call <em>after</em> the facet – the faceting won’t know to what it should apply otherwise (try moving the command up).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>{</span>
@@ -2343,8 +2343,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-b313a6743ab5abf2cf99" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b313a6743ab5abf2cf99">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a2a3bfd5514c3833afe2" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a2a3bfd5514c3833afe2">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Here’s an example that shows why this is useful: How do the minimum and maximum temperatures vary between NYC and Seattle? In addition to showing the minimum and maximum temperatures (a ribbon), we may want to show the midpoint between these as its own line. For just NYC, we can make this plot using <code>vl.layer</code> to superimpose the two marks,</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>{</span>
@@ -2374,8 +2374,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>8</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-3aee96bc35005482318b" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3aee96bc35005482318b">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4994f7fb53e79c694da7" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4994f7fb53e79c694da7">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Now, within each facet, we want to overlay two types of marks. We can no longer specify <code>.column()</code> or <code>.row()</code> within the <code>.encode()</code> calls for each mark. Instead, we have to specify a facet at the end, after we’ve already overlayed the two elements.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>{</span>
@@ -2408,8 +2408,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-faceting"</span>, include <span class='op'>=</span> <span class='fl'>9</span>, height <span class='op'>=</span> <span class='fl'>230</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-17573d53d6b2f4df5918" style="width:624px;height:230px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-17573d53d6b2f4df5918">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d331cbc6df3ba25439f5" style="width:624px;height:230px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d331cbc6df3ba25439f5">{"x":{"notebook":"@krisrs1128/examples-of-faceting","include":9,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
