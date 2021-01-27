@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week3-3_files/anchor-4.2.2/anchor.min.js","week3-3_files/bowser-1.9.3/bowser.min.js","week3-3_files/distill-2.2.21/template.v2.js","week3-3_files/header-attrs-2.6/header-attrs.js","week3-3_files/jquery-1.11.3/jquery.min.js","week3-3_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week3-3_files/FilmFinder.jpg","week3-3_files/anchor-4.2.2/anchor.min.js","week3-3_files/bowser-1.9.3/bowser.min.js","week3-3_files/distill-2.2.21/template.v2.js","week3-3_files/header-attrs-2.6/header-attrs.js","week3-3_files/htmlwidgets-1.5.3/htmlwidgets.js","week3-3_files/jquery-1.11.3/jquery.min.js","week3-3_files/observable-runtime-4.7.2/inspector.css","week3-3_files/observable-runtime-4.7.2/runtime.umd.js","week3-3_files/robservable-binding-0.2.0/robservable.js","week3-3_files/robservable-utils-0.1.0/robservable.js","week3-3_files/robservable-utils-0.1.0/robservable.yaml","week3-3_files/robservable-utils-0.1.0/runtime/inspector.css","week3-3_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week3-3_files/robservable-utils-0.1.0/utils.js","week3-3_files/voronoi.png","week3-3_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2005,6 +2005,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!--/radix_placeholder_distill-->
   <script src="../../site_libs/header-attrs-2.6/header-attrs.js"></script>
+  <script src="../../site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+  <link href="../../site_libs/observable-runtime-4.7.2/inspector.css" rel="stylesheet" />
+  <script src="../../site_libs/observable-runtime-4.7.2/runtime.umd.js"></script>
+  <script src="../../site_libs/robservable-utils-0.1.0/utils.js"></script>
+  <script src="../../site_libs/robservable-binding-0.2.0/robservable.js"></script>
   <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
   <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
   <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
@@ -2254,47 +2259,54 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>To reveal the identity of an observation, we can reveal a label on hover. This is essentially a tooltip, but we have re-implemented it manually using a selection. The reason is that this allows additional customization in the structure of the interaction and visual update.</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">const</span> hover <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectSingle</span>()</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;mouseover&#39;</span>) <span class="co">// select on mouseover</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">nearest</span>(<span class="kw">true</span>)   <span class="co">// select nearest point to mouse cursor</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">empty</span>(<span class="st">&#39;none&#39;</span>)<span class="op">;</span>  <span class="co">// empty selection should match nothing</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="kw">const</span> click <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectMulti</span>()</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">empty</span>(<span class="st">&#39;none&#39;</span>)<span class="op">;</span>  <span class="co">// empty selection matches no points</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>  </span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>  <span class="co">// scatter plot encodings shared by all marks</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  <span class="kw">const</span> plot <span class="op">=</span> vl<span class="op">.</span><span class="fu">markCircle</span>()<span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;Rotten_Tomatoes_Rating&#39;</span>)<span class="op">,</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;IMDB_Rating&#39;</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>  )<span class="op">;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>  </span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>  <span class="co">// shared base for new layers</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>  <span class="kw">const</span> base <span class="op">=</span> plot<span class="op">.</span><span class="fu">transform</span>(</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">filter</span>(vl<span class="op">.</span><span class="fu">or</span>(hover<span class="op">,</span> click)) <span class="co">// filter to points in either selection</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>  )<span class="op">;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>  </span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>  <span class="co">// mark properties for new layers</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>  <span class="kw">const</span> halo <span class="op">=</span> {<span class="dt">size</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">&#39;firebrick&#39;</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">1</span>}<span class="op">;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>  <span class="kw">const</span> label <span class="op">=</span> {<span class="dt">dx</span><span class="op">:</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">-8</span><span class="op">,</span> <span class="dt">align</span><span class="op">:</span> <span class="st">&#39;right&#39;</span>}<span class="op">;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>  <span class="kw">const</span> white <span class="op">=</span> {<span class="dt">stroke</span><span class="op">:</span> <span class="st">&#39;white&#39;</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>}<span class="op">;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>  <span class="co">// layer scatter plot points, halo annotations, and title labels</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">data</span>(movies)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">layer</span>(</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>      plot<span class="op">.</span><span class="fu">select</span>(hover<span class="op">,</span> click)<span class="op">,</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>      base<span class="op">.</span><span class="fu">markPoint</span>(halo)<span class="op">,</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>      base<span class="op">.</span><span class="fu">markText</span>(label<span class="op">,</span> white)<span class="op">.</span><span class="fu">encode</span>(vl<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&#39;Title&#39;</span>))<span class="op">,</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>      base<span class="op">.</span><span class="fu">markText</span>(label)<span class="op">.</span><span class="fu">encode</span>(vl<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&#39;Title&#39;</span>))</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>    )</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">width</span>(<span class="dv">600</span>)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">height</span>(<span class="dv">450</span>)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()<span class="op">;</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a>}</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="co">/* Define behavior of hover and click selections */</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="kw">const</span> hover <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectSingle</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;mouseover&#39;</span>) <span class="co">// select on mouseover</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">nearest</span>(<span class="kw">true</span>)   <span class="co">// select nearest point to mouse cursor</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">empty</span>(<span class="st">&#39;none&#39;</span>)<span class="op">;</span>  <span class="co">// empty selection should match nothing</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  <span class="kw">const</span> click <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectMulti</span>()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">empty</span>(<span class="st">&#39;none&#39;</span>)<span class="op">;</span>  <span class="co">// empty selection matches no points</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>  </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  <span class="co">/* Define encodings for full and filtered data */</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>  <span class="kw">const</span> all_points <span class="op">=</span> vl<span class="op">.</span><span class="fu">markCircle</span>()<span class="op">.</span><span class="fu">encode</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;Rotten_Tomatoes_Rating&#39;</span>)<span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>    vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;IMDB_Rating&#39;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>  )</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>  </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>  <span class="kw">const</span> filter <span class="op">=</span> vl<span class="op">.</span><span class="fu">filter</span>(vl<span class="op">.</span><span class="fu">or</span>(hover<span class="op">,</span> click))<span class="op">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>        subset_points <span class="op">=</span> all_points<span class="op">.</span><span class="fu">transform</span>(filter)<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>  <span class="co">// mark properties for new layers</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>  <span class="kw">const</span> halo <span class="op">=</span> {<span class="dt">size</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">&#39;firebrick&#39;</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">3</span>}<span class="op">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>        label <span class="op">=</span> {<span class="dt">dx</span><span class="op">:</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">-8</span><span class="op">,</span> <span class="dt">align</span><span class="op">:</span> <span class="st">&#39;right&#39;</span>}<span class="op">,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>        white <span class="op">=</span> {<span class="dt">stroke</span><span class="op">:</span> <span class="st">&#39;white&#39;</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>}<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>  <span class="co">// layer scatter plot points, halo annotations, and title labels</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">data</span>(movies)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">layer</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>      all_points<span class="op">.</span><span class="fu">select</span>(hover<span class="op">,</span> click)<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>      subset_points<span class="op">.</span><span class="fu">markPoint</span>(halo)<span class="op">,</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>      subset_points<span class="op">.</span><span class="fu">markText</span>(label<span class="op">,</span> white)<span class="op">.</span><span class="fu">encode</span>(vl<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&#39;Title&#39;</span>))<span class="op">,</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>      subset_points<span class="op">.</span><span class="fu">markText</span>(label)<span class="op">.</span><span class="fu">encode</span>(vl<span class="op">.</span><span class="fu">text</span>()<span class="op">.</span><span class="fu">fieldN</span>(<span class="st">&#39;Title&#39;</span>))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>    )</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">width</span>(<span class="dv">600</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">height</span>(<span class="dv">450</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()<span class="op">;</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-3"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>450</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div id="htmlwidget-b34db4a2a7c5f4f5896a" style="width:624px;height:450px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b34db4a2a7c5f4f5896a">{"x":{"notebook":"@krisrs1128/week-3-3","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
 <ol start="3" type="1">
 <li><p>This kind of labeling is a good middle ground between overloading the user with all details (putting all labels in the plot) and hiding the information completely (no labels). This is one of the benefits of interactive visualization — we can adapt the complexity of a visualization based on user inputs.</p></li>
-<li><p>Aside: Notice that we didn’t need to directly hover over a point in order for the label to be revealed. Behind the scenes, a the nearest-neighbor (Voronoi) tesselation has been computed, and the labels change as soon as you transition from one cell to another. This [article] provides a detailed description, if you are curious (we won’t refer to this again, though).</p></li>
+<li><p>Aside: Notice that we didn’t need to directly hover over a point in order for the label to be revealed. Behind the scenes, a the nearest-neighbor (Voronoi) tessellation has been computed, and the labels change as soon as you transition from one cell to another. This [article] provides a detailed description, if you are curious (we won’t refer to this again, though).</p></li>
 </ol>
-<p>[<a href="https://d33wubrfki0l68.cloudfront.net/09bc3659501928d56b59319b0cb3347d347c92ec/591df/img/blog/2015/voronoi-hover/tooltip\_attached\_to\_voronoi\_cell.png" class="uri">https://d33wubrfki0l68.cloudfront.net/09bc3659501928d56b59319b0cb3347d347c92ec/591df/img/blog/2015/voronoi-hover/tooltip\_attached\_to\_voronoi\_cell.png</a>]</p>
+<p><img src="week3-3_files/voronoi.png" /></p>
 <ol start="4" type="1">
 <li>Another example of details-on-demand is overview + detail<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> time series visualization. The fine-grained structure in the time series might not be visible in the overview, but the user can zoom into features of interest using the selector. We can understand detail without losing our orientation in the overall time series.</li>
 </ol>
@@ -2307,24 +2319,33 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">encode</span>(x<span class="op">,</span> vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">fieldQ</span>(<span class="st">&#39;price&#39;</span>))</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">width</span>(<span class="dv">700</span>)<span class="op">;</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>  <span class="kw">const</span> overview <span class="op">=</span> base<span class="op">.</span><span class="fu">select</span>(brush)<span class="op">.</span><span class="fu">height</span>(<span class="dv">60</span>)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>  <span class="kw">const</span> overview <span class="op">=</span> base<span class="op">.</span><span class="fu">select</span>(selector)<span class="op">.</span><span class="fu">height</span>(<span class="dv">60</span>)<span class="op">;</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>  <span class="kw">const</span> detail <span class="op">=</span> base<span class="op">.</span><span class="fu">encode</span>(</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    x<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> selector})<span class="op">;</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>  <span class="co">// return layered view</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">vconcat</span>(detail<span class="op">,</span> overview)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">data</span>(sp500)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()<span class="op">;</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>}</span></code></pre></div>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    x<span class="op">.</span><span class="fu">scale</span>({<span class="dt">domain</span><span class="op">:</span> selector})</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>  )<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>  <span class="co">// return layered view</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">vconcat</span>(detail<span class="op">,</span> overview)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">data</span>(sp500)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-3"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div id="htmlwidget-e41ae6025605232b10b6" style="width:624px;height:500px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e41ae6025605232b10b6">{"x":{"notebook":"@krisrs1128/week-3-3","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
 <ol start="5" type="1">
 <li><p>The visualization is implemented by re-using the same base visual encoding (<code>markArea</code> time series) and (a) binding a selector to a smaller (60 pixel high) full time series and (b) adapting the scale of the larger time series, so that it only displays years within the current selection interval.</p></li>
 <li><p>Finally, we note that dynamic queries can be chained together in a sequence. They allow the user to navigate between static visualizations that display information across subsets and at different resolution.</p></li>
 <li><p>These visualizations are more complex to implement, but it’s worth sharing an example. One of the earliest examples of details on demand was the film finder app.</p></li>
 </ol>
-<p>[<a href="https://infovis-wiki.net/wiki/File:FilmFinder.jpg" class="uri">https://infovis-wiki.net/wiki/File:FilmFinder.jpg</a>]</p>
+<p><img src="week3-3_files/FilmFinder.jpg" /></p>
 <pre><code>It let’s you transition between an overview of all movies and details about selected ones. The key is that the transition is effortless — we can focus in on a few movies without losing our bearings in the broader context.
 
-You can watch a whole (delightfully retro) video about this visualization [here].</code></pre>
+You can watch a whole (delightfully retro) video about this visualization [here](https://www.youtube.com/watch?v=g9JadyYUyK8).</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />

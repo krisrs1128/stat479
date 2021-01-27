@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week3-5_files/anchor-4.2.2/anchor.min.js","week3-5_files/bowser-1.9.3/bowser.min.js","week3-5_files/distill-2.2.21/template.v2.js","week3-5_files/header-attrs-2.6/header-attrs.js","week3-5_files/jquery-1.11.3/jquery.min.js","week3-5_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week3-5_files/anchor-4.2.2/anchor.min.js","week3-5_files/bowser-1.9.3/bowser.min.js","week3-5_files/cerebral.png","week3-5_files/distill-2.2.21/template.v2.js","week3-5_files/google.png","week3-5_files/header-attrs-2.6/header-attrs.js","week3-5_files/jquery-1.11.3/jquery.min.js","week3-5_files/microarray.png","week3-5_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2251,31 +2251,37 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <ol type="1">
 <li>These notes consider real-world systems that use dynamic linking. They are less practical most of the notes in this course, but there are approaches that are good to know about, and which you might want to learn about from a hands-on point of view in your future projects.</li>
-<li>Overview + Detail: Google Maps. We can see details of a location without losing context of the surrounding area.</li>
-<li>Multi-form Display: Microarray Explorer
-<ol type="1">
+<li><strong>Overview + Detail</strong>: Google Maps. We can see details of a location without losing context of the surrounding area.</li>
+</ol>
+<p><img src="week3-5_files/google.png" /></p>
+<ol start="3" type="1">
+<li><strong>Multi-form Display</strong>: Microarray Explorer</li>
+</ol>
+<p><img src="week3-5_files/microarray.png" /></p>
+<ol type="a">
 <li>One encoding through a central scatterplot.</li>
 <li>A complementary encoding through time series.</li>
 <li>Detail names of the selected genes. This is more convenient than having to tooltip over all the individual genes.</li>
 <li>Selections in one display update all the others.</li>
-</ol></li>
-<li>Multiple techniques: [Cerebral].
-<ol type="1">
-<li>There are many pieces in this visualization. Let’s deconstruct the components,
-<ol type="1">
+</ol>
+<ol start="4" type="1">
+<li><strong>Multiple techniques</strong>: <a href="https://www.youtube.com/watch?v=76HhG1FQngI">Cerebral</a>.</li>
+</ol>
+<p><img src="week3-5_files/cerebral.png" /> a. There are many pieces in this visualization. Let’s deconstruct the components,</p>
+<ol type="i">
 <li>A gene network (known interactions)</li>
 <li>Small multiples showing the same network colored in at different time points</li>
 <li>Time series showing the individual genes over time. (value of multiform: time series make changes over time obvious, but network shows relationships between genes)</li>
-</ol></li>
-<li>Let’s examine the visualization strategies being used,
-<ol type="1">
+</ol>
+<ol start="2" type="a">
+<li><p>Let’s examine the visualization strategies being used,</p>
+<ol type="i">
 <li>Multi-form visualization: Time series and networks refer to the same underlying genes, but support different comparisons.</li>
 <li>Small-multiples: One of the panels shows the same genes shaded in across many time points.</li>
 <li>Overview + detail: The central display summaries the gene networks over time, and the small multiples can be used to understand the network at a particular timepoint.</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div></li>
 </ol></li>
 </ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

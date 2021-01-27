@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week3-4_files/anchor-4.2.2/anchor.min.js","week3-4_files/bowser-1.9.3/bowser.min.js","week3-4_files/distill-2.2.21/template.v2.js","week3-4_files/header-attrs-2.6/header-attrs.js","week3-4_files/jquery-1.11.3/jquery.min.js","week3-4_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week3-4_files/anchor-4.2.2/anchor.min.js","week3-4_files/bowser-1.9.3/bowser.min.js","week3-4_files/cerebral.png","week3-4_files/distill-2.2.21/template.v2.js","week3-4_files/google.png","week3-4_files/header-attrs-2.6/header-attrs.js","week3-4_files/htmlwidgets-1.5.3/htmlwidgets.js","week3-4_files/jquery-1.11.3/jquery.min.js","week3-4_files/microarray.png","week3-4_files/observable-runtime-4.7.2/inspector.css","week3-4_files/observable-runtime-4.7.2/runtime.umd.js","week3-4_files/robservable-binding-0.2.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.yaml","week3-4_files/robservable-utils-0.1.0/runtime/inspector.css","week3-4_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week3-4_files/robservable-utils-0.1.0/utils.js","week3-4_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2005,6 +2005,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!--/radix_placeholder_distill-->
   <script src="../../site_libs/header-attrs-2.6/header-attrs.js"></script>
+  <script src="../../site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+  <link href="../../site_libs/observable-runtime-4.7.2/inspector.css" rel="stylesheet" />
+  <script src="../../site_libs/observable-runtime-4.7.2/runtime.umd.js"></script>
+  <script src="../../site_libs/robservable-utils-0.1.0/utils.js"></script>
+  <script src="../../site_libs/robservable-binding-0.2.0/robservable.js"></script>
   <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
   <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
   <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
@@ -2252,8 +2257,43 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <ol type="1">
 <li><p>It is often useful to combine multi-view composition with dynamic queries. The basic idea is to (a) show different aspects of a dataset using different views, and then (b) link the views using dynamic queries. This strategy is sometimes called <em>dynamic linking</em>.</p></li>
 <li><p>To make this concrete, consider cross-filtering. In the visualization below, we can see how different fields of a flights dataset are related to one another.</p></li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-4"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>235</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div id="htmlwidget-24aba6153b68971c9429" style="width:624px;height:235px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-24aba6153b68971c9429">{"x":{"notebook":"@krisrs1128/week-3-4","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">const</span> brush <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectInterval</span>()<span class="op">.</span><span class="fu">encodings</span>(<span class="st">&#39;x&#39;</span>)<span class="op">.</span><span class="fu">resolve</span>(<span class="st">&#39;intersect&#39;</span>)<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>        hist <span class="op">=</span> vl<span class="op">.</span><span class="fu">markBar</span>()<span class="op">.</span><span class="fu">encode</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>          vl<span class="op">.</span><span class="fu">x</span>()<span class="op">.</span><span class="fu">fieldQ</span>(vl<span class="op">.</span><span class="fu">repeat</span>(<span class="st">&#39;row&#39;</span>))<span class="op">.</span><span class="fu">bin</span>({<span class="dt">maxbins</span><span class="op">:</span> <span class="dv">100</span>})<span class="op">,</span> <span class="co">// up to 100 bins, but no smaller than 1 unit</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>          vl<span class="op">.</span><span class="fu">y</span>()<span class="op">.</span><span class="fu">count</span>()<span class="op">.</span><span class="fu">title</span>(<span class="kw">null</span>) <span class="co">// no y-axis title</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>        )<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">layer</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>      hist<span class="op">.</span><span class="fu">select</span>(brush)<span class="op">.</span><span class="fu">encode</span>(vl<span class="op">.</span><span class="fu">color</span>()<span class="op">.</span><span class="fu">value</span>(<span class="st">&#39;lightgrey&#39;</span>))<span class="op">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>      hist<span class="op">.</span><span class="fu">transform</span>(vl<span class="op">.</span><span class="fu">filter</span>(brush))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>    )</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">width</span>(<span class="dv">900</span>)<span class="op">.</span><span class="fu">height</span>(<span class="dv">100</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">repeat</span>({<span class="dt">row</span><span class="op">:</span> [<span class="st">&#39;delay&#39;</span><span class="op">,</span> <span class="st">&#39;distance&#39;</span><span class="op">,</span> <span class="st">&#39;time&#39;</span>]})</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">data</span>(flights)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">config</span>({<span class="dt">view</span><span class="op">:</span> {<span class="dt">stroke</span><span class="op">:</span> <span class="kw">null</span>}}) <span class="co">// no outline</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>    <span class="op">.</span><span class="fu">render</span>()<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="layout-chunk" data-layout="l-page">
+<div class="sourceCode">
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-4"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>430</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div id="htmlwidget-326f5d7fd4724055c091" style="width:624px;height:430px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-326f5d7fd4724055c091">{"x":{"notebook":"@krisrs1128/week-3-4","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+</div>
+<ol start="3" type="1">
 <li><p>The implementation here is subtle.</p>
-<ol type="1">
+<ol type="a">
 <li>Three grey histograms are drawn using the <code>repeat</code> strategy. These serve as a reference and are never updated.</li>
 <li>A <code>selectInterval</code> is bound to each of these grey histograms. This is what lets us select ranges of values, with which we will update the blue histogram.</li>
 <li>The blue histograms are then drawn using only the data that has passed through a filter defined by the above <code>selectInterval</code>. Every time the brush is moved, the histograms are recomputed and redrawn.</li>
@@ -2266,7 +2306,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Small multiples: Enable high information density by sharing the same encodings across many subsets.</li>
 <li>Multi-form: Allows different encodings that are suited to complementary visual tasks.</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div></li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div></li>
 </ol>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
