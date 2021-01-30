@@ -91,8 +91,8 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-02-21"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-02-21"/>
+<meta property="article:published" itemprop="datePublished" content="2021-02-22"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-02-22"/>
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -111,7 +111,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Missing Data (Part 2)"]},{"type":"character","attributes":{},"value":["A deeper look at missing data, imputation, and characterization."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["02-21-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Missing Data (Part 2)"]},{"type":"character","attributes":{},"value":["A deeper look at missing data, imputation, and characterization."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["02-22-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Missing Data (Part 2)","description":"A deeper look at missing data, imputation, and characterization.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-21T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
+{"title":"Missing Data (Part 2)","description":"A deeper look at missing data, imputation, and characterization.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-22T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2244,7 +2244,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div class="d-byline">
   Kris Sankaran  (UW Madison)
   
-<br/>02-21-2021
+<br/>02-22-2021
 </div>
 
 <div class="d-article">
@@ -2276,18 +2276,18 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 <pre><code># A tibble: 500 x 3
-    value value_NA imputed
-    &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt;
- 1  0.441 !NA        0.441
- 2 -0.677 !NA       -0.677
- 3 -0.776 !NA       -0.776
- 4 -0.481 !NA       -0.481
- 5 -0.985 !NA       -0.985
- 6  0.494 !NA        0.494
- 7 -0.624 !NA       -0.624
- 8 -3.31  !NA       -3.31 
- 9 -1.19  !NA       -1.19 
-10  0.792 !NA        0.792
+     value value_NA imputed
+     &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt;
+ 1 -0.405  !NA      -0.405 
+ 2  1.48   !NA       1.48  
+ 3 -0.602  !NA      -0.602 
+ 4 -0.185  !NA      -0.185 
+ 5 -0.479  !NA      -0.479 
+ 6  0.420  !NA       0.420 
+ 7  2.32   !NA       2.32  
+ 8 -0.934  !NA      -0.934 
+ 9 NA      NA        0.0128
+10 -0.0470 !NA      -0.0470
 # … with 490 more rows</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
