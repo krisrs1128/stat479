@@ -17,6 +17,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 ```{r}
 library("tidyr")
 library("ggplot2")
+theme_set(theme_bw())
 ```
 
 1. A dataset is called tidy if rows correspond to distinct observations and columns correspond to distinct variables.

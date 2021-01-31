@@ -18,6 +18,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("dplyr")
 library("tidyr")
 library("ggplot2")
+theme_set(theme_bw())
 ```
 
 1. Pivoting refers to the process of changing the interpretation of each row in a data frame. It is useful for addressing problems 1 - 2 in the previous lecture, which we repeat here for completeness.

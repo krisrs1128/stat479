@@ -19,7 +19,6 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 ```{r}
 library("tidyr")
 library("dplyr")
-library("ggplot2")
 ```
 
 1. It’s easiest to define visual encodings when the variables we want to encode are contained in their own columns. After sketching out a visualization of interest, we may find that these variables are not explicitly represented among the columns of the raw dataset. In this case, we may need to derive them based on what is available. The `dplyr` and `tidyr` packages provide functions for deriving new variables, which we review in these notes.
