@@ -2253,7 +2253,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_zadih83r">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-3/week2-3.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_zadih83r">Recording</a>, <a href="https://observablehq.com/@krisrs1128/examples-of-repetition">Notebook</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-3/week2-3.Rmd">Rmarkdown</a></em></p>
 <p>Faceting is useful whenever you want different rows of your dataset to appear in different panels. What if you want to compare different columns, or work with several datasets? A more general alternative is to use concatenation or repetition.</p>
 <p>We’re going to illustrate this using vega-lite, but the principles also apply to ggplot2<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Suppose we want to plot several weather variables next to one another – we can use <code>hconcat</code>. The idea here is to construct each plot separately and then combine them only at the very end.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
@@ -2303,8 +2303,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-1a8dc8a6f8a80b98a858" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1a8dc8a6f8a80b98a858">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9c59b0356844884527eb" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9c59b0356844884527eb">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>This implementation is straightforward, but very clumsy. Whenever you find yourself copying and pasting code you should ask yourself whether there is a more elegant way to implement the same idea. In this case, there is, by reusing the same template for everything except the <span class="math inline">\(y\)</span>-axis encoding.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{</span>
@@ -2331,8 +2331,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-8a9382b093b9b10345fb" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8a9382b093b9b10345fb">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a79d4f8f0a8cd335e981" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a79d4f8f0a8cd335e981">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>That’s better, but we can be even more concise, by using repetition. This lets us reuse the same template by referring to an abstract <code>vl.repeat()</code> object in the encoding.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>{</span>
@@ -2356,8 +2356,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-c48fe512bfaa1d02e757" style="width:624px;height:220px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c48fe512bfaa1d02e757">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a18a4a6e9e84fc66edfa" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a18a4a6e9e84fc66edfa">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Let’s use this idea to generate a scatterplot matrix, a type of plot that shows all pairs of scatterplots between columns in a dataset. This type of plot is often useful in revealing correlations between fields.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>{</span>
@@ -2384,8 +2384,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/examples-of-repetition"</span>, include <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-3185a735fdd40af8ef0f" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3185a735fdd40af8ef0f">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-5bce9fef5bc6589342d0" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5bce9fef5bc6589342d0">{"x":{"notebook":"@krisrs1128/examples-of-repetition","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">

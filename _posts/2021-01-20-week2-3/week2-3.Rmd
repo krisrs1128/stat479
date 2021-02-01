@@ -12,13 +12,12 @@ output:
     self_contained: false
 ---
 
-
 ```{r setup, include=FALSE}
 library("robservable")
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_zadih83r),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-3/week2-3.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_zadih83r), [Notebook](https://observablehq.com/@krisrs1128/examples-of-repetition), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-3/week2-3.Rmd)_
 
 Faceting is useful whenever you want different rows of your dataset to appear in
 different panels. What if you want to compare different columns, or work with
