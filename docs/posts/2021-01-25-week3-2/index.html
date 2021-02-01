@@ -2253,7 +2253,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_gjjsi7da">Recording</a>, <a href="https://observablehq.com/@krisrs1128/week-3-2">Notebook</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <ol type="1">
 <li>Before, we only selected based on observations. How can we select based on attributes? One idea is to introduce widgets outside of the visualization through which the user can define queries. Selections are then <em>bound</em> to widgets, letting us use conditional encodings like before, but with respect to this new class of inputs.</li>
 </ol>
@@ -2280,11 +2280,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-2"</span>, include <span class='op'>=</span> <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>325</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-64184fabc3e869612e39" style="width:624px;height:325px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-64184fabc3e869612e39">{"x":{"notebook":"@krisrs1128/week-3-2","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2e697a1f8f72772bb9d5" style="width:624px;height:325px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2e697a1f8f72772bb9d5">{"x":{"notebook":"@krisrs1128/week-3-2","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="2" type="1">
-<li>Besides <code>menu</code> bindings, there are <code>checkbox</code>, <code>radio</code>, and <code>slider</code> inputs. If you revisit the gapminder visualization in [Lecture 1 - 3], you will see that the interaction was accomplished by binding a selection to a <code>slider</code> input.</li>
+<li>Besides <code>menu</code> bindings, there are <code>checkbox</code>, <code>radio</code>, and <code>slider</code> inputs. If you revisit the gapminder visualization in <a href="https://krisrs1128.github.io/stat479/posts/2021-01-16-week1-3/">Lecture 1-3</a>, you will see that the interaction was accomplished by binding a selection to a <code>slider</code> input.</li>
 <li>A selection can combine multiple bindings. For example, in the block below, we filter by both MPAA rating and genre. The only part of the code that is different is the definition of the <code>selection</code> object in the first few lines.</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a> {  </span>
@@ -2312,8 +2312,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-2"</span>, include <span class='op'>=</span> <span class='fl'>7</span>, height <span class='op'>=</span> <span class='fl'>335</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-f1297121a441a6656b2a" style="width:624px;height:335px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f1297121a441a6656b2a">{"x":{"notebook":"@krisrs1128/week-3-2","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4f9e082e9f2ff2c3764c" style="width:624px;height:335px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4f9e082e9f2ff2c3764c">{"x":{"notebook":"@krisrs1128/week-3-2","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="4" type="1">
 <li>Interpretation 1: Dynamic queries create the visual analog of a database interaction. Rather than using a programming-based interface to <code>filter</code> elements or <code>select</code> attributes, we can design interactive visual equivalents.</li>
@@ -2360,8 +2360,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-2"</span>, include <span class='op'>=</span> <span class='fl'>8</span>, height <span class='op'>=</span> <span class='fl'>390</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-a487ea07091281397447" style="width:624px;height:390px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a487ea07091281397447">{"x":{"notebook":"@krisrs1128/week-3-2","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-54c0cd329adfc78a7207" style="width:624px;height:390px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-54c0cd329adfc78a7207">{"x":{"notebook":"@krisrs1128/week-3-2","include":8,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

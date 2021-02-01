@@ -2253,10 +2253,10 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_z1qdziag">Recording</a>, <a href="https://observablehq.com/@krisrs1128/week-3-1">Notebook</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <ol type="1">
 <li>A major difference between doing visualization on paper and on computers is that visualization on computers can make use of interactivity. An interactive visualization is one that changes in response to user cues. This allows a display to update in a way that provides a visual comparison that was not available in a previous view. In this way, interactive visualization allows users to answer a sequence of questions.</li>
-<li>Selection, both of observations and of attributes, is fundamental to interactive visualization. This is because it is precedes other interactive operations: you can select a subset of observations to filter down to or attributes to coordinate across multiple displays (we consider both types of interactivity in later lectures).</li>
+<li>Selection, both of observations and of attributes, is fundamental to interactive visualization. This is because it precedes other interactive operations: you can select a subset of observations to filter down to or attributes to coordinate across multiple displays (we consider both types of interactivity in later lectures).</li>
 <li>Let’s see how selection is implemented in vega-lite. We begin with an example, and then deconstruct it. The raw data are available <a href="https://uwmadison.box.com/shared/static/lpvp0istfawq20ems8ooh1hcrng16kay.csv">here</a>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
@@ -2264,8 +2264,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-1"</span>, include <span class='op'>=</span> <span class='fl'>3</span>, height <span class='op'>=</span> <span class='fl'>180</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-fea007921477c47dc479" style="width:624px;height:180px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-fea007921477c47dc479">{"x":{"notebook":"@krisrs1128/week-3-1","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-901dd32318ff4b696891" style="width:624px;height:180px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-901dd32318ff4b696891">{"x":{"notebook":"@krisrs1128/week-3-1","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">const</span> selection <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectSingle</span>()<span class="op">;</span></span>
@@ -2288,11 +2288,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li><code>vl.selectSingle()</code>: Allows selection of one observation at a time.</li>
 <li><code>vl.selectMulti()</code>: Allows selection of several observations.</li>
 <li><code>vl.selectInterval()</code>: Allows selection of contiguous intervals of observations.</li>
-<li>To associate the selection with the points, we bound them to the <code>vl.markCircle()</code> block using the call <code>.select(selection)</code>. This is how vega-lite knows that the user interaction should be associated with individual points.</li>
 </ul>
-<ol start="7" type="1">
-<li>We then apply the idea of <em>conditional encoding</em> to allow the visualization to respond to user selections. Conditional encoding changes the visual encodings of marks depending on whether they are contained within a user selected set. For example, in the plot above, if the observation is within the selected set, it is colored in by the number of cylinders in the car, otherwise it is grey. This is implemented by the <code>.if(selection, vl.fieldO('Cylinders')).value('grey')</code> modification of the original <code>vl.color()</code> encoding.</li>
-<li>To understand the behavior of the three interaction techniques above, let’s regenerate this plot with the other two types of selections.</li>
+<ol start="5" type="1">
+<li><p>To associate the selection with the points, we bound them to the <code>vl.markCircle()</code> block using the call <code>.select(selection)</code>. This is how vega-lite knows that the user interaction should be associated with individual points.</p></li>
+<li><p>We then apply the idea of <em>conditional encoding</em> to allow the visualization to respond to user selections. Conditional encoding changes the visual encodings of marks depending on whether they are contained within a user selected set. For example, in the plot above, if the observation is within the selected set, it is colored in by the number of cylinders in the car, otherwise it is grey. This is implemented by the <code>.if(selection, vl.fieldO('Cylinders')).value('grey')</code> modification of the original <code>vl.color()</code> encoding.</p></li>
+<li><p>To understand the behavior of the three interaction techniques above, let’s regenerate this plot with the other two types of selections.</p></li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">plot</span>(selection) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="cf">return</span> vl<span class="op">.</span><span class="fu">markCircle</span>()</span>
@@ -2310,15 +2310,16 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>vl<span class="op">.</span><span class="fu">hconcat</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="fu">plot</span>(vl<span class="op">.</span><span class="fu">selectSingle</span>())<span class="op">.</span><span class="fu">title</span>(<span class="st">&#39;Single (Click)&#39;</span>)<span class="op">,</span> </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="fu">plot</span>(vl<span class="op">.</span><span class="fu">selectMulti</span>())<span class="op">.</span><span class="fu">title</span>(<span class="st">&#39;Multi (Shift-Click)&#39;</span>)<span class="op">,</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>  <span class="fu">plot</span>(vl<span class="op">.</span><span class="fu">selectInterval</span>())<span class="op">.</span><span class="fu">title</span>(<span class="st">&#39;Interval (Drag)&#39;</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>)<span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>  <span class="fu">plot</span>(vl<span class="op">.</span><span class="fu">selectInterval</span>())<span class="op">.</span><span class="fu">title</span>(<span class="st">&#39;Interval (Drag)&#39;</span>)<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  <span class="fu">plot</span>(vl<span class="op">.</span><span class="fu">selectMulti</span>()<span class="op">.</span><span class="fu">on</span>(<span class="st">&quot;mouseover&quot;</span>)<span class="op">.</span><span class="fu">nearest</span>(<span class="kw">true</span>))<span class="op">.</span><span class="fu">title</span>(<span class="st">&#39;Mouseover Painting&#39;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>)<span class="op">.</span><span class="fu">render</span>()</span></code></pre></div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-1"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>210</span><span class='op'>)</span>
+<pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-1"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>220</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-84cd15fe19a17d16028f" style="width:624px;height:210px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-84cd15fe19a17d16028f">{"x":{"notebook":"@krisrs1128/week-3-1","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-60c1296efab05735fbc5" style="width:624px;height:220px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-60c1296efab05735fbc5">{"x":{"notebook":"@krisrs1128/week-3-1","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="8" type="1">
 <li><p>Are there ways that we can select multiple observations based on attributes other than their position in a plot (that is, without having to click or drag on them within the plot)? The answer is yes, using dynamic queries, which are discussed in the next recording.</p></li>

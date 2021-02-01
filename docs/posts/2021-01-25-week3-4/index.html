@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week3-4_files/anchor-4.2.2/anchor.min.js","week3-4_files/bowser-1.9.3/bowser.min.js","week3-4_files/cerebral.png","week3-4_files/distill-2.2.21/template.v2.js","week3-4_files/google.png","week3-4_files/header-attrs-2.6/header-attrs.js","week3-4_files/htmlwidgets-1.5.3/htmlwidgets.js","week3-4_files/jquery-1.11.3/jquery.min.js","week3-4_files/microarray.png","week3-4_files/observable-runtime-4.7.2/inspector.css","week3-4_files/observable-runtime-4.7.2/runtime.umd.js","week3-4_files/robservable-binding-0.2.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.yaml","week3-4_files/robservable-utils-0.1.0/runtime/inspector.css","week3-4_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week3-4_files/robservable-utils-0.1.0/utils.js","week3-4_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week3-4_files/anchor-4.2.2/anchor.min.js","week3-4_files/bowser-1.9.3/bowser.min.js","week3-4_files/distill-2.2.21/template.v2.js","week3-4_files/header-attrs-2.6/header-attrs.js","week3-4_files/htmlwidgets-1.5.3/htmlwidgets.js","week3-4_files/jquery-1.11.3/jquery.min.js","week3-4_files/observable-runtime-4.7.2/inspector.css","week3-4_files/observable-runtime-4.7.2/runtime.umd.js","week3-4_files/robservable-binding-0.2.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.js","week3-4_files/robservable-utils-0.1.0/robservable.yaml","week3-4_files/robservable-utils-0.1.0/runtime/inspector.css","week3-4_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week3-4_files/robservable-utils-0.1.0/utils.js","week3-4_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2253,7 +2253,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://rafalab.github.io/dsbook/ggplot2.html">Reading</a>, [Recording], <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum">Reading</a>, <a href="https://mediaspace.wisc.edu/media/1_mxmjc2qy">Recording</a>, <a href="https://observablehq.com/@krisrs1128/week-3-4">Notebook</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd">Rmarkdown</a></em></p>
 <ol type="1">
 <li><p>It is often useful to combine multi-view composition with dynamic queries. The basic idea is to (a) show different aspects of a dataset using different views, and then (b) link the views using dynamic queries. This strategy is sometimes called <em>dynamic linking</em>.</p></li>
 <li><p>To make this concrete, consider cross-filtering. In the visualization below, we can see how different fields of a flights dataset are related to one another.</p></li>
@@ -2263,8 +2263,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-4"</span>, include <span class='op'>=</span> <span class='fl'>4</span>, height <span class='op'>=</span> <span class='fl'>235</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-24aba6153b68971c9429" style="width:624px;height:235px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-24aba6153b68971c9429">{"x":{"notebook":"@krisrs1128/week-3-4","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-3a07085f07efbbe9830b" style="width:624px;height:235px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3a07085f07efbbe9830b">{"x":{"notebook":"@krisrs1128/week-3-4","include":4,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>{</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">const</span> brush <span class="op">=</span> vl<span class="op">.</span><span class="fu">selectInterval</span>()<span class="op">.</span><span class="fu">encodings</span>(<span class="st">&#39;x&#39;</span>)<span class="op">.</span><span class="fu">resolve</span>(<span class="st">&#39;intersect&#39;</span>)<span class="op">,</span></span>
@@ -2288,8 +2288,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'>robservable</span><span class='op'>(</span><span class='st'>"@krisrs1128/week-3-4"</span>, include <span class='op'>=</span> <span class='fl'>5</span>, height <span class='op'>=</span> <span class='fl'>430</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-326f5d7fd4724055c091" style="width:624px;height:430px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-326f5d7fd4724055c091">{"x":{"notebook":"@krisrs1128/week-3-4","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-c312e5cb9462cf3847e9" style="width:624px;height:430px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c312e5cb9462cf3847e9">{"x":{"notebook":"@krisrs1128/week-3-4","include":5,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="3" type="1">
 <li><p>The implementation here is subtle.</p>
