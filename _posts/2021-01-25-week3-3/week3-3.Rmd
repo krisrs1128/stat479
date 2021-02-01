@@ -17,7 +17,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_gvcjz76o), [Notebook](https://observablehq.com/@krisrs1128/week-3-3), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 1. One common type of dynamic query is to ask the identity of a particular observation. A generalization of this query is the _details-on-demand_ class of interactions. We will see examples of both in these notes.
 2. To reveal the identity of an observation, we can reveal a label on hover. This is essentially a tooltip, but we have re-implemented it manually using a selection. The reason is that this allows additional customization in the structure of the interaction and visual update.
@@ -61,12 +61,12 @@ _[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkd
 }
 ````
 ```{r}
-robservable("@krisrs1128/week-3-3", include = 4, height = 450)
+robservable("@krisrs1128/week-3-3", include = 4, height = 480)
 ```
 
 3. This kind of labeling is a good middle ground between overloading the user with all details (putting all labels in the plot) and hiding the information completely (no labels). This is one of the benefits of interactive visualization — we can adapt the complexity of a visualization based on user inputs. 
 
-3. Aside: Notice that we didn’t need to directly hover over a point in order for the label to be revealed. Behind the scenes, a the nearest-neighbor (Voronoi) tessellation has been computed, and the labels change as soon as you transition from one cell to another. This [article] provides a detailed description, if you are curious (we won’t refer to this again, though).
+3. Aside: Notice that we didn’t need to directly hover over a point in order for the label to be revealed. Behind the scenes, a the nearest-neighbor (Voronoi) tessellation has been computed, and the labels change as soon as you transition from one cell to another. This [article](https://www.visualcinnamon.com/2015/07/voronoi/) provides a detailed description, if you are curious (we won’t refer to this again, though).
 
 ![](week3-3_files/voronoi.png)
 
@@ -95,7 +95,7 @@ robservable("@krisrs1128/week-3-3", include = 4, height = 450)
 ````
 
 ```{r}
-robservable("@krisrs1128/week-3-3", include = 5, height = 500)
+robservable("@krisrs1128/week-3-3", include = 5, height = 475)
 ```
 
 5. The visualization is implemented by re-using the same base visual encoding (`markArea` time series) and (a) binding a selector to a smaller (60 pixel high) full time series and (b) adapting the scale of the larger time series, so that it only displays years within the current selection interval.
@@ -106,6 +106,6 @@ robservable("@krisrs1128/week-3-3", include = 5, height = 500)
 
 ![](week3-3_files/FilmFinder.jpg)
 
-	It let’s you transition between an overview of all movies and details about selected ones. The key is that the transition is effortless — we can focus in on a few movies without losing our bearings in the broader context.
+It let’s you transition between an overview of all movies and details about selected ones. The key is that the transition is effortless — we can focus in on a few movies without losing our bearings in the broader context.
 
-	You can watch a whole (delightfully retro) video about this visualization [here](https://www.youtube.com/watch?v=g9JadyYUyK8).
+You can watch a whole (delightfully retro) video about this visualization [here](https://www.youtube.com/watch?v=g9JadyYUyK8).

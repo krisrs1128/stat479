@@ -17,7 +17,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_gjjsi7da), [Notebook](https://observablehq.com/@krisrs1128/week-3-2),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 1. Before, we only selected based on observations. How can we select based on attributes? One idea is to introduce widgets outside of the visualization through which the user can define queries. Selections are then _bound_ to widgets, letting us use conditional encodings like before, but with respect to this new class of inputs.
 
@@ -47,7 +47,7 @@ robservable("@krisrs1128/week-3-2", include = 6, height = 325)
 ```
 
 
-2. Besides `menu` bindings, there are `checkbox`, `radio`, and `slider` inputs. If you revisit the gapminder visualization in [Lecture 1 - 3], you will see that the interaction was accomplished by binding a selection to a `slider` input.
+2. Besides `menu` bindings, there are `checkbox`, `radio`, and `slider` inputs. If you revisit the gapminder visualization in [Lecture 1-3](https://krisrs1128.github.io/stat479/posts/2021-01-16-week1-3/), you will see that the interaction was accomplished by binding a selection to a `slider` input.
 3. A selection can combine multiple bindings. For example, in the block below, we filter by both MPAA rating and genre. The only part of the code that is different is the definition of the `selection` object in the first few lines.
 
 ````js

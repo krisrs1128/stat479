@@ -17,7 +17,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording],  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_mxmjc2qy), [Notebook](https://observablehq.com/@krisrs1128/week-3-4), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 1. It is often useful to combine multi-view composition with dynamic queries.
 The basic idea is to (a) show different aspects of a dataset using different
