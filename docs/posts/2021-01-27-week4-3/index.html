@@ -2248,6 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
+<p><em><a href="https://r4ds.had.co.nz/tidy-data.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%204%20%5B3%5D%20Deriving%20Variables/1_b40dfhtt">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-3/week4-3.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidyr.tidyverse.org'>"tidyr"</a></span><span class='op'>)</span>
@@ -2315,13 +2316,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 6 China        2000 213766 1280428583 107.   </code></pre>
 </div>
 <ol start="7" type="1">
-<li>Sometimes, the variables of interest are functions of several rows. For example, perhaps we want to visualize averages of a variable across age groups. In this case, we can derive a summary across groups of rows using the `group_by</li>
-</ol>
-<ul>
-<li>summarise`.</li>
-</ul>
-<ol start="8" type="1">
-<li>For example, perhaps we want the average rate over both years.</li>
+<li><p>Sometimes, the variables of interest are functions of several rows. For example, perhaps we want to visualize averages of a variable across age groups. In this case, we can derive a summary across groups of rows using the <code>group_by</code>-followed-by-<code>summarise</code> pattern.</p></li>
+<li><p>For example, perhaps we want the average rate over both years.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">

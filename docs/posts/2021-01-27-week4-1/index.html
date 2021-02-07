@@ -2248,11 +2248,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
+<p><em><a href="https://r4ds.had.co.nz/tidy-data.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%204%20%5B1%5D%20Tidy%20Data/1_13526lye">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-1/week4-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidyr.tidyverse.org'>"tidyr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -2262,7 +2263,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p><img src="week4-1_files/tidy-1.png" /></p>
 <ol start="2" type="1">
 <li>For visualization, it is important that data be in tidy format. This is because (a) each visual mark will be associated with a row of the dataset and (b) properties of the visual marks will determined by values within the columns. A plot that is easy to create when the data are in tidy format might be very hard to create otherwise.</li>
-<li>The tidy data might seem like an idea so natural that it’s not worth teaching (let alone formalizing). However, exceptions are encountered frequently, and it’s important that you be able to spot them. Further, there are now many utiliities for “tidying” data, and they are worth becoming familiar with.</li>
+<li>The tidy data might seem like an idea so natural that it’s not worth teaching (let alone formalizing). However, exceptions are encountered frequently, and it’s important that you be able to spot them. Further, there are now many utilities for “tidying” data, and they are worth becoming familiar with.</li>
 <li>Here is an example of a tidy dataset.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
@@ -2283,9 +2284,9 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p>It is easy to visualize the tidy dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>table1</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>year</span>, y <span class='op'>=</span> <span class='va'>cases</span>, col <span class='op'>=</span> <span class='va'>country</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='op'>)</span>
+<pre><code><span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>table1</span>, <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>year</span>, y <span class='op'>=</span> <span class='va'>cases</span>, col <span class='op'>=</span> <span class='va'>country</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="week4-1_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
@@ -2293,7 +2294,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <ol start="5" type="1">
 <li><p>Below are three non-tidy versions of the same dataset. They are representative of more general classes of problems that may arise,</p>
 <ol type="a">
-<li>A variable might be implicitly stored within column names, rather than explicitly stored in its own column. here, the years are stored as column names. It’s not really possible to create the plot above using the data in this format.</li>
+<li>A variable might be implicitly stored within column names, rather than explicitly stored in its own column. Here, the years are stored as column names. It’s not really possible to create the plot above using the data in this format.</li>
 </ol></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
@@ -2363,16 +2364,16 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p>The trouble is that this variable has to be stored as a character; otherwise, we lose access to the original population and case variable. But, this makes the plot useless.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>table3</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>year</span>, y <span class='op'>=</span> <span class='va'>rate</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>group <span class='op'>=</span> <span class='va'>country</span><span class='op'>)</span><span class='op'>)</span>
+<pre><code><span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>table3</span>, <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>year</span>, y <span class='op'>=</span> <span class='va'>rate</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/ggplot2/man/aes.html'>aes</a></span><span class='op'>(</span>group <span class='op'>=</span> <span class='va'>country</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="week4-1_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
 <p>The next few lectures provide tools for addressing these three problems.</p>
 <ol start="6" type="1">
-<li>A few caveats are in order. It’s easy to become a tidy-data purist, and lose sight of the bigger data-analytic picture. To prevent that, first, remember that what is or is not tidy may be context dependent. Maybe you want to treat each week as an observation, rather than each day. Second, know that there are sometimes computational reasons to prefer non-tidy data (for example, “long” data often require more memory, since column names that were originally stored once now have to be copied onto each row).</li>
+<li>A few caveats are in order. It’s easy to become a tidy-data purist, and lose sight of the bigger data-analytic picture. To prevent that, first, remember that what is or is not tidy may be context dependent. Maybe you want to treat each week as an observation, rather than each day. Second, know that there are sometimes computational reasons to prefer non-tidy data. For example, “long” data often require more memory, since column names that were originally stored once now have to be copied onto each row. Certain statistical models are also sometimes best framed as matrix operations on non-tidy datasets.</li>
 </ol>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

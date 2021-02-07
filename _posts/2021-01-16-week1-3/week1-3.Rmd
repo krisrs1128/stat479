@@ -8,8 +8,7 @@ author:
     affiliation: UW Madison
 date: 01-27-2021
 output:
-  distill::distill_article:
-    self_contained: false
+  rmarkdown::pdf_document
 ---
 
 _[Reading](https://observablehq.com/@uwdata/data-types-graphical-marks-and-visual-encoding-channels?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/Week+1+%5B3%5D+Introduction+to+Vega-Lite/1_mm4yv2c9),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-16-week1-3/week1-3.Rmd),  [Notebook](https://observablehq.com/@krisrs1128/introduction-to-vega-lite)_

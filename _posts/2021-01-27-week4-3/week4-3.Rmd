@@ -12,6 +12,8 @@ output:
     self_contained: false
 ---
 
+_[Reading](https://r4ds.had.co.nz/tidy-data.html), [Recording](https://mediaspace.wisc.edu/media/Week%204%20%5B3%5D%20Deriving%20Variables/1_b40dfhtt), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-3/week4-3.Rmd)_
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
@@ -58,8 +60,8 @@ table3 %>%
 
 7. Sometimes, the variables of interest are functions of several rows. For
 example, perhaps we want to visualize averages of a variable across age groups.
-In this case, we can derive a summary across groups of rows using the `group_by
-+ summarise`.
+In this case, we can derive a summary across groups of rows using the
+`group_by`-followed-by-`summarise` pattern.
 
 8. For example, perhaps we want the average rate over both years.
 

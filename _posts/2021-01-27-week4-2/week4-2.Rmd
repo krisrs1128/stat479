@@ -11,6 +11,9 @@ output:
     self_contained: false
 ---
 
+_[Reading](https://r4ds.had.co.nz/tidy-data.html), [Recording](https://mediaspace.wisc.edu/media/Week%204%20%5B2%5D%20Pivoting/1_dp7cqka3), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-2/week4-2.Rmd)_
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
@@ -90,7 +93,7 @@ For reference, here is `table2` before pivoting.
 table2
 ```
 
-Now, we spread the `cases` and `pouplation` variables into their own columns.
+Now, we spread the `cases` and `population` variables into their own columns.
 
 ```{r}
 table2 %>%

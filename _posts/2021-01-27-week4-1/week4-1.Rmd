@@ -11,6 +11,9 @@ output:
     self_contained: false
 ---
 
+_[Reading](https://r4ds.had.co.nz/tidy-data.html), [Recording](https://mediaspace.wisc.edu/media/Week%204%20%5B1%5D%20Tidy%20Data/1_13526lye), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-1/week4-1.Rmd)_
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
@@ -25,7 +28,7 @@ theme_set(theme_bw())
 ![](week4-1_files/tidy-1.png)
 
 2. For visualization, it is important that data be in tidy format. This is because (a) each visual mark will be associated with a row of the dataset and (b) properties of the visual marks will determined by values within the columns. A plot that is easy to create when the data are in tidy format might be very hard to create otherwise.
-3. The tidy data might seem like an idea so natural that it’s not worth teaching (let alone formalizing). However, exceptions are encountered frequently, and it’s important that you be able to spot them. Further, there are now many utiliities for "tidying" data, and they are worth becoming familiar with.
+3. The tidy data might seem like an idea so natural that it’s not worth teaching (let alone formalizing). However, exceptions are encountered frequently, and it’s important that you be able to spot them. Further, there are now many utilities for "tidying" data, and they are worth becoming familiar with.
 4. Here is an example of a tidy dataset.
 
 ```{r}
@@ -44,7 +47,7 @@ ggplot(table1, aes(x = year, y = cases, col = country)) +
 representative of more general classes of problems that may arise,
 
 	a. A variable might be implicitly stored within column names, rather than
-	explicitly stored in its own column. here, the years are stored as column
+	explicitly stored in its own column. Here, the years are stored as column
 	names. It's not really possible to create the plot above using the data in this
 	format.
 
@@ -83,6 +86,7 @@ The next few lectures provide tools for addressing these three problems.
 sight of the bigger data-analytic picture. To prevent that, first, remember that
 what is or is not tidy may be context dependent. Maybe you want to treat each
 week as an observation, rather than each day. Second, know that there are
-sometimes computational reasons to prefer non-tidy data (for example, "long"
+sometimes computational reasons to prefer non-tidy data. For example, "long"
 data often require more memory, since column names that were originally stored
-once now have to be copied onto each row).
+once now have to be copied onto each row. Certain statistical models are also
+sometimes best framed as matrix operations on non-tidy datasets.
