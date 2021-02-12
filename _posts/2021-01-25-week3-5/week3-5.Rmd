@@ -16,7 +16,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording](https://mediaspace.wisc.edu/media/1_i9qfxljb),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_i9qfxljb),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 1. These notes consider real-world systems that use dynamic linking. They are less practical most of the notes in this course, but there are approaches that are good to know about, and which you might want to learn about from a hands-on point of view in your future projects.
 2. **Overview + Detail**: Google Maps. We can see details of a location without losing context of the surrounding area.

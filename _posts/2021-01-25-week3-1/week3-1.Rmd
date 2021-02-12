@@ -17,7 +17,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://rafalab.github.io/dsbook/ggplot2.html), [Recording](https://mediaspace.wisc.edu/media/1_z1qdziag), [Notebook](https://observablehq.com/@krisrs1128/week-3-1), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_z1qdziag), [Notebook](https://observablehq.com/@krisrs1128/week-3-1), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
 
 1. A major difference between doing visualization on paper and on computers is that visualization on computers can make use of interactivity. An interactive visualization is one that changes in response to user cues. This allows a display to update in a way that provides a visual comparison that was not available in a previous view. In this way, interactive visualization allows users to answer a sequence of questions.
 2. Selection, both of observations and of attributes, is fundamental to interactive visualization. This is because it precedes other interactive operations: you can select a subset of observations to filter down to or attributes to coordinate across multiple displays (we consider both types of interactivity in later lectures).
