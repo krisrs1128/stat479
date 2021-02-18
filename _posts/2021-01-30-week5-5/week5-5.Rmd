@@ -20,11 +20,10 @@ _[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recordin
 
 ```{r}
 library("cluster")
-library("dplyr")
 library("ggplot2")
 library("readr")
 library("stringr")
-library("utils")
+library("dplyr")
 theme_set(theme_minimal())
 ```
 
@@ -95,7 +94,8 @@ certainly a mistake in how the data were merged.].
 
 ```{r}
 movies %>%
-  filter(Title == "Alice in Wonderland")
+  filter(Title == "Alice in Wonderland") %>%
+  select(Title, Release_Date, IMDB_Rating, IMDB_Votes)
 ```
 
 7.  To automatically remove these remakes / sequels from our candidate list,
@@ -113,7 +113,8 @@ movies %>%
   filter(!is.na(year)) %>%
   group_by(cluster, year) %>%
   mutate(conditional_count = n()) %>%
-  filter(conditional_count > 1)
+  filter(conditional_count > 1) %>%
+  select(Title, year, cluster)
 ```
 
 ## Minor Tricks
