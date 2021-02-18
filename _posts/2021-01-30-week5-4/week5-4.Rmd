@@ -11,6 +11,11 @@ output:
     self_contained: false
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+
 _[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd)_
 
 ```{r}

@@ -2250,13 +2250,26 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div class="d-article">
 <p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://svn.r-project.org/R-packages/trunk/cluster'>"cluster"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://stringr.tidyverse.org'>"stringr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"utils"</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <ol type="1">
 <li><p>Entity resolution<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> is the process of resolving field values that refer to the same thing, but which are stored using different names. For example, a column might include entries for “UW Madison” and “University of Wisconsin - Madison.” This often arises when a dataset is made by linking a few different sources, combining different time periods of the same source, or involved manual text entry.</p></li>
 <li><p>One simple way to detect candidates for unification is to cluster all the strings using an appropriate distance. The Profiler paper uses the string edit distance to decide whether two strings are similar. For example, two insertions to the first string below would give us the second string, so the edit distance is 2.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/utils/adist.html'>adist</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"abc"</span>, <span class='st'>"abcde"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 <pre><code>     [,1] [,2]
 [1,]    0    2
 [2,]    2    0</code></pre>
@@ -2265,27 +2278,61 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Like in the Profiler paper, we’re going to illustrate this by looking for potentially duplicated movies in the movies dataset.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='va'>movies</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/txa56mux3ca2f8w2zmc9dq7yunljd1ak.csv"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>Title</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <ol start="4" type="1">
 <li>The block below computes the string distance between all pairs of movie titles. We then extract all clusters of movie titles whose maximum within-cluster distance is less than or equal to 3.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='va'>D</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/adist.html'>adist</a></span><span class='op'>(</span><span class='va'>movies</span><span class='op'>$</span><span class='va'>Title</span><span class='op'>)</span>
+<span class='va'>tree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/hclust.html'>hclust</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>as.dist</a></span><span class='op'>(</span><span class='va'>D</span><span class='op'>)</span>, method <span class='op'>=</span> <span class='st'>"complete"</span><span class='op'>)</span>
+<span class='va'>movies</span><span class='op'>$</span><span class='va'>cluster</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cutree.html'>cutree</a></span><span class='op'>(</span><span class='va'>tree</span>, h <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <ol start="5" type="1">
 <li>The potential duplicates are those clusters that have more than one element. Let’s derive the size of each cluster and visualize a few of the clusters. We can see that we’ve picked out sequels, movies with short names, and a few exact matches.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='va'>movies</span> <span class='op'>&lt;-</span> <span class='va'>movies</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    cluster_ix <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>, <span class='co'># indexes movies in each cluster from 1 .. cluster_size</span>
+    cluster_size <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span>
+  <span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>movies</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>cluster_size</span> <span class='op'>&gt;</span> <span class='fl'>1</span>, <span class='va'>cluster</span> <span class='op'>&lt;</span> <span class='fl'>100</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/reorder.factor.html'>reorder</a></span><span class='op'>(</span><span class='va'>cluster</span>, <span class='op'>-</span><span class='va'>cluster_size</span><span class='op'>)</span>, x <span class='op'>=</span> <span class='va'>cluster_ix</span>, label <span class='op'>=</span> <span class='va'>Title</span><span class='op'>)</span>,
+    size <span class='op'>=</span> <span class='fl'>4</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.1</span>, <span class='fl'>0.1</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 <p><img src="week5-5_files/figure-html5/unnamed-chunk-6-1.png" width="1152" /></p>
 </div>
 <ol start="6" type="1">
 <li>It seems like many of the potential duplicates are probably not mistakes. For example, Alice in Wonderland refers to two movies, the 1951 original and a 2010 remake<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>movies</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>Title</span> <span class='op'>==</span> <span class='st'>"Alice in Wonderland"</span><span class='op'>)</span>
+</code></pre>
+</div>
 <pre><code># A tibble: 2 x 19
 # Groups:   cluster [1]
   Title US_Gross Worldwide_Gross US_DVD_Sales Production_Budg…
@@ -2303,6 +2350,17 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>To automatically remove these remakes / sequels from our candidate list, let’s filter out movies that didn’t appear in the same year. This is a special case of the general idea of “conditional deduplication” – you can simplify your entity resolution candidates if you can first match by a few other fields. In the end, it doesn’t seem like there are any true duplicates. The closest we get is that Tarzan and Taxman both came out in 1999…</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>movies</span> <span class='op'>&lt;-</span> <span class='va'>movies</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>year <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_extract.html'>str_extract</a></span><span class='op'>(</span><span class='va'>Release_Date</span>, <span class='st'>"19[0-9]+"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>movies</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>year</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>cluster</span>, <span class='va'>year</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>conditional_count <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>conditional_count</span> <span class='op'>&gt;</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
 <pre><code># A tibble: 6 x 21
 # Groups:   cluster, year [3]
   Title US_Gross Worldwide_Gross US_DVD_Sales Production_Budg…
@@ -2326,15 +2384,32 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li><p>For example, here are two Gaussian blobs. Looking at a scatterplot, it looks like one blob.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>1e6</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>0.05</span> <span class='op'>*</span> <span class='va'>n</span>, sd <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>z</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X1</span>, y <span class='op'>=</span> <span class='va'>X2</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 <p><img src="week5-5_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
 </div>
 <ol start="10" type="1">
 <li>But if you binned the plot, the second blob appears. It’s not possible to perceive 100K points on a screen anyways, so this visualization is much more meaningful.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bin2d.html'>geom_bin2d</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X1</span>, y <span class='op'>=</span> <span class='va'>X2</span><span class='op'>)</span>, binwidth <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_b</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
 <p><img src="week5-5_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
 </div>
 <ol start="11" type="1">
