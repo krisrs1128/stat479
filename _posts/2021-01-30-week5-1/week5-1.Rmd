@@ -11,6 +11,8 @@ output:
     self_contained: false
 ---
 
+_[Reading](https://naniar.njtierney.com/articles/getting-started-w-naniar.html), [Recording](), [Rmarkdown]()_
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
