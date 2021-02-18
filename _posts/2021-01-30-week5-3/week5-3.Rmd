@@ -18,11 +18,12 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 ```
 
 ```{r}
-library("dplyr")
-library("tidyr")
-library("ggplot2")
-library("stringr")
 library("MASS")
+library("dplyr")
+library("ggplot2")
+library("purrr")
+library("stringr")
+library("tidyr")
 theme_set(theme_minimal())
 set.seed(123)
 ```
@@ -74,7 +75,6 @@ make_dataset <- function(n = 2000, p = 0.95, sigma = 2) {
   data.frame(mu_hat = mean(x), sigma_hat = sd(x), med_hat = median(x), iqr_hat = IQR(x))
 }
 
-library("purrr")
 x_sim <- map_dfr(1:1000, ~ make_dataset(100, 0.9), .id = "replicate")
 ggplot(x_sim) + 
   geom_point(aes(x = mu_hat, y = sigma_hat))

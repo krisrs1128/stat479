@@ -40,7 +40,7 @@ explanation -- these outlier movies were released outside of the US. In
 the full system, selecting bins in the left hand plot highlights the countries
 that contribute to that bin in orange color.
 
-![]movies.png)
+![](movies.png)
 
 3. How can we know which views to coordinate? Ideally, there would be a
 systematic way to search through promising views, without relying solely on
