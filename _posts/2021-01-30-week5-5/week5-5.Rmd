@@ -11,7 +11,7 @@ output:
     self_contained: false
 ---
 
-_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](), [Rmarkdown]()_
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd)_
 
 ```{r}
 library("cluster")

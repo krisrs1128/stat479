@@ -85,38 +85,38 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: Missing Data (Part 1)</title>
+<title>Statistical Data Visualization: Detecting Outliers</title>
 
-<meta property="description" itemprop="description" content="A look at how visualization can help characterize missing data."/>
+<meta property="description" itemprop="description" content="Techniques to identify extreme values."/>
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-02-21"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-02-21"/>
+<meta property="article:published" itemprop="datePublished" content="2021-02-23"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-02-23"/>
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: Missing Data (Part 1)"/>
+<meta property="og:title" content="Statistical Data Visualization: Detecting Outliers"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="A look at how visualization can help characterize missing data."/>
+<meta property="og:description" content="Techniques to identify extreme values."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: Missing Data (Part 1)"/>
-<meta property="twitter:description" content="A look at how visualization can help characterize missing data."/>
+<meta property="twitter:title" content="Statistical Data Visualization: Detecting Outliers"/>
+<meta property="twitter:description" content="Techniques to identify extreme values."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Missing Data (Part 1)"]},{"type":"character","attributes":{},"value":["A look at how visualization can help characterize missing data."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["02-21-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Detecting Outliers"]},{"type":"character","attributes":{},"value":["Techniques to identify extreme values."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["02-23-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week5-1_files/anchor-4.2.2/anchor.min.js","week5-1_files/bowser-1.9.3/bowser.min.js","week5-1_files/distill-2.2.21/template.v2.js","week5-1_files/figure-html5/unnamed-chunk-2-1.png","week5-1_files/figure-html5/unnamed-chunk-3-1.png","week5-1_files/figure-html5/unnamed-chunk-4-1.png","week5-1_files/figure-html5/unnamed-chunk-5-1.png","week5-1_files/header-attrs-2.6/header-attrs.js","week5-1_files/jquery-1.11.3/jquery.min.js","week5-1_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week5-3_files/anchor-4.2.2/anchor.min.js","week5-3_files/bowser-1.9.3/bowser.min.js","week5-3_files/distill-2.2.21/template.v2.js","week5-3_files/figure-html5/unnamed-chunk-2-1.png","week5-3_files/figure-html5/unnamed-chunk-3-1.png","week5-3_files/figure-html5/unnamed-chunk-4-1.png","week5-3_files/figure-html5/unnamed-chunk-5-1.png","week5-3_files/figure-html5/unnamed-chunk-6-1.png","week5-3_files/figure-html5/unnamed-chunk-7-1.png","week5-3_files/header-attrs-2.6/header-attrs.js","week5-3_files/jquery-1.11.3/jquery.min.js","week5-3_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Missing Data (Part 1)","description":"A look at how visualization can help characterize missing data.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-21T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
+{"title":"Detecting Outliers","description":"Techniques to identify extreme values.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-23T00:00:00.000-06:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,82 +2235,145 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Missing Data (Part 1)</h1>
+<h1>Detecting Outliers</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>A look at how visualization can help characterize missing data.</p></p>
+<p><p>Techniques to identify extreme values.</p></p>
 </div>
 
 <div class="d-byline">
   Kris Sankaran  (UW Madison)
   
-<br/>02-21-2021
+<br/>02-23-2021
 </div>
 
 <div class="d-article">
-<p><em><a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-1/week5-1.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-3/week5-3.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidyr.tidyverse.org'>"tidyr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/njtierney/naniar'>"naniar"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://github.com/hms-dbmi/UpSetR'>"UpSetR"</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://stringr.tidyverse.org'>"stringr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://www.stats.ox.ac.uk/pub/MASS4/'>"MASS"</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
 <ol type="1">
-<li><p>Visualization is about more than simply communicating results at the end of a data analysis. It can be used to improve the process of data analysis itself. This is the subject of this week’s notes.</p></li>
-<li><p>When data science workflows are opaque — when sequences of commands are followed blindly — that’s when mistakes are most likely to be made^[Prof. Broman has noted a compendium of <a href="http://www.eusprig.org/horror-stories.htm">horror stories</a>. Visualization can help improve the transparency of different steps across the workflow.</p></li>
-<li><p>To make this idea concrete, let’s consider missing data. We can encounter missing data for a variety of reasons. Perhaps a sensor was broken or no response was submitted. Maybe several datasets were merged, but some fields are only present in the more recent versions.</p></li>
-<li><p>If there are missing data, and if we fail to account for it, we might accidentally draw incorrect conclusions. Or, if we are going to attempt to impute the missing values, we should verify the assumptions of whatever imputation algorithm we intend to use.</p></li>
-<li><p>A first plot to make is to look at the proportion of missing data within each field. Let’s consider the <code>riskfactors</code> data, which is a subset from the <a href="https://www.rdocumentation.org/packages/naniar/versions/0.6.0/topics/riskfactors">Behavioral Risk Factor Surveillance System</a>.</p></li>
+<li><p>Extreme values are a common data quality issue. They can either be genuine extreme values or measurement errors — in either case, it’s important to identify them and potentially account for them.</p></li>
+<li><p>Visualization can support detection and characterization of anomalies. We’ll review the ideas in the Profiler paper. That work is trying to set the foundation for more complex systems for data cleaning. We’ll look at a few of the interesting, more self-contained ideas within the paper, and demonstrate them in simple examples.</p></li>
+<li><p>How can we detect anomalies in numerical data? A first idea is to use <span class="math inline">\(z\)</span>-scores. For column <span class="math inline">\(j\)</span>, estimate the mean <span class="math inline">\(\hat{\mu}_{j}\)</span> and standard deviation <span class="math inline">\(\hat{\sigma}_{j}\)</span>. For each observation <span class="math inline">\(i\)</span>, it’s anomalousness can be summarized by <span class="math inline">\(z_{ij} := \frac{x_{ij} - \hat{\mu}_{j}}{\hat{\sigma}_{j}}\)</span>. This is illustrated below on a normally distributed dataset that has been contaminated with a few outliers from a <span class="math inline">\(t\)</span> distribution.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/naniar/man/gg_miss_var.html'>gg_miss_var</a></span><span class='op'>(</span><span class='va'>riskfactors</span><span class='op'>)</span>
+<pre><code><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>0.95</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span>, <span class='fl'>2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/TDist.html'>rt</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='op'>(</span><span class='fl'>1</span> <span class='op'>-</span> <span class='va'>p</span><span class='op'>)</span>, df <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>z</span> <span class='op'>&lt;-</span> <span class='op'>(</span><span class='va'>x</span> <span class='op'>-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/stats/sd.html'>sd</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x</span>, z <span class='op'>=</span> <span class='va'>z</span>, z_ <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>z</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span>binwidth <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_rug.html'>geom_rug</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='va'>x</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>z_</span> <span class='op'>&gt;</span> <span class='fl'>2.5</span><span class='op'>)</span>, 
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>z_</span><span class='op'>)</span>,
+    size <span class='op'>=</span> <span class='fl'>1.5</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_color_gradient2</a></span><span class='op'>(</span>low <span class='op'>=</span> <span class='st'>"#fffbfc"</span>, high <span class='op'>=</span> <span class='st'>"#c50f2c"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week5-1_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+</div>
+<ol start="5" type="1">
+<li>There is a potential issue with only using z-scores. The presence of anomalies can distort mean and variance estimates. For example, if the standard deviation is distorted, true outliers can be hidden away. To illustrate, consider the means and standard deviations estimated in a variant of the simulation above. The true means and standard deviations are 4 and 2.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>make_dataset</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>n</span> <span class='op'>=</span> <span class='fl'>2000</span>, <span class='va'>p</span> <span class='op'>=</span> <span class='fl'>0.95</span>, <span class='va'>sigma</span> <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span>, <span class='fl'>0</span>, <span class='va'>sigma</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/TDist.html'>rt</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='op'>(</span><span class='fl'>1</span> <span class='op'>-</span> <span class='va'>p</span><span class='op'>)</span>, df <span class='op'>=</span> <span class='fl'>2</span> <span class='op'>*</span> <span class='va'>sigma</span> <span class='op'>^</span> <span class='fl'>2</span> <span class='op'>/</span> <span class='op'>(</span><span class='va'>sigma</span> <span class='op'>^</span> <span class='fl'>2</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>mu_hat <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, sigma_hat <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/sd.html'>sd</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, med_hat <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, iqr_hat <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/IQR.html'>IQR</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://purrr.tidyverse.org'>"purrr"</a></span><span class='op'>)</span>
+<span class='va'>x_sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>1000</span>, <span class='op'>~</span> <span class='fu'>make_dataset</span><span class='op'>(</span><span class='fl'>100</span>, <span class='fl'>0.9</span><span class='op'>)</span>, .id <span class='op'>=</span> <span class='st'>"replicate"</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x_sim</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>mu_hat</span>, y <span class='op'>=</span> <span class='va'>sigma_hat</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
 <ol start="6" type="1">
-<li>This histogram doesn’t tell us whether missing data tend to co-occur across a few different dimensions. For that, we can count the different missingness patterns.</li>
+<li>The fact that there are outliers can itself invalidate our <span class="math inline">\(z\)</span>-scores. A more robust alternative is to compare each point to the median and interquartile range (IQR, the difference between the 3rd and 1st quartile). Indeed, for the dataset above, the comparable median and IQR estimates are given below. Note that they are much more stable.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/naniar/man/gg_miss_upset.html'>gg_miss_upset</a></span><span class='op'>(</span><span class='va'>riskfactors</span><span class='op'>)</span>
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x_sim</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>med_hat</span>, y <span class='op'>=</span> <span class='va'>iqr_hat</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week5-1_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
-</div>
-<ol start="7" type="1">
-<li>Neither of these approaches tell us whether missing data tend to occur in clumps along rows of the data. We might expect this if our sensor broke down within a particular time interval, for example. For this, we can make a type of heatmap across all the data.</li>
-</ol>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='http://visdat.njtierney.com//reference/vis_miss.html'>vis_miss</a></span><span class='op'>(</span><span class='va'>riskfactors</span><span class='op'>)</span>
-</code></pre>
-</div>
-<p><img src="week5-1_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
-</div>
-<p>There doesn’t seem to be much clumping in that dataset, but consider the <code>airquality</code> dataset below, whose rows are sorted by time.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='http://visdat.njtierney.com//reference/vis_miss.html'>vis_miss</a></span><span class='op'>(</span><span class='va'>airquality</span><span class='op'>)</span>
-</code></pre>
-</div>
-<p><img src="week5-1_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
 </div>
 <ol start="8" type="1">
-<li>This visualization actually has a formal name, the shadow matrix<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, and it comes up in theoretical analysis of missing data.</li>
+<li>What about multivariate anomalies? They can be tricky to detect because a point can appear typical from a few dimensions viewed independently, but become outlying when the dimensions are viewed together. Consider the example below, where the red point blends into the histograms for either dimension viewed on its own. The data are generated from a bivariate normal distribution, but with one red outlying point at (1.5, -1.5). The point clearly stands out in two dimensions.</li>
 </ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Sigma</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>0.9</span>, <span class='fl'>0.9</span>, <span class='fl'>1</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/MASS/man/mvrnorm.html'>mvrnorm</a></span><span class='op'>(</span><span class='fl'>500</span>, mu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span>, Sigma <span class='op'>=</span> <span class='va'>Sigma</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1.5</span>, <span class='op'>-</span><span class='fl'>1.5</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"normal"</span>, <span class='fl'>500</span><span class='op'>)</span>, <span class='st'>"anomaly"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X1</span>, y <span class='op'>=</span> <span class='va'>X2</span>, col <span class='op'>=</span> <span class='va'>type</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_color_manual</a></span><span class='op'>(</span>values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"red"</span>, <span class='st'>"black"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+</div>
+<p>However, if we had only looked at one-dimensional <span class="math inline">\(z\)</span>-scores, we would have completely missed the anomaly.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>x_long</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span><span class='op'>(</span><span class='va'>X1</span><span class='op'>:</span><span class='va'>X2</span>, names_to <span class='op'>=</span> <span class='st'>"dimension"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x_long</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>value</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span>binwidth <span class='op'>=</span> <span class='fl'>0.4</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_rug.html'>geom_rug</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='va'>x_long</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"anomaly"</span><span class='op'>)</span>, 
+    col <span class='op'>=</span> <span class='st'>"red"</span>, size <span class='op'>=</span> <span class='fl'>2</span> 
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>dimension</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>panel.border <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_rect</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='cn'>NA</span>, size <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+</div>
+<ol start="8" type="1">
+<li>To be able to detect these types of multidimensional outliers, the Profiler paper uses the Mahalanobis distance. This distance works by estimating a jointly normal distribution across dimensions and then looking for points that would have low probability under the estimate distribution.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>mu_hat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>, <span class='fl'>2</span>, <span class='va'>mean</span><span class='op'>)</span>
+<span class='va'>sigma_hat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cov</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>x</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>D2 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/mahalanobis.html'>mahalanobis</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>]</span>, <span class='va'>mu_hat</span>, <span class='va'>sigma_hat</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X1</span>, y <span class='op'>=</span> <span class='va'>X2</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>D2</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_color_gradient2</a></span><span class='op'>(</span>low <span class='op'>=</span> <span class='st'>"#fffbfc"</span>, high <span class='op'>=</span> <span class='st'>"#c50f2c"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-3_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
-<section class="footnotes" role="doc-endnotes">
-<hr />
-<ol>
-<li id="fn1" role="doc-endnote"><p>Which when you think about it sounds pretty dystopian / scifi.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2318,6 +2381,15 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->

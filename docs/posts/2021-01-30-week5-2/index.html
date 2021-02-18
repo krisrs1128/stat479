@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-2/week5-2.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://www.stats.ox.ac.uk/pub/MASS4/'>"MASS"</a></span><span class='op'>)</span>
@@ -2279,16 +2279,16 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code># A tibble: 500 x 3
      value value_NA imputed
      &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt;
- 1 -0.804  !NA      -0.804 
- 2  0.353  !NA       0.353 
- 3  1.20   !NA       1.20  
- 4  0.550  !NA       0.550 
- 5  0.692  !NA       0.692 
- 6  2.00   !NA       2.00  
- 7  0.597  !NA       0.597 
- 8 -0.539  !NA      -0.539 
- 9  0.0303 !NA       0.0303
-10  0.234  !NA       0.234 
+ 1 -0.811  !NA      -0.811 
+ 2 NA      NA       -0.0233
+ 3 -0.694  !NA      -0.694 
+ 4 -0.158  !NA      -0.158 
+ 5 -0.692  !NA      -0.692 
+ 6  0.0677 !NA       0.0677
+ 7  0.189  !NA       0.189 
+ 8 NA      NA       -0.0233
+ 9  0.200  !NA       0.200 
+10  0.117  !NA       0.117 
 # … with 490 more rows</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
@@ -2342,7 +2342,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p><img src="week5-2_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
 <ol start="7" type="1">
-<li>But how can we tell if a multiple imputation method is effective? We can plot the data, making sure to distinguish between true and imputed observations.
+<li>But how can we tell if a multiple imputation method is effective? We can plot the data, making sure to distinguish between true and imputed observations.</li>
+</ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>aq_imputed</span><span class='op'>)</span> <span class='op'>+</span> 
@@ -2350,8 +2351,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<img src="week5-2_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></li>
-</ol>
+<p><img src="week5-2_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
 <ol start="8" type="1">
 <li><p>Finally, let’s ask, why are the data missing in the first place? A natural idea is to try to find characteristics of observations that are predictive of their having missing values for some particular field. For example, maybe respondents within a given age group always leave a question blank. To this end, a well chosen plot can be very suggestive.</p></li>
