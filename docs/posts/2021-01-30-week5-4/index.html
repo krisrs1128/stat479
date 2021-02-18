@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["movies.png","week5-5_files/figure-html5/unnamed-chunk-2-1.png","week5-5_files/figure-html5/unnamed-chunk-6-1.png"]}
+  {"type":"character","attributes":{},"value":["movies.png","week5-4_files/figure-html5/unnamed-chunk-2-1.png","week5-4_files/figure-html5/unnamed-chunk-6-1.png","week5-5.html","week5-5_files/anchor-4.2.2/anchor.min.js","week5-5_files/bowser-1.9.3/bowser.min.js","week5-5_files/distill-2.2.21/template.v2.js","week5-5_files/figure-html5/unnamed-chunk-2-1.png","week5-5_files/figure-html5/unnamed-chunk-6-1.png","week5-5_files/header-attrs-2.6/header-attrs.js","week5-5_files/jquery-1.11.3/jquery.min.js","week5-5_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2248,21 +2248,38 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="sourceCode">
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/topepo/caret/'>"caret"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/gbm-developers/gbm'>"gbm"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://wilkelab.org/ggridges/'>"ggridges"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://lubridate.tidyverse.org'>"lubridate"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://docs.ropensci.org/skimr'>"skimr"</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <ol type="1">
 <li><p>If we uncover extreme values, it’s natural to ask why they arise. The most reliable way to find out is to study how the data were collected. Often, though, through a little detective work based on the rest of the available data, we can form reasonable hypotheses for the source of extreme values.</p></li>
 <li><p>The profiler paper approaches this by coordinating views. On the left, a binned scatterplot shows the relationship between Global (<span class="math inline">\(x\)</span>-axis) and US (<span class="math inline">\(y\)</span>-axis) gross product for movies in the IMDB dataset. There seem to be a few outliers along the bottom of the scatterplot. These are movies with high Global gross but which had low revenue in the US. At first, we might suspect that these are errors. However, linking the scatterplot with the map on the right gives a explanation – these outlier movies were released outside of the US. In the full system, selecting bins in the left hand plot highlights the countries that contribute to that bin in orange color.</p></li>
 </ol>
-<p>[]movies.png)</p>
+<p><img src="movies.png" /></p>
 <ol start="3" type="1">
 <li><p>How can we know which views to coordinate? Ideally, there would be a systematic way to search through promising views, without relying solely on intuition. The Profiler paper suggests a criterion based on mutual information. We will not discuss this specific proposal, since I do not want us to get side-tracked learning about information theory. Instead, we will use a simpler (and I think more practical) alternative based on predictability.</p></li>
 <li><p>We will illustrate the idea with a dataset of rail tickets in Spain<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Each row shows a train trip, along with its date, the available seats, and an associated fare. A histogram of trip duration reveals some outliers – some trips take more than 10 hours.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week5-5_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='va'>trips</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/fmag4vyhqad1sdb76aphukkumq2z2yp2.csv"</span><span class='op'>)</span> <span class='co'># give it a minute, it's a large file</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>trips</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>duration</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span>bins <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-4_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
 </div>
 <ol start="5" type="1">
 <li>What might be behind these long trips? A few hypotheses come to mind,</li>
@@ -2277,6 +2294,10 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Let’s see what additional measurements are available to us, to see whether they might help us come up with a satisfactory explanation. It seems like we have origin / destination and date variables, but not much else. Note the one variable (<code>seats</code>) that is entirely missing.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://docs.ropensci.org/skimr/reference/skim.html'>skim</a></span><span class='op'>(</span><span class='va'>trips</span><span class='op'>)</span>
+</code></pre>
+</div>
 <table>
 <caption><span id="tab:unnamed-chunk-3">Table 1: </span>Data summary</caption>
 <tbody>
@@ -2565,28 +2586,67 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li><p>Applying this idea to the train trips example, let’s extract some features that might be predictive of whether a trip took more than 6 hours. We put this in the <code>x</code> data.frame. We put an indicator of whether the trip is 6 or more hours in the <code>y</code> vector.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>trips</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate_all.html'>mutate_at</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/vars.html'>vars</a></span><span class='op'>(</span><span class='va'>destination</span>, <span class='va'>origin</span>, <span class='va'>fare</span>, <span class='va'>vehicle_type</span>, <span class='va'>vehicle_class</span><span class='op'>)</span>, 
+    <span class='va'>as.factor</span>
+  <span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    month <span class='op'>=</span> <span class='fu'><a href='http://lubridate.tidyverse.org/reference/month.html'>month</a></span><span class='op'>(</span><span class='va'>departure</span><span class='op'>)</span>,
+    hour <span class='op'>=</span> <span class='fu'><a href='http://lubridate.tidyverse.org/reference/hour.html'>hour</a></span><span class='op'>(</span><span class='va'>departure</span><span class='op'>)</span>,
+  <span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>destination</span>, <span class='va'>origin</span>, <span class='va'>month</span>, <span class='va'>hour</span>, <span class='va'>fare</span>, <span class='va'>vehicle_type</span>, <span class='va'>vehicle_class</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='op'>)</span>
 
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>trips</span><span class='op'>$</span><span class='va'>duration</span> <span class='op'>&gt;</span> <span class='fl'>6</span><span class='op'>)</span>
+</code></pre>
+</div>
 </div>
 <ol start="10" type="1">
 <li>Now, we fit a model that predicts <code>y</code> based on <code>x</code>. We’ll subsample rows so that it doesn’t take too long – our goal is visualization, not prediction performance. We are using the <code>caret</code> package to run the model, because it provides an interface to many potential prediction models. Finally, the <code>varImp</code> command summarizes how important each variable was for the eventual prediction.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>ix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>, <span class='fl'>1000</span><span class='op'>)</span>
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>ix</span>, <span class='op'>]</span>, y <span class='op'>=</span> <span class='va'>y</span><span class='op'>[</span><span class='va'>ix</span><span class='op'>]</span>, method <span class='op'>=</span> <span class='st'>"gbm"</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/caret/man/varImp.html'>varImp</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+</code></pre>
+</div>
 <pre><code>gbm variable importance
 
               Overall
 vehicle_type  100.000
-origin          3.909
-destination     2.496
-hour            1.828
-vehicle_class   1.662
-fare            0.449
+origin          4.671
+destination     3.735
+fare            2.204
+hour            1.799
+vehicle_class   0.575
 month           0.000</code></pre>
 </div>
 <ol start="11" type="1">
 <li>It seems that <code>vehicle_type</code> is by far the most predictive variable. To see its relationship with trip duration, let’s use ridge lines. We create separate histograms split according <code>vehicle_type</code>. We’ll also split histograms within each vehicle type according to origin city, since this was the second most important variable.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="week5-5_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<div class="sourceCode">
+<pre><code><span class='co'># reorder for the vehicle types</span>
+<span class='va'>vehicle_order</span> <span class='op'>&lt;-</span> <span class='va'>trips</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>vehicle_type</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>mduration <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>duration</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>mduration</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='op'>(</span><span class='va'>vehicle_type</span><span class='op'>)</span>
+
+<span class='va'>trips</span> <span class='op'>&lt;-</span> <span class='va'>trips</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>vehicle_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>vehicle_type</span>, levels <span class='op'>=</span> <span class='va'>vehicle_order</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='co'># make the ridge line plot</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>trips</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>duration</span>, y <span class='op'>=</span> <span class='va'>vehicle_type</span>, fill <span class='op'>=</span> <span class='va'>origin</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://wilkelab.org/ggridges/reference/geom_density_ridges.html'>geom_density_ridges</a></span><span class='op'>(</span>alpha <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='st'>"Vehicle Type"</span>, x <span class='op'>=</span> <span class='st'>"Duration"</span>, fill <span class='op'>=</span> <span class='st'>"Origin City"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_fill_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week5-4_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
 <ol start="12" type="1">
 <li><p>This is a nice explanation. A few of the <code>vehicle_types</code>, like AVE and ALVIA, correspond to high speed express trains. The regional lines, like MD and R Express, tend to take longer to reach their destination. Within a particular type of train, the duration is related to the origin city, likely because that determines the distance between origin and destination.</p></li>
