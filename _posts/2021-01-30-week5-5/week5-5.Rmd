@@ -16,7 +16,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 ```
 
 
-_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd)_
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B5%5D%20Other%20Tricks%20from%20Profiler/1_67ag90bm), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd)_
 
 ```{r}
 library("cluster")
@@ -102,12 +102,13 @@ movies %>%
 let's filter out movies that didn't appear in the same year. This is a special
 case of the general idea of "conditional deduplication" -- you can simplify your
 entity resolution candidates if you can first match by a few other fields. In
-the end, it doesn't seem like there are any true duplicates. The closest we get
-is that Tarzan and Taxman both came out in 1999...
+the end, it doesn't seem like there are any true duplicates, though it is quite
+a coincidence that "Diary of the Dead" and "Day of the Dead" both came out in
+2008.
 
 ```{r}
 movies <- movies %>%
-  mutate(year = str_extract(Release_Date, "19[0-9]+"))
+  mutate(year = str_extract(Release_Date, "[0-9]+$"))
 
 movies %>%
   filter(!is.na(year)) %>%

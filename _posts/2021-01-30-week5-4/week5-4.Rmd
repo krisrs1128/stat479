@@ -1,7 +1,7 @@
 ---
-title: "Characterizing Anomalies"
+title: "Characterizing Outliers"
 description: |
-  Which columns might help us understand anomalies?
+  Which columns might help us understand extreme values?
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -16,17 +16,17 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 ```
 
 
-_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd)_
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B4%5D%20Characterizing%20Outliers/1_uj49qt29), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd)_
 
 ```{r}
 library("caret")
-library("dplyr")
 library("gbm")
 library("ggplot2")
 library("ggridges")
 library("lubridate")
 library("readr")
 library("skimr")
+library("dplyr")
 theme_set(theme_minimal())
 ```
 
@@ -91,7 +91,7 @@ more columns. Instead, we'll consider a more generally useful strategy, based on
 predictability.
 
 8. Intuitively, we should try finding features that help predict whether an
-observation will be an anomaly. The features that are most predictive determine
+observation will be an outlier. The features that are most predictive determine
 conditions within which the outliers are expected to arise, suggesting potential
 explanations. For example, in the movie revenue example, you might have found
 that country label is strongly predictive of whether an observation had high
