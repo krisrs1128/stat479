@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-1/week5-1.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://naniar.njtierney.com/articles/getting-started-w-naniar.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%205%20%5B1%5D%20Missing%20Data%20(Part%201)/1_xjmq3zmu">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-1/week5-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
@@ -2261,7 +2261,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <ol type="1">
 <li><p>Visualization is about more than simply communicating results at the end of a data analysis. It can be used to improve the process of data analysis itself. This is the subject of this week’s notes.</p></li>
-<li><p>When data science workflows are opaque — when sequences of commands are followed blindly — that’s when mistakes are most likely to be made^[Prof. Broman has noted a compendium of <a href="http://www.eusprig.org/horror-stories.htm">horror stories</a>. Visualization can help improve the transparency of different steps across the workflow.</p></li>
+<li><p>When data science workflows are opaque — when sequences of commands are followed blindly — that’s when mistakes are most likely to be made<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Visualization can help improve the transparency of different steps across the workflow.</p></li>
 <li><p>To make this idea concrete, let’s consider missing data. We can encounter missing data for a variety of reasons. Perhaps a sensor was broken or no response was submitted. Maybe several datasets were merged, but some fields are only present in the more recent versions.</p></li>
 <li><p>If there are missing data, and if we fail to account for it, we might accidentally draw incorrect conclusions. Or, if we are going to attempt to impute the missing values, we should verify the assumptions of whatever imputation algorithm we intend to use.</p></li>
 <li><p>A first plot to make is to look at the proportion of missing data within each field. Let’s consider the <code>riskfactors</code> data, which is a subset from the <a href="https://www.rdocumentation.org/packages/naniar/versions/0.6.0/topics/riskfactors">Behavioral Risk Factor Surveillance System</a>.</p></li>
@@ -2302,13 +2302,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <p><img src="week5-1_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
 </div>
 <ol start="8" type="1">
-<li>This visualization actually has a formal name, the shadow matrix<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, and it comes up in theoretical analysis of missing data.</li>
+<li>This visualization actually has a formal name, the shadow matrix<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, and it comes up in theoretical analysis of missing data.</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>Which when you think about it sounds pretty dystopian / scifi.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1" role="doc-endnote"><p>Prof. Broman has noted a compendium of <a href="http://www.eusprig.org/horror-stories.htm">horror stories</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>Which when you think about it sounds pretty dystopian / scifi.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 <!--radix_placeholder_article_footer-->

@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%205%20%5B5%5D%20Other%20Tricks%20from%20Profiler/1_67ag90bm">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://svn.r-project.org/R-packages/trunk/cluster'>"cluster"</a></span><span class='op'>)</span>
@@ -2341,12 +2341,13 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 2      47 Alice in Wonderland Mar 05 2010          6.7      63458</code></pre>
 </div>
 <ol start="7" type="1">
-<li>To automatically remove these remakes / sequels from our candidate list, let’s filter out movies that didn’t appear in the same year. This is a special case of the general idea of “conditional deduplication” – you can simplify your entity resolution candidates if you can first match by a few other fields. In the end, it doesn’t seem like there are any true duplicates. The closest we get is that Tarzan and Taxman both came out in 1999…</li>
+<li>To automatically remove these remakes / sequels from our candidate list, let’s filter out movies that didn’t appear in the same year. This is a special case of the general idea of “conditional deduplication” – you can simplify your entity resolution candidates if you can first match by a few other fields. In the end, it doesn’t seem like there are any true duplicates, though it is quite a coincidence that “Diary of the Dead” and “Day of the Dead” both came out in</li>
+<li></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>movies</span> <span class='op'>&lt;-</span> <span class='va'>movies</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>year <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_extract.html'>str_extract</a></span><span class='op'>(</span><span class='va'>Release_Date</span>, <span class='st'>"19[0-9]+"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>year <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_extract.html'>str_extract</a></span><span class='op'>(</span><span class='va'>Release_Date</span>, <span class='st'>"[0-9]+$"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='va'>movies</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>year</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -2356,16 +2357,21 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>Title</span>, <span class='va'>year</span>, <span class='va'>cluster</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 6 x 3
-# Groups:   cluster, year [3]
-  Title  year  cluster
-  &lt;chr&gt;  &lt;chr&gt;   &lt;int&gt;
-1 Reds   1981      467
-2 Taps   1981      467
-3 Pi     1998      662
-4 54     1998      662
-5 Taxman 1999     2601
-6 Tarzan 1999     2601</code></pre>
+<pre><code># A tibble: 43 x 3
+# Groups:   cluster, year [20]
+   Title             year  cluster
+   &lt;chr&gt;             &lt;chr&gt;   &lt;int&gt;
+ 1 Ray               2004        5
+ 2 Saw               2004        5
+ 3 Rent              2005       84
+ 4 Venom             2005       84
+ 5 Bobby             2006       92
+ 6 Borat             2006       92
+ 7 Day of the Dead   2008      230
+ 8 Diary of the Dead 2008      230
+ 9 The Box           2009      324
+10 The Road          2009      324
+# … with 33 more rows</code></pre>
 </div>
 <h2 id="minor-tricks">Minor Tricks</h2>
 <ol start="8" type="1">
