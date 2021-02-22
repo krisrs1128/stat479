@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%205%20%5B4%5D%20Characterizing%20Outliers/1_uj49qt29">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/topepo/caret/'>"caret"</a></span><span class='op'>)</span>
@@ -2615,14 +2615,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <pre><code>gbm variable importance
 
-                Overall
-vehicle_type  100.00000
-destination     4.10416
-fare            1.03666
-vehicle_class   0.94911
-origin          0.94136
-month           0.06168
-hour            0.00000</code></pre>
+               Overall
+vehicle_type  100.0000
+origin          2.5829
+vehicle_class   1.9751
+destination     1.1214
+fare            0.6559
+hour            0.1539
+month           0.0000</code></pre>
 </div>
 <ol start="11" type="1">
 <li>It seems that <code>vehicle_type</code> is by far the most predictive variable. To see its relationship with trip duration, let’s use ridge lines. We create separate histograms split according <code>vehicle_type</code>. We’ll also split histograms within each vehicle type according to origin city, since this was the second most important variable.</li>
