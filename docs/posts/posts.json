@@ -17,6 +17,23 @@
     "input_file": {}
   },
   {
+    "path": "posts/2021-02-23-week6-2/",
+    "title": "Time Series Patterns",
+    "description": "Vocabulary for describing visual structure in time series.",
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-03-02",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\n\n\nlibrary(\"dplyr\")\nlibrary(\"tsibble\")\nlibrary(\"tsibbledata\")\nlibrary(\"fpp2\")\nlibrary(\"ggplot2\")\nlibrary(\"lubridate\")\nlibrary(\"feasts\")\ntheme_set(theme_minimal())\n\n\n\nThere are a few structures that are worth keeping an eye out for whenever you plot a single time series. We’ll review the main vocabulary in these notes.\nVocabulary\nTrend: A long-run increase or decrease in a time series.\nSeasonal: A pattern that recurs over a fixed and known period.\nCyclic: A rising and falling pattern that does not occur over a fixed or known period.\n\nA few series with different combinations of these patterns are shown below.\n\n\nggplot(as_tsibble(qauselec)) +\n  geom_line(aes(x = index, y = value)) +\n  labs(title = \"Australian Quarterly Electricity Production\")\n\n\n\nggplot(as_tsibble(hsales)) +\n  geom_line(aes(x = index, y = value)) +\n  labs(title = \"Housing Sales\")\n\n\n\nggplot(as_tsibble(ustreas)) +\n  geom_line(aes(x = index, y = value)) +\n  labs(title = \"US Treasury Bill Contracts\")\n\n\n\nggplot(as_tsibble(diff(goog))) +\n  geom_line(aes(x = index, y = value)) +\n  labs(title = \"Google Stock Prices\")\n\n\n\n\nA series can display combinations of these patterns at once. Further, the same data can exhibit different patterns depending on the scale at which it is viewed. For example, though a dataset might seem seasonal at short time scales, a long-term trend might appear after zooming out. This is visible in the electricity production plot above.\nFinally, it’s worth keeping in mind that real-world structure can be much more complicated than any of these patterns. For example, the plot below shows the number of passengers on flights from Melbourne to Sydney between 1987 and\nYou can see a period when no flights were made and a trial in 1992 where economy seats were switched to business seats.\n\n\nmelbourne_sydney <- ansett %>%\n  filter(Airports == \"MEL-SYD\") # challenge: facet by Airports, instead of filtering\n\nggplot(melbourne_sydney) +\n  geom_line(aes(x = Week, y = Passengers, col = Class))\n\n\n\n\n\n\n\n",
+    "preview": "posts/2021-02-23-week6-2/week6-2_files/figure-html5/unnamed-chunk-2-1.png",
+    "last_modified": "2021-02-23T12:52:59-06:00",
+    "input_file": {}
+  },
+  {
     "path": "posts/2021-02-23-week6-1/",
     "title": "tsibble Objects",
     "description": "A data structure for managing time series data.",
