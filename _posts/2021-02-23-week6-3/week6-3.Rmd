@@ -13,8 +13,65 @@ output:
 
 _[Reading](), [Recording](), [Rmarkdown]()_
 
-1. If our data have seasonal structure, it’s natural to compare individual periods against one another. In contrast to plotting the data in one long time series, seasonal plots reduce the amount of distance our eyes have to travel in order to compare two periods in a seasonal pattern. This also reduces the burden on our memory.
+```{r}
+library("dplyr")
+library("tsibble")
+library("tsibbledata")
+library("fpp2")
+library("ggplot2")
+library("robservable")
+library("lubridate")
+library("feasts")
+theme_set(theme_minimal())
+```
 
-2. In R, we can use the `gg_season` function to overlay all the seasons onto one another. If the time series exhibit seasonal structure at multiple scales, then we can view them all using the `period` argument.
 
-3. In vega-lite, we can create analogous plots using `.month()`, `.year()`, or `.day()`, for example. An advantage of using vega-lite is that they let us use tooltips, instead of trying to encode the season’s period using color.
+1. If our data have seasonal structure, it’s natural to compare individual
+periods against one another. In contrast to plotting the data in one long time
+series, seasonal plots reduce the amount of distance our eyes have to travel in
+order to compare two periods in a seasonal pattern. This also reduces the burden
+on our memory.
+
+2. In R, we can use the `gg_season` function to overlay all the seasons onto one
+another. The plot below shows antidiabetes drug sales over time. This view makes
+it clear that there is a spike in sales every January.
+
+```{r}
+cols <- scales::viridis_pal()(10)
+gg_season(as_tsibble(a10), pal = cols)
+```
+
+3. If the time series exhibit seasonal structure at multiple scales, then
+we can view them all using the `period` argument.
+
+```{r}
+gg_season(vic_elec, Demand, period = "day", pal = cols)
+gg_season(vic_elec, Demand, period = "week", pal = cols)
+```
+
+3. In vega-lite, we can use tooltips, instead of trying to encode the season’s
+period using color. This lets us isolate specific series that have interesting
+behavior (e.g., week number in the plot below). The downside is that we have to
+manually calculate the variable that goes on the $x$-axis, rather than relying
+on the `period` argument like above.
+
+````js
+{
+  let line = vl.markLine({opacity: 0.8, size: 0.9})
+    .data(data)
+    .encode(
+      vl.x().fieldQ("time_in_week_").scale({domain: [0, 7]}),
+      vl.y().fieldQ("Demand"), 
+      vl.detail().fieldN("week"),
+      vl.color().fieldN("year"),
+      vl.tooltip().fieldN("week")
+    )    
+    .width(600);
+  
+  return line.render()
+ }
+````
+
+```{r}
+robservable("@krisrs1128/seasonality", 4)
+```
