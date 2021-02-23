@@ -1,0 +1,30 @@
+---
+title: "Time Series Patterns"
+description: |
+  Vocabulary for describing visual structure in time series.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-02-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. There are a few structures that are worth keeping an eye out for whenever you plot a single time series. We’ll review the main vocabulary in these notes.
+2. The other main point to takeaway here is how the `autoplot` function can quickly plot tsibble objects. We no longer need to specify the `x`-axis, since it assumes we’re plotting against the tsibble’s Index.
+3. Vocabulary
+
+	* Trend: A long-run increase or decrease in a time series.
+	* Seasonal: A pattern that recurs over a fixed and known period.
+	* Cyclic: A rising and falling pattern that does not occur over a fixed or known period.
+	
+4. A series can display combinations of these patterns at once. Further, the same data can exhibit different patterns depending on the scale at which it is viewed. For example, though a dataset might seem seasonal at short time scales, a long-term trend might appear after zooming out.

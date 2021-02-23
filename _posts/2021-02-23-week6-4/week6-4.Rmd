@@ -1,0 +1,23 @@
+---
+title: "Cross and Auto-Correlation"
+description: |
+  Summaries of relationships between and within time series.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-04-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. There is often interest in seeing how two time series relate to one another. A scatterplot can be useful in gauging this relationship.
+2. Note that the timepoints are far from independent. Points tend to drift gradually across the scatterplot, rather than jumping to completely different regions in short time intervals. This is just the 2D consequence of the time series varying smoothly.
+3. To formally measure the linear relationship between two time series, we can use the cross-correlation,
+	\frac{\sum_{t}\left(x_{t} - \hat{\mu}_{X}\right)\left(y_{t} - \hat{\mu}_{Y}\right)}{\hat{\sigma}_{X}\hat{\sigma}\_{Y}}
+4. Cross-correlation can be extended to autocorrelation — the correlation between a time series and a lagged version of itself. This measure is useful for quantifying the strength of seasonality within a time series. A daily time series with strong weekly seasonality will have high autocorrelation at lag 7, for example.
+5. You can create lagged time series scatterplots using the `gg_lag` function.
+6. These lag plots take up a bit of space. A more compact summary is to compute the autocorrelation function (ACF). Peaks and valleys in an ACF suggest seasonality at the frequency indicated by the lag value.
+7. Gradually decreasing slopes in the ACF suggest trends. This is because if there is a trend, the current value tends to be very correlated with the recent past.

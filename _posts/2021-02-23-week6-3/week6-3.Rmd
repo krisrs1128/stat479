@@ -1,0 +1,20 @@
+---
+title: "Seasonal Plots"
+description: |
+  Approaches for visualizing seasonality.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-03-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. If our data have seasonal structure, it’s natural to compare individual periods against one another. In contrast to plotting the data in one long time series, seasonal plots reduce the amount of distance our eyes have to travel in order to compare two periods in a seasonal pattern. This also reduces the burden on our memory.
+
+2. In R, we can use the `gg_season` function to overlay all the seasons onto one another. If the time series exhibit seasonal structure at multiple scales, then we can view them all using the `period` argument.
+
+3. In vega-lite, we can create analogous plots using `.month()`, `.year()`, or `.day()`, for example. An advantage of using vega-lite is that they let us use tooltips, instead of trying to encode the season’s period using color.

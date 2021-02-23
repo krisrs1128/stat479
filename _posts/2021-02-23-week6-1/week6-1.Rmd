@@ -1,0 +1,27 @@
+---
+title: "tsibble Objects"
+description: |
+  A data structure for managing time series data.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-01-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. Tsibbles are data structures that are designed specifically for storing time series data. They are useful because they create a unified interface to various time series visualization and modeling tasks. This removes the friction of having to transform back and forth between data.frames, lists, and matrices, depending on the particular task of interest.
+2. The key difference between a tsibble and an ordinary data frame is that it requires a temporal key variable, specifying the frequency with which observations are collected. For example, the code below generates a tsibble with yearly observations.
+3. You can also create a tsibble from an ordinary data.frame by calling the `as_tsibble` function.
+4. The index is useful because it creates a data consistency check. If a few days are missing from a daily dataset, then it will automatically create NAs for these entries. When we print a tsibble object, it prints the index and frequency on the top right corner.
+5. (olympics example, with missing value)
+6. As the above example shows, tsibbles can store more than one time series at a time. However, in this case, we have to specify key columns that distinguish between the separate time series.
+7. The usual data tidying functions from `dplyr` are implemented for tsibbles. Filtering rows, selecting columns, deriving variables using `mutate`, and summarizing groups using `group_by` and `summarise` all work as expected.
+8. For example, this computes the total cost of Australian pharmceuticals per month for a particular type of script.

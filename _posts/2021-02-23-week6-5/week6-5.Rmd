@@ -1,0 +1,22 @@
+---
+title: "Collections of Time Series"
+description: |
+  Navigating across related time series.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-05-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. We have seen ways of visualizing a single time series (seasonal plots, ACF) and small numbers of time series (Cross Correlation). In practice, it’s also common to encounter large collections of time series. These datasets tend to require more sophisticated analysis techniques, but we will review one useful approach, based on extracted features.
+2. The high-level idea is to represent each time series by a vector of summary statistics, like the maximum value, the slope, and so on. These vector summaries can then be used to create an overview of variation seen across all time series.
+3. Computing summary statistics by hand would be tedious. Fortunately, the feasts package makes it easy to extract a variety of statistics for tsibble objects.
+4. (show example)
+5. Once you have a dataframe summarizing these time series, you can run any clustering or dimensionality reduction procedure on the summary. For example, this is 2D representation from PCA. We will get into much more depth about dimensionality reduction later in this course — for now, just think of this as an abstract map relating all the time series.
+6. We can look at the series that are outlying in the PCA. The reading gives interpretations for why these should be considered outliers.
+7. This featurization approach is especially powerful with coordinated views. In the figure below, different time series are highlighted depending on the user’s brushing over the PCA.
