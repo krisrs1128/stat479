@@ -11,17 +11,19 @@ output:
     self_contained: false
 ---
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://otexts.com/fpp3/seasonal-plots.html), [Recording](https://mediaspace.wisc.edu/media/Week%206%20%5B3%5D%20Seasonal%20Plots/1_vbhlrnx5), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-02-23-week6-3/week6-3.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
 
 ```{r}
 library("dplyr")
-library("tsibble")
-library("tsibbledata")
-library("fpp2")
 library("ggplot2")
 library("robservable")
-library("lubridate")
 library("feasts")
+library("fpp2")
+library("tsibbledata")
 theme_set(theme_minimal())
 ```
 

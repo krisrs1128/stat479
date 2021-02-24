@@ -16,7 +16,7 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://otexts.com/fpp3/graphics.html), [Recording](https://mediaspace.wisc.edu/media/Week%206%20%5B1%5D%20tsibble%20Objects/1_z6o1ddbo), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-02-23-week6-1/week6-1.Rmd)_
 
 ```{r}
 library("readr")
@@ -28,7 +28,10 @@ library("lubridate")
 
 1. Tsibbles are data structures that are designed specifically for storing time series data. They are useful because they create a unified interface to various time series visualization and modeling tasks. This removes the friction of having to transform back and forth between data.frames, lists, and matrices, depending on the particular task of interest.
 
-2. The key difference between a tsibble and an ordinary data frame is that it requires a temporal key variable, specifying the frequency with which observations are collected. For example, the code below generates a tsibble with yearly observations.
+2. The key difference between a tsibble and an ordinary data.frame is that it
+requires a temporal key variable, specifying the frequency with which
+observations are collected. For example, the code below generates a tsibble with
+yearly observations.
 
 ```{r}
 tsibble(

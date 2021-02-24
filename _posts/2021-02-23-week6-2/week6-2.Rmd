@@ -11,13 +11,11 @@ output:
     self_contained: false
 ---
 
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://otexts.com/fpp3/tspatterns.html), [Recording](https://mediaspace.wisc.edu/media/Week%206%20%5B2%5D%20Time%20Series%20Patterns/1_i43mqixm), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-02-23-week6-2/week6-2.Rmd)_
 
 ```{r}
 library("dplyr")
@@ -25,8 +23,6 @@ library("tsibble")
 library("tsibbledata")
 library("fpp2")
 library("ggplot2")
-library("lubridate")
-library("feasts")
 theme_set(theme_minimal())
 ```
 
@@ -65,11 +61,7 @@ viewed. For example, though a dataset might seem seasonal at short time scales,
 a long-term trend might appear after zooming out. This is visible in the
 electricity production plot above.
 
-4. Finally, it's worth keeping in mind that real-world structure can be much
-more complicated than any of these patterns. For example, the plot below shows
-the number of passengers on flights from Melbourne to Sydney between 1987 and
-1992. You can see a period when no flights were made and a trial in 1992 where
-economy seats were switched to business seats.
+4. Finally, it's worth keeping in mind that real-world structure can be much more complicated than any of these patterns. For example, the plot below shows the number of passengers on flights from Melbourne to Sydney between 1987 and 1992. You can see a period when no flights were made and a trial in 1992 where economy seats were switched to business seats.
 
 ```{r}
 melbourne_sydney <- ansett %>%

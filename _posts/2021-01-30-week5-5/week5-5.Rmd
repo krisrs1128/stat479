@@ -15,7 +15,6 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-
 _[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B5%5D%20Other%20Tricks%20from%20Profiler/1_67ag90bm), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd)_
 
 ```{r}
