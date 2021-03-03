@@ -13,6 +13,10 @@ output:
 
 _[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](), [Rmarkdown]()_
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
 ```{r}
 library("dplyr")
 library("ggmap")
@@ -127,6 +131,7 @@ ggplot() +
   geom_sf(data = india_geom) +
   coord_sf(xlim = c(60, 110), ylim = c(5, 40))
 ```
+
 8. We can also encode data that's contained in the vector dataset, using the
 `aes`.
 
@@ -141,10 +146,49 @@ ggplot() +
 can find one using the `ggmap` library.
 
 ```{r}
-map <- get_map(c(left = 60, bottom = 5, right = 110, top = 40))
-india_geom <- st_transform(india_geom, crs = 3857)
-plot(india_geom, expandBB = c(0, 0.2, 0.1, 1), col = "gray", lwd = 3, bgMap = map)
+source("https://uwmadison.box.com/shared/static/c1mnfdl292fcot0jo58g5wnshquaa7zx.r")
+register_google(key = "AIzaSyBW7PU2Ne1CM33WMaPreTbAImzGB22Pc6s")
+watercolor <- get_map(c(79.5937, 22.92501), maptype = "watercolor", zoom = 3)
+watercolor <- ggmap_bbox(watercolor)
+ggmap(watercolor) +
+  geom_sf(data = world_asia, aes(fill = lifeExp), inherit.aes = FALSE) +
+  coord_sf(xlim = c(5.5e6, 11e6), ylim = c(5e5, 5e6), crs = st_crs(3857)) +
+  scale_fill_viridis_b()
 ```
 
-9. If you go back to the code from the previous lecture, you can see more
-examples of using the ggplot2 approach.
+9. The code from the previous lecture gives more examples of how to use ggplot2
+and ggmap to visualize vector data over public map backgrounds
+
+10. Even in this more complex setup, where we work with background images and
+vector data rather than standard data.frames, most of the usual ggplot2
+functions still apply. For example, we can still color code or facet by fields
+in the vector dataset. To illustrate, we revisit the bus route data from the
+last lecture and distinguish between buses operated by the cities of Madison vs.
+Monona. Before plotting, we fetch the underlying data.
+
+```{r}
+bus <- read_sf("https://uwmadison.box.com/shared/static/5neu1mpuh8esmb1q3j9celu73jy1rj2i.geojson")
+satellite <- get_map(c(-89.37974, 43.07140), maptype = "satellite", zoom = 12)
+satellite <- ggmap_bbox(satellite)
+
+head(bus)
+```
+
+Note that `operator` is the field containing information about which city is
+operating the buses. We can color code the routes by this attribute.
+
+```{r}
+ggmap(satellite) +
+  geom_sf(data = bus, aes(color = operator), size = .5, inherit.aes = FALSE) +
+  coord_sf(crs = st_crs(3857))
+```
+
+Alternatively, we can facet.
+
+```{r}
+ggmap(satellite) +
+  geom_sf(data = bus, col = "#bc7ab3", size = .5, inherit.aes = FALSE) +
+  coord_sf(crs = st_crs(3857)) +
+  facet_wrap(~ operator)
+```
+

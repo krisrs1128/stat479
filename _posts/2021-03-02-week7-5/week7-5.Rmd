@@ -13,28 +13,82 @@ output:
 
 _[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](), [Rmarkdown]()_
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("robservable")
+library("leaflet")
+library("readr")
+```
+
 1. These are optional notes. The reading does not cover interactivity in spatial
 data contexts, and there will be no problems in this class related to
 interactive spatial data visualization. However, these notes may be useful if
-you ever work on a spatial data project with interactive components.
+your project involves interaction with spatial data.
 
 2. In `vega-lite`, vector data can be visualized using `vl.markGeoshape`. Any
 fields contained within the vector dataset can be visually encoded in the marks.
 This is analogous to `geom_sf` in ggplot2.
 
-3. Spatial data are often amenable to dynamic linking. Selections on the map can
-highlight elements in a complementary figure. For example, hovering over
-geographic elements might highlight series in a time series plot or update a
-barchart placed on the side. This is an example with random histogram data.
+````js
+vl.markGeoshape({fill: "#e0e0e0", stroke: "#f7f7f7", strokeWidth: 1})
+    .data(vector_data) // contains the vector data boundaries
+    .project(vl.projection('albersUsa'))
+    .render()
+````
 
-4. Alternatively, selections in a complementary figure can highlight the
-associated geographic elements.
+```{r}
+robservable("@krisrs1128/minimal-geoshape", 3, height = 300)
+```
 
-5. The example below reproduces the population growth figure from (UIC Bremer)
-using vega-lite. Another classic example of linked spatial data visualization is
-the DC HomeSearcher.
+3. Spatial data are often amenable to dynamic linking. For example, selections
+in a complementary figure can be used to query points on a map. Here are two
+examples from public observable notebooks. The first, by Chanwut Kittivorawong,
+updates the cities displayed on a map using a brush applied to histogram data.
+Conceptually, it is like the NYC house prices homework problem, except it
+includes several histogram selectors and draws a background map for context.
 
-6. Sometimes it’s useful to add an interactive map background to a vector
-dataset. In this case, the `leaflet` package in R can be useful. By fetching
-background images on which vector data can be plotted, it is like `ggmap`.
-Unlike `ggmap`, the backgrounds can be panned and zoomed.
+```{r}
+robservable("@chanwutk/happiness-of-each-country", 6, height = 750)
+```
+The second, by Alissa Chen, shows how the amount of daylight varies across
+cities, depending on time of the year. Brushing over the time series filters the
+data that are used to determine the circle widths (the little suns) on top of
+the map.
+
+```{r}
+robservable("@alchan/whats-the-average-amount-of-sunlight-in-a-city-over-a-short-te", 3, height = 730)
+```
+
+
+4. Alternatively, selections on the map can highlight elements in a
+complementary figure. For example, hovering over geographic elements might
+highlight series in a time series plot or update a barchart placed on the side.
+Vega-lite doesn't support selections based on vector data elements, only points
+that are overlaid on the map. However, these sorts of selections can be made
+with d3.
+
+```{r}
+robservable("@krisrs1128/geojson-mouseover", 7)
+```
+
+5. Sometimes it’s useful to add an interactive map background to a vector
+dataset. In this case, the `leaflet` package in R can be useful. In the code
+block below, `addTiles` fetches the background map. `addCircles` overlays the
+new vector features on top of the map. It's worth noting that the vector
+features were created automatically -- there was no need to create or read in
+any type of `sf` object.
+
+```{r}
+cities <- read_csv("https://uwmadison.box.com/shared/static/j98anvdoasfb1h651qxzrow2ua45oap1.csv")
+leaflet(cities) %>% 
+  addTiles() %>% 
+  addCircles(
+    lng = ~Long, 
+    lat = ~Lat, 
+    radius = ~sqrt(Pop) * 30
+  )
+```
+

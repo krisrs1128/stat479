@@ -12,6 +12,11 @@ output:
 ---
 
 _[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](), [Rmarkdown]()_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
 ```{r}
 library("raster")
 library("RStoolbox")
@@ -84,7 +89,7 @@ ggRGB(satellite) +
   geom_point(
     data = data.frame(x = -113, y = 37.3), 
     aes(x = x, y = y), 
-    col = "blue", size = 10
+    col = "red", size = 10
   )
 ```
 
@@ -98,6 +103,7 @@ sat_df <- subset(satellite, 1) %>%
   as.data.frame(xy = TRUE)
 ggplot(sat_df) +
   geom_raster(aes(x = x, y = y, fill = landsat.1)) +
-  scale_fill_gradient(low = "white", high = "black")
+  scale_fill_gradient(low = "white", high = "black") +
+  coord_fixed()
 ```
 
