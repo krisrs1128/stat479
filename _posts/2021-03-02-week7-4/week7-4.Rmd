@@ -11,7 +11,11 @@ output:
     self_contained: false
 ---
 
-_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](), [Rmarkdown]()_
+_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](https://mediaspace.wisc.edu/media/Week%207%20%5B4%5D%20Coordinate%20Reference%20Systems/1_f6tizaj7), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-02-week7-4/week7-4.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
 
 ```{r}
 library("ggplot2")

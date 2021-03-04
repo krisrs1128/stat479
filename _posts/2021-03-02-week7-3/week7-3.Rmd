@@ -11,7 +11,7 @@ output:
     self_contained: false
 ---
 
-_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](), [Rmarkdown]()_
+_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](https://mediaspace.wisc.edu/media/Week%207%20%5B3%5D%20Raster%20Data/1_k5px5f53), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-02-week7-3/week7-3.Rmd)_
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
@@ -42,7 +42,11 @@ f <- system.file("raster/srtm.tif", package = "spDataLarge")
 zion <- raster(f)
 ```
 
-4. Typing the name of the object shows the metadata associated with it (but not the actual grid values). We can see that the grid has 457 rows and 465 columns. We also see its spatial extent: The minimum and maximum longitude are both close to -113 and the latitudes are between 37.1 and 37.5. A quick google map search ([https://goo.gl/maps/X4EY2BsGgMZzN5BM9])shows that this is located in Zion national park.
+4. Typing the name of the object shows the metadata associated with it (but not
+the actual grid values). We can see that the grid has 457 rows and 465 columns.
+We also see its spatial extent: The minimum and maximum longitude are both close
+to -113 and the latitudes are between 37.1 and 37.5. A quick google map [search](https://goo.gl/maps/X4EY2BsGgMZzN5BM9) shows that this is located in Zion
+national park.
 
 ```{r}
 zion
