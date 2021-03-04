@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["sf-classes.png","week7-2_files/anchor-4.2.2/anchor.min.js","week7-2_files/bowser-1.9.3/bowser.min.js","week7-2_files/distill-2.2.21/template.v2.js","week7-2_files/figure-html5/unnamed-chunk-10-1.png","week7-2_files/figure-html5/unnamed-chunk-11-1.png","week7-2_files/figure-html5/unnamed-chunk-12-1.png","week7-2_files/figure-html5/unnamed-chunk-14-1.png","week7-2_files/figure-html5/unnamed-chunk-16-1.png","week7-2_files/figure-html5/unnamed-chunk-17-1.png","week7-2_files/figure-html5/unnamed-chunk-3-1.png","week7-2_files/figure-html5/unnamed-chunk-4-1.png","week7-2_files/figure-html5/unnamed-chunk-5-1.png","week7-2_files/figure-html5/unnamed-chunk-6-1.png","week7-2_files/figure-html5/unnamed-chunk-9-1.png","week7-2_files/header-attrs-2.6/header-attrs.js","week7-2_files/jquery-1.11.3/jquery.min.js","week7-2_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["sf-classes.png","week7-2_files/anchor-4.2.2/anchor.min.js","week7-2_files/bowser-1.9.3/bowser.min.js","week7-2_files/distill-2.2.21/template.v2.js","week7-2_files/figure-html5/unnamed-chunk-10-1.png","week7-2_files/figure-html5/unnamed-chunk-11-1.png","week7-2_files/figure-html5/unnamed-chunk-12-1.png","week7-2_files/figure-html5/unnamed-chunk-13-1.png","week7-2_files/figure-html5/unnamed-chunk-14-1.png","week7-2_files/figure-html5/unnamed-chunk-15-1.png","week7-2_files/figure-html5/unnamed-chunk-16-1.png","week7-2_files/figure-html5/unnamed-chunk-17-1.png","week7-2_files/figure-html5/unnamed-chunk-3-1.png","week7-2_files/figure-html5/unnamed-chunk-4-1.png","week7-2_files/figure-html5/unnamed-chunk-5-1.png","week7-2_files/figure-html5/unnamed-chunk-6-1.png","week7-2_files/figure-html5/unnamed-chunk-9-1.png","week7-2_files/header-attrs-2.6/header-attrs.js","week7-2_files/jquery-1.11.3/jquery.min.js","week7-2_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2415,7 +2415,7 @@ geographic CRS: WGS 84
 <p><img src="week7-2_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
 <ol start="8" type="1">
-<li>If you want to overlay spatial features onto a publicly available map, you can find one using the <code>ggmap</code> library. We have to apply the <code>ggmap_bbox</code> function for technical reasons related to ggplot2 and ggmap not using the same coordinate systems. The point though is that we can overlay vector data on standard map backgrounds.</li>
+<li>If you want to overlay spatial features onto a publicly available map, you can find one using the <code>ggmap</code> library.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2423,27 +2423,17 @@ geographic CRS: WGS 84
 <span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/register_google.html'>register_google</a></span><span class='op'>(</span>key <span class='op'>=</span> <span class='st'>"AIzaSyBW7PU2Ne1CM33WMaPreTbAImzGB22Pc6s"</span><span class='op'>)</span>
 <span class='va'>watercolor</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/get_map.html'>get_map</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>79.5937</span>, <span class='fl'>22.92501</span><span class='op'>)</span>, maptype <span class='op'>=</span> <span class='st'>"watercolor"</span>, zoom <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 <span class='va'>watercolor</span> <span class='op'>&lt;-</span> <span class='fu'>ggmap_bbox</span><span class='op'>(</span><span class='va'>watercolor</span><span class='op'>)</span>
-</code></pre>
-</div>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></span><span class='op'>(</span><span class='va'>watercolor</span><span class='op'>)</span> <span class='op'>+</span>
+<span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></span><span class='op'>(</span><span class='va'>watercolor</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>world_asia</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='va'>lifeExp</span><span class='op'>)</span>, inherit.aes <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5.5e6</span>, <span class='fl'>11e6</span><span class='op'>)</span>, ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5e5</span>, <span class='fl'>5e6</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_b</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-2_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
+<p><img src="week7-2_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
 <ol start="9" type="1">
-<li>The code from the previous lecture gives more examples of how to use ggplot2</li>
-</ol>
-<ul>
-<li>ggmap to visualize vector data on public map backgrounds.</li>
-</ul>
-<ol start="10" type="1">
-<li>Even in this more complex setup, where we work with background images and vector data rather than standard data.frames, most of the usual ggplot2 functions still apply. For example, we can still color code or facet by fields in the vector dataset. To illustrate, we revisit the bus route data from the last lecture and distinguish between buses operated by the cities of Madison vs. Monona. Before plotting, we fetch the underlying data.</li>
+<li><p>The code from the previous lecture gives more examples of how to use ggplot2 and ggmap to visualize vector data over public map backgrounds</p></li>
+<li><p>Even in this more complex setup, where we work with background images and vector data rather than standard data.frames, most of the usual ggplot2 functions still apply. For example, we can still color code or facet by fields in the vector dataset. To illustrate, we revisit the bus route data from the last lecture and distinguish between buses operated by the cities of Madison vs. Monona. Before plotting, we fetch the underlying data.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2479,7 +2469,7 @@ geographic CRS: WGS 84
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-2_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
+<p><img src="week7-2_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
 </div>
 <p>Alternatively, we can facet.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2490,7 +2480,7 @@ geographic CRS: WGS 84
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>operator</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-2_files/figure-html5/unnamed-chunk-17-1.png" width="624" /></p>
+<p><img src="week7-2_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
