@@ -80,10 +80,6 @@ ggplot(lakes) +
 With a little extra effort, we can overlay the features onto public map
 backgrounds (these are often called "basemaps").
 
-```{r}
-st_centroid(lakes[1, ])
-```
-
 ```{r, echo = FALSE}
 source("https://uwmadison.box.com/shared/static/c1mnfdl292fcot0jo58g5wnshquaa7zx.r")
 register_google(key = "AIzaSyBW7PU2Ne1CM33WMaPreTbAImzGB22Pc6s") # you can get your own API key
