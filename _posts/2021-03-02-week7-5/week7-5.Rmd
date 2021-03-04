@@ -81,7 +81,7 @@ new vector features on top of the map. It's worth noting that the vector
 features were created automatically -- there was no need to create or read in
 any type of `sf` object.
 
-```{r, eval = FALSE}
+```{r}
 cities <- read_csv("https://uwmadison.box.com/shared/static/j98anvdoasfb1h651qxzrow2ua45oap1.csv")
 leaflet(cities) %>% 
   addTiles() %>% 

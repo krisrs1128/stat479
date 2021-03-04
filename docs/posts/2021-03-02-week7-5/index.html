@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week7-5_files/Proj4Leaflet-1.0.1/proj4leaflet.js","week7-5_files/anchor-4.2.2/anchor.min.js","week7-5_files/bowser-1.9.3/bowser.min.js","week7-5_files/distill-2.2.21/template.v2.js","week7-5_files/header-attrs-2.6/header-attrs.js","week7-5_files/htmlwidgets-1.5.3/htmlwidgets.js","week7-5_files/jquery-1.12.4/jquery.min.js","week7-5_files/leaflet-1.3.1/images/layers-2x.png","week7-5_files/leaflet-1.3.1/images/layers.png","week7-5_files/leaflet-1.3.1/images/marker-icon-2x.png","week7-5_files/leaflet-1.3.1/images/marker-icon.png","week7-5_files/leaflet-1.3.1/images/marker-shadow.png","week7-5_files/leaflet-1.3.1/leaflet.css","week7-5_files/leaflet-1.3.1/leaflet.js","week7-5_files/leaflet-binding-2.0.4.1/leaflet.js","week7-5_files/leafletfix-1.0.0/leafletfix.css","week7-5_files/observable-runtime-4.7.2/inspector.css","week7-5_files/observable-runtime-4.7.2/runtime.umd.js","week7-5_files/proj4-2.6.2/proj4.min.js","week7-5_files/robservable-binding-0.2.0/robservable.js","week7-5_files/robservable-utils-0.1.0/robservable.js","week7-5_files/robservable-utils-0.1.0/robservable.yaml","week7-5_files/robservable-utils-0.1.0/runtime/inspector.css","week7-5_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week7-5_files/robservable-utils-0.1.0/utils.js","week7-5_files/rstudio_leaflet-1.3.1/images/1px.png","week7-5_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css","week7-5_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week7-5_files/Proj4Leaflet-1.0.1/proj4leaflet.js","week7-5_files/anchor-4.2.2/anchor.min.js","week7-5_files/bowser-1.9.3/bowser.min.js","week7-5_files/distill-2.2.21/template.v2.js","week7-5_files/header-attrs-2.6/header-attrs.js","week7-5_files/htmlwidgets-1.5.3/htmlwidgets.js","week7-5_files/jquery-1.11.3/jquery.min.js","week7-5_files/jquery-1.12.4/jquery.min.js","week7-5_files/leaflet-1.3.1/images/layers-2x.png","week7-5_files/leaflet-1.3.1/images/layers.png","week7-5_files/leaflet-1.3.1/images/marker-icon-2x.png","week7-5_files/leaflet-1.3.1/images/marker-icon.png","week7-5_files/leaflet-1.3.1/images/marker-shadow.png","week7-5_files/leaflet-1.3.1/leaflet.css","week7-5_files/leaflet-1.3.1/leaflet.js","week7-5_files/leaflet-binding-2.0.4.1/leaflet.js","week7-5_files/leafletfix-1.0.0/leafletfix.css","week7-5_files/observable-runtime-4.7.2/inspector.css","week7-5_files/observable-runtime-4.7.2/runtime.umd.js","week7-5_files/proj4-2.6.2/proj4.min.js","week7-5_files/robservable-binding-0.2.0/robservable.js","week7-5_files/robservable-utils-0.1.0/robservable.js","week7-5_files/robservable-utils-0.1.0/robservable.yaml","week7-5_files/robservable-utils-0.1.0/runtime/inspector.css","week7-5_files/robservable-utils-0.1.0/runtime/runtime.umd.js","week7-5_files/robservable-utils-0.1.0/utils.js","week7-5_files/rstudio_leaflet-1.3.1/images/1px.png","week7-5_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css","week7-5_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2010,7 +2010,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <script src="../../site_libs/observable-runtime-4.7.2/runtime.umd.js"></script>
   <script src="../../site_libs/robservable-utils-0.1.0/utils.js"></script>
   <script src="../../site_libs/robservable-binding-0.2.0/robservable.js"></script>
-  <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="../../site_libs/jquery-1.12.4/jquery.min.js"></script>
+  <link href="../../site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+  <script src="../../site_libs/leaflet-1.3.1/leaflet.js"></script>
+  <link href="../../site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+  <script src="../../site_libs/proj4-2.6.2/proj4.min.js"></script>
+  <script src="../../site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+  <link href="../../site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+  <script src="../../site_libs/leaflet-binding-2.0.4.1/leaflet.js"></script>
   <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
   <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
   <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
@@ -2275,8 +2282,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/minimal-geoshape"</span>, <span class='fl'>3</span>, height <span class='op'>=</span> <span class='fl'>300</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-c93181719b8c026433d7" style="width:624px;height:300px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c93181719b8c026433d7">{"x":{"notebook":"@krisrs1128/minimal-geoshape","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-151b3ba703bf40e1c96d" style="width:624px;height:300px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-151b3ba703bf40e1c96d">{"x":{"notebook":"@krisrs1128/minimal-geoshape","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="3" type="1">
 <li>Spatial data are often amenable to dynamic linking. For example, selections in a complementary figure can be used to query points on a map. Here are two examples from public observable notebooks. The first, by Chanwut Kittivorawong, updates the cities displayed on a map using a brush applied to histogram data. Conceptually, it is like the NYC house prices homework problem, except it includes several histogram selectors and draws a background map for context.</li>
@@ -2286,8 +2293,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@chanwutk/happiness-of-each-country"</span>, <span class='fl'>6</span>, height <span class='op'>=</span> <span class='fl'>750</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-9d4ebf1e656635673d7f" style="width:624px;height:750px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9d4ebf1e656635673d7f">{"x":{"notebook":"@chanwutk/happiness-of-each-country","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-93a7390e443930cda054" style="width:624px;height:750px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-93a7390e443930cda054">{"x":{"notebook":"@chanwutk/happiness-of-each-country","include":6,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>The second, by Alissa Chen, shows how the amount of daylight varies across cities, depending on time of the year. Brushing over the time series filters the data that are used to determine the circle widths (the little suns) on top of the map.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2295,8 +2302,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@alchan/whats-the-average-amount-of-sunlight-in-a-city-over-a-short-te"</span>, <span class='fl'>3</span>, height <span class='op'>=</span> <span class='fl'>730</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-5a2a549dffb030016d16" style="width:624px;height:730px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5a2a549dffb030016d16">{"x":{"notebook":"@alchan/whats-the-average-amount-of-sunlight-in-a-city-over-a-short-te","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-06d3910cc9ff282d646d" style="width:624px;height:730px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-06d3910cc9ff282d646d">{"x":{"notebook":"@alchan/whats-the-average-amount-of-sunlight-in-a-city-over-a-short-te","include":3,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="4" type="1">
 <li>Alternatively, selections on the map can highlight elements in a complementary figure. For example, hovering over geographic elements might highlight series in a time series plot or update a barchart placed on the side. Vega-lite doesn’t support selections based on vector data elements, only points that are overlaid on the map. However, these sorts of selections can be made with d3.</li>
@@ -2306,8 +2313,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@krisrs1128/geojson-mouseover"</span>, <span class='fl'>7</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-0a11acc9dd0243b91b12" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0a11acc9dd0243b91b12">{"x":{"notebook":"@krisrs1128/geojson-mouseover","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4dae8fb7dffff1d8b440" style="width:624px;height:384px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4dae8fb7dffff1d8b440">{"x":{"notebook":"@krisrs1128/geojson-mouseover","include":7,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="5" type="1">
 <li>Sometimes it’s useful to add an interactive map background to a vector dataset. In this case, the <code>leaflet</code> package in R can be useful. In the code block below, <code>addTiles</code> fetches the background map. <code>addCircles</code> overlays the new vector features on top of the map. It’s worth noting that the vector features were created automatically – there was no need to create or read in any type of <code>sf</code> object.</li>
@@ -2324,6 +2331,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='op'>)</span>
 </code></pre>
 </div>
+<div id="htmlwidget-b88159d278aa5d3f79ae" style="width:624px;height:384px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b88159d278aa5d3f79ae">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircles","args":[[42.3601,41.7627,40.7127,39.95,40.4397,41.8236],[-71.0589,-72.6743,-74.0059,-75.1667,-79.9764,-71.4222],[24111.6030159755,10607.3229421942,86979.3078841169,37385.8261912185,16590.8679700611,12656.8005435813],null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]}],"limits":{"lat":[39.95,42.3601],"lng":[-79.9764,-71.0589]}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
