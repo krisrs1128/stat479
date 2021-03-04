@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["output.tif","week7-1_files/anchor-4.2.2/anchor.min.js","week7-1_files/bowser-1.9.3/bowser.min.js","week7-1_files/distill-2.2.21/template.v2.js","week7-1_files/figure-html5/unnamed-chunk-10-1.png","week7-1_files/figure-html5/unnamed-chunk-11-1.png","week7-1_files/figure-html5/unnamed-chunk-3-1.png","week7-1_files/figure-html5/unnamed-chunk-5-1.png","week7-1_files/figure-html5/unnamed-chunk-5-2.png","week7-1_files/figure-html5/unnamed-chunk-6-1.png","week7-1_files/figure-html5/unnamed-chunk-7-1.png","week7-1_files/figure-html5/unnamed-chunk-9-1.png","week7-1_files/header-attrs-2.6/header-attrs.js","week7-1_files/jquery-1.11.3/jquery.min.js","week7-1_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week7-1_files/anchor-4.2.2/anchor.min.js","week7-1_files/bowser-1.9.3/bowser.min.js","week7-1_files/distill-2.2.21/template.v2.js","week7-1_files/figure-html5/unnamed-chunk-10-1.png","week7-1_files/figure-html5/unnamed-chunk-11-1.png","week7-1_files/figure-html5/unnamed-chunk-12-1.png","week7-1_files/figure-html5/unnamed-chunk-3-1.png","week7-1_files/figure-html5/unnamed-chunk-5-1.png","week7-1_files/figure-html5/unnamed-chunk-5-2.png","week7-1_files/figure-html5/unnamed-chunk-6-1.png","week7-1_files/figure-html5/unnamed-chunk-6-2.png","week7-1_files/figure-html5/unnamed-chunk-7-1.png","week7-1_files/figure-html5/unnamed-chunk-8-1.png","week7-1_files/figure-html5/unnamed-chunk-9-1.png","week7-1_files/header-attrs-2.6/header-attrs.js","week7-1_files/jquery-1.11.3/jquery.min.js","week7-1_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2269,7 +2269,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <ol start="2" type="1">
 <li><p>Vector data formats are used to store geometric information, like the locations of hospitals (points), trajectories of bus routes (lines), or boundaries of counties (polygons). It’s useful to think of the associated data as being spatially enriched data frames, with each row corresponding to one of these geometric features.</p></li>
 <li><p>Vector data are usually stored in <code>.geojson</code>, <code>.wkt</code>, <code>.shp</code>, or <code>.topojson</code> formats. Standard data.frames cannot be used because then important spatial metadata would be lost, like the Coordinate Reference System (to be explained in the fourth lecture this week).</p></li>
-<li><p>In R, these formats can be read using <code>read_sf</code> in the <code>sf</code> package. They can be written using the <code>write_sf</code> function.</p></li>
+<li><p>In R, these formats can be read using <code>read_sf</code> in the <code>sf</code> package. They can be written using the <code>write_sf</code> function. Here, we’ll read in a vector dataset containing the boundaries of lakes in Madison.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2302,43 +2302,36 @@ geographic CRS: WGS 84
 </code></pre>
 </div>
 </div>
+<p>We’ll discuss plotting in the next lecture, but for a preview, this is how you can visualize the lakes using ggplot2.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='va'>lakes</span> <span class='op'>&lt;-</span> <span class='va'>lakes</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
-    longitude <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_coordinates.html'>st_coordinates</a></span><span class='op'>(</span><span class='va'>geometry</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>,
-    latitude <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_coordinates.html'>st_coordinates</a></span><span class='op'>(</span><span class='va'>geometry</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>]</span>
-  <span class='op'>)</span>
-
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>lakes</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='st'>"#00ced1"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>longitude</span>, y <span class='op'>=</span> <span class='va'>latitude</span>, label <span class='op'>=</span> <span class='va'>name</span><span class='op'>)</span>,
-    size <span class='op'>=</span> <span class='fl'>3</span>, box.padding <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grid/unit.html'>unit</a></span><span class='op'>(</span><span class='fl'>25</span>, <span class='st'>"pt"</span><span class='op'>)</span>
-  <span class='op'>)</span>
-</code></pre>
-</div>
 <p><img src="week7-1_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
+<p>With a little extra effort, we can overlay the features onto public map backgrounds (these are often called “basemaps”).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_centroid</a></span><span class='op'>(</span><span class='va'>lakes</span><span class='op'>[</span><span class='fl'>1</span>, <span class='op'>]</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Simple feature collection with 1 feature and 18 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: -89.35824 ymin: 43.0684 xmax: -89.35824 ymax: 43.0684
+geographic CRS: WGS 84
+# A tibble: 1 x 19
+# Groups:   id [1]
+  id    X.id  name  name.win natural old_name type  water wikidata
+* &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   
+1 rela… rela… Lake… Tchee-h… water   Third L… mult… lake  Q2916757
+# … with 10 more variables: wikipedia &lt;chr&gt;, boat &lt;chr&gt;,
+#   gnis.feature_id &lt;chr&gt;, ele &lt;chr&gt;, gnis.county_id &lt;chr&gt;,
+#   gnis.created &lt;chr&gt;, gnis.state_id &lt;chr&gt;, geometry &lt;POINT [°]&gt;,
+#   longitude &lt;dbl&gt;, latitude &lt;dbl&gt;</code></pre>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></span><span class='op'>(</span><span class='va'>satellite</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>lakes</span>, fill <span class='op'>=</span> <span class='st'>"#00ced1"</span>, inherit.aes <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span>
-</code></pre>
-</div>
-<img src="week7-1_files/figure-html5/unnamed-chunk-5-1.png" width="624" />
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></span><span class='op'>(</span><span class='va'>watercolor</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>lakes</span>, fill <span class='op'>=</span> <span class='st'>"#00ced1"</span>, inherit.aes <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span>
-</code></pre>
-</div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-5-2.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-6-1.png" width="624" /><img src="week7-1_files/figure-html5/unnamed-chunk-6-2.png" width="624" /></p>
 </div>
 <ol start="5" type="1">
 <li>There is a surprising amount of public vector data available online. Using this <a href="https://overpass-turbo.eu/s/14ma">query<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></a>, I’ve downloaded locations of all hospital clinics in Madison.</li>
@@ -2347,13 +2340,13 @@ geographic CRS: WGS 84
 <div class="sourceCode">
 <pre><code><span class='va'>clinics</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>read_sf</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/896jdml9mfnmza3vf8bh221h9hlvh70v.geojson"</span><span class='op'>)</span>
 
-<span class='co'># exercise -- overlay the names of the clinics, using geom_text</span>
+<span class='co'># how would you overlay the names of the clinics, using geom_text?</span>
 <span class='fu'><a href='https://rdrr.io/pkg/ggmap/man/ggmap.html'>ggmap</a></span><span class='op'>(</span><span class='va'>satellite</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>clinics</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, size <span class='op'>=</span> <span class='fl'>2</span>, inherit.aes <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
 <p>Using this <a href="https://overpass-turbo.eu/s/14m9">query</a>, I’ve downloaded all the bus routes.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2365,7 +2358,7 @@ geographic CRS: WGS 84
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>coord_sf</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
 </div>
 <p>For the boundaries of the lakes above, I used this <a href="https://overpass-turbo.eu/s/14mb">query</a>.</p>
 <p>Many organizations prepare geojson data themselves and make it publicly available; e.g., the boundaries of <a href="https://data-wi-dnr.opendata.arcgis.com/datasets/c7de80dd473d440e98ab3acb611e7d64_2">rivers</a> or <a href="https://rds.icimod.org/Home/DataDetail?metadataId=9361&amp;searchlist=True">glaciers</a>. Don’t worry about how to visualize these data at this point — I just want to give some motivating examples.</p>
@@ -2402,7 +2395,7 @@ max values :                              65535,                              65
 <pre><code><span class='fu'><a href='https://rdrr.io/pkg/RStoolbox/man/ggRGB.html'>ggRGB</a></span><span class='op'>(</span><span class='va'>shanghai</span>, stretch<span class='op'>=</span><span class='st'>"lin"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
 </div>
 <p>There’s actually quite a bit of information in this image. We can zoom in…</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2411,7 +2404,7 @@ max values :                              65535,                              65
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>121.66</span>, <span class='fl'>121.665</span><span class='op'>)</span>, ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>30.963</span>, <span class='fl'>30.968</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-10-1.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
 </div>
 <p>Here are is data on elevation in Zion national park.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2425,13 +2418,13 @@ max values :                              65535,                              65
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week7-1_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+<p><img src="week7-1_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
 <h3 id="installation">Installation</h3>
 <ol start="9" type="1">
 <li>A note about R packages: for historical reasons, spatial data libraries in R reference a few command line programs, like <code>gdal</code> and <code>proj</code>. Since these command line programs are not themselves a part of R, they need to be installed before the corresponding R packages. The process will differ from operating system to operating system, and the experience can be frustrating, especially when the R packages don’t recognize the underlying system installation. I recommend following the instructions on <a href="https://github.com/r-spatial/sf">this page</a> and reaching out early if you have any issues.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
