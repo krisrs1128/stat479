@@ -1,0 +1,13 @@
+base
+rmarkdown
+distill
+knitr
+igraph
+ggplot2
+ggnetwork
+ggraph
+dplyr
+tidygraph
+robservable
+gridExtra
+networkD3

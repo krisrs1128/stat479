@@ -1,0 +1,26 @@
+---
+title: "Enclosure"
+description: |
+  Visualization of hierarchical structure.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-15-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_mxmjc2qy), [Notebook](https://observablehq.com/@krisrs1128/week-3-4), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
+1. If nodes can be conceptually organized into a hierarchy, then it’s possible to use enclosure — the containment of some visual marks within other — to encode those relationships.
+2. Hierarchy most obviously occurs in trees, but it can also be present in networks with clustering structure at several levels.
+3. Enclosure is used in treemaps. In this visualization, each node is allocated an area, and all its children are drawn within that area (and so on, recursively, down to the leaves).
+4. This is a particularly useful visualization when it’s important to visualize a continuous attribute associated with each node. For example, a large node might correspond to a large part of a budget or a large directory in a filesystem.
+5. This visualization is not so useful for making topological comparisons, like the distance between two nodes in the tree.
+6. In situations where network nodes can be organized hierarchically, containment marks can directly represent the these relationships. For example, in the network below, the red and yellow clusters are contained in a green supercluster. The combination of node-link diagram and containment sets makes this structure clear.

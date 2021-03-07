@@ -1,0 +1,31 @@
+---
+title: "Adjacency Matrix Views"
+description: |
+  A scalable network visualization strategy.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-14-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_mxmjc2qy), [Notebook](https://observablehq.com/@krisrs1128/week-3-4), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
+1. The adjacency matrix of an undirected graph is the matrix with a 1 in entry $ij$ if nodes $i$ and $j$ are linked by an edge and 0 otherwise. It has one row and one column for every node in the graph. Visually, these 1’s and 0’s can be encoded as a black and white squares.
+2. The example below shows the adjacency matrix associated with…
+3. In a directed graph, the $ij^{th}$ entry is set to 1 if node $i$ leads directly to node $j$. Unlike the undirected graph, it is not necessarily symmetric.
+4. The example below shows the directed graph associated with….
+5. Node properties can be encoded along the rows and columns of the matrix. Edge properties can be encoded by the color or opacity of cells in the matrix.
+6. The key advantage of visualization using adjacency matrices is that they can scale to large and dense networks. It’s possible to perceive structure even when the squares are quite small, and there is no risk of edges overlapping with one another.
+7. Adjacency matrices can be as useful as node-link diagrams for the task of finding group structure. The example below shows how cliques (fully connected subsets), bicliques (sets of nodes that are fully connected between one another), and clusters (densely, but not completely, connected subsets) are clearly visible in both node-link and adjacency matrix visualizations.
+8. The key disadvantage of adjacency matrix visualization is that it’s challenging to make sense of the local topology around a node. Finding the « friends of friends » of a node requires effort.
+9. Another issue is that different orderings of rows and columns can have a dramatic effect on the structure that’s visible^[Though viewed differently, this additional degree of freedom can facilitate richer comparisons.]
+10. These visualizations also tend to be less intuitive for audiences that haven’t viewed them before.
+11. In a sense, adjacency matrix and node-link visualizations are complementary to one another. Some approaches try to use the adjacency matrix to give a global view of a network, and dynamic queries on the adjacency matrix can reveal the associated, local node-link diagrams.
