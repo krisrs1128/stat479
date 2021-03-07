@@ -12,7 +12,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 library("robservable")
 ```
 
@@ -20,6 +20,7 @@ _[Reading](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9)
 
 ```{r}
 library("dplyr")
+library("knitr")
 library("ggplot2")
 library("ggraph")
 library("gridExtra")
@@ -109,19 +110,19 @@ salvage the node-link display. For example, in a large tree, a rectangular or
 BubbleTree layout can be used.
 	
 	
-```{r, fig.cap = "Example rectangular and BubbleTree layouts, for very large trees, as shown in Visualization Analysis and Design."}
+```{r, fig.cap = "Example rectangular and BubbleTree layouts, for very large trees, as shown in Visualization Analysis and Design.", echo = FALSE}
 include_graphics("https://uwmadison.box.com/shared/static/r9boadgujdkp0xy3hk23n6j2ri13yh6h.png")
 ```
 	
-	If a large network has a modular structure, then it is possible to first lay out the separate clusters far apart from one another, before running force directed placement.
+If a large network has a modular structure, then it is possible to first lay out the separate clusters far apart from one another, before running force directed placement.
 	
-```{r, fig.cap = "A hierarchical force directed layout algorithm, as shown in Visualization Analysis and Design."}
+```{r, fig.cap = "A hierarchical force directed layout algorithm, as shown in Visualization Analysis and Design.", echo = FALSE}
 include_graphics("https://uwmadison.box.com/shared/static/0zihaty78j8ytmdjwlqetbxpjzbrz8k6.png")
 ```
 
-	If many edges go through a few shared paths, it may be possible to bundle them.
+If many edges go through a few shared paths, it may be possible to bundle them.
 	
-```{r, fig.width = 12}
+```{r, layout='l-page', fig.width = 12, fig.height=12, fig.cap = "In edge bundling, similar paths are placed close to one another."}
 from <- match(flare$imports$from, flare$vertices$name)
 to <- match(flare$imports$to, flare$vertices$name)
 ggraph(G_flare, layout = 'dendrogram', circular = TRUE) + 
