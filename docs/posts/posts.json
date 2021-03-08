@@ -1,5 +1,22 @@
 [
   {
+    "path": "posts/2021-03-06-week8-4/",
+    "title": "Enclosure",
+    "description": "Visualization of hierarchical structure using containment.",
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-03-16",
+    "categories": [],
+    "contents": "\nReading, Recording, Notebook, Rmarkdown\n\n\nlibrary(\"ggplot2\")\nlibrary(\"ggraph\")\nlibrary(\"dplyr\")\nlibrary(\"tidygraph\")\ntheme_set(theme_graph())\n\n\n\nIf nodes can be conceptually organized into a hierarchy, then it’s possible to use enclosure (i.e., the containment of some visual marks within others) to encode those relationships.\n\n\ngraph <- graph_from_data_frame(flare$edges, vertices = flare$vertices)\n\np1 <- ggraph(graph, \"dendrogram\") +\n  geom_edge_link() +\n  geom_node_point()\np2 <- ggraph(graph, \"circlepack\", weight = size) +\n  geom_node_circle(aes(fill = depth), size = 0.25, n = 50) +\n  scale_fill_distiller(direction = 1) +\n  coord_fixed()\n\ngrid.arrange(p1, p2, ncol = 2)\n\n\n\n\nFigure 1: A tree and the equivalent representation using containment. The outer circle corresponds to the root node in the tree, and paths down the tree are associated with sequences of nested circles.\n\n\n\nHierarchy most obviously occurs in trees, but it can also be present in networks with clustering structure at several levels. (see point 6 below).\nEnclosure is used in treemaps. In this visualization, each node is allocated an area, and all its children are drawn within that area (and so on, recursively, down to the leaves).\n\n\nggraph(graph, \"treemap\", weight = size) +\n  geom_node_tile(aes(fill = depth), size = 0.25, n = 50) +\n  scale_fill_distiller(direction = 1) +\n  coord_fixed()\n\n\n\n\nFigure 2: A treemap representation associated with the tree from above.\n\n\n\nThis is a particularly useful visualization when it’s important to visualize a continuous attribute associated with each node. For example, a large node might correspond to a large part of a budget or a large directory in a filesystem. Here is an example visualization of Obama’s budget proposal in 2013.\nA caveat: treemaps are not so useful for making topological comparisons, like the distance between two nodes in the tree.\nIn situations where network nodes can be organized hierarchically, containment marks can directly represent the these relationships. For example, in the network below, the red and yellow clusters are contained in a green supercluster. The combination of node-link diagram and containment sets makes this structure clear.\n\n\n\nFigure 3: An example of how hierarchy across groups of nodes can be encoded within a network.\n\n\n\n\n\n\n",
+    "preview": "posts/2021-03-06-week8-4/week8-4_files/figure-html5/unnamed-chunk-2-1.png",
+    "last_modified": "2021-03-08T11:42:25-06:00",
+    "input_file": "week8-4.utf8.md"
+  },
+  {
     "path": "posts/2021-03-06-week8-2/",
     "title": "Node - Link Diagrams",
     "description": "The most common network visualization strategy.",
