@@ -104,7 +104,6 @@ Now we can visualize these derived attributes using the `geom_edge_link` and
 ```{r, fig.cap = "The same network as above, but with edge size encoding the weight attribute."}
 ggraph(G, layout = "kk") +
   geom_edge_link(aes(width = width)) +
-  geom_node_point(aes(col = group)) +
   geom_node_label(aes(label = id))
 ```
 

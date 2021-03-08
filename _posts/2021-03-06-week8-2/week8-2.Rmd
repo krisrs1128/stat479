@@ -121,8 +121,17 @@ include_graphics("https://uwmadison.box.com/shared/static/0zihaty78j8ytmdjwlqetb
 ```
 
 If many edges go through a few shared paths, it may be possible to bundle them.
+
+```{r, echo = FALSE, fig.cap = "In edge bundling, similar paths are placed close to one another."}
+include_graphics("https://www.data-to-viz.com/graph/IMG/bundle_compare.png")
+```
+
+Bundled connections can be visualized using the `geom_conn_bundle` geometry.
+Before using this layout, it is necessary to have a hierarchy over all the
+nodes, since shared ancestry among connected nodes is how the proximity of paths
+is determined.
 	
-```{r, layout='l-page', fig.width = 12, fig.height=12, fig.cap = "In edge bundling, similar paths are placed close to one another."}
+```{r, layout='l-page', fig.width = 12, fig.height=12, fig.cap = "An example of hierarchical edge bundling in R."}
 from <- match(flare$imports$from, flare$vertices$name)
 to <- match(flare$imports$to, flare$vertices$name)
 ggraph(G_flare, layout = 'dendrogram', circular = TRUE) + 
