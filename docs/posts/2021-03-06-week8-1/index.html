@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week8-1_files/anchor-4.2.2/anchor.min.js","week8-1_files/bowser-1.9.3/bowser.min.js","week8-1_files/distill-2.2.21/template.v2.js","week8-1_files/figure-html5/unnamed-chunk-6-1.png","week8-1_files/figure-html5/unnamed-chunk-8-1.png","week8-1_files/figure-html5/unnamed-chunk-9-1.png","week8-1_files/header-attrs-2.6/header-attrs.js","week8-1_files/jquery-1.11.3/jquery.min.js","week8-1_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week8-1_files/anchor-4.2.2/anchor.min.js","week8-1_files/bowser-1.9.3/bowser.min.js","week8-1_files/distill-2.2.21/template.v2.js","week8-1_files/figure-html5/unnamed-chunk-6-1.png","week8-1_files/figure-html5/unnamed-chunk-7-1.png","week8-1_files/figure-html5/unnamed-chunk-8-1.png","week8-1_files/figure-html5/unnamed-chunk-9-1.png","week8-1_files/header-attrs-2.6/header-attrs.js","week8-1_files/jquery-1.11.3/jquery.min.js","week8-1_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="https://search.library.wisc.edu/catalog/9911196629502121">Reading</a> (Chapter 9), <a href="">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-1/week8-1.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="https://search.library.wisc.edu/catalog/9911196629502121">Reading 1</a> (Chapter 9), <a href="https://web.stanford.edu/class/bios221/book/Chap-Graphs.html">Reading 2</a>, <a href="https://mediaspace.wisc.edu/media/Week%208%20%5B1%5D%20Introduction%20to%20Networks%20and%20Trees/1_qie3eehm">Recording</a>, <a href="https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-1/week8-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
@@ -2260,11 +2260,11 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol type="1">
-<li><p>Networks and trees can be used to represent information in a variety of contexts. Abstractly, networks and trees are types of <em>graphs</em>, which are defined by (a) a set of vertices, <span class="math inline">\(V\)</span>, and (b) a set of edges <span class="math inline">\(E\)</span> between pairs of vertices.</p></li>
-<li><p>Just to have something concrete in mind, here are some preliminary examples,</p>
+<li><p>Networks and trees can be used to represent information in a variety of contexts. Abstractly, networks and trees are types of <em>graphs</em>, which are defined by (a) a set <span class="math inline">\(V\)</span> of vertices and (b) a set <span class="math inline">\(E\)</span> of edges between pairs of vertices.</p></li>
+<li><p>It is helpful to have a few specific examples in mind,</p>
 <ul>
 <li>The Internet: <span class="math inline">\(V = \{\text{All Webpages}\}, \left(v, v^{\prime}\right) \in E\)</span> if there is a hyperlink between pages <span class="math inline">\(v\)</span> and <span class="math inline">\(v^{\prime}\)</span>.</li>
-<li>Evolutionary Tree: <span class="math inline">\(V = \{\text{All past and present species}\}, \left(v,  v^{\prime}\right) \in E\)</span> if one of the species is a descendant of the other.</li>
+<li>Evolutionary Tree: <span class="math inline">\(V = \{\text{All past and present species}\}, \left(v,  v^{\prime}\right) \in E\)</span> if one of the species <span class="math inline">\(v\)</span> or <span class="math inline">\(v^{\prime}\)</span> is a descendant of the other.</li>
 <li>Disease Transmission: <span class="math inline">\(V = \{\text{Community Members}\}, \left(v,  v^{\prime}\right) \in E\)</span> if the two community members have come in close contact.</li>
 <li>Directory Tree: <span class="math inline">\(V = \{\text{All directories in a computer}\}, \left(v,  v^{\prime}\right) \in E\)</span> if one directory is contained in the other.</li>
 </ul></li>
@@ -2304,33 +2304,49 @@ Figure 4: Directories in a file system can be organized into a tree, with parent
 <ol start="3" type="1">
 <li><p>Either vertices or edges might have attributes. For example, in the directory tree, we might know the sizes of the files (vertex attribute), and in the disease transmission network we might know the duration of contact between individuals (edge attribute).</p></li>
 <li><p>An edge may be either undirected or directed. In a directed edge, one vertex leads to the other, while in an undirected edge, there is no sense of ordering.</p></li>
-<li><p>In R, the <code>tidygraph</code> package can be used to manipulate graph packages, and <code>ggraph</code> extends the usual ggplot2 syntax to graphs.</p></li>
+<li><p>In R, the <code>tidygraph</code> package can be used to manipulate graph data. It’s <code>tbl_graph</code> class stores node and edge attributes in a single data structure. and <code>ggraph</code> extends the usual ggplot2 syntax to graphs.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>E</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span>,
-    <span class='fl'>2</span>, <span class='fl'>3</span>,
-    <span class='fl'>3</span>, <span class='fl'>4</span>,
-    <span class='fl'>4</span>, <span class='fl'>5</span>,
-    <span class='fl'>5</span>, <span class='fl'>6</span><span class='op'>)</span>,
-  byrow <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  ncol <span class='op'>=</span> <span class='fl'>2</span>
+<pre><code><span class='va'>E</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  source <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span><span class='op'>)</span>,
+  target <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span><span class='op'>)</span>
 <span class='op'>)</span>
 
-<span class='fu'><a href='https://ggraph.data-imaginist.com/reference/ggraph.html'>ggraph</a></span><span class='op'>(</span><span class='va'>E</span>, layout <span class='op'>=</span> <span class='st'>'kk'</span><span class='op'>)</span> <span class='op'>+</span> 
-    <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_edge_fan.html'>geom_edge_fan</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
-    <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_node_point.html'>geom_node_point</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>G</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></span><span class='op'>(</span>edges <span class='op'>=</span> <span class='va'>E</span><span class='op'>)</span>
+<span class='va'>G</span>
 </code></pre>
 </div>
-<p><img src="week8-1_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<pre><code># A tbl_graph: 6 nodes and 5 edges
+#
+# A rooted tree
+#
+# Node Data: 6 x 0 (active)
+#
+# Edge Data: 5 x 2
+   from    to
+  &lt;int&gt; &lt;int&gt;
+1     1     3
+2     2     3
+3     3     4
+# … with 2 more rows</code></pre>
+</div>
+<p>This <code>tbl_graph</code> can be plotted using the code below. There are different geoms available for nodes and edges – for example, what happens if you replace <code>geom_edge_link()</code> with <code>geom_edge_arc()</code>?</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggraph.data-imaginist.com/reference/ggraph.html'>ggraph</a></span><span class='op'>(</span><span class='va'>G</span>, layout <span class='op'>=</span> <span class='st'>'kk'</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_edge_link.html'>geom_edge_link</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_node_point.html'>geom_node_point</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week8-1_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
 </div>
 <ol start="6" type="1">
 <li>We can mutate node and edge attributes using dplyr-like syntax. Before mutating edges, it’s necessary to call <code>activate(edges)</code>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>G</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>as_tbl_graph</a></span><span class='op'>(</span><span class='va'>E</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+<pre><code><span class='va'>G</span> <span class='op'>&lt;-</span> <span class='va'>G</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
     id <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/ranking.html'>row_number</a></span><span class='op'>(</span><span class='op'>)</span>,
     group <span class='op'>=</span> <span class='va'>id</span> <span class='op'>&lt;</span> <span class='fl'>4</span>
@@ -2347,11 +2363,11 @@ Figure 4: Directories in a file system can be organized into a tree, with parent
 # Edge Data: 5 x 3 (active)
    from    to width
   &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
-1     1     3 0.961
-2     2     3 0.970
-3     3     4 0.990
-4     4     5 0.980
-5     5     6 0.295
+1     1     3 0.609
+2     2     3 0.218
+3     3     4 0.667
+4     4     5 0.449
+5     5     6 0.379
 #
 # Node Data: 6 x 2
      id group
@@ -2361,17 +2377,16 @@ Figure 4: Directories in a file system can be organized into a tree, with parent
 3     3 TRUE 
 # … with 3 more rows</code></pre>
 </div>
-<p>Now we can visualize these derived attributes using the <code>geom_edge_link</code> and <code>geom_node_point</code>.</p>
+<p>Now we can visualize these derived attributes using an aesthetic mapping within the <code>geom_edge_link</code> and <code>geom_node_point</code> geoms.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='fu'><a href='https://ggraph.data-imaginist.com/reference/ggraph.html'>ggraph</a></span><span class='op'>(</span><span class='va'>G</span>, layout <span class='op'>=</span> <span class='st'>"kk"</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_edge_link.html'>geom_edge_link</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>width <span class='op'>=</span> <span class='va'>width</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_node_point.html'>geom_node_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggraph.data-imaginist.com/reference/geom_node_text.html'>geom_node_label</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>id</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div class="figure"><span id="fig:unnamed-chunk-8"></span>
-<img src="week8-1_files/figure-html5/unnamed-chunk-8-1.png" alt="The same network as above, but with edge size encoding the weight attribute." width="624" />
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<img src="week8-1_files/figure-html5/unnamed-chunk-9-1.png" alt="The same network as above, but with edge size encoding the weight attribute." width="624" />
 <p class="caption">
 Figure 5: The same network as above, but with edge size encoding the weight attribute.
 </p>
@@ -2379,22 +2394,22 @@ Figure 5: The same network as above, but with edge size encoding the weight attr
 </div>
 <h3 id="example-tasks">Example Tasks</h3>
 <ol start="5" type="1">
-<li><p>The purpose of these notes is not to give an abstract discussion of networks or graph theory. Instead, we want to explore (a) the types of data that are amenable to representation by networks or trees and (b) the visual comparisons that would be most useful.</p></li>
-<li><p>As these examples suggest, trees and networks can be used to represent either physical interactions or conceptual relationships. Typical tasks include,</p>
+<li><p>What types of data that are amenable to representation by networks or trees? What visual comparisons do networks and trees facilitate?</p></li>
+<li><p>Our initial examples suggest that trees and networks can be used to represent either physical interactions or conceptual relationships. Typical tasks include,</p>
 <ul>
 <li>Searching for groupings</li>
 <li>Following paths</li>
 <li>Isolating key nodes</li>
 </ul></li>
-<li><p>By « searching for groupings, » we mean finding clusters of nodes that are highly interconnected, but which are relatively isolated from one another. This kind of modular structure might lend itself to deeper investigation within each of the clusters.</p>
+<li><p>By “searching for groupings,” we mean finding clusters of nodes that are highly interconnected, but which have few links outside the cluster. This kind of modular structure might lend itself to deeper investigation within each of the clusters.</p>
 <ul>
-<li>Clusters in a network of political blogs might suggest an echo chamber effect</li>
-<li>Gene clusters in a differential expression study might suggest pathways needed for the production of an important protein</li>
+<li>Clusters in a network of political blogs might suggest an echo chamber effect.</li>
+<li>Gene clusters in a differential expression study might suggest pathways needed for the production of an important protein.</li>
 <li>Clusters in a recipe network could be used identify different culinary techniques or cuisines.</li>
 </ul></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<div class="figure"><span id="fig:unnamed-chunk-10"></span>
 <img src="http://www.visualcomplexity.com/vc/images/227_big02.jpg" alt="A representation of 1200 blogs before the 2004 election, from *The political blogosphere and the 2004 US election: divided they blog*."  />
 <p class="caption">
 Figure 6: A representation of 1200 blogs before the 2004 election, from <em>The political blogosphere and the 2004 US election: divided they blog</em>.
@@ -2402,14 +2417,14 @@ Figure 6: A representation of 1200 blogs before the 2004 election, from <em>The 
 </div>
 </div>
 <ol start="8" type="1">
-<li><p>By « following paths, » we mean tracing the paths out from a particular node, to see which other nodes it is close to.</p>
+<li><p>By “following paths,” we mean tracing the paths out from a particular node, to see which other nodes it is close to.</p>
 <ul>
 <li>Following paths in a citation network might reveal the chain of publications that led to an important discovery.</li>
 <li>Following paths in a recommendation network might suggest other users who might be interested in watching a certain movie.</li>
 </ul></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-10"></span>
+<div class="figure"><span id="fig:unnamed-chunk-11"></span>
 <img src="https://psl.linqs.org/assets/images/hyper/fig3.png" alt="A recommendation network, linking individuals and the movies that they viewed."  />
 <p class="caption">
 Figure 7: A recommendation network, linking individuals and the movies that they viewed.
@@ -2417,7 +2432,7 @@ Figure 7: A recommendation network, linking individuals and the movies that they
 </div>
 </div>
 <ol start="9" type="1">
-<li><p>« Isolating key nodes » is a more fuzzy concept, usually referring to the task of finding nodes that are exceptional in some way. For example, it’s often interesting to find nodes with many more connections than others, or which link otherwise isolated clusters.</p>
+<li><p>“Isolating key nodes” is a more fuzzy concept, usually referring to the task of finding nodes that are exceptional in some way. For example, it’s often interesting to find nodes with many more connections than others, or which link otherwise isolated clusters.</p>
 <ul>
 <li>A node with many edges in a disease transmission network is a superspreader.</li>
 <li>A node that links two clusters in a citation network might be especially interdisciplinary.</li>
@@ -2425,7 +2440,7 @@ Figure 7: A recommendation network, linking individuals and the movies that they
 </ul></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-11"></span>
+<div class="figure"><span id="fig:unnamed-chunk-12"></span>
 <img src="https://www.leydesdorff.net/betweenness/index_files/image008.jpg" alt="The scientific journal, Social Networks, links several publication communities, as found by *Betweenness Centrality as an Indicator of the  Interdisciplinarity of Scientific Journals*."  />
 <p class="caption">
 Figure 8: The scientific journal, Social Networks, links several publication communities, as found by <em>Betweenness Centrality as an Indicator of the Interdisciplinarity of Scientific Journals</em>.
@@ -2435,7 +2450,7 @@ Figure 8: The scientific journal, Social Networks, links several publication com
 <ol start="10" type="1">
 <li>If you find these questions interesting, you might enjoy the catalog of examples on the website <a href="http://www.visualcomplexity.com/vc/">VisualComplexity</a>.</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

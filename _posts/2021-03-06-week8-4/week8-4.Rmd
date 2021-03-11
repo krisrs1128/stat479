@@ -16,13 +16,14 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_mxmjc2qy), [Notebook](https://observablehq.com/@krisrs1128/week-3-4), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+_[Reading](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9), [Recording](https://mediaspace.wisc.edu/media/Week%208%20%5B4%5D%20Enclosure/1_mfuwwoh6), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-3/week8-3.Rmd)_
 
 ```{r}
 library("ggplot2")
 library("ggraph")
 library("dplyr")
 library("tidygraph")
+library("gridExtra")
 theme_set(theme_graph())
 ```
 
@@ -31,13 +32,14 @@ to use enclosure (i.e., the containment of some visual marks within others) to
 encode those relationships.
 
 ```{r, layout = "l-page", fig.width = 12, fig.cap = "A tree and the equivalent representation using containment. The outer circle corresponds to the root node in the tree, and paths down the tree are associated with sequences of nested circles."}
-graph <- graph_from_data_frame(flare$edges, vertices = flare$vertices)
+graph <- tbl_graph(flare$vertices, flare$edges)
 
-p1 <- ggraph(graph, "dendrogram") +
+p1 <- ggraph(graph, "tree") +
   geom_edge_link() +
-  geom_node_point()
+  geom_node_point(aes(size = size)) +
+  scale_size(range = c(0.1, 5))
 p2 <- ggraph(graph, "circlepack", weight = size) +
-  geom_node_circle(aes(fill = depth), size = 0.25, n = 50) +
+  geom_node_circle(aes(fill = depth)) +
   scale_fill_distiller(direction = 1) +
   coord_fixed()
 
@@ -53,7 +55,7 @@ recursively, down to the leaves).
 
 ```{r, fig.cap = "A treemap representation associated with the tree from above."}
 ggraph(graph, "treemap", weight = size) +
-  geom_node_tile(aes(fill = depth), size = 0.25, n = 50) +
+  geom_node_tile(aes(fill = depth, size = depth), size = 0.25) +
   scale_fill_distiller(direction = 1) +
   coord_fixed()
 ```

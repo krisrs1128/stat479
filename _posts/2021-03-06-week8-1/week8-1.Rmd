@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-1/week8-1.Rmd)_
+_[Reading 1](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9), [Reading 2](https://web.stanford.edu/class/bios221/book/Chap-Graphs.html), [Recording](https://mediaspace.wisc.edu/media/Week%208%20%5B1%5D%20Introduction%20to%20Networks%20and%20Trees/1_qie3eehm), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-1/week8-1.Rmd)_
 
 ```{r}
 library("ggplot2")
@@ -28,15 +28,16 @@ theme_set(theme_graph())
 
 1. Networks and trees can be used to represent information in a variety of
 contexts. Abstractly, networks and trees are types of *graphs*, which are
-defined by (a) a set of vertices, $V$, and (b) a set of edges $E$ between pairs
-of vertices.
+defined by (a) a set $V$ of vertices and (b) a set $E$ of edges between pairs of
+vertices.
 
-2. Just to have something concrete in mind, here are some preliminary examples,
+2. It is helpful to have a few specific examples in mind,
 
 	* The Internet: $V = \{\text{All Webpages}\}, \left(v, v^{\prime}\right) \in E$
 	if there is a hyperlink between pages $v$ and $v^{\prime}$.
 	* Evolutionary Tree: $V = \{\text{All past and present species}\}, \left(v,
-	v^{\prime}\right) \in E$ if one of the species is a descendant of the other.
+	v^{\prime}\right) \in E$ if one of the species $v$ or $v^{\prime}$ is a
+	descendant of the other.
 	* Disease Transmission: $V = \{\text{Community Members}\}, \left(v,
 	v^{\prime}\right) \in E$ if the two community members have come in close
 	contact.
@@ -67,29 +68,35 @@ individuals (edge attribute).
 4. An edge may be either undirected or directed. In a directed edge, one vertex
 leads to the other, while in an undirected edge, there is no sense of ordering.
 
-5. In R, the `tidygraph` package can be used to manipulate graph packages, and
-`ggraph` extends the usual ggplot2 syntax to graphs.
+5. In R, the `tidygraph` package can be used to manipulate graph data. It's
+`tbl_graph` class stores node and edge attributes in a single data structure.
+and `ggraph` extends the usual ggplot2 syntax to graphs.
 
 ```{r}
-E <- matrix(
-  c(1, 3,
-    2, 3,
-    3, 4,
-    4, 5,
-    5, 6),
-  byrow = TRUE,
-  ncol = 2
+E <- data.frame(
+  source = c(1, 2, 3, 4, 5),
+  target = c(3, 3, 4, 5, 6)
 )
 
-ggraph(E, layout = 'kk') + 
-    geom_edge_fan() +
-    geom_node_point(size = 2)
+G <- tbl_graph(edges = E)
+G
 ```
+
+This `tbl_graph` can be plotted using the code below. There are different geoms
+available for nodes and edges -- for example, what happens if you replace
+`geom_edge_link()` with `geom_edge_arc()`?
+
+```{r}
+ggraph(G, layout = 'kk') + 
+  geom_edge_link() +
+  geom_node_point()
+```
+
 6. We can mutate node and edge attributes using dplyr-like syntax. Before
 mutating edges, it's necessary to call `activate(edges)`.
 
 ```{r}
-G <- as_tbl_graph(E) %>%
+G <- G %>%
   mutate(
     id = row_number(),
     group = id < 4
@@ -98,8 +105,8 @@ G <- as_tbl_graph(E) %>%
   mutate(width = runif(n()))
 G
 ```
-Now we can visualize these derived attributes using the `geom_edge_link` and
-`geom_node_point`.
+Now we can visualize these derived attributes using an aesthetic mapping within
+the `geom_edge_link` and `geom_node_point` geoms.
 
 ```{r, fig.cap = "The same network as above, but with edge size encoding the weight attribute."}
 ggraph(G, layout = "kk") +
@@ -109,26 +116,24 @@ ggraph(G, layout = "kk") +
 
 ### Example Tasks
 
-5. The purpose of these notes is not to give an abstract discussion of networks
-or graph theory. Instead, we want to explore (a) the types of data that are
-amenable to representation by networks or trees and (b) the visual comparisons
-that would be most useful.
+5. What types of data that are amenable to representation by networks or trees?
+What visual comparisons do networks and trees facilitate?
 
-6. As these examples suggest, trees and networks can be used to represent either
-physical interactions or conceptual relationships. Typical tasks include,
+6. Our initial examples suggest that trees and networks can be used to represent
+either physical interactions or conceptual relationships. Typical tasks include,
 
 	* Searching for groupings
 	* Following paths
 	* Isolating key nodes
 	
-7. By « searching for groupings, » we mean finding clusters of nodes that are
-highly interconnected, but which are relatively isolated from one another. This
-kind of modular structure might lend itself to deeper investigation within each
-of the clusters.
+7. By "searching for groupings," we mean finding clusters of nodes that are
+highly interconnected, but which have few links outside the cluster. This kind
+of modular structure might lend itself to deeper investigation within each of
+the clusters.
 
-	* Clusters in a network of political blogs might suggest an echo chamber effect
+	* Clusters in a network of political blogs might suggest an echo chamber effect.
 	* Gene clusters in a differential expression study might suggest pathways
-	needed for the production of an important protein
+	needed for the production of an important protein.
 	* Clusters in a recipe network could be used identify different culinary
 	techniques or cuisines.
 
@@ -136,7 +141,7 @@ of the clusters.
 include_graphics("http://www.visualcomplexity.com/vc/images/227_big02.jpg")
 ```
 	
-8. By « following paths, » we mean tracing the paths out from a particular node,
+8. By "following paths," we mean tracing the paths out from a particular node,
 to see which other nodes it is close to.
 
 	* Following paths in a citation network might reveal the chain of publications
@@ -148,8 +153,8 @@ to see which other nodes it is close to.
 include_graphics("https://psl.linqs.org/assets/images/hyper/fig3.png")
 ```
 	
-9. « Isolating key nodes » is a more fuzzy concept, usually referring to the
-task of finding nodes that are exceptional in some way. For example, it’s often
+9. "Isolating key nodes" is a more fuzzy concept, usually referring to the task
+of finding nodes that are exceptional in some way. For example, it’s often
 interesting to find nodes with many more connections than others, or which link
 otherwise isolated clusters.
 

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TR
 library("robservable")
 ```
 
-_[Reading](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9), [Recording](), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-2/week8-2.Rmd)_
+_[Reading](https://search.library.wisc.edu/catalog/9911196629502121) (Chapter 9), [Recording](https://mediaspace.wisc.edu/media/Week%208%20%5B2%5D%20Node%20-%20Link%20Diagrams/1_3kbgjvps), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-03-06-week8-2/week8-2.Rmd)_
 
 ```{r}
 library("dplyr")
@@ -31,9 +31,8 @@ theme_set(theme_graph())
 
 1. A node-link diagram is a visual encoding strategy for network data, where
 nodes are drawn as points and links between nodes are drawn as lines between
-them. The dataset below is from a friendship network from a survey of high
-schoolers in 1957 and 1958, from the book "Introduction to Mathematical
-Sociology."
+them. The dataset below is a friendship network derived from a survey of high
+schoolers in 1957 and 1958, available in the `tidygraph` package.
 
 ```{r}
 G_school <- as_tbl_graph(highschool) %>%
@@ -47,7 +46,7 @@ ggraph(G_school) +
 
 2. For trees, the vertical or radial position can further encode the depth of a
 node in the tree. The data below represent the directory structure from a widely
-used web package.
+used web package called flare.
 
 ```{r, fig.cap = "The same node-link diagram, with either height or radius encoding depth in the tree.", layout = "l-page", fig.height = 8, fig.width = 18}
 G_flare <- tbl_graph(flare$vertices, flare$edges)
@@ -62,7 +61,7 @@ p2 <- ggraph(G_flare, 'tree', circular = TRUE) +
 grid.arrange(p1, p2, ncol = 2)
 ```
 
-3. In either trees or networks, attributes of the nodes and edges can be encoded
+3. In either trees or networks, attributes of nodes and edges can be encoded
 using size (node radius or edge width) or color.
 
 4. The node-link representation is especially effective for the task of
@@ -72,7 +71,7 @@ neighborhood of one node or describing the shortest path between two nodes.
 5. In node-link diagrams, spatial position is subtle. It does not directly
 encode any attribute in the dataset, but layout algorithms (i.e., algorithms
 that try to determine the spatial positions of nodes in a node-link diagram) try
-to ensure that nodes that are close to one another in the shortest path sense
+to ensure that nodes that are close to one another in the shortest-path-sense
 also appear close to one another on the page.
 
 ```{r, fig.cap = "A comparison of two layout algorithms for the same network.", fig.width = 10}
@@ -88,7 +87,9 @@ grid.arrange(p1, p2, ncol = 2)
 ```
 
 
-6. One common layout algorithm uses « force-directed placement. » The edges here are interpreted as physical springs, and the node positions are iteratively updated according to the forces induced by the springs.
+6. One common layout algorithm uses force-directed placement. The edges here are
+interpreted as physical springs, and the node positions are iteratively updated
+according to the forces induced by the springs.
 
 7. Here is an interactive force-directed layout of the network from above,
 generated using the networkD3 package.
@@ -126,12 +127,12 @@ If many edges go through a few shared paths, it may be possible to bundle them.
 include_graphics("https://www.data-to-viz.com/graph/IMG/bundle_compare.png")
 ```
 
-Bundled connections can be visualized using the `geom_conn_bundle` geometry.
-Before using this layout, it is necessary to have a hierarchy over all the
-nodes, since shared ancestry among connected nodes is how the proximity of paths
-is determined.
+Bundled connections can be visualized using the `geom_conn_bundle` geometry in
+ggraph. Before using this layout, it is necessary to have a hierarchy over all
+the nodes, since shared ancestry among connected nodes is how the proximity of
+paths is determined.
 	
-```{r, layout='l-page', fig.width = 12, fig.height=12, fig.cap = "An example of hierarchical edge bundling in R."}
+```{r, fig.width=9, fig.height=9, fig.cap = "An example of hierarchical edge bundling in R."}
 from <- match(flare$imports$from, flare$vertices$name)
 to <- match(flare$imports$to, flare$vertices$name)
 ggraph(G_flare, layout = 'dendrogram', circular = TRUE) + 
