@@ -1,7 +1,7 @@
 ---
-title: ""
+title: "Heatmaps"
 description: |
-
+  Visualizing table values, ordered by clustering results.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -17,6 +17,13 @@ library("robservable")
 ```
 
 _[Reading](), [Recording](), [Rmarkdown]()_
+```{r}
+library("readr")
+library("superheat")
+library("ggplot2")
+library("dplyr")
+theme_set(theme_minimal())
+```
 
 1. The direct outputs of a standard clustering algorithim are (a) cluster
 assignments for each sample, (b) the centroids associated with each cluster. A
@@ -35,13 +42,64 @@ represents the value of that entry. For example, here are the first few rows of
 the movies data, along with the corresponding heatmap, made using the superheat
 package.
 
+```{r}
+movies_mat <- read_csv("https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv") %>%
+  column_to_rownames(var = "title")
+```
+
+```{r, fig.height = 9, fig.width = 12}
+cols <- c('#f6eff7','#bdc9e1','#67a9cf','#1c9099','#016c59')
+superheat(movies_mat, left.label.text.size = 4, heat.pal = cols, heat.lim = c(0, 5))
+```
+
 4. Just like in adjacency matrix visualizations, the effectiveness of a heatmap
 can depend dramatically on the way in which rows and columns are ordered. To
 provide a more coherent view, both rows and columns can be clustered, and rows /
 columns belonging to the same cluster can be placed side-by-side.
 
-5. superheat also makes it easy to visualize the cluster membership of each row
-/ column, encoding cluster membership using color.
+```{r, fig.height = 9, fig.width = 12}
+movies_clust <- movies_mat %>%
+  kmeans(centers = 10)
+
+users_clust <- movies_mat %>%
+  t() %>%
+  kmeans(centers = 10)
+
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  order.rows = order(movies_clust$cluster),
+  order.cols = order(users_clust$cluster),
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```
+
+5. superheat also makes it easy to visualize plot statistics adjacent ot the
+adjacent to the main heatmap. These statistics can be plotted as points, lines,
+or bars. Points are useful when you want to highlight the raw value, lines are
+effective for showing change, and bars give a sense of the area below a set of
+observations. In this example, we use an added panel on the right hand side
+(`yr`) to encode the total number of ratings given to that movie. The
+`yr.obs.cols` allows us to change the color of each point in the adjacent plot.
+In this example, we change color depending on which cluster the movie was found
+to belong to.
+
+```{r, fig.height = 9, fig.width = 12}
+cluster_cols <- c('#8dd3c7','#ccebc5','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd')
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  order.rows = order(movies_clust$cluster),
+  order.cols = order(users_clust$cluster),
+  heat.pal = cols,
+  heat.lim = c(0, 5),
+  yr = rowSums(movies_mat > 0),
+  yr.axis.name = "Number of Ratings",
+  yr.obs.col = cluster_cols[movies_clust$cluster],
+  yr.plot.type = "bar"
+)
+```
 
 6. It also makes sense to order the rows / columns using hierarchical
 clusterings. This approach is especially useful when the samples fall along a
@@ -49,12 +107,30 @@ continuous gradient, rather than belonging to well-separated groups. The
 `pretty.order.rows` and `pretty.order.cols` arguments use hierarchical
 clustering to reorder the heatmap.
 
-7. The trees estimated by `pretty.order.rows` and `pretty.order.cols` can be
-also visualized.
+```{r, fig.height = 9, fig.width = 12}
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  pretty.order.cols = TRUE,  
+  pretty.order.rows = TRUE,
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```
 
-8. The superheat package also makes it possible to display rowwise or columnwise
-statistics alongside the main heatmap. These statistics can be plotted as
-points, lines, or bars. Points are useful when you want to highlight the raw
-value, lines are effective for showing change, and bars give a sense of the area
-below a set of observations. The visualizations below show the average rating of
-each movie.
+7. The hierarchical clustering trees estimated by `pretty.order.rows` and
+`pretty.order.cols` can be also visualized.
+
+```{r, fig.height = 9, fig.width = 15}
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  pretty.order.cols = TRUE,  
+  pretty.order.rows = TRUE, 
+  row.dendrogram = TRUE,
+  col.dendrogram = TRUE,
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```
+
