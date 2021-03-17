@@ -1,0 +1,58 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. Clustering algorithms usually require the number $K$ of clusters to generate
+as an argument. How should it be chosen?
+
+2. There are many answers in the literature, but one common approach is to
+compute the silhouette statistic. This is the approach advocated by the authors
+of the HOPACH algorithm — they say to cut their hierarchical clustering tree at
+the location where the median of silhouette statistics is minimized.
+
+3. The diagrams below illustrate the computation of silhouette statistics for a
+clustering that used $K = 3$. A silhouette statistic $s\_{i}$ can be computed
+for each observation in a dataset, with respect to this clustering.
+
+4. Suppose observation $i$ belongs to cluster 1. To compute its silhouette
+statistic, $s_{i}$, we start by computing the pairwise distances to all
+observations in the same cluster (cluster 1). Call average of these distances
+$a_{i}$.
+
+5. Next, we compute pairwise distances to all observations in clusters 2 and 3.
+The average of these pairwise distances are called $b_{i2}$ and $b_{i3}$. Choose
+the smaller of $b_{i2}$ and $b_{i3}$, and call it $b_{i}$. In a sense, this is
+the ``next best'' cluster to put observation $i$.
+
+6. The silhouette statistic for observation $i$ is defined as $s_{i}:=
+\frac{b_{i} - a_{i}}{\max{a_{i}, b\_{i}}$.
+
+7. The median of these $s_{i}$ for all observations within cluster $k$ is a
+measure of how isolated cluster $k$ is from the rest of the observations. The
+higher this number, the more well-defined the cluster. The closer it is to 0,
+the less well-defined the cluster.
+
+8. Denote the median of the silhouette statistics within cluster $k$ by
+$SS_{k}$. A measure how how good a clustering is overall can be determined by
+the median of these medians: $\text{Quality}(K) := \text{median}_{k = 1 \dots,
+K} SS_{k}$.
+
+9. In particular, this can be used to define (a) a good cut point in a
+hierarchical clustering or (b) a point at which a cluster should no longer be
+split into subgroups.

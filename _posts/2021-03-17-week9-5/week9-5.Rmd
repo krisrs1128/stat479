@@ -1,0 +1,42 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. One of the fundamental principles in statistics is that, no matter how the
+experiment / study was conducted, if you ran it again, you would get different
+results. More formally, sampling variability creates uncertainty in our
+inferences.
+
+2. How should we think about sampling variability in the context of clustering?
+This is a question that is still being actively studied, but we will consider
+some approaches described in the HOPACH paper^[The fact that the paper discussed
+this problem was my main reason for choosing it as a reading.].
+
+3. Let’s start with a motivating example. A study has found a collection of
+genes that are differentially expressed between patients with two different
+subtypes of leukemia. There is an interest in clustering genes that have similar
+expression profiles across all patients — these genes probably belong to similar
+biological processes.
+
+4. Once you run the clustering, how sure can you be that, if the study would run
+again, you would recover a similar clustering? Are there some genes that you are
+sure belong to a particular cluster? Are there some that lie between two
+clusters?
+
+5. We illustrate the main idea, consider the simulated dataset below.

@@ -1,0 +1,60 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. The direct outputs of a standard clustering algorithim are (a) cluster
+assignments for each sample, (b) the centroids associated with each cluster. A
+hierarchical clustering algorithm enriches this output with a tree, which
+provide (a) and (b) at multiple levels of resolution.
+
+2. These outputs can be used to improve visualizations. For example, they can be
+used to define small multiples, faceting across clusters. One especially common
+idea is to reorder the rows of a heatmap, and this is the subject of these
+notes.
+
+3. In a heatmap, each mark (usually a small tile) corresponds to an entry of a
+matrix. The x-coordinate of the mark encodes the index of the observation, while
+the y-coordinate encodes the index of the feature. The color of each tile
+represents the value of that entry. For example, here are the first few rows of
+the movies data, along with the corresponding heatmap, made using the superheat
+package.
+
+4. Just like in adjacency matrix visualizations, the effectiveness of a heatmap
+can depend dramatically on the way in which rows and columns are ordered. To
+provide a more coherent view, both rows and columns can be clustered, and rows /
+columns belonging to the same cluster can be placed side-by-side.
+
+5. superheat also makes it easy to visualize the cluster membership of each row
+/ column, encoding cluster membership using color.
+
+6. It also makes sense to order the rows / columns using hierarchical
+clusterings. This approach is especially useful when the samples fall along a
+continuous gradient, rather than belonging to well-separated groups. The
+`pretty.order.rows` and `pretty.order.cols` arguments use hierarchical
+clustering to reorder the heatmap.
+
+7. The trees estimated by `pretty.order.rows` and `pretty.order.cols` can be
+also visualized.
+
+8. The superheat package also makes it possible to display rowwise or columnwise
+statistics alongside the main heatmap. These statistics can be plotted as
+points, lines, or bars. Points are useful when you want to highlight the raw
+value, lines are effective for showing change, and bars give a sense of the area
+below a set of observations. The visualizations below show the average rating of
+each movie.

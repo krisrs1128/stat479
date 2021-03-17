@@ -1,0 +1,63 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. In $K$-means, $K$ controls the « magnification » of a clustering. What if we
+wanted to do the clustering at many different scales?
+
+2. A tree can be used to implicitly store many clusterings at once. You can get
+a standard clustering by « cutting » the tree at some level.
+
+3. These hierarchical clustering trees can be thought of abstract versions of
+the taxonomic trees. Instead of relating species, they relate observations in a
+dataset.
+
+```{r}
+robservable("@mbostock/tree-of-life")
+```
+
+4. Elaborating on this analogy, the leaves of a hierarchical clustering tree are
+the original observations. The more recently two nodes share a common
+« ancestor, » the more similar those observations are.
+
+5. The specific algorithm proceeds as follows,
+
+	* Initialize: Associate each point with a cluster \def\reals{\mathbb{R}}
+	\def\E{\mathbb{E}} % Expectation symbol \def\P{\mathbb{P}} % Expectation symbol
+	\def\Earg#1{\E\left[{#1}\right]} \def\Parg#1{\P\left[{#1}\right]}
+	\def\Esubarg#1#2{\E\_{#1}\left[{#2}\right]} \def\eps{\epsilon}
+	\def\F{\mathcal{F}} C\_i := \{x\_i\}Ci :={x i }
+	* Iterate until only one cluster: Look at all pairs of clusters. Merge the pair
+	\def\reals{\mathbb{R}} \def\E{\mathbb{E}} % Expectation symbol
+	\def\P{\mathbb{P}} % Expectation symbol \def\Earg#1{\E\left[{#1}\right]}
+	\def\Parg#1{\P\left[{#1}\right]} \def\Esubarg#1#2{\E_{#1}\left[{#2}\right]}
+	\def\eps{\epsilon} \def\F{\mathcal{F}} C_k, C_{k^{\prime}}C k​	 ,C k ′  which
+	are the most similar.\_
+	
+6. In R, this can be accomplished by using the `hclust` function. First, we need
+to compute the distances between all pairs of observations (this provides the
+similarities used in the algorithm). Then, we apply `hclust` to the matrix of
+pairwise distances.
+
+7. We apply this to a movie ratings dataset. Movies are considered similar if
+they tend to receive similar ratings across all audience members. The result is
+visualized below.
+
+8. We can cut the tree to recover a standard clustering.
+
