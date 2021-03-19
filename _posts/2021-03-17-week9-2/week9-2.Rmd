@@ -5,7 +5,7 @@ description: |
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 
+date: 2021-03-22
 output:
   distill::distill_article:
     self_contained: false
@@ -13,7 +13,6 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
-library("robservable")
 ```
 
 _[Reading](), [Recording](), [Rmarkdown]()_
@@ -23,22 +22,23 @@ library("dplyr")
 library("ggplot2")
 library("ggraph")
 library("knitr")
+library("readr")
 library("robservable")
 library("tidygraph")
 theme_set(theme_graph())
 ```
 
-1. In reality, data tend not to be as clearly separated into a fixed number of
-distinct clusters. More often, even once a cluster formed, it's possible to
-identify a few subclusters. For example, if you initially clustered movies into
-"drama" and "scifi", you might be able to further refine the scifi cluster into
-"time travel" and "dystopian future."
+1. In reality, data are rarely separated into a clear number of homogeneous
+clusters. More often, even once a cluster formed, it's possible to identify a
+few subclusters. For example, if you initially clustered movies into "drama" and
+"scifi", you might be able to further refine the scifi cluster into "time
+travel" and "aliens."
 
-2.$K$-means only allows clustering at a single level of ``magnification.'' To
-simultaneously cluster across scales, you can use a hierarchical clustering. As
-a first observation, note that a tree can be used to implicitly store many
-clusterings at once. You can get a standard clustering by ``cutting'' the tree
-at some level.
+2.$K$-means only allows clustering at a single level of magnification. To
+instead simultaneously cluster across scales, you can use an approach called
+hierarchical clustering. As a first observation, note that a tree can be used to
+implicitly store many clusterings at once. You can get a standard clustering by
+cutting the tree at some level.
 
 ```{r}
 include_graphics("https://drive.google.com/uc?id=11YZtI_rbkRNAwj5rArUBh1nNYZBmSRVG")
@@ -54,7 +54,7 @@ robservable("@mbostock/tree-of-life")
 
 4. Elaborating on this analogy, the leaves of a hierarchical clustering tree are
 the original observations. The more recently two nodes share a common
-``ancestor,'' the more similar those observations are.
+ancestor, the more similar those observations are.
 
 5. The specific algorithm proceeds as follows,
 
@@ -82,12 +82,12 @@ include_graphics("https://drive.google.com/uc?id=1kYqnHe_ARcpYmaMGlwQq9uAM7urGdz
 include_graphics("https://drive.google.com/uc?id=1_n0bm0raZkexZgmUuhD4wO0sRlpGHHCc")
 ```
 
-```{r, fig.cap = "... and eventually we will construct the entire tree."}
+```{r}
 include_graphics("https://drive.google.com/uc?id=11_zq5WYue-FICbWbnIg8OQoQDVaG--x-")
 ```
 	
-6. In R, this can be accomplished by using the `hclust` function. First, we need
-to compute the distances between all pairs of observations (this provides the
+6. In R, this can be accomplished by using the `hclust` function. First, we
+compute the distances between all pairs of observations (this provides the
 similarities used in the algorithm). Then, we apply `hclust` to the matrix of
 pairwise distances.
 
@@ -106,9 +106,9 @@ hclust_result <- hclust(D)
 plot(hclust_result, cex = 0.5)
 ```
 
-8. We can customize our tree visualization using ggraph. First, we need to
+8. We can customize our tree visualization using the ggraph package. We can
 convert the hclust object into a ggraph, using the same `as_tbl_graph` function
-we used in the network and trees lectures.
+from the network and trees lectures.
 
 ```{r}
 hclust_graph <- as_tbl_graph(hclust_result, height = height)
