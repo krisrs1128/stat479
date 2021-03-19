@@ -85,38 +85,38 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: K-Means</title>
+<title>Statistical Data Visualization: Silhouette Statistics</title>
 
-<meta property="description" itemprop="description" content="An introduction to clustering and how to manage its output."/>
+<meta property="description" itemprop="description" content="Diagnostics for the quality of a clustering."/>
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-03-21"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-03-21"/>
+<meta property="article:published" itemprop="datePublished" content="2021-03-24"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-03-24"/>
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: K-Means"/>
+<meta property="og:title" content="Statistical Data Visualization: Silhouette Statistics"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="An introduction to clustering and how to manage its output."/>
+<meta property="og:description" content="Diagnostics for the quality of a clustering."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: K-Means"/>
-<meta property="twitter:description" content="An introduction to clustering and how to manage its output."/>
+<meta property="twitter:title" content="Statistical Data Visualization: Silhouette Statistics"/>
+<meta property="twitter:description" content="Diagnostics for the quality of a clustering."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["K-Means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Silhouette Statistics"]},{"type":"character","attributes":{},"value":["Diagnostics for the quality of a clustering."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-24"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week9-1_files/anchor-4.2.2/anchor.min.js","week9-1_files/bowser-1.9.3/bowser.min.js","week9-1_files/distill-2.2.21/template.v2.js","week9-1_files/figure-html5/unnamed-chunk-5-1.png","week9-1_files/figure-html5/unnamed-chunk-6-1.png","week9-1_files/header-attrs-2.6/header-attrs.js","week9-1_files/jquery-1.11.3/jquery.min.js","week9-1_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week9-4_files/anchor-4.2.2/anchor.min.js","week9-4_files/bowser-1.9.3/bowser.min.js","week9-4_files/distill-2.2.21/template.v2.js","week9-4_files/figure-html5/unnamed-chunk-10-1.png","week9-4_files/figure-html5/unnamed-chunk-3-1.png","week9-4_files/figure-html5/unnamed-chunk-4-1.png","week9-4_files/figure-html5/unnamed-chunk-5-1.png","week9-4_files/figure-html5/unnamed-chunk-6-1.png","week9-4_files/figure-html5/unnamed-chunk-7-1.png","week9-4_files/figure-html5/unnamed-chunk-8-1.png","week9-4_files/figure-html5/unnamed-chunk-9-1.png","week9-4_files/header-attrs-2.6/header-attrs.js","week9-4_files/jquery-1.11.3/jquery.min.js","week9-4_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"K-Means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"Silhouette Statistics","description":"Diagnostics for the quality of a clustering.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-24T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,179 +2235,208 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>K-Means</h1>
+<h1>Silhouette Statistics</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>An introduction to clustering and how to manage its output.</p></p>
+<p><p>Diagnostics for the quality of a clustering.</p></p>
 </div>
 
 <div class="d-byline">
   Kris Sankaran  (UW Madison)
   
-<br/>2021-03-21
+<br/>2021-03-24
 </div>
 
 <div class="d-article">
 <p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"dslabs"</span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://yihui.org/knitr/'>"knitr"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidymodels.tidymodels.org'>"tidymodels"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidyr.tidyverse.org'>"tidyr"</a></span><span class='op'>)</span>
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://svn.r-project.org/R-packages/trunk/cluster'>"cluster"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://stringr.tidyverse.org'>"stringr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidymodels.tidymodels.org'>"tidymodels"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
 <ol type="1">
-<li><p>The goal of clustering is to discover distinct groups within a dataset. In an ideal clustering, samples are very different between groups, but relatively similar within groups. At the end of a clustering routine, <span class="math inline">\(K\)</span> clusters have been identified, and each sample is assigned to one of these <span class="math inline">\(K\)</span> clusters. <span class="math inline">\(K\)</span> must be chosen by the user.</p></li>
-<li><p>Clustering gives a compressed representation of the dataset. Therefore, clustering is useful for getting a quick overview of the high-level structure in a dataset.</p></li>
-<li><p>For example, clustering can be used in the following applications,</p>
-<ul>
-<li>User segmentation: A marketing study might try to summarize different user behaviors by clustering into a few key “segments.” Each segment might motivate a different type of marketing campaign.</li>
-<li>Gene expression profiling: A genomics study might try to identify genes whose expression levels are similar across different experimental conditions. These gene clusters might be responsible for a shared biological function.</li>
-</ul></li>
-<li><p>K-means is a particular algorithm for finding clusters. First, it randomly initializes <span class="math inline">\(K\)</span> cluster centroids. Then, it alternates the following two steps until convergence,</p>
-<ul>
-<li>Assign points to their nearest cluster centroid.</li>
-<li>Update the <span class="math inline">\(K\)</span> centroids to be the averages of points within their cluster.</li>
-</ul></li>
-</ol>
-<p>Here is an animation from the <code>tidymodels</code> page on <span class="math inline">\(K\)</span>-means,</p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="https://www.tidymodels.org/learn/statistics/k-means/kmeans.gif" /><!-- --></p>
-</div>
-<ol start="5" type="1">
-<li><p>Note that, since we have to take an average for each coordinate, we require that our data be quantitative, not categorical<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p></li>
-<li><p>We illustrate this idea using the <code>movielens</code> dataset from the reading. This dataset has ratings (0.5 to 5) given by 671 users across 9066 movies. We can think of this as a matrix of movies vs. users, with ratings within the entries. For simplicity, we filter down to only the 50 most frequently rated movies. We will assume that if a user never rated a movie, they would have given that movie a zero<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> We’ve skipped a few steps used in the reading (subtracting movie / user averages and filtering to only active users), but the overall results are comparable.</p></li>
+<li><p>Clustering algorithms usually require the number of clusters <span class="math inline">\(K\)</span> as an argument. How should it be chosen?</p></li>
+<li><p>There are many possible criteria, but one common approach is to compute the silhouette statistic. It is a statistic that can be computed for each observation in a dataset, measuring how strongly it is tied to its assigned cluster. If a whole cluster has large silhouette statistics, then that cluster is well-defined and clearly isolated other clusters.</p></li>
+<li><p>The plots below illustrate the computation of silhouette statistics for a clustering of the penguins dataset that used <span class="math inline">\(K = 3\)</span>. To set up, we first need to cluster the penguins dataset. The idea is the same as in the <span class="math inline">\(K\)</span>-means notes, but we encapsulate the code in a function, so that we can easily extract data for different values of <span class="math inline">\(K\)</span>.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"movielens"</span><span class='op'>)</span>
-<span class='va'>frequently_rated</span> <span class='op'>&lt;-</span> <span class='va'>movielens</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>movieId</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>n<span class='op'>=</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='fl'>50</span>, <span class='va'>n</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='op'>(</span><span class='va'>movieId</span><span class='op'>)</span>
+<pre><code><span class='va'>penguins</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/ijh7iipc9ect1jf0z8qa2n3j7dgem1gh.csv"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>id <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/ranking.html'>row_number</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='va'>movie_mat</span> <span class='op'>&lt;-</span> <span class='va'>movielens</span> <span class='op'>%&gt;%</span> 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>movieId</span> <span class='op'>%in%</span> <span class='va'>frequently_rated</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>title</span>, <span class='va'>userId</span>, <span class='va'>rating</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span><span class='va'>title</span>, names_from <span class='op'>=</span> <span class='va'>userId</span>, values_from <span class='op'>=</span> <span class='va'>rating</span>, values_fill <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
-
-<span class='va'>movie_mat</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>20</span><span class='op'>]</span>
+<span class='va'>cluster_penguins</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>penguins</span>, <span class='va'>K</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>penguins</span> <span class='op'>%&gt;%</span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"length|depth|mass"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='op'>)</span>
+    
+  <span class='fu'><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></span><span class='op'>(</span><span class='va'>x</span>, center <span class='op'>=</span> <span class='va'>K</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+    <span class='fu'>augment</span><span class='op'>(</span><span class='va'>penguins</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='co'># creates column ".cluster" with cluster label</span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>silhouette <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/cluster/man/silhouette.html'>silhouette</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>.cluster</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[</span>, <span class='st'>"sil_width"</span><span class='op'>]</span><span class='op'>)</span>
+<span class='op'>}</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 10 x 20
-   title     `2`   `3`   `4`   `5`   `6`   `7`   `8`   `9`  `10`  `11`
-   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 Seven …     4   0       0     0     0     0   5       3     0     0
- 2 Usual …     4   0       0     0     0     0   5       0     5     5
- 3 Braveh…     4   4       0     0     0     5   4       0     0     0
- 4 Apollo…     5   0       0     4     0     0   0       0     0     0
- 5 Pulp F…     4   4.5     5     0     0     0   4       0     0     5
- 6 Forres…     3   5       5     4     0     3   4       0     0     0
- 7 Lion K…     3   0       5     4     0     3   0       0     0     0
- 8 Mask, …     3   0       4     4     0     3   0       0     0     0
- 9 Speed       3   2.5     0     4     0     3   0       0     0     0
-10 Fugiti…     3   0       0     0     0     0   4.5     0     0     0
-# … with 9 more variables: 12 &lt;dbl&gt;, 13 &lt;dbl&gt;, 14 &lt;dbl&gt;, 15 &lt;dbl&gt;,
-#   16 &lt;dbl&gt;, 17 &lt;dbl&gt;, 18 &lt;dbl&gt;, 19 &lt;dbl&gt;, 20 &lt;dbl&gt;</code></pre>
 </div>
-<ol start="7" type="1">
-<li>Next, we run <code>kmeans</code> on this dataset. I’ve used the dplyr pipe notation to run <code>kmeans</code> on the data above with “title” removed. <code>augment</code> is a function from the tidymodels package that adds the cluster labels identified by <code>kmeans</code> to the rows in the original dataset.</li>
+<ol start="4" type="1">
+<li>Denote the silhouette statistic of observation <span class="math inline">\(i\)</span> by <span class="math inline">\(s_{i}\)</span>. We will compute <span class="math inline">\(s_i\)</span> for the observation with the black highlight below<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>kclust</span> <span class='op'>&lt;-</span> <span class='va'>movie_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>title</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></span><span class='op'>(</span>centers <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
-
-<span class='va'>movie_mat</span> <span class='op'>&lt;-</span> <span class='fu'>augment</span><span class='op'>(</span><span class='va'>kclust</span>, <span class='va'>movie_mat</span><span class='op'>)</span> <span class='co'># creates column ".cluster" with cluster label</span>
-<span class='va'>kclust</span> <span class='op'>&lt;-</span> <span class='fu'>tidy</span><span class='op'>(</span><span class='va'>kclust</span><span class='op'>)</span>
-
-<span class='va'>movie_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>title</span>, <span class='va'>.cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>.cluster</span><span class='op'>)</span>
+<pre><code><span class='va'>cur_id</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='va'>penguins3</span> <span class='op'>&lt;-</span> <span class='fu'>cluster_penguins</span><span class='op'>(</span><span class='va'>penguins</span>, K <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>obs_i</span> <span class='op'>&lt;-</span> <span class='va'>penguins3</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>id</span> <span class='op'>==</span> <span class='va'>cur_id</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 50 x 2
-   title                .cluster
-   &lt;chr&gt;                &lt;fct&gt;   
- 1 American Beauty      1       
- 2 Godfather, The       1       
- 3 Seven (a.k.a. Se7en) 2       
- 4 Usual Suspects, The  2       
- 5 Pulp Fiction         2       
- 6 Braveheart           3       
- 7 Apollo 13            3       
- 8 Speed                3       
- 9 Fugitive, The        3       
-10 Jurassic Park        3       
-# … with 40 more rows</code></pre>
 </div>
-<ol start="8" type="1">
-<li>There are two pieces of derived data generated by this routine,</li>
-</ol>
-<ul>
-<li>The cluster assignments
-<ul>
-<li>The cluster centroids</li>
-</ul></li>
-</ul>
-<p>and both can be the subjects of visualization.</p>
-<ol start="9" type="1">
-<li>In our movie example, the cluster centroids are imaginary pseudo-movies that are representative of their cluster. They are represented by the scores they would have received by each of the users in the dataset. This is visualized below. In a more realistic application, we would also want to display some information about each user; e.g., maybe some movies are more popular among certain age groups or in certain regions.</li>
-</ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>kclust_long</span> <span class='op'>&lt;-</span> <span class='va'>kclust</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span><span class='op'>(</span><span class='va'>`2`</span><span class='op'>:</span><span class='va'>`671`</span>, names_to <span class='op'>=</span> <span class='st'>"userId"</span>, values_to <span class='op'>=</span> <span class='st'>"rating"</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>kclust_long</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/reorder.factor.html'>reorder</a></span><span class='op'>(</span><span class='va'>userId</span>, <span class='va'>rating</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='va'>rating</span><span class='op'>)</span>,
-    stat <span class='op'>=</span> <span class='st'>"identity"</span>
-  <span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='va'>cluster</span> <span class='op'>~</span> <span class='va'>.</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Users (sorted)"</span>, y <span class='op'>=</span> <span class='st'>"Rating"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
-    axis.text.x <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,
-    axis.text.y <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
-    strip.text.y <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>angle <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
-  <span class='op'>)</span>
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins3</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>bill_length_mm</span>, y <span class='op'>=</span> <span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>obs_i</span>, size <span class='op'>=</span> <span class='fl'>5</span>, col <span class='op'>=</span> <span class='st'>"black"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size</a></span><span class='op'>(</span>range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div class="figure"><span id="fig:unnamed-chunk-5"></span>
-<img src="week9-1_files/figure-html5/unnamed-chunk-5-1.png" alt="We can visualize each cluster by seeing the average ratings each user gave to the movies in that cluster (this is the definition of the centroid). An alternative visualization strategy would be to show a heatmap -- we'll discuss this soon in the superheat lecture." width="624" />
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-4-1.png" alt="The observation on which we will compute the silhouette statistic." width="624" />
 <p class="caption">
-Figure 1: We can visualize each cluster by seeing the average ratings each user gave to the movies in that cluster (this is the definition of the centroid). An alternative visualization strategy would be to show a heatmap – we’ll discuss this soon in the superheat lecture.
+Figure 1: The observation on which we will compute the silhouette statistic.
 </p>
 </div>
 </div>
-<ol start="10" type="1">
-<li><p>It’s often of interest to relate the cluster assignments to complementary data, to see whether the clustering reflects any previously known differences between the observations, which weren’t directly used in the clustering algorithm.</p></li>
-<li><p>Be cautious: Outliers, nonspherical shapes, and variations in density can throw off <span class="math inline">\(K\)</span>-means.</p></li>
+<ol start="5" type="1">
+<li>The first step in the calculation of the silhouette statistic is to measure the pairwise distances between the observation <span class="math inline">\(i\)</span> and all observations in the same cluster. These distances are the lengths of the small lines below. Call average of these lengths <span class="math inline">\(a_{i}\)</span>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-6"></span>
-<img src="https://codeahoy.com/img/kmeans/uneven-applied.png" alt="The difficulty that variations in density poses to k-means, from Cluster Analysis using K-Means Explained."  />
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins3</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>bill_length_mm</span>, y <span class='op'>=</span> <span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_segment.html'>geom_segment</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='va'>penguins3</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>.cluster</span> <span class='op'>==</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>.cluster</span><span class='op'>)</span>, 
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>xend <span class='op'>=</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>bill_length_mm</span>, yend <span class='op'>=</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>bill_depth_mm</span><span class='op'>)</span>,
+    size <span class='op'>=</span> <span class='fl'>0.6</span>, alpha <span class='op'>=</span> <span class='fl'>0.3</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>obs_i</span>, size <span class='op'>=</span> <span class='fl'>5</span>, col <span class='op'>=</span> <span class='st'>"black"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size</a></span><span class='op'>(</span>range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Distances used for "</span>, <span class='va'>a</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-5-1.png" alt="The average distance between the target observation and all others in the same cluster." width="624" />
 <p class="caption">
-Figure 2: The difficulty that variations in density poses to k-means, from Cluster Analysis using K-Means Explained.
+Figure 2: The average distance between the target observation and all others in the same cluster.
+</p>
+</div>
+</div>
+<ol start="5" type="1">
+<li>Next, we compute pairwise distances to all observations in clusters 2 and 3. The average of these pairwise distances are called <span class="math inline">\(b_{i2}\)</span> and <span class="math inline">\(b_{i3}\)</span>. Choose the smaller of <span class="math inline">\(b_{i2}\)</span> and <span class="math inline">\(b_{i3}\)</span>, and call it <span class="math inline">\(b_{i}\)</span>. In a sense, this is the “next best” cluster to put observation <span class="math inline">\(i\)</span>. For a general <span class="math inline">\(K\)</span>, you would compute <span class="math inline">\(b_{ik}\)</span> for all <span class="math inline">\(k\)</span> (other than observation <span class="math inline">\(i\)</span>’s cluster) and take the minimum across all of them. In this case, the orange segments are on average smaller than the blue segments, so <span class="math inline">\(b_i\)</span> is defined as the average length of the orange segments.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins3</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>bill_length_mm</span>, y <span class='op'>=</span> <span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_segment.html'>geom_segment</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='va'>penguins3</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>.cluster</span> <span class='op'>!=</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>.cluster</span><span class='op'>)</span>, 
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>xend <span class='op'>=</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>bill_length_mm</span>, yend <span class='op'>=</span> <span class='va'>obs_i</span><span class='op'>$</span><span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span><span class='op'>)</span>,
+    size <span class='op'>=</span> <span class='fl'>0.5</span>, alpha <span class='op'>=</span> <span class='fl'>0.3</span>
+  <span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>obs_i</span>, size <span class='op'>=</span> <span class='fl'>5</span>, col <span class='op'>=</span> <span class='st'>"black"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size</a></span><span class='op'>(</span>range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Distances used for "</span>, <span class='va'>b</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>, <span class='st'>" and "</span>, <span class='va'>b</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-6-1.png" alt="The average distance between the target observation and all others in *different* clusters." width="624" />
+<p class="caption">
+Figure 3: The average distance between the target observation and all others in <em>different</em> clusters.
+</p>
+</div>
+</div>
+<ol start="6" type="1">
+<li><p>The silhouette statistic for observation <span class="math inline">\(i\)</span> is derived from the relative lengths of the orange vs. green segments. Formally, the silhouette statistic for observation <span class="math inline">\(i\)</span> is <span class="math inline">\(s_{i}:= \frac{b_{i} - a_{i}}{\max{a_{i}, b\_{i}}\)</span>. This number is close to 1 if the orange segments are much longer than the green segments, close to 0 if the segments are about the same size, and close to -1 if the the orange segments are much shorter than the green segments<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p></li>
+<li><p>The median of these <span class="math inline">\(s_{i}\)</span> for all observations within cluster <span class="math inline">\(k\)</span> is a measure of how well-defined cluster <span class="math inline">\(k\)</span> is overall. The higher this number, the more well-defined the cluster.</p></li>
+<li><p>Denote the median of the silhouette statistics within cluster <span class="math inline">\(k\)</span> by <span class="math inline">\(SS_{k}\)</span>. A measure how good a choice of <span class="math inline">\(K\)</span> is can be determined by the median of these medians: <span class="math inline">\(\text{Quality}(K) := \text{median}_{k = 1 \dots, K} SS_{k}\)</span>.</p></li>
+<li><p>In particular, this can be used to define (a) a good cut point in a hierarchical clustering or (b) a point at which a cluster should no longer be split into subgroups.</p></li>
+<li><p>In R, we can use the <code>silhouette</code> function from the cluster package to compute the silhouette statistic. The syntax is <code>silhouette(cluster_labels, pairwise_distances)</code> where <code>cluster_labels</code> is a vector of (integer) cluster ID’s for each observation and <code>pairwise_distances</code> gives the lengths of the segments between all pairs of observations. An example of this function’s usage is given in the function at the start of the illustration.</p></li>
+<li><p>This is what the silhouette statistic looks like in the penguins dataset when we choose 3 clusters. The larger points have lower silhouette statistics. This points between clusters 2 and 3 have large silhouette statistics because those two clusters blend into one another.</p></li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins3</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>bill_length_mm</span>, y <span class='op'>=</span> <span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span>, size <span class='op'>=</span> <span class='va'>silhouette</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size</a></span><span class='op'>(</span>range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-7-1.png" alt="The silhouette statistics on the Palmers Penguins dataset, when using $K$-means with $K = 3$." width="624" />
+<p class="caption">
+Figure 4: The silhouette statistics on the Palmers Penguins dataset, when using <span class="math inline">\(K\)</span>-means with <span class="math inline">\(K = 3\)</span>.
 </p>
 </div>
 </div>
 <ol start="12" type="1">
-<li>The goals of clustering are highly problem dependent, and different goals might call for alternative algorithms. For example, consider the ways clustering might be used to understand disease transmission. One problem might be to cluster the DNA sequences of the pathogenic agent, to recover its evolutionary history. This could be done using hierarchical clustering (next lecture). A second problem might be to determine whether patient outcomes might be driven by one of a few environmental factors, in which case a <span class="math inline">\(K\)</span>-means clustering across the typical environmental factors would be reasonable. A third use would be to perform contact tracing, based on a network clustering algorithm. The point is that no clustering algorithm is uniformly better than any other in all situations, and the choice of which one to use should be guided by the problem requirements.</li>
+<li>We can also visualize the histogram of silhouette statistics within each cluster. Since the silhouette statistics for cluster 2 are generally lower than those for the other two clusters (in particular, its median is lower), we can conclude that it is less well-defined.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins3</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>silhouette</span><span class='op'>)</span>, binwidth <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.cluster</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-8-1.png" alt="The per-cluster histograms of silhouette statistics summarize how well-defined each cluster is." width="768" />
+<p class="caption">
+Figure 5: The per-cluster histograms of silhouette statistics summarize how well-defined each cluster is.
+</p>
+</div>
+</div>
+<ol start="13" type="1">
+<li>If we choose even more clusters, then there are more points lying along the boundaries of poorly defined clusters. Their associated silhouette statistics end up becoming larger. From the histogram, we can also see a deterioration in the median silhouette scores across all clusters.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>penguins4</span> <span class='op'>&lt;-</span> <span class='fu'>cluster_penguins</span><span class='op'>(</span><span class='va'>penguins</span>, K <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins4</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>bill_length_mm</span>, y <span class='op'>=</span> <span class='va'>bill_depth_mm</span>, col <span class='op'>=</span> <span class='va'>.cluster</span>, size <span class='op'>=</span> <span class='va'>silhouette</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size</a></span><span class='op'>(</span>range <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<img src="week9-4_files/figure-html5/unnamed-chunk-9-1.png" alt="We can repeat the same exercise, but with $K = 4$ clusters instead." width="624" />
+<p class="caption">
+Figure 6: We can repeat the same exercise, but with <span class="math inline">\(K = 4\)</span> clusters instead.
+</p>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>penguins4</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>silhouette</span><span class='op'>)</span>, binwidth <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.cluster</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week9-4_files/figure-html5/unnamed-chunk-10-1.png" width="768" /></p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1" role="doc-endnote"><p>To work with data of different types, it’s possible to use a variant called <span class="math inline">\(K\)</span>-medoids, but this is beyond the scope of this class.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>This is an approximation – there are probably many movies that the users would have enjoyed had they had a chance to watch them.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1" role="doc-endnote"><p>You can change <code>cur_id</code> to try different observations.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>This last case likely indicates a misclustering.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 <!--radix_placeholder_article_footer-->

@@ -85,38 +85,38 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: K-Means</title>
+<title>Statistical Data Visualization: Heatmaps</title>
 
-<meta property="description" itemprop="description" content="An introduction to clustering and how to manage its output."/>
+<meta property="description" itemprop="description" content="Visualizing table values, ordered by clustering results."/>
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-03-21"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-03-21"/>
+<meta property="article:published" itemprop="datePublished" content="2021-03-23"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-03-23"/>
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: K-Means"/>
+<meta property="og:title" content="Statistical Data Visualization: Heatmaps"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="An introduction to clustering and how to manage its output."/>
+<meta property="og:description" content="Visualizing table values, ordered by clustering results."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: K-Means"/>
-<meta property="twitter:description" content="An introduction to clustering and how to manage its output."/>
+<meta property="twitter:title" content="Statistical Data Visualization: Heatmaps"/>
+<meta property="twitter:description" content="Visualizing table values, ordered by clustering results."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["K-Means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Heatmaps"]},{"type":"character","attributes":{},"value":["Visualizing table values, ordered by clustering results."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-23"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week9-1_files/anchor-4.2.2/anchor.min.js","week9-1_files/bowser-1.9.3/bowser.min.js","week9-1_files/distill-2.2.21/template.v2.js","week9-1_files/figure-html5/unnamed-chunk-5-1.png","week9-1_files/figure-html5/unnamed-chunk-6-1.png","week9-1_files/header-attrs-2.6/header-attrs.js","week9-1_files/jquery-1.11.3/jquery.min.js","week9-1_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week9-3_files/anchor-4.2.2/anchor.min.js","week9-3_files/bowser-1.9.3/bowser.min.js","week9-3_files/distill-2.2.21/template.v2.js","week9-3_files/figure-html5/unnamed-chunk-3-1.png","week9-3_files/figure-html5/unnamed-chunk-4-1.png","week9-3_files/figure-html5/unnamed-chunk-5-1.png","week9-3_files/figure-html5/unnamed-chunk-6-1.png","week9-3_files/figure-html5/unnamed-chunk-7-1.png","week9-3_files/header-attrs-2.6/header-attrs.js","week9-3_files/jquery-1.11.3/jquery.min.js","week9-3_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"K-Means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"Heatmaps","description":"Visualizing table values, ordered by clustering results.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-23T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,181 +2235,134 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>K-Means</h1>
+<h1>Heatmaps</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>An introduction to clustering and how to manage its output.</p></p>
+<p><p>Visualizing table values, ordered by clustering results.</p></p>
 </div>
 
 <div class="d-byline">
   Kris Sankaran  (UW Madison)
   
-<br/>2021-03-21
+<br/>2021-03-23
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"dslabs"</span><span class='op'>)</span>
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://yihui.org/knitr/'>"knitr"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidymodels.tidymodels.org'>"tidymodels"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidyr.tidyverse.org'>"tidyr"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"superheat"</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tibble.tidyverse.org/'>"tibble"</a></span><span class='op'>)</span>
 <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
 <ol type="1">
-<li><p>The goal of clustering is to discover distinct groups within a dataset. In an ideal clustering, samples are very different between groups, but relatively similar within groups. At the end of a clustering routine, <span class="math inline">\(K\)</span> clusters have been identified, and each sample is assigned to one of these <span class="math inline">\(K\)</span> clusters. <span class="math inline">\(K\)</span> must be chosen by the user.</p></li>
-<li><p>Clustering gives a compressed representation of the dataset. Therefore, clustering is useful for getting a quick overview of the high-level structure in a dataset.</p></li>
-<li><p>For example, clustering can be used in the following applications,</p>
-<ul>
-<li>User segmentation: A marketing study might try to summarize different user behaviors by clustering into a few key “segments.” Each segment might motivate a different type of marketing campaign.</li>
-<li>Gene expression profiling: A genomics study might try to identify genes whose expression levels are similar across different experimental conditions. These gene clusters might be responsible for a shared biological function.</li>
-</ul></li>
-<li><p>K-means is a particular algorithm for finding clusters. First, it randomly initializes <span class="math inline">\(K\)</span> cluster centroids. Then, it alternates the following two steps until convergence,</p>
-<ul>
-<li>Assign points to their nearest cluster centroid.</li>
-<li>Update the <span class="math inline">\(K\)</span> centroids to be the averages of points within their cluster.</li>
-</ul></li>
-</ol>
-<p>Here is an animation from the <code>tidymodels</code> page on <span class="math inline">\(K\)</span>-means,</p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="https://www.tidymodels.org/learn/statistics/k-means/kmeans.gif" /><!-- --></p>
-</div>
-<ol start="5" type="1">
-<li><p>Note that, since we have to take an average for each coordinate, we require that our data be quantitative, not categorical<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p></li>
-<li><p>We illustrate this idea using the <code>movielens</code> dataset from the reading. This dataset has ratings (0.5 to 5) given by 671 users across 9066 movies. We can think of this as a matrix of movies vs. users, with ratings within the entries. For simplicity, we filter down to only the 50 most frequently rated movies. We will assume that if a user never rated a movie, they would have given that movie a zero<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> We’ve skipped a few steps used in the reading (subtracting movie / user averages and filtering to only active users), but the overall results are comparable.</p></li>
+<li><p>The direct outputs of a standard clustering algorithim are (a) cluster assignments for each sample, (b) the centroids associated with each cluster. A hierarchical clustering algorithm enriches this output with a tree, which provide (a) and (b) at multiple levels of resolution.</p></li>
+<li><p>These outputs can be used to improve visualizations. For example, they can be used to define small multiples, faceting across clusters. One especially common idea is to reorder the rows of a heatmap using the results of a clustering, and this is the subject of these notes.</p></li>
+<li><p>In a heatmap, each mark (usually a small tile) corresponds to an entry of a matrix. The <span class="math inline">\(x\)</span>-coordinate of the mark encodes the index of the observation, while the <span class="math inline">\(y\)</span>-coordinate encodes the index of the feature. The color of each tile represents the value of that entry. For example, here are the first few rows of the movies data, along with the corresponding heatmap, made using the superheat package.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"movielens"</span><span class='op'>)</span>
-<span class='va'>frequently_rated</span> <span class='op'>&lt;-</span> <span class='va'>movielens</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>movieId</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>n<span class='op'>=</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='fl'>50</span>, <span class='va'>n</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='op'>(</span><span class='va'>movieId</span><span class='op'>)</span>
-
-<span class='va'>movie_mat</span> <span class='op'>&lt;-</span> <span class='va'>movielens</span> <span class='op'>%&gt;%</span> 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>movieId</span> <span class='op'>%in%</span> <span class='va'>frequently_rated</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>title</span>, <span class='va'>userId</span>, <span class='va'>rating</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span><span class='va'>title</span>, names_from <span class='op'>=</span> <span class='va'>userId</span>, values_from <span class='op'>=</span> <span class='va'>rating</span>, values_fill <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
-
-<span class='va'>movie_mat</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>20</span><span class='op'>]</span>
+<pre><code><span class='va'>movies_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tibble.tidyverse.org/reference/rownames.html'>column_to_rownames</a></span><span class='op'>(</span>var <span class='op'>=</span> <span class='st'>"title"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 10 x 20
-   title     `2`   `3`   `4`   `5`   `6`   `7`   `8`   `9`  `10`  `11`
-   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 Seven …     4   0       0     0     0     0   5       3     0     0
- 2 Usual …     4   0       0     0     0     0   5       0     5     5
- 3 Braveh…     4   4       0     0     0     5   4       0     0     0
- 4 Apollo…     5   0       0     4     0     0   0       0     0     0
- 5 Pulp F…     4   4.5     5     0     0     0   4       0     0     5
- 6 Forres…     3   5       5     4     0     3   4       0     0     0
- 7 Lion K…     3   0       5     4     0     3   0       0     0     0
- 8 Mask, …     3   0       4     4     0     3   0       0     0     0
- 9 Speed       3   2.5     0     4     0     3   0       0     0     0
-10 Fugiti…     3   0       0     0     0     0   4.5     0     0     0
-# … with 9 more variables: 12 &lt;dbl&gt;, 13 &lt;dbl&gt;, 14 &lt;dbl&gt;, 15 &lt;dbl&gt;,
-#   16 &lt;dbl&gt;, 17 &lt;dbl&gt;, 18 &lt;dbl&gt;, 19 &lt;dbl&gt;, 20 &lt;dbl&gt;</code></pre>
 </div>
-<ol start="7" type="1">
-<li>Next, we run <code>kmeans</code> on this dataset. I’ve used the dplyr pipe notation to run <code>kmeans</code> on the data above with “title” removed. <code>augment</code> is a function from the tidymodels package that adds the cluster labels identified by <code>kmeans</code> to the rows in the original dataset.</li>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>cols</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'#f6eff7'</span>,<span class='st'>'#bdc9e1'</span>,<span class='st'>'#67a9cf'</span>,<span class='st'>'#1c9099'</span>,<span class='st'>'#016c59'</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/superheat/man/superheat.html'>superheat</a></span><span class='op'>(</span><span class='va'>movies_mat</span>, left.label.text.size <span class='op'>=</span> <span class='fl'>4</span>, heat.pal <span class='op'>=</span> <span class='va'>cols</span>, heat.lim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week9-3_files/figure-html5/unnamed-chunk-3-1.png" width="1152" /></p>
+</div>
+<ol start="4" type="1">
+<li>Just like in adjacency matrix visualizations, the effectiveness of a heatmap can depend dramatically on the way in which rows and columns are ordered. To provide a more coherent view, we cluster both rows and columns, placing rows / columns belonging to the same cluster next to one another.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>kclust</span> <span class='op'>&lt;-</span> <span class='va'>movie_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>title</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+<pre><code><span class='va'>movies_clust</span> <span class='op'>&lt;-</span> <span class='va'>movies_mat</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></span><span class='op'>(</span>centers <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 
-<span class='va'>movie_mat</span> <span class='op'>&lt;-</span> <span class='fu'>augment</span><span class='op'>(</span><span class='va'>kclust</span>, <span class='va'>movie_mat</span><span class='op'>)</span> <span class='co'># creates column ".cluster" with cluster label</span>
-<span class='va'>kclust</span> <span class='op'>&lt;-</span> <span class='fu'>tidy</span><span class='op'>(</span><span class='va'>kclust</span><span class='op'>)</span>
+<span class='va'>users_clust</span> <span class='op'>&lt;-</span> <span class='va'>movies_mat</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></span><span class='op'>(</span>centers <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 
-<span class='va'>movie_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>title</span>, <span class='va'>.cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>.cluster</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/superheat/man/superheat.html'>superheat</a></span><span class='op'>(</span>
+  <span class='va'>movies_mat</span>, 
+  left.label.text.size <span class='op'>=</span> <span class='fl'>4</span>, 
+  order.rows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>movies_clust</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span>,
+  order.cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>users_clust</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span>,
+  heat.pal <span class='op'>=</span> <span class='va'>cols</span>,
+  heat.lim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5</span><span class='op'>)</span>
+<span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 50 x 2
-   title                .cluster
-   &lt;chr&gt;                &lt;fct&gt;   
- 1 American Beauty      1       
- 2 Godfather, The       1       
- 3 Seven (a.k.a. Se7en) 2       
- 4 Usual Suspects, The  2       
- 5 Pulp Fiction         2       
- 6 Braveheart           3       
- 7 Apollo 13            3       
- 8 Speed                3       
- 9 Fugitive, The        3       
-10 Jurassic Park        3       
-# … with 40 more rows</code></pre>
+<p><img src="week9-3_files/figure-html5/unnamed-chunk-4-1.png" width="1152" /></p>
 </div>
-<ol start="8" type="1">
-<li>There are two pieces of derived data generated by this routine,</li>
-</ol>
-<ul>
-<li>The cluster assignments
-<ul>
-<li>The cluster centroids</li>
-</ul></li>
-</ul>
-<p>and both can be the subjects of visualization.</p>
-<ol start="9" type="1">
-<li>In our movie example, the cluster centroids are imaginary pseudo-movies that are representative of their cluster. They are represented by the scores they would have received by each of the users in the dataset. This is visualized below. In a more realistic application, we would also want to display some information about each user; e.g., maybe some movies are more popular among certain age groups or in certain regions.</li>
+<ol start="5" type="1">
+<li>superheat also makes it easy to visualize plot statistics adjacent ot the adjacent to the main heatmap. These statistics can be plotted as points, lines, or bars. Points are useful when we want to highlight the raw value, lines are effective for showing change, and bars give a sense of the area below a set of observations. In this example, we use an added panel on the right hand side (<code>yr</code>) to encode the total number of ratings given to that movie. The <code>yr.obs.cols</code> allows us to change the color of each point in the adjacent plot. In this example, we change color depending on which cluster the movie was found to belong to.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>kclust_long</span> <span class='op'>&lt;-</span> <span class='va'>kclust</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span><span class='op'>(</span><span class='va'>`2`</span><span class='op'>:</span><span class='va'>`671`</span>, names_to <span class='op'>=</span> <span class='st'>"userId"</span>, values_to <span class='op'>=</span> <span class='st'>"rating"</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>kclust_long</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/reorder.factor.html'>reorder</a></span><span class='op'>(</span><span class='va'>userId</span>, <span class='va'>rating</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='va'>rating</span><span class='op'>)</span>,
-    stat <span class='op'>=</span> <span class='st'>"identity"</span>
-  <span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_grid.html'>facet_grid</a></span><span class='op'>(</span><span class='va'>cluster</span> <span class='op'>~</span> <span class='va'>.</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Users (sorted)"</span>, y <span class='op'>=</span> <span class='st'>"Rating"</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
-    axis.text.x <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,
-    axis.text.y <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
-    strip.text.y <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>angle <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
-  <span class='op'>)</span>
+<pre><code><span class='va'>cluster_cols</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'#8dd3c7'</span>,<span class='st'>'#ccebc5'</span>,<span class='st'>'#bebada'</span>,<span class='st'>'#fb8072'</span>,<span class='st'>'#80b1d3'</span>,<span class='st'>'#fdb462'</span>,<span class='st'>'#b3de69'</span>,<span class='st'>'#fccde5'</span>,<span class='st'>'#d9d9d9'</span>,<span class='st'>'#bc80bd'</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/superheat/man/superheat.html'>superheat</a></span><span class='op'>(</span>
+  <span class='va'>movies_mat</span>, 
+  left.label.text.size <span class='op'>=</span> <span class='fl'>4</span>, 
+  order.rows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>movies_clust</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span>,
+  order.cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>users_clust</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span>,
+  heat.pal <span class='op'>=</span> <span class='va'>cols</span>,
+  heat.lim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5</span><span class='op'>)</span>,
+  yr <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/Matrix/man/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>movies_mat</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span>,
+  yr.axis.name <span class='op'>=</span> <span class='st'>"Number of Ratings"</span>,
+  yr.obs.col <span class='op'>=</span> <span class='va'>cluster_cols</span><span class='op'>[</span><span class='va'>movies_clust</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>]</span>,
+  yr.plot.type <span class='op'>=</span> <span class='st'>"bar"</span>
+<span class='op'>)</span>
 </code></pre>
 </div>
-<div class="figure"><span id="fig:unnamed-chunk-5"></span>
-<img src="week9-1_files/figure-html5/unnamed-chunk-5-1.png" alt="We can visualize each cluster by seeing the average ratings each user gave to the movies in that cluster (this is the definition of the centroid). An alternative visualization strategy would be to show a heatmap -- we'll discuss this soon in the superheat lecture." width="624" />
-<p class="caption">
-Figure 1: We can visualize each cluster by seeing the average ratings each user gave to the movies in that cluster (this is the definition of the centroid). An alternative visualization strategy would be to show a heatmap – we’ll discuss this soon in the superheat lecture.
-</p>
+<p><img src="week9-3_files/figure-html5/unnamed-chunk-5-1.png" width="1152" /></p>
 </div>
-</div>
-<ol start="10" type="1">
-<li><p>It’s often of interest to relate the cluster assignments to complementary data, to see whether the clustering reflects any previously known differences between the observations, which weren’t directly used in the clustering algorithm.</p></li>
-<li><p>Be cautious: Outliers, nonspherical shapes, and variations in density can throw off <span class="math inline">\(K\)</span>-means.</p></li>
+<ol start="6" type="1">
+<li>It also makes sense to order the rows / columns using hierarchical clustering. This approach is especially useful when the samples fall along a continuous gradient, rather than belonging to clearly delineated groups. The <code>pretty.order.rows</code> and <code>pretty.order.cols</code> arguments use hierarchical clustering to reorder the heatmap.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-6"></span>
-<img src="https://codeahoy.com/img/kmeans/uneven-applied.png" alt="The difficulty that variations in density poses to k-means, from Cluster Analysis using K-Means Explained."  />
-<p class="caption">
-Figure 2: The difficulty that variations in density poses to k-means, from Cluster Analysis using K-Means Explained.
-</p>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/pkg/superheat/man/superheat.html'>superheat</a></span><span class='op'>(</span>
+  <span class='va'>movies_mat</span>, 
+  left.label.text.size <span class='op'>=</span> <span class='fl'>4</span>, 
+  pretty.order.cols <span class='op'>=</span> <span class='cn'>TRUE</span>,  
+  pretty.order.rows <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  heat.pal <span class='op'>=</span> <span class='va'>cols</span>,
+  heat.lim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5</span><span class='op'>)</span>
+<span class='op'>)</span>
+</code></pre>
 </div>
+<p><img src="week9-3_files/figure-html5/unnamed-chunk-6-1.png" width="1152" /></p>
 </div>
-<ol start="12" type="1">
-<li>The goals of clustering are highly problem dependent, and different goals might call for alternative algorithms. For example, consider the ways clustering might be used to understand disease transmission. One problem might be to cluster the DNA sequences of the pathogenic agent, to recover its evolutionary history. This could be done using hierarchical clustering (next lecture). A second problem might be to determine whether patient outcomes might be driven by one of a few environmental factors, in which case a <span class="math inline">\(K\)</span>-means clustering across the typical environmental factors would be reasonable. A third use would be to perform contact tracing, based on a network clustering algorithm. The point is that no clustering algorithm is uniformly better than any other in all situations, and the choice of which one to use should be guided by the problem requirements.</li>
+<ol start="7" type="1">
+<li>The hierarchical clustering trees estimated by <code>pretty.order.rows</code> and <code>pretty.order.cols</code> can be also visualized.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
-<section class="footnotes" role="doc-endnotes">
-<hr />
-<ol>
-<li id="fn1" role="doc-endnote"><p>To work with data of different types, it’s possible to use a variant called <span class="math inline">\(K\)</span>-medoids, but this is beyond the scope of this class.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>This is an approximation – there are probably many movies that the users would have enjoyed had they had a chance to watch them.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/pkg/superheat/man/superheat.html'>superheat</a></span><span class='op'>(</span>
+  <span class='va'>movies_mat</span>, 
+  left.label.text.size <span class='op'>=</span> <span class='fl'>4</span>, 
+  pretty.order.cols <span class='op'>=</span> <span class='cn'>TRUE</span>,  
+  pretty.order.rows <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+  row.dendrogram <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  col.dendrogram <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  heat.pal <span class='op'>=</span> <span class='va'>cols</span>,
+  heat.lim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5</span><span class='op'>)</span>
+<span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="week9-3_files/figure-html5/unnamed-chunk-7-1.png" width="1440" /></p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
