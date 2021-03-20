@@ -2268,26 +2268,27 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol type="1">
-<li>In reality, data are rarely separated into a clear number of homogeneous clusters. More often, even once a cluster formed, it’s possible to identify a few subclusters. For example, if you initially clustered movies into “drama” and “scifi”, you might be able to further refine the scifi cluster into “time travel” and “aliens.”</li>
+<li><p>In reality, data are rarely separated into a clear number of homogeneous clusters. More often, even once a cluster formed, it’s possible to identify a few subclusters. For example, if you initially clustered movies into “drama” and “scifi”, you might be able to further refine the scifi cluster into “time travel” and “aliens.”</p></li>
+<li><p><span class="math inline">\(K\)</span>-means only allows clustering at a single level of magnification. To instead simultaneously cluster across scales, you can use an approach called hierarchical clustering. As a first observation, note that a tree can be used to implicitly store many clusterings at once. You can get a standard clustering by cutting the tree at some level.</p></li>
 </ol>
-<p>2.<span class="math inline">\(K\)</span>-means only allows clustering at a single level of magnification. To instead simultaneously cluster across scales, you can use an approach called hierarchical clustering. As a first observation, note that a tree can be used to implicitly store many clusterings at once. You can get a standard clustering by cutting the tree at some level.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=11YZtI_rbkRNAwj5rArUBh1nNYZBmSRVG"</span><span class='op'>)</span>
-</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<img src="https://drive.google.com/uc?id=11YZtI_rbkRNAwj5rArUBh1nNYZBmSRVG" alt="We can recover clusters at different levels of granularity, by cutting a hierarchical clustering tree."  />
+<p class="caption">
+Figure 1: We can recover clusters at different levels of granularity, by cutting a hierarchical clustering tree.
+</p>
 </div>
-<p><img src="https://drive.google.com/uc?id=11YZtI_rbkRNAwj5rArUBh1nNYZBmSRVG" /><!-- --></p>
 </div>
 <ol start="3" type="1">
 <li>These hierarchical clustering trees can be thought of abstract versions of the taxonomic trees. Instead of relating species, they relate observations in a dataset.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@mbostock/tree-of-life"</span><span class='op'>)</span>
+<pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@mbostock/tree-of-life"</span>, height <span class='op'>=</span> <span class='fl'>1150</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-14ce28ae593bde0f735d" style="width:624px;height:384px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-14ce28ae593bde0f735d">{"x":{"notebook":"@mbostock/tree-of-life","include":null,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0ec5c4fbafa1d88489e1" style="width:624px;height:1150px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0ec5c4fbafa1d88489e1">{"x":{"notebook":"@mbostock/tree-of-life","include":null,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="4" type="1">
 <li><p>Elaborating on this analogy, the leaves of a hierarchical clustering tree are the original observations. The more recently two nodes share a common ancestor, the more similar those observations are.</p></li>
@@ -2298,70 +2299,46 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </ul></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=1-VCD5H7YZMLlgCsm02qHCqZO-l0xadRo"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <div class="figure"><span id="fig:unnamed-chunk-4"></span>
 <img src="https://drive.google.com/uc?id=1-VCD5H7YZMLlgCsm02qHCqZO-l0xadRo" alt="At initialization, the hierarchical clustering routine has a cluster for each observation."  />
 <p class="caption">
-Figure 1: At initialization, the hierarchical clustering routine has a cluster for each observation.
+Figure 2: At initialization, the hierarchical clustering routine has a cluster for each observation.
 </p>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=1bxFQlxfq2BZ6owPw3K2Ft5e7jE6eB6HE"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <div class="figure"><span id="fig:unnamed-chunk-5"></span>
 <img src="https://drive.google.com/uc?id=1bxFQlxfq2BZ6owPw3K2Ft5e7jE6eB6HE" alt="Next, the two closest observations are merged into one cluster. This is the first merge point on the tree."  />
 <p class="caption">
-Figure 2: Next, the two closest observations are merged into one cluster. This is the first merge point on the tree.
+Figure 3: Next, the two closest observations are merged into one cluster. This is the first merge point on the tree.
 </p>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=1Jcmlq5qFuNA42IRruIKqlYAc8JM5wys8"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <div class="figure"><span id="fig:unnamed-chunk-6"></span>
 <img src="https://drive.google.com/uc?id=1Jcmlq5qFuNA42IRruIKqlYAc8JM5wys8" alt="We continue this at the next iteration, though this time we have compute the pairwise distance between all clusters, not observations (technically, all the observations were their own cluster at the first step, and in both cases, we compare the pairwise distances between clusters)."  />
 <p class="caption">
-Figure 3: We continue this at the next iteration, though this time we have compute the pairwise distance between all clusters, not observations (technically, all the observations were their own cluster at the first step, and in both cases, we compare the pairwise distances between clusters).
+Figure 4: We continue this at the next iteration, though this time we have compute the pairwise distance between all clusters, not observations (technically, all the observations were their own cluster at the first step, and in both cases, we compare the pairwise distances between clusters).
 </p>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=1kYqnHe_ARcpYmaMGlwQq9uAM7urGdzjn"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <div class="figure"><span id="fig:unnamed-chunk-7"></span>
 <img src="https://drive.google.com/uc?id=1kYqnHe_ARcpYmaMGlwQq9uAM7urGdzjn" alt="We can continue this process..."  />
 <p class="caption">
-Figure 4: We can continue this process…
+Figure 5: We can continue this process…
 </p>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=1_n0bm0raZkexZgmUuhD4wO0sRlpGHHCc"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <div class="figure"><span id="fig:unnamed-chunk-8"></span>
 <img src="https://drive.google.com/uc?id=1_n0bm0raZkexZgmUuhD4wO0sRlpGHHCc" alt="... and eventually we will construct the entire tree."  />
 <p class="caption">
-Figure 5: … and eventually we will construct the entire tree.
+Figure 6: … and eventually we will construct the entire tree.
 </p>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/include_graphics.html'>include_graphics</a></span><span class='op'>(</span><span class='st'>"https://drive.google.com/uc?id=11_zq5WYue-FICbWbnIg8OQoQDVaG--x-"</span><span class='op'>)</span>
-</code></pre>
-</div>
 <p><img src="https://drive.google.com/uc?id=11_zq5WYue-FICbWbnIg8OQoQDVaG--x-" /><!-- --></p>
 </div>
 <ol start="6" type="1">
@@ -2373,7 +2350,7 @@ Figure 5: … and eventually we will construct the entire tree.
 <pre><code><span class='va'>movies_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv"</span><span class='op'>)</span>
 
 <span class='va'>D</span> <span class='op'>&lt;-</span> <span class='va'>movies_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tibble.tidyverse.org/reference/rownames.html'>column_to_rownames</a></span><span class='op'>(</span>var <span class='op'>=</span> <span class='st'>"title"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>column_to_rownames</span><span class='op'>(</span>var <span class='op'>=</span> <span class='st'>"title"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='va'>hclust_result</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/hclust.html'>hclust</a></span><span class='op'>(</span><span class='va'>D</span><span class='op'>)</span>
@@ -2424,7 +2401,7 @@ Figure 5: … and eventually we will construct the entire tree.
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week9-2_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
+<p><img src="week9-2_files/figure-html5/unnamed-chunk-12-1.png" width="960" /></p>
 </div>
 <ol start="8" type="1">
 <li>We can cut the tree to recover a standard clustering. This is where the grammar-of-graphics approach from ggraph becomes useful – we can encode the cluster membership of a movie using color, for example.</li>
@@ -2465,7 +2442,7 @@ Figure 5: … and eventually we will construct the entire tree.
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>legend.position <span class='op'>=</span> <span class='st'>"none"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week9-2_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
+<p><img src="week9-2_files/figure-html5/unnamed-chunk-14-1.png" width="960" /></p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

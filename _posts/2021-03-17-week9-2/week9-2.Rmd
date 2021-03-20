@@ -34,13 +34,13 @@ few subclusters. For example, if you initially clustered movies into "drama" and
 "scifi", you might be able to further refine the scifi cluster into "time
 travel" and "aliens."
 
-2.$K$-means only allows clustering at a single level of magnification. To
+2. $K$-means only allows clustering at a single level of magnification. To
 instead simultaneously cluster across scales, you can use an approach called
 hierarchical clustering. As a first observation, note that a tree can be used to
 implicitly store many clusterings at once. You can get a standard clustering by
 cutting the tree at some level.
 
-```{r}
+```{r, echo = FALSE, fig.cap = "We can recover clusters at different levels of granularity, by cutting a hierarchical clustering tree."}
 include_graphics("https://drive.google.com/uc?id=11YZtI_rbkRNAwj5rArUBh1nNYZBmSRVG")
 ```
 
@@ -49,7 +49,7 @@ the taxonomic trees. Instead of relating species, they relate observations in a
 dataset.
 
 ```{r}
-robservable("@mbostock/tree-of-life")
+robservable("@mbostock/tree-of-life", height = 1150)
 ```
 
 4. Elaborating on this analogy, the leaves of a hierarchical clustering tree are
@@ -62,27 +62,27 @@ ancestor, the more similar those observations are.
 	* Iterate until only one cluster: Look at all pairs of clusters. Merge the pair
 	$C_k, C_{k^{\prime}}$ which are the most similar.
 	
-```{r, fig.cap = "At initialization, the hierarchical clustering routine has a cluster for each observation."}
+```{r, fig.cap = "At initialization, the hierarchical clustering routine has a cluster for each observation.", echo = FALSE}
 include_graphics("https://drive.google.com/uc?id=1-VCD5H7YZMLlgCsm02qHCqZO-l0xadRo")
 ```
 	
-```{r, fig.cap = "Next, the two closest observations are merged into one cluster. This is the first merge point on the tree." }
+```{r, fig.cap = "Next, the two closest observations are merged into one cluster. This is the first merge point on the tree." , echo = FALSE}
 include_graphics("https://drive.google.com/uc?id=1bxFQlxfq2BZ6owPw3K2Ft5e7jE6eB6HE")
 ```
 	
-```{r, fig.cap = "We continue this at the next iteration, though this time we have compute the pairwise distance between all clusters, not observations (technically, all the observations were their own cluster at the first step, and in both cases, we compare the pairwise distances between clusters)."}
+```{r, fig.cap = "We continue this at the next iteration, though this time we have compute the pairwise distance between all clusters, not observations (technically, all the observations were their own cluster at the first step, and in both cases, we compare the pairwise distances between clusters).", echo = FALSE}
 include_graphics("https://drive.google.com/uc?id=1Jcmlq5qFuNA42IRruIKqlYAc8JM5wys8")
 ```
 
-```{r, fig.cap = "We can continue this process..."}
+```{r, fig.cap = "We can continue this process...", echo = FALSE}
 include_graphics("https://drive.google.com/uc?id=1kYqnHe_ARcpYmaMGlwQq9uAM7urGdzjn")
 ```
 
-```{r, fig.cap = "... and eventually we will construct the entire tree."}
+```{r, fig.cap = "... and eventually we will construct the entire tree.", echo= FALSE}
 include_graphics("https://drive.google.com/uc?id=1_n0bm0raZkexZgmUuhD4wO0sRlpGHHCc")
 ```
 
-```{r}
+```{r, echo = FALSE}
 include_graphics("https://drive.google.com/uc?id=11_zq5WYue-FICbWbnIg8OQoQDVaG--x-")
 ```
 	
@@ -95,7 +95,7 @@ pairwise distances.
 they tend to receive similar ratings across all audience members. The result is
 visualized below.
 
-```{r}
+```{r, fig.height= 7}
 movies_mat <- read_csv("https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv")
 
 D <- movies_mat %>%
@@ -117,7 +117,7 @@ hclust_graph <- hclust_graph %>%
 hclust_graph
 ```
 
-```{r, fig.height= 10}
+```{r, fig.width = 10, fig.height= 10}
 ggraph(hclust_graph, "dendrogram", height = height, circular = TRUE) +
   geom_edge_elbow() +
   geom_node_text(aes(label = label), size = 4) +
@@ -134,7 +134,7 @@ cluster_df <- cutree(hclust_result, k = 10) %>% # try changing K and regeneratin
 cluster_df
 ```
 
-```{r, fig.height= 10}
+```{r, fig.width = 10, fig.height = 10}
 # colors chosen using https://medialab.github.io/iwanthue/
 cols <- c("#51b48c", "#cf3d6e", "#7ab743", "#7b62cb", "#c49644", "#c364b9", "#6a803a", "#688dcd", "#c95a38", "#c26b7e")
 hclust_graph %>%

@@ -85,7 +85,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: K-Means</title>
+<title>Statistical Data Visualization: $K$-means</title>
 
 <meta property="description" itemprop="description" content="An introduction to clustering and how to manage its output."/>
 
@@ -96,7 +96,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: K-Means"/>
+<meta property="og:title" content="Statistical Data Visualization: $K$-means"/>
 <meta property="og:type" content="article"/>
 <meta property="og:description" content="An introduction to clustering and how to manage its output."/>
 <meta property="og:locale" content="en_US"/>
@@ -104,14 +104,14 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: K-Means"/>
+<meta property="twitter:title" content="Statistical Data Visualization: $K$-means"/>
 <meta property="twitter:description" content="An introduction to clustering and how to manage its output."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["K-Means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["$K$-means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"K-Means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"$K$-means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,7 +2235,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>K-Means</h1>
+<h1>K-means</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 <p><p>An introduction to clustering and how to manage its output.</p></p>
@@ -2269,7 +2269,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>User segmentation: A marketing study might try to summarize different user behaviors by clustering into a few key “segments.” Each segment might motivate a different type of marketing campaign.</li>
 <li>Gene expression profiling: A genomics study might try to identify genes whose expression levels are similar across different experimental conditions. These gene clusters might be responsible for a shared biological function.</li>
 </ul></li>
-<li><p>K-means is a particular algorithm for finding clusters. First, it randomly initializes <span class="math inline">\(K\)</span> cluster centroids. Then, it alternates the following two steps until convergence,</p>
+<li><p><span class="math inline">\(K\)</span>-means is a particular algorithm for finding clusters. First, it randomly initializes <span class="math inline">\(K\)</span> cluster centroids. Then, it alternates the following two steps until convergence,</p>
 <ul>
 <li>Assign points to their nearest cluster centroid.</li>
 <li>Update the <span class="math inline">\(K\)</span> centroids to be the averages of points within their cluster.</li>
@@ -2281,7 +2281,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <ol start="5" type="1">
 <li><p>Note that, since we have to take an average for each coordinate, we require that our data be quantitative, not categorical<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p></li>
-<li><p>We illustrate this idea using the <code>movielens</code> dataset from the reading. This dataset has ratings (0.5 to 5) given by 671 users across 9066 movies. We can think of this as a matrix of movies vs. users, with ratings within the entries. For simplicity, we filter down to only the 50 most frequently rated movies. We will assume that if a user never rated a movie, they would have given that movie a zero<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> We’ve skipped a few steps used in the reading (subtracting movie / user averages and filtering to only active users), but the overall results are comparable.</p></li>
+<li><p>We illustrate this idea using the <code>movielens</code> dataset from the reading. This dataset has ratings (0.5 to 5) given by 671 users across 9066 movies. We can think of this as a matrix of movies vs. users, with ratings within the entries. For simplicity, we filter down to only the 50 most frequently rated movies. We will assume that if a user never rated a movie, they would have given that movie a zero<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. We’ve skipped a few steps used in the reading (subtracting movie / user averages and filtering to only active users), but the overall results are comparable.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2334,31 +2334,26 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 <pre><code># A tibble: 50 x 2
-   title                .cluster
-   &lt;chr&gt;                &lt;fct&gt;   
- 1 American Beauty      1       
- 2 Godfather, The       1       
- 3 Seven (a.k.a. Se7en) 2       
- 4 Usual Suspects, The  2       
- 5 Pulp Fiction         2       
- 6 Braveheart           3       
- 7 Apollo 13            3       
- 8 Speed                3       
- 9 Fugitive, The        3       
-10 Jurassic Park        3       
+   title                              .cluster
+   &lt;chr&gt;                              &lt;fct&gt;   
+ 1 Independence Day (a.k.a. ID4)      1       
+ 2 Twelve Monkeys (a.k.a. 12 Monkeys) 1       
+ 3 Mission: Impossible                1       
+ 4 Usual Suspects, The                2       
+ 5 American Beauty                    2       
+ 6 Godfather, The                     2       
+ 7 Fargo                              2       
+ 8 Toy Story                          3       
+ 9 Lion King, The                     4       
+10 Mask, The                          4       
 # … with 40 more rows</code></pre>
 </div>
 <ol start="8" type="1">
-<li>There are two pieces of derived data generated by this routine,</li>
-</ol>
+<li>There are two pieces of derived data generated by this routine,
 <ul>
-<li>The cluster assignments
-<ul>
-<li>The cluster centroids</li>
+<li>The cluster assignments</li>
+<li>The cluster centroids and both can be the subjects of visualization.</li>
 </ul></li>
-</ul>
-<p>and both can be the subjects of visualization.</p>
-<ol start="9" type="1">
 <li>In our movie example, the cluster centroids are imaginary pseudo-movies that are representative of their cluster. They are represented by the scores they would have received by each of the users in the dataset. This is visualized below. In a more realistic application, we would also want to display some information about each user; e.g., maybe some movies are more popular among certain age groups or in certain regions.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">

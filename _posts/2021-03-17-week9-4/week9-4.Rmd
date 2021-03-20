@@ -122,11 +122,11 @@ ggplot(penguins3, aes(x = bill_length_mm, y = bill_depth_mm, col = .cluster)) +
 
 6. The silhouette statistic for observation $i$ is derived from the relative
 lengths of the orange vs. green segments. Formally, the silhouette statistic for
-observation $i$ is $s_{i}:= \frac{b_{i} - a_{i}}{\max{a_{i}, b\_{i}}$. This
-number is close to 1 if the orange segments are much longer than the green
-segments, close to 0 if the segments are about the same size, and close to -1 if
-the the orange segments are much shorter than the green segments^[This last case
-likely indicates a misclustering.].
+observation $i$ is $s_{i}:= \frac{b_{i} - a_{i}}{\max\left({a_{i},
+b_{i}}\right)}$. This number is close to 1 if the orange segments are much
+longer than the green segments, close to 0 if the segments are about the same
+size, and close to -1 if the the orange segments are much shorter than the green
+segments^[This last case likely indicates a misclustering.].
 
 7. The median of these $s_{i}$ for all observations within cluster $k$ is a
 measure of how well-defined cluster $k$ is overall. The higher this number, the
