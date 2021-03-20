@@ -15,7 +15,8 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://rlbarter.github.io/superheat/basic-usage.html), [Recording](https://mediaspace.wisc.edu/media/Week%209%20%5B3%5D%20Heatmaps/1_j0w5upqf), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-3/week9-3.Rmd)_
+
 ```{r}
 library("dplyr")
 library("ggplot2")

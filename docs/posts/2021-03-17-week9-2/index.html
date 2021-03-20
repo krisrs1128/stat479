@@ -2253,7 +2253,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://rafalab.github.io/dsbook/clustering.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%209%20%5B2%5D%20Hierarchical%20Clustering/1_8f9hgzpc">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-2/week9-2.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
@@ -2287,8 +2287,8 @@ Figure 1: We can recover clusters at different levels of granularity, by cutting
 <pre><code><span class='fu'><a href='https://juba.github.io/robservable//reference/robservable.html'>robservable</a></span><span class='op'>(</span><span class='st'>"@mbostock/tree-of-life"</span>, height <span class='op'>=</span> <span class='fl'>1150</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="htmlwidget-0ec5c4fbafa1d88489e1" style="width:624px;height:1150px;" class="robservable html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0ec5c4fbafa1d88489e1">{"x":{"notebook":"@mbostock/tree-of-life","include":null,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-474b3e8cd160f85a9825" style="width:624px;height:1150px;" class="robservable html-widget"></div>
+<script type="application/json" data-for="htmlwidget-474b3e8cd160f85a9825">{"x":{"notebook":"@mbostock/tree-of-life","include":null,"hide":null,"input":null,"observers":null,"update_height":true,"update_width":true},"evals":[],"jsHooks":[]}</script>
 </div>
 <ol start="4" type="1">
 <li><p>Elaborating on this analogy, the leaves of a hierarchical clustering tree are the original observations. The more recently two nodes share a common ancestor, the more similar those observations are.</p></li>
@@ -2350,7 +2350,7 @@ Figure 6: … and eventually we will construct the entire tree.
 <pre><code><span class='va'>movies_mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv"</span><span class='op'>)</span>
 
 <span class='va'>D</span> <span class='op'>&lt;-</span> <span class='va'>movies_mat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>column_to_rownames</span><span class='op'>(</span>var <span class='op'>=</span> <span class='st'>"title"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tibble.tidyverse.org/reference/rownames.html'>column_to_rownames</a></span><span class='op'>(</span>var <span class='op'>=</span> <span class='st'>"title"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='va'>hclust_result</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/hclust.html'>hclust</a></span><span class='op'>(</span><span class='va'>D</span><span class='op'>)</span>

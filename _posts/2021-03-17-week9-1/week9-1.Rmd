@@ -15,7 +15,7 @@ output:
 knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://rafalab.github.io/dsbook/clustering.html), [Recording](https://mediaspace.wisc.edu/media/Week%209%20%5B1%5D%20K-means/1_vegn8x9q), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-1/week9-1.Rmd)_
 
 ```{r}
 library("dslabs")

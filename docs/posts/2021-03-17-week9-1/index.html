@@ -85,7 +85,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: $K$-means</title>
+<title>Statistical Data Visualization: K-means</title>
 
 <meta property="description" itemprop="description" content="An introduction to clustering and how to manage its output."/>
 
@@ -96,7 +96,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: $K$-means"/>
+<meta property="og:title" content="Statistical Data Visualization: K-means"/>
 <meta property="og:type" content="article"/>
 <meta property="og:description" content="An introduction to clustering and how to manage its output."/>
 <meta property="og:locale" content="en_US"/>
@@ -104,14 +104,14 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: $K$-means"/>
+<meta property="twitter:title" content="Statistical Data Visualization: K-means"/>
 <meta property="twitter:description" content="An introduction to clustering and how to manage its output."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["$K$-means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["K-means"]},{"type":"character","attributes":{},"value":["An introduction to clustering and how to manage its output."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-21"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"$K$-means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"K-means","description":"An introduction to clustering and how to manage its output.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-21T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://rafalab.github.io/dsbook/clustering.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%209%20%5B1%5D%20K-means/1_vegn8x9q">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-1/week9-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'>"dslabs"</span><span class='op'>)</span>
@@ -2334,18 +2334,18 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 <pre><code># A tibble: 50 x 2
-   title                              .cluster
-   &lt;chr&gt;                              &lt;fct&gt;   
- 1 Independence Day (a.k.a. ID4)      1       
- 2 Twelve Monkeys (a.k.a. 12 Monkeys) 1       
- 3 Mission: Impossible                1       
- 4 Usual Suspects, The                2       
- 5 American Beauty                    2       
- 6 Godfather, The                     2       
- 7 Fargo                              2       
- 8 Toy Story                          3       
- 9 Lion King, The                     4       
-10 Mask, The                          4       
+   title                .cluster
+   &lt;chr&gt;                &lt;fct&gt;   
+ 1 American Beauty      1       
+ 2 Godfather, The       1       
+ 3 Seven (a.k.a. Se7en) 2       
+ 4 Usual Suspects, The  2       
+ 5 Pulp Fiction         2       
+ 6 Braveheart           3       
+ 7 Apollo 13            3       
+ 8 Speed                3       
+ 9 Fugitive, The        3       
+10 Jurassic Park        3       
 # … with 40 more rows</code></pre>
 </div>
 <ol start="8" type="1">
