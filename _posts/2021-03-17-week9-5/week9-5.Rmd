@@ -12,7 +12,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
 _[Reading](http://users.umiacs.umd.edu/~hcorrada/CMSC702/readings/Solutions_ch13.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%209%20%5B5%5D%20Cluster%20Stability/1_ypfgd7cu), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-5/week9-5.Rmd)_
@@ -88,7 +89,7 @@ c_{K}$.
   of the dataset $X_{b}^{\ast}$.
   - Permute the original cluster centroids to reflect the order of patients in
   $X_{b}^{\ast}$. Call the permuted centroids $c_{1b}^{\ast}, \dots,
-  c_{KB}^{\ast}$.
+  c_{Kb}^{\ast}$.
   - Assign genes in $X_{b}^{\ast}$ to the cluster $k$ of the closest
   $c_{bk}^{\ast}$.
 * We quantify our certainty that gene $j$ belongs to cluster $k$ by counting the

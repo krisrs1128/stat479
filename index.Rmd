@@ -5,7 +5,7 @@ author:
 - name: Kris Sankaran
   affiliation: University of Wisconsin-Madison
 description: |
-  STAT 479 Spring 2020
+  STAT 479 Spring 2021
 ---
 
 ```{r setup, include=FALSE}
