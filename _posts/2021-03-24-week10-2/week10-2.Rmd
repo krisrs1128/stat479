@@ -113,8 +113,13 @@ argument, "2." The scores of each sample with respect to these components can be
 extracted using `juice.` We'll see how to visualize and interpret these results
 in the next lecture.
 
-```{r}
+```{r, fig.cap = "The first five principal components are linear combinations of features."}
 tidy(pca_prep, 2)
-juice(pca_prep)
 ```
 
+```{r, fig.cap = "The coordinates of a few samples with respect to the princpal components above."}
+juice(pca_prep)
+```
+```{r, fig.cap = "Total variance explained by each component of the PCA."}
+tidy(pca_prep, 2, type = "variance")
+```
