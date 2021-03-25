@@ -68,16 +68,16 @@ provide any notion of derived features.
 
 13. We can summarize the properties of UMAP,
 
-  * **Global or local structure**: The number of nearest neighbors $K$ used
+  * *Global or local structure*: The number of nearest neighbors $K$ used
   during graph construction can be used modulate the emphasis of global vs.
   local structure.
-  * **Nonlinear**: UMAP can reflect nonlinear structure in high-dimensions.
-  * **No interpretable features**: UMAP only returns the map between points, and
+  * *Nonlinear*: UMAP can reflect nonlinear structure in high-dimensions.
+  * *No interpretable features*: UMAP only returns the map between points, and
   there is no analog of components to describe how the original features were
   used to construct the map.
-  * **Slower**: While UMAP is much faster than comparable nonlinear
+  * *Slower*: While UMAP is much faster than comparable nonlinear
   dimensionality reduction algorithms, it is still slower than linear
   approaches.
-  * **Nondeterministic**: The output from UMAP can change from run to run, due
+  * *Nondeterministic*: The output from UMAP can change from run to run, due
   to randomness in the graph layout step. If exact reproducibility is required,
   a random seed should be set.

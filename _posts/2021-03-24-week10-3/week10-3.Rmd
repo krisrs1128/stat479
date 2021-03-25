@@ -54,17 +54,17 @@ supplementary and modeling data less bluntly.
 10. We conclude with some characteristics of PCA, which are worth keeping in
 mind when choosing between alternative dimensionality reduction methods.
 
-  * **Global structure**: Since PCA is looking for high-variance overall, it tends
+  * *Global structure*: Since PCA is looking for high-variance overall, it tends
   to focus on global structure.
-  * **Linear**: PCA can only consider linear functions of the original features.
+  * *Linear*: PCA can only consider linear functions of the original features.
   If we expect nonlinear features to be more meaningful, then another approach
   should be considered.
-  * **Interpretable features**: The PCA components exactly specify how to
+  * *Interpretable features*: The PCA components exactly specify how to
   construct each of the derived features.
-  * **Fast**: Compared to most dimensionality reduction methods, PCA is quite
+  * *Fast*: Compared to most dimensionality reduction methods, PCA is quite
   fast. Further, it is easy to implement approximate versions of PCA that scale to
   very large datasets.
-  * **Deterministic**: Some embedding algorithms perform an optimization process,
+  * *Deterministic*: Some embedding algorithms perform an optimization process,
   which means there might be some variation in the results due to randomness in
   the optimization. In contrast, PCA is deterministic, with the components being
   unique up to sign (i.e., you could reflect the components, but the effective

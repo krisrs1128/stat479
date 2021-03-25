@@ -18,57 +18,103 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 
 _[Reading](),[Recording](),[Rmarkdown]()_
 
+```{r}
+library("tidymodels")
+library("readr")
+```
+
 1. In our last notes, we saw how we could organize a collection of images based
 on the average pixel brightness. We can think of average pixel brightness as a
-derived features with which to build a low-dimensional representation.
+derived feature on which to build a low-dimensional map.
 
-2. We can partially automate the process of deriving new features. General
-feature derivation is a complicated problem. We can simplify things by
-restricting attention to,
+2. We can partially automate the process of deriving new features. Finding the
+best way to combine raw features into derived ones is a complicated problem, in
+general. We can simplify things by restricting attention to,
 
-  * Features that are linear combinations of the raw input columns.
-  * Features that are orthogonal to one another.
-  * Features that have high variance.
+* Features that are linear combinations of the raw input columns.
+* Features that are orthogonal to one another.
+* Features that have high variance.
 
-3. Linear combinations: We make this restriction because it allows for an
-analytical solution. We will relax this requirement when discussing other
-dimensionality reduction approaches.
+3. Restricting to *linear combinations* allows for an analytical solution. We
+will relax this requirement when discussing other dimensionality reduction
+approaches.
 
-4. Orthogonality means that the derived features will be uncorrelated with one
+4. *Orthogonality* means that the derived features will be uncorrelated with one
 another. This is a nice property, because it would be wasteful if features were
 redundant.
 
-5. High variance is desirable because it means we preserve more of the essential
-structure of the underlying data. For example, if you look at this 2D
+5. *High variance* is desirable because it means we preserve more of the
+essential structure of the underlying data. For example, if you look at this 2D
 representation of a 3D object, it’s hard to tell what it is,
 
-	
+```{r, echo = FALSE, fig.cap = "What is this object?", fig.align = "center"}
+include_graphics("https://www.huber.embl.de/msmb/images/CAM3.png")
+```
+
 But when viewing an alternative reduction which has higher variance...
+
+```{r, echo = FALSE, fig.cap = "Not so complicated now. Credit for this visualization goes to Professor Julie Josse, at Ecole Polytechnique.", fig.align = "center"}
+include_graphics("https://www.huber.embl.de/msmb/images/CAM4.png")
+```
 	
 6. Principal Components Analysis (PCA) is the optimal dimensionality reduction
 under these three restrictions. Formally, PCA finds a matrix $\Phi \in \reals{D
-\times K}$ and a set of vector $z_{i} \in \reals^{K}$ such that $x_{i} \approx
-\Phi z_{i}$ for all $i$. The columns of $\Phi$ are called principal components,
-and they specify the structure of the derived linear features. The vector
-$z_{i}$ is called the score of $x\_{i}$ with respect to these components. The
-top component explains the most variance, the second captures the next most, and
-so on.
+\times K}$ and a set of vector $z_{i} \in \mathbb{R}^{K}$ such that $x_{i}
+\approx \Phi z_{i}$ for all $i$. The columns of $\Phi$ are called principal
+components, and they specify the structure of the derived linear features. The
+vector $z_{i}$ is called the score of $x\_{i}$ with respect to these components.
+The top component explains the most variance, the second captures the next most,
+and so on.
 
 7. For example, if one of the columns of $\Phi$ was equal to $\left(\frac{1}{D},
 \dots, \frac{1}{D}\right)$, then that feature computes the average of all
 coordinates (e.g., to get average brightness), and $z_{i1}$ would be a measure
-of how large the coordinates of sample $i$ are, on average._
+of how large the coordinates of sample $i$ are, on average.
 
 8. Geometrically, the columns of $\Phi$ span a plane that well approximates the
-data. The $z_{i}$ provide coordinates of points projected onto this plane._
-[https://drive.google.com/uc?id=1COajuPX5IOfXoHkZZ3CuVs0qxhisvPla]
+data. The $z_{i}$ provide coordinates of points projected onto this plane.
 
-9. In R, it’s most conveniently implemented using the tidymodels package.
+```{r, echo = fALSE, fig.cap = "PCA finds a low-dimensional linear subspace that closely approximates the high-dimensional data."}
+include_graphics("https://drive.google.com/uc?id=1COajuPX5IOfXoHkZZ3CuVs0qxhisvPla")
+```
 
-10. The `step_normalize` call is used to center and scale all the columns. This
+9. In R, PCA can be conveniently implemented using the tidymodels package. We
+will see a base R implementation in the next lecture. The
+[dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-26/readme.md)
+below contains properties of a variety of cocktails, from the Boston Bartender's
+guide. The first two columns are qualitative descriptors, while the rest give
+numerical ingredient information.
+
+```{r}
+cocktails_df <- read_csv("https://uwmadison.box.com/shared/static/qyqof2512qsek8fpnkqqiw3p1jb77acf.csv")
+cocktails_df
+```
+10. The `pca_rec` object defines a tidymodels recipe for performing PCA.
+Computation of the lower-dimensional representation is deferred until `prep()`
+is called. This delineation between workflow definition and execution helps
+clarify the overall workflow, and it is typical of the tidymodels package.
+
+```{r}
+pca_rec <- recipe(~., data = cocktails_df) %>%
+  update_role(name, category, new_role = "id") %>%
+  step_normalize(all_predictors()) %>%
+  step_pca(all_predictors())
+
+pca_prep <- prep(pca_rec)
+```
+
+11. The `step_normalize` call is used to center and scale all the columns. This
 is needed because otherwise columns with larger variance will have more weight
 in the final dimensionality reduction, which is not meaningful in this case.
 
-11. The object ((….) defines the PCA pipeline, but it is only executed when we
-run (….). This is typical of the `tidymodels` package, which we will explore in
-more detail in the next set of notes.
+12. We can `tidy` each element of a workflow. Since PCA was the second step in
+the workflow, we can extract the PCA components by calling tidy with an
+argument, "2." The scores of each sample with respect to these components can be
+extracted using `juice.` We'll see how to visualize and interpret these results
+in the next lecture.
+
+```{r}
+tidy(pca_prep, 2)
+juice(pca_prep)
+```
+
