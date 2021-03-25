@@ -74,7 +74,7 @@ of how large the coordinates of sample $i$ are, on average.
 8. Geometrically, the columns of $\Phi$ span a plane that well approximates the
 data. The $z_{i}$ provide coordinates of points projected onto this plane.
 
-```{r, echo = fALSE, fig.cap = "PCA finds a low-dimensional linear subspace that closely approximates the high-dimensional data."}
+```{r, echo = FALSE, fig.cap = "PCA finds a low-dimensional linear subspace that closely approximates the high-dimensional data."}
 include_graphics("https://drive.google.com/uc?id=1COajuPX5IOfXoHkZZ3CuVs0qxhisvPla")
 ```
 

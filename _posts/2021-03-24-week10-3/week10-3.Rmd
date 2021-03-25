@@ -105,8 +105,7 @@ is farther along.
 ggplot(scores, aes(PC1, PC2, label = name)) +
   geom_point(aes(color = category), alpha = 0.7, size = 1.5) +
   geom_text_repel(check_overlap = TRUE, size = 3) +
-  coord_fixed(sqrt(variances$value[2] / variances$value[1])) + # rescale axes to reflect variance
-  labs(color = NULL)
+  coord_fixed(sqrt(variances$value[2] / variances$value[1])) # rescale axes to reflect variance
 ```
 
 5. For example, El Nino has high value for PC1, which means it has a high value
@@ -154,9 +153,7 @@ scores_direct <- cbind(metadata, pca_result$scores)
 ggplot(scores_direct, aes(Comp.1, Comp.2, label = name)) +
   geom_point(aes(color = category), alpha = 0.7, size = 1.5) +
   geom_text_repel(check_overlap = TRUE, size = 3) +
-  coord_fixed(sqrt(variances$value[2] / variances$value[1])) + # rescale axes to reflect variance
-  labs(color = NULL)
-  geom_point()
+  coord_fixed(sqrt(variances$value[2] / variances$value[1])) # rescale axes to reflect variance
 ```
 
 10. The equivalent tidymodels implementation handles the difference between

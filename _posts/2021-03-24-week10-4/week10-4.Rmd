@@ -18,6 +18,21 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 
 _[Reading](),[Recording](),[Rmarkdown]()_
 
+```{r}
+library("ggplot2")
+library("readr")
+library("tidymodels")
+library("embed")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
 1. Nonlinearity can give a more faithful representation of the data when the
 data don’t lie on a low-dimensional linear subspace.
 
@@ -25,6 +40,13 @@ data don’t lie on a low-dimensional linear subspace.
 one-dimensional line through these data that separate the groups well. We will
 need an alternative approach to reducing dimensionality if we want to preserve
 nonlinear structure.
+
+```{r, fig.cap = "An example nonlinear dataset where projections onto any straight line will necessarily cause the classes to bleed together."}
+nonlinear <- read_csv("https://uwmadison.box.com/shared/static/kdt9qqvonhcz2ssb599p1nqganrg1w6k.csv")
+ggplot(nonlinear, aes(X, Y, col = Class)) +
+  geom_point() +
+  scale_color_brewer()
+```
 
 3. From a high-level, the intuition behind UMAP is to (a) build a graph joining
 nearby neighbors in the original high-dimensional space, and then (b) layout the
@@ -34,14 +56,26 @@ graph in a lower-dimensional space.
 we can try to layout the resulting nodes and edges on a 1-dimensional line in a
 way that approximately preserves the ordering.
 
-5. A natural way to build a graph is to join each node to it’s $K$ closest
+```{r, fig.cap = "UMAP (and many other nonlinear methods) begins by constructing a graph in the high-dimensional space, whose layout in the lower dimensional space will ideally preserve the essential relationships between samples.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/k4hrx2s4cqmmheg6u0yclir8op42sb0s.png")
+```
+
+5. A natural way to build a graph is to join each node to its $K$ closest
 neighbors. The choice of $K$ will influence the final reduction, and it is
 treated as a hyperparameter of UMAP.
+
+```{r, fig.cap = "When using fewer nearest neighbors, the final dimensionality reduction will place more emphasis on effectively preserving the relationships between points in local neighborhoods."}
+include_graphics("https://uwmadison.box.com/shared/static/ns6mpykr2zux3t35wuejc7ybtxngm98e.png")
+```
 
 6. Larger values of $K$ prioritize preservation of global structure, while
 smaller $K$ will better reflect local differences. This property is not
 obvious a priori, but is suggested by the type of toy simulations described in
 the reading.
+
+```{r, fig.cap = "When using larger neighborhoods, UMAP will place more emphasis on preserving global structure, sometimes at the cost of local relationships between points."}
+include_graphics("https://uwmadison.box.com/shared/static/70utv1s9yv3h5kturf6i02knhi2jw2dl.png")
+```
 
 7. One detail in the graph construction: In UMAP, the edges are assigned weights
 depending on how close the neighbors they link are, relative to the distance to
@@ -56,16 +90,42 @@ strengths of the springs is another hyperparameter. Lower tension on the springs
 allow the points to spread out more losely, higher tension forces points closer
 together. This is a second hyperparameter of UMAP.
 
+```{r, fig.keep='hold', out.width = 500, fig.cap = "Examples of embeddings when using low min dist (higher tension) and high min dist (lower tension)."}
+include_graphics("https://uwmadison.box.com/s/g6uqg4dauzfea0qrymaw5m77hl79adem")
+include_graphics("https://uwmadison.box.com/s/vo96qoakuzm8kx8h7sbuqfaulksfvm1j")
+```
+
 9. These two hyperparameters — the number of nearest neighbors $K$ and the
 layout tension — are the only two hyperparameters of $U$-map.
 
-10. Examples of what it does to a few different toy datasets.
+10. You can see more examples of what this algorithm does to toy datasets in
+this [reading](https://pair-code.github.io/understanding-umap). Note in
+particular the properties that the algorithm *does not* preserve. The distance
+between clusters should not be interpreted, since it just means that the graph
+components were not connected. Similarly, the density of points is not
+preserved, since we layout the nearest neighbor graph without regard to the
+distance of points within the graph.
 
-11. In R, we can implement this using almost the same code as we used for PCA.
+11. In R, we can implement this using almost the same code as we used for PCA,
+once we load the embed package.
+
+```{r}
+cocktails_df <- read_csv("https://uwmadison.box.com/shared/static/qyqof2512qsek8fpnkqqiw3p1jb77acf.csv")
+umap_rec <- recipe(~., data = cocktails_df) %>%
+  update_role(name, category, new_role = "id") %>%
+  step_normalize(all_predictors()) %>%
+  step_umap(all_predictors(), neighbors = 20, min_dist = 0.1)
+umap_prep <- prep(umap_rec)
+```
 
 12. UMAP returns a low-dimensional atlas relating the points, but it does not
 provide any notion of derived features.
 
+```{r}
+ggplot(juice(umap_prep), aes(umap_1, umap_2)) +
+  geom_point(aes(color = category), alpha = 0.7, size = 0.8) +
+  geom_text(aes(label = name), check_overlap = TRUE, size = 3, hjust = "inward")
+```
 13. We can summarize the properties of UMAP,
 
   * *Global or local structure*: The number of nearest neighbors $K$ used
