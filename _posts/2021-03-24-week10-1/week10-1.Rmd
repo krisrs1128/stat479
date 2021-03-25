@@ -1,0 +1,53 @@
+---
+title: "Introduction to Dimensionality Reduction"
+description: |
+   What are high-dimensional data and when should we learn low-dimensional representations?
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-03-29
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](),[Recording](),[Rmarkdown]()_
+
+1. Sometimes a dataset has more features than we could reasonably hope to
+visually encode simultaneously. Such data are called « high-dimensional, »
+because each row of the dataset can be viewed as a vector in a high-dimensional
+space (one dimension for each feature).
+
+* Each cell in a genomics dataset might have measurements for hundreds of molecules.
+* Each survey respondent might provide answers to dozens of questions
+* Each image might have several thousand pixels
+* Each document might have counts across several thousand relevant words.
+
+7. For low-dimensional data, we could encode all the features in our data
+directly, either using properties of marks or through clever faceting. In
+high-dimensional data, this is no longer possible.
+
+8. Even though there are many features associated with each observation, it may
+still be possible to organize samples across a smaller number of meaningful,
+derived features.
+
+9. For example, consider the Metropolitan Museum of Art dataset, which contains
+images of many artworks. Abstractly, each artwork is a high-dimensional object,
+containing pixel intensities for many pixels. But it is reasonable to derive
+features based on the average brightness.
+
+10. Informally, the goal of dimensionality reduction techniques is to produce a
+low-dimensional Atlas relating members of a collection of complex objects.
+Samples that are similar to one another in the high-dimensional space should be
+placed near one another in the low-dimensional view.
+
+11. Continuing with the example, we might want to construct a 2D map that places
+similar artworks next to one another. However, manual feature construction can
+be difficult. Algorithmic approaches try streamline the process of generating
+these maps by optimizing some more generic criterion. Different algorithms use
+different criteria, which we will review in the next couple of lectures.

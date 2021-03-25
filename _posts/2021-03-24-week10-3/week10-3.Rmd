@@ -1,0 +1,72 @@
+---
+title: "Principal Components Analysis II"
+description: |
+    Visualizing and interpreting PCA.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-03-31
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](),[Recording](),[Rmarkdown]()_
+
+1. How should we visualize the results from PCA? There are two artifacts to
+consider — components and scores — and we first consider them separately.
+
+2. Can interpret components by looking at how variables contribute. From the
+plot below, we see that the first PC mostly captures variation related to.
+
+3. The next PC reflects variation related to….
+
+4. Next, we can visualize the scores of each sample with respect to these
+components. The plot below shows $\left(z_{i1}, z_{i2}\right)$. Since $x_{i}
+\approx \phi_{1}z_{i1} + \varphi_{2} z_{i2}$, they have large values for
+variables with large component values in the coordinate directions where $z_{i}$
+is farther along.
+
+5. For example, California puts negative weight on the crimes, California has
+more than the average # of crimes
+
+6. Since $\varphi\_{2}$ puts negative weight on urban population, California has
+larger than the average pop
+
+7. Let’s examine the original code in a little more detail. We are using
+tidymodels, which is a package for decoupling the definition and the execution
+of a data pipeline. This compartmentalization makes it easier to design and
+reuse across settings.
+
+8. Here is how you would apply PCA without the tidymodels package. You have to
+first split the data into the « metadata » that is used for visualization and
+the actual numerical variables used for modeling. Then at the end, you have to
+join it back in.
+
+9. The equivalent tidymodels implementation handles the difference between
+supplementary and modeling data less bluntly.
+
+10. We conclude with some characteristics of PCA, which are worth keeping in
+mind when choosing between alternative dimensionality reduction methods.
+
+  * **Global structure**: Since PCA is looking for high-variance overall, it tends
+  to focus on global structure.
+  * **Linear**: PCA can only consider linear functions of the original features.
+  If we expect nonlinear features to be more meaningful, then another approach
+  should be considered.
+  * **Interpretable features**: The PCA components exactly specify how to
+  construct each of the derived features.
+  * **Fast**: Compared to most dimensionality reduction methods, PCA is quite
+  fast. Further, it is easy to implement approximate versions of PCA that scale to
+  very large datasets.
+  * **Deterministic**: Some embedding algorithms perform an optimization process,
+  which means there might be some variation in the results due to randomness in
+  the optimization. In contrast, PCA is deterministic, with the components being
+  unique up to sign (i.e., you could reflect the components, but the effective
+  features will always be the same).
+  

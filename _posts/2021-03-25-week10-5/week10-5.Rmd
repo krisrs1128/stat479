@@ -1,0 +1,35 @@
+---
+title: "PCA and UMAP Examples"
+description: |
+    More examples of dimensionality reduction using PCA and UMAP.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-4-02
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](),[Recording](),[Rmarkdown]()_
+
+1. These notes don’t introduce any new conceptual material. Instead, they give a
+few examples of how PCA and UMAP can be used on real-world datasets.
+
+2. We can apply dimensionality reduction to the antibiotics dataset described in
+lecture (). Since there are (…) bacteria, each sample is viewed as a vector in
+(…)-dimensional space. We can ask which samples are more or less related to one
+another, based on their species profiles.
+
+3. Both PCA and UMAP can be used on image data. Here, each pixel in an image is
+considered a different feature. For example, the FashionMnist dataset is made of
+…. 28 x 28 images. We view each image as a vector $x_{i} \in $.. The goal of
+dimensionality reduction in this context is to build an atlas of images, where
+images with similar overall pixel values should be located next to one another.
+
+4. 

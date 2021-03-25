@@ -1,0 +1,74 @@
+---
+title: "Principal Components Analysis I"
+description: |
+    Linear dimensionality reduction using PCA.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-03-30
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](),[Recording](),[Rmarkdown]()_
+
+1. In our last notes, we saw how we could organize a collection of images based
+on the average pixel brightness. We can think of average pixel brightness as a
+derived features with which to build a low-dimensional representation.
+
+2. We can partially automate the process of deriving new features. General
+feature derivation is a complicated problem. We can simplify things by
+restricting attention to,
+
+  * Features that are linear combinations of the raw input columns.
+  * Features that are orthogonal to one another.
+  * Features that have high variance.
+
+3. Linear combinations: We make this restriction because it allows for an
+analytical solution. We will relax this requirement when discussing other
+dimensionality reduction approaches.
+
+4. Orthogonality means that the derived features will be uncorrelated with one
+another. This is a nice property, because it would be wasteful if features were
+redundant.
+
+5. High variance is desirable because it means we preserve more of the essential
+structure of the underlying data. For example, if you look at this 2D
+representation of a 3D object, it’s hard to tell what it is,
+
+	
+But when viewing an alternative reduction which has higher variance...
+	
+6. Principal Components Analysis (PCA) is the optimal dimensionality reduction
+under these three restrictions. Formally, PCA finds a matrix $\Phi \in \reals{D
+\times K}$ and a set of vector $z_{i} \in \reals^{K}$ such that $x_{i} \approx
+\Phi z_{i}$ for all $i$. The columns of $\Phi$ are called principal components,
+and they specify the structure of the derived linear features. The vector
+$z_{i}$ is called the score of $x\_{i}$ with respect to these components. The
+top component explains the most variance, the second captures the next most, and
+so on.
+
+7. For example, if one of the columns of $\Phi$ was equal to $\left(\frac{1}{D},
+\dots, \frac{1}{D}\right)$, then that feature computes the average of all
+coordinates (e.g., to get average brightness), and $z_{i1}$ would be a measure
+of how large the coordinates of sample $i$ are, on average._
+
+8. Geometrically, the columns of $\Phi$ span a plane that well approximates the
+data. The $z_{i}$ provide coordinates of points projected onto this plane._
+[https://drive.google.com/uc?id=1COajuPX5IOfXoHkZZ3CuVs0qxhisvPla]
+
+9. In R, it’s most conveniently implemented using the tidymodels package.
+
+10. The `step_normalize` call is used to center and scale all the columns. This
+is needed because otherwise columns with larger variance will have more weight
+in the final dimensionality reduction, which is not meaningful in this case.
+
+11. The object ((….) defines the PCA pipeline, but it is only executed when we
+run (….). This is typical of the `tidymodels` package, which we will explore in
+more detail in the next set of notes.
