@@ -237,7 +237,7 @@ items are indicated by color. It seems that the types are well separated, but
 the labels are not informative... to understand what the colors mean, we need to
 look at the images.
 
-```{r, fig.width = 7, fig.height = 7, fig.cap = "Principal component scores from the fashion dataset."}
+```{r, fig.width = 5, fig.height = 5, fig.cap = "Principal component scores from the fashion dataset."}
 scores <- juice(pca_prep) %>%
   rename(x = PC1, y = PC2)
 ggplot(scores, aes(x, y, col = label)) +
@@ -252,7 +252,7 @@ sort of image using ggplot2; however, we have hidden it to avoid cluttering
 these notes. You can view the function in the rmarkdown link at the top of this
 document.
 
-```{r, fig.width = 7, fig.height = 7, preview = TRUE, fig.cap = "A subset of principal component scores expressed as the corresponding images."}
+```{r, fig.width = 5, fig.height = 5, preview = TRUE, fig.cap = "A subset of principal component scores expressed as the corresponding images."}
 pivot_scores(scores, fashion) %>%
   overlay_images()
 ```
@@ -262,7 +262,7 @@ the UMAP scores and the second overlays the same set of 300 images onto these
 new coordinates. It seems that UMAP can more clearly separate shoes and pants
 from shirts and sweaters.
 
-```{r, fig.cap = "The locations of all the images according to UMAP. Each color is a different class."}
+```{r, fig.width = 5, fig.height = 5, fig.cap = "The locations of all the images according to UMAP. Each color is a different class."}
 umap_rec <- step_umap(fashion_, all_predictors(), num_comp = 2, min_dist = 0.5)
 umap_prep <- prep(umap_rec)
 scores <- juice(umap_prep) %>%
@@ -273,7 +273,7 @@ ggplot(scores, aes(x, y, col = label)) +
   coord_fixed()
 ```
 
-```{r, fig.cap = "A sample of the images at the locations determined by UMAP."}
+```{r, fig.width = 5, fig.height = 5, fig.cap = "A sample of the images at the locations determined by UMAP."}
 pivot_scores(scores, fashion, scale_factor = 0.05) %>%
   overlay_images(scale_factor = 0.05)
 ```
