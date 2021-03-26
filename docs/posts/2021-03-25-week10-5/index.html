@@ -85,38 +85,38 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Statistical Data Visualization: Uniform Manifold Approximation and Projection</title>
+<title>Statistical Data Visualization: PCA and UMAP Examples (optional)</title>
 
-<meta property="description" itemprop="description" content="An overview of the UMAP algorithm."/>
+<meta property="description" itemprop="description" content="More examples of dimensionality reduction using PCA and UMAP."/>
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-04-01"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-04-01"/>
+<meta property="article:published" itemprop="datePublished" content="2021-04-02"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-04-02"/>
 <meta name="article:author" content="Kris Sankaran"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Statistical Data Visualization: Uniform Manifold Approximation and Projection"/>
+<meta property="og:title" content="Statistical Data Visualization: PCA and UMAP Examples (optional)"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="An overview of the UMAP algorithm."/>
+<meta property="og:description" content="More examples of dimensionality reduction using PCA and UMAP."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Statistical Data Visualization: Uniform Manifold Approximation and Projection"/>
-<meta property="twitter:description" content="An overview of the UMAP algorithm."/>
+<meta property="twitter:title" content="Statistical Data Visualization: PCA and UMAP Examples (optional)"/>
+<meta property="twitter:description" content="More examples of dimensionality reduction using PCA and UMAP."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Uniform Manifold Approximation and Projection"]},{"type":"character","attributes":{},"value":["An overview of the UMAP algorithm."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-4-01"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["PCA and UMAP Examples (optional)"]},{"type":"character","attributes":{},"value":["More examples of dimensionality reduction using PCA and UMAP."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-4-02"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week10-4_files/anchor-4.2.2/anchor.min.js","week10-4_files/bowser-1.9.3/bowser.min.js","week10-4_files/distill-2.2.21/template.v2.js","week10-4_files/figure-html5/unnamed-chunk-2-1.png","week10-4_files/figure-html5/unnamed-chunk-8-1.png","week10-4_files/header-attrs-2.6/header-attrs.js","week10-4_files/jquery-1.11.3/jquery.min.js","week10-4_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week10-5_files/anchor-4.2.2/anchor.min.js","week10-5_files/bowser-1.9.3/bowser.min.js","week10-5_files/distill-2.2.21/template.v2.js","week10-5_files/figure-html5/unnamed-chunk-13-1.png","week10-5_files/figure-html5/unnamed-chunk-14-1.png","week10-5_files/figure-html5/unnamed-chunk-15-1.png","week10-5_files/figure-html5/unnamed-chunk-16-1.png","week10-5_files/figure-html5/unnamed-chunk-2-1.png","week10-5_files/figure-html5/unnamed-chunk-4-1.png","week10-5_files/figure-html5/unnamed-chunk-7-1.png","week10-5_files/figure-html5/unnamed-chunk-8-1.png","week10-5_files/figure-html5/unnamed-chunk-9-1.png","week10-5_files/header-attrs-2.6/header-attrs.js","week10-5_files/jquery-1.11.3/jquery.min.js","week10-5_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Uniform Manifold Approximation and Projection","description":"An overview of the UMAP algorithm.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-01T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"PCA and UMAP Examples (optional)","description":"More examples of dimensionality reduction using PCA and UMAP.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-02T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,26 +2235,29 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Uniform Manifold Approximation and Projection</h1>
+<h1>PCA and UMAP Examples (optional)</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>An overview of the UMAP algorithm.</p></p>
+<p><p>More examples of dimensionality reduction using PCA and UMAP.</p></p>
 </div>
 
 <div class="d-byline">
   Kris Sankaran  (UW Madison)
   
-<br/>2021-4-01
+<br/>2021-4-02
 </div>
 
 <div class="d-article">
-<p><em><a href="https://pair-code.github.io/understanding-umap">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-4/week10-4.Rmd">Rmarkdown</a></em></p>
+<p><em>Reading <a href="https://juliasilge.com/blog/cocktail-recipes-umap/">1</a> and <a href="https://pair-code.github.io/understanding-umap">2</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-25-week10-5/week10-5.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://embed.tidymodels.org'>"embed"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/slowkow/ggrepel'>"ggrepel"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='http://stringr.tidyverse.org'>"stringr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidymodels.tidymodels.org'>"tidymodels"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://embed.tidymodels.org'>"embed"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/juliasilge/tidytext'>"tidytext"</a></span><span class='op'>)</span>
 <span class='va'>theme479</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> 
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
     panel.grid.minor <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,
@@ -2263,12 +2266,16 @@ d-article ul > li { /*to add back in space between bullet items that I took away
     legend.position <span class='op'>=</span> <span class='st'>"bottom"</span>
   <span class='op'>)</span>
 <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='va'>theme479</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>479</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
 <ol type="1">
-<li><p>Nonlinear dimension reduction methods can give a more faithful representation than PCA when the data don’t lie on a low-dimensional linear subspace.</p></li>
-<li><p>For example, suppose the data were shaped like this. There is no one-dimensional line through these data that separate the groups well. We will need an alternative approach to reducing dimensionality if we want to preserve nonlinear structure.</p></li>
+<li>These notes don’t introduce any new conceptual material. Instead, they give a few examples of how PCA and UMAP can be used.</li>
+</ol>
+<h3 id="from-two-dimensions-to-one">From two dimensions to one</h3>
+<ol start="2" type="1">
+<li>We presented the two moons dataset earlier as an example where UMAP, but not PCA, would be able to discover a one-dimensional representation that separates the groups. The implication is that, if we anticipate some sort of nonlinearity in higher-dimensions (which we can’t directly visualize), then UMAP would be a more suitable choice.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2279,97 +2286,255 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 <div class="figure"><span id="fig:unnamed-chunk-2"></span>
-<img src="week10-4_files/figure-html5/unnamed-chunk-2-1.png" alt="An example nonlinear dataset where projections onto any straight line will necessarily cause the classes to bleed together." width="624" />
+<img src="week10-5_files/figure-html5/unnamed-chunk-2-1.png" alt="The original two moons dataset. We will ask both PCA and UMAP to recover a 1D reduction of these 2D data." width="624" />
 <p class="caption">
-Figure 1: An example nonlinear dataset where projections onto any straight line will necessarily cause the classes to bleed together.
+Figure 1: The original two moons dataset. We will ask both PCA and UMAP to recover a 1D reduction of these 2D data.
 </p>
 </div>
 </div>
 <ol start="3" type="1">
-<li><p>From a high-level, the intuition behind UMAP is to (a) build a graph joining nearby neighbors in the original high-dimensional space, and then (b) layout the graph in a lower-dimensional space.</p></li>
-<li><p>For example, consider the 2-dimensional sine wave below. If we build a graph, we can try to layout the resulting nodes and edges on a 1-dimensional line in a way that approximately preserves the ordering.</p></li>
+<li>The code block below defines both the PCA and UMAP recipes. There is no need to normalize the data, since the two dimensions are already on the same scale.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-3"></span>
-<img src="https://uwmadison.box.com/shared/static/k4hrx2s4cqmmheg6u0yclir8op42sb0s.png" alt="UMAP (and many other nonlinear methods) begins by constructing a graph in the high-dimensional space, whose layout in the lower dimensional space will ideally preserve the essential relationships between samples."  />
-<p class="caption">
-Figure 2: UMAP (and many other nonlinear methods) begins by constructing a graph in the high-dimensional space, whose layout in the lower dimensional space will ideally preserve the essential relationships between samples.
-</p>
+<div class="sourceCode">
+<pre><code><span class='va'>moons_</span> <span class='op'>&lt;-</span> <span class='fu'>recipe</span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>moons</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>Class</span>, new_role <span class='op'>=</span> <span class='st'>"id"</span><span class='op'>)</span>
+
+<span class='va'>pca_rec</span> <span class='op'>&lt;-</span> <span class='fu'>step_pca</span><span class='op'>(</span><span class='va'>moons_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, num_comp <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>umap_rec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://embed.tidymodels.org/reference/step_umap.html'>step_umap</a></span><span class='op'>(</span><span class='va'>moons_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, num_comp <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
 </div>
 </div>
-<ol start="5" type="1">
-<li>A natural way to build a graph is to join each node to its <span class="math inline">\(K\)</span> closest neighbors. The choice of <span class="math inline">\(K\)</span> will influence the final reduction, and it is treated as a hyperparameter of UMAP.</li>
+<ol start="4" type="1">
+<li>The block below shows both the UMAP and PCA representations. The PCA representation seems to mostly reflect the variation on the <span class="math inline">\(x\)</span>-axis of the original data, and the two classes mix together. On the other hand, the UMAP clearly separates the groups. This is expected, since the nearest neighborhood graph that defines UMAP is likely separated into two major components, one for each moon.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>scores</span> <span class='op'>&lt;-</span> <span class='fu'>bind_cols</span><span class='op'>(</span>
+  <span class='fu'>prep</span><span class='op'>(</span><span class='va'>umap_rec</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>juice</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>mutate</span><span class='op'>(</span>umap_1 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>umap_1</span><span class='op'>)</span><span class='op'>)</span>,
+  <span class='fu'>prep</span><span class='op'>(</span><span class='va'>pca_rec</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>juice</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='va'>Class</span><span class='op'>)</span>
+<span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>pivot_longer</span><span class='op'>(</span><span class='op'>-</span><span class='va'>Class</span>, names_to <span class='op'>=</span> <span class='st'>"method"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>scores</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>method</span>, col <span class='op'>=</span> <span class='va'>Class</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span>position <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/position_jitter.html'>position_jitter</a></span><span class='op'>(</span>h <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>, alpha <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span> 
+</code></pre>
+</div>
 <div class="figure"><span id="fig:unnamed-chunk-4"></span>
-<img src="https://uwmadison.box.com/shared/static/ns6mpykr2zux3t35wuejc7ybtxngm98e.png" alt="When using fewer nearest neighbors, the final dimensionality reduction will place more emphasis on effectively preserving the relationships between points in local neighborhoods."  />
+<img src="week10-5_files/figure-html5/unnamed-chunk-4-1.png" alt="1D PCA and UMAP representations of the 2D two moons dataset." width="576" />
 <p class="caption">
-Figure 3: When using fewer nearest neighbors, the final dimensionality reduction will place more emphasis on effectively preserving the relationships between points in local neighborhoods.
+Figure 2: 1D PCA and UMAP representations of the 2D two moons dataset.
 </p>
+</div>
+</div>
+<h3 id="antibiotics-dataset">Antibiotics Dataset</h3>
+<ol start="5" type="1">
+<li>We can apply dimensionality reduction to the antibiotics dataset described in <a href="https://krisrs1128.github.io/stat479/posts/2021-01-20-week2-1/">lecture 2 - 1</a>. There, we had filtered down to the 6 most abundant bacteria. Now we will consider 147 most abundant, which means that each sample can be imagined as a vector in a 147-dimensional space. Ideally, a dimensionality-reduction procedure should be able to place samples close to one another when they have similar species profiles. In addition to loading species counts, we load taxonomic information about each species, in the <code>taxa</code> variable.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>antibiotic</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/t1lifegdz8s0a8lgckber32ytyh9hu4r.csv"</span><span class='op'>)</span>
+<span class='va'>taxa</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/ng6y6etk79lrm0gtsgw2u0yq6gqcozze.csv"</span><span class='op'>)</span>
+</code></pre>
 </div>
 </div>
 <ol start="6" type="1">
-<li>Larger values of <span class="math inline">\(K\)</span> prioritize preservation of global structure, while smaller <span class="math inline">\(K\)</span> will better reflect local differences. This property is not obvious a priori, but is suggested by the simulations described in the reading.</li>
+<li>We now define a PCA recipe. Since the counts are relatively skewed, we log-transform<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, using <code>step_log</code>. The rest of the definition is like the 2D example above.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-5"></span>
-<img src="https://uwmadison.box.com/shared/static/70utv1s9yv3h5kturf6i02knhi2jw2dl.png" alt="When using larger neighborhoods, UMAP will place more emphasis on preserving global structure, sometimes at the cost of local relationships between points." data-distill-preview=1 />
-<p class="caption">
-Figure 4: When using larger neighborhoods, UMAP will place more emphasis on preserving global structure, sometimes at the cost of local relationships between points.
-</p>
+<div class="sourceCode">
+<pre><code><span class='va'>antibiotic_</span> <span class='op'>&lt;-</span> <span class='fu'>recipe</span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>antibiotic</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>sample</span><span class='op'>:</span><span class='va'>antibiotic</span>, new_role <span class='op'>=</span> <span class='st'>"id"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_log</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, offset <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_normalize</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>pca_rec</span> <span class='op'>&lt;-</span> <span class='fu'>step_pca</span><span class='op'>(</span><span class='va'>antibiotic_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>pca_prep</span> <span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>pca_rec</span><span class='op'>)</span>
+</code></pre>
 </div>
 </div>
 <ol start="7" type="1">
-<li><p>One detail in the graph construction: In UMAP, the edges are assigned weights depending on the distance they span, normalized by the distance to the closest neighbor. Neighbors that are close, relative to the nearest neighbors, are assigned higher weights than those that are far away, and points that are linked by high weight edges are pulled together with larger force in the final graph layout. This is what the authors mean by using a “fuzzy” nearest neighbor graph. The fuzziness allows the algorithm to distinguish neighbors that are very close from those that are far, even though they all lie within a <span class="math inline">\(K\)</span>-nearest-neighborhood.</p></li>
-<li><p>Once the graph is constructed, there is the question of how the graph layout should proceed. UMAP uses a variant of force-directed layout, and the global strength of the springs is another hyperparameter. Lower tension on the springs allow the points to spread out more loosely, higher tension forces points closer together. This is a second hyperparameter of UMAP.</p></li>
-</ol>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="https://uwmadison.box.com/shared/static/g6uqg4dauzfea0qrymaw5m77hl79adem.png" width="200" /><img src="https://uwmadison.box.com/shared/static/vo96qoakuzm8kx8h7sbuqfaulksfvm1j.png" width="200" /></p>
-</div>
-<ol start="9" type="1">
-<li><p>These two hyperparameters — the number of nearest neighbors <span class="math inline">\(K\)</span> and the layout tension — are the only two hyperparameters of UMAP.</p></li>
-<li><p>You can see more examples of what this algorithm does to toy datasets in the <a href="https://pair-code.github.io/understanding-umap">reading</a>. Note in particular the properties that the algorithm <em>does not</em> preserve. The distance between clusters should not be interpreted, since it just means that the graph components were not connected. Similarly, the density of points is not preserved.</p></li>
-<li><p>In R, we can implement this using almost the same code as we used for PCA. The <code>step_umap</code> command is available through the embed package.</p></li>
+<li>We generate a map of the PCA scores below. The primary difference is between the three study participants – D, E, and F. Within each person, there is some variation between the antibiotic periods, as indicated by the points’ colors.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>cocktails_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/qyqof2512qsek8fpnkqqiw3p1jb77acf.csv"</span><span class='op'>)</span>
-<span class='va'>umap_rec</span> <span class='op'>&lt;-</span> <span class='fu'>recipe</span><span class='op'>(</span><span class='op'>~</span><span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>cocktails_df</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>category</span>, new_role <span class='op'>=</span> <span class='st'>"id"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>step_normalize</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://embed.tidymodels.org/reference/step_umap.html'>step_umap</a></span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, neighbors <span class='op'>=</span> <span class='fl'>20</span>, min_dist <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
-<span class='va'>umap_prep</span> <span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>umap_rec</span><span class='op'>)</span>
+<pre><code><span class='va'>scores</span> <span class='op'>&lt;-</span> <span class='fu'>juice</span><span class='op'>(</span><span class='va'>pca_prep</span><span class='op'>)</span> 
+<span class='va'>variances</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://generics.r-lib.org/reference/tidy.html'>tidy</a></span><span class='op'>(</span><span class='va'>pca_prep</span>, <span class='fl'>2</span>, type <span class='op'>=</span> <span class='st'>"variance"</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>scores</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>PC1</span>, <span class='va'>PC2</span>, col <span class='op'>=</span> <span class='va'>antibiotic</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>shape <span class='op'>=</span> <span class='va'>ind</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>1.5</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span>, check_overlap <span class='op'>=</span> <span class='cn'>TRUE</span>, size <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>/</span> <span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span>
 </code></pre>
 </div>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-7-1.png" alt="PCA scores for the antibiotics dataset. The main difference is between study participants, with some secondary variation related to whether the participant was taking the antibiotic at that timepoint." width="624" />
+<p class="caption">
+Figure 3: PCA scores for the antibiotics dataset. The main difference is between study participants, with some secondary variation related to whether the participant was taking the antibiotic at that timepoint.
+</p>
 </div>
-<ol start="12" type="1">
-<li>UMAP returns a low-dimensional atlas relating the points, but it does not provide any notion of derived features.</li>
+</div>
+<ol start="8" type="1">
+<li>Which species contribute the most to the principal components? We can analyze this like we did with the cocktails dataset. In addition to plotting the raw component value, we also join in the taxa information. This allows us to color in each bar by the species group that each bacteria belongs to. For example, we see that samples on the right side of the plot above (i.e., high PC1) likely have more Firmicutes than Bacteroidetes. PC2 seems to pick up on two species that have higher abundance when the rest drop-off.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'>juice</span><span class='op'>(</span><span class='va'>umap_prep</span><span class='op'>)</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>umap_1</span>, <span class='va'>umap_2</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>category</span><span class='op'>)</span>, alpha <span class='op'>=</span> <span class='fl'>0.7</span>, size <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>name</span><span class='op'>)</span>, check_overlap <span class='op'>=</span> <span class='cn'>TRUE</span>, size <span class='op'>=</span> <span class='fl'>3</span>, hjust <span class='op'>=</span> <span class='st'>"inward"</span><span class='op'>)</span>
+<pre><code><span class='va'>components_</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://generics.r-lib.org/reference/tidy.html'>tidy</a></span><span class='op'>(</span><span class='va'>pca_prep</span>, <span class='fl'>3</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/stats/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>component</span> <span class='op'>%in%</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_c.html'>str_c</a></span><span class='op'>(</span><span class='st'>"PC"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>terms_ <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/reorder_within.html'>reorder_within</a></span><span class='op'>(</span><span class='va'>terms</span>, <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>value</span><span class='op'>)</span>, <span class='va'>component</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>component</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>top_n</span><span class='op'>(</span><span class='fl'>20</span>, <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>value</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>left_join</span><span class='op'>(</span><span class='va'>taxa</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>components_</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>terms_</span>, fill <span class='op'>=</span> <span class='va'>Phylum</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>component</span>, scales <span class='op'>=</span> <span class='st'>"free_y"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/reorder_within.html'>scale_y_reordered</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_fill_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set1"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 <div class="figure"><span id="fig:unnamed-chunk-8"></span>
-<img src="week10-4_files/figure-html5/unnamed-chunk-8-1.png" alt="The learned UMAP representation of the cocktails dataset." width="624" />
+<img src="week10-5_files/figure-html5/unnamed-chunk-8-1.png" alt="The first six principal components associated with the antibiotics dataset." width="624" />
 <p class="caption">
-Figure 5: The learned UMAP representation of the cocktails dataset.
+Figure 4: The first six principal components associated with the antibiotics dataset.
+</p>
+</div>
+</div>
+<ol start="9" type="1">
+<li>We can use similar code to compute a UMAP embedding. The UMAP seems to separate the different timepoints more clearly. However, there is no analog of <code>components</code> with which to interpret the different axes. Instead, a typical approach to interpret the representation is to find points that are close together (e.g., using <span class="math inline">\(K\)</span>-means) and take their average species profile.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>umap_rec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://embed.tidymodels.org/reference/step_umap.html'>step_umap</a></span><span class='op'>(</span><span class='va'>antibiotic_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, min_dist <span class='op'>=</span> <span class='fl'>1.5</span><span class='op'>)</span>
+<span class='va'>umap_prep</span> <span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>umap_rec</span><span class='op'>)</span>
+
+<span class='va'>scores</span> <span class='op'>&lt;-</span> <span class='fu'>juice</span><span class='op'>(</span><span class='va'>umap_prep</span><span class='op'>)</span> 
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>scores</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>umap_1</span>, <span class='va'>umap_2</span>, col <span class='op'>=</span> <span class='va'>antibiotic</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>shape <span class='op'>=</span> <span class='va'>ind</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>1.5</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html'>geom_text_repel</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span>, max.overlaps <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set2"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-9-1.png" alt="The UMAP representation associated with the antibiotics dataset." width="624" />
+<p class="caption">
+Figure 5: The UMAP representation associated with the antibiotics dataset.
+</p>
+</div>
+</div>
+<h3 id="image-data">Image Data</h3>
+<ol start="10" type="1">
+<li>Both PCA and UMAP can be used on image data. Here, each pixel in an image is considered a different feature. For example, the FashionMNIST dataset includes 60,000 28 x 28 images of fashion objects. We can think of image as a vector<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> <span class="math inline">\(x_{i} \in \mathbb{R}^{784}\)</span>. The goal of dimensionality reduction in this context is to build an atlas of images, where images with similar overall pixel values should be located next to one another. First, we read in the data and subsample it, so the code doesn’t take so long to run.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>fashion</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/aur84ttkwa2rqvzo99qo7yhxemoc6om0.csv"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>sample_frac</span><span class='op'>(</span><span class='fl'>0.2</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>
+    image <span class='op'>=</span> <span class='fu'>row_number</span><span class='op'>(</span><span class='op'>)</span>,
+    label <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>label</span><span class='op'>)</span>
+  <span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<ol start="11" type="1">
+<li>Each row of the matrix above is a separate image. We can prepare a PCA recipe just like in the two examples above. Note that we are not normalizing the features – the pixels are already on a common scale.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>fashion_</span> <span class='op'>&lt;-</span> <span class='fu'>recipe</span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>fashion</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>label</span>, <span class='va'>image</span>, new_role <span class='op'>=</span> <span class='st'>"id"</span><span class='op'>)</span>
+
+<span class='va'>pca_rec</span> <span class='op'>&lt;-</span> <span class='fu'>step_pca</span><span class='op'>(</span><span class='va'>fashion_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>pca_prep</span> <span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>pca_rec</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<ol start="12" type="1">
+<li>The code below extracts the PCA scores and visualizes them as a cloud of points. Each point corresponds to an image, and the different types of fashion items are indicated by color. It seems that the types are well separated, but the labels are not informative… to understand what the colors mean, we need to look at the images.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>scores</span> <span class='op'>&lt;-</span> <span class='fu'>juice</span><span class='op'>(</span><span class='va'>pca_prep</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>rename</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>PC1</span>, y <span class='op'>=</span> <span class='va'>PC2</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>scores</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, col <span class='op'>=</span> <span class='va'>label</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set3"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-13"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-13-1.png" alt="Principal component scores from the fashion dataset." width="672" />
+<p class="caption">
+Figure 6: Principal component scores from the fashion dataset.
 </p>
 </div>
 </div>
 <ol start="13" type="1">
-<li>We can summarize the properties of UMAP,</li>
+<li>The block below overlays the first 300 images from the dataset at the locations from the previous plot. We have prepared a function to generate this sort of image using ggplot2; however, we have hidden it to avoid cluttering these notes. You can view the function in the rmarkdown link at the top of this document.</li>
 </ol>
-<ul>
-<li><em>Global or local structure</em>: The number of nearest neighbors <span class="math inline">\(K\)</span> used during graph construction can be used modulate the emphasis of global vs. local structure.</li>
-<li><em>Nonlinear</em>: UMAP can reflect nonlinear structure in high-dimensions.</li>
-<li><em>No interpretable features</em>: UMAP only returns the map between points, and there is no analog of components to describe how the original features were used to construct the map.</li>
-<li><em>Slower</em>: While UMAP is much faster than comparable nonlinear dimensionality reduction algorithms, it is still slower than linear approaches.</li>
-<li><em>Nondeterministic</em>: The output from UMAP can change from run to run, due to randomness in the graph layout step. If exact reproducibility is required, a random seed should be set.</li>
-</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>pivot_scores</span><span class='op'>(</span><span class='va'>scores</span>, <span class='va'>fashion</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>overlay_images</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-14"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-14-1.png" alt="A subset of principal component scores expressed as the corresponding images." width="672" data-distill-preview=1 />
+<p class="caption">
+Figure 7: A subset of principal component scores expressed as the corresponding images.
+</p>
+</div>
+</div>
+<ol start="14" type="1">
+<li>Finally, we can repeat the exercise above with UMAP. The first plot shows the UMAP scores and the second overlays the same set of 300 images onto these new coordinates. It seems that UMAP can more clearly separate shoes and pants from shirts and sweaters.</li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>umap_rec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://embed.tidymodels.org/reference/step_umap.html'>step_umap</a></span><span class='op'>(</span><span class='va'>fashion_</span>, <span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, num_comp <span class='op'>=</span> <span class='fl'>2</span>, min_dist <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>
+<span class='va'>umap_prep</span> <span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>umap_rec</span><span class='op'>)</span>
+<span class='va'>scores</span> <span class='op'>&lt;-</span> <span class='fu'>juice</span><span class='op'>(</span><span class='va'>umap_prep</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>rename</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>umap_1</span>, y <span class='op'>=</span> <span class='va'>umap_2</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>scores</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, col <span class='op'>=</span> <span class='va'>label</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_brewer</a></span><span class='op'>(</span>palette <span class='op'>=</span> <span class='st'>"Set3"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-15"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-15-1.png" alt="The locations of all the images according to UMAP. Each color is a different class." width="624" />
+<p class="caption">
+Figure 8: The locations of all the images according to UMAP. Each color is a different class.
+</p>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>pivot_scores</span><span class='op'>(</span><span class='va'>scores</span>, <span class='va'>fashion</span>, scale_factor <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>overlay_images</span><span class='op'>(</span>scale_factor <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-16"></span>
+<img src="week10-5_files/figure-html5/unnamed-chunk-16-1.png" alt="A sample of the images at the locations determined by UMAP." width="624" />
+<p class="caption">
+Figure 9: A sample of the images at the locations determined by UMAP.
+</p>
+</div>
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>Specifically, we use a <span class="math inline">\(\log\left(1 + x\right)\)</span> transform, since there are many 0 counts.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>28 * 28 = 784<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
