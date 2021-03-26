@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>,<a href="">Recording</a>,<a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://juliasilge.com/blog/cocktail-recipes-umap/">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-2/week10-2.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://tidymodels.tidymodels.org'>"tidymodels"</a></span><span class='op'>)</span>
@@ -2257,8 +2257,8 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol type="1">
-<li><p>In our last notes, we saw how we could organize a collection of images based on the average pixel brightness. We can think of average pixel brightness as a derived feature on which to build a low-dimensional map.</p></li>
-<li><p>We can partially automate the process of deriving new features. Finding the best way to combine raw features into derived ones is a complicated problem, in general. We can simplify things by restricting attention to,</p></li>
+<li><p>In our last notes, we saw how we could organize a collection of images based on the average pixel brightness. We can think of average pixel brightness as a derived feature with which to build a low-dimensional map.</p></li>
+<li><p>We can partially automate the process of deriving new features. Though, in general, finding the best way to combine raw features into derived ones is a complicated problem, we can simplify things by restricting attention to,</p></li>
 </ol>
 <ul>
 <li>Features that are linear combinations of the raw input columns.</li>
@@ -2266,13 +2266,13 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Features that have high variance.</li>
 </ul>
 <ol start="3" type="1">
-<li><p>Restricting to <em>linear combinations</em> allows for an analytical solution. We will relax this requirement when discussing other dimensionality reduction approaches.</p></li>
+<li><p>Restricting to <em>linear combinations</em> allows for an analytical solution. We will relax this requirement when discussing UMAP.</p></li>
 <li><p><em>Orthogonality</em> means that the derived features will be uncorrelated with one another. This is a nice property, because it would be wasteful if features were redundant.</p></li>
 <li><p><em>High variance</em> is desirable because it means we preserve more of the essential structure of the underlying data. For example, if you look at this 2D representation of a 3D object, it’s hard to tell what it is,</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-2"></span>
-<img src="https://www.huber.embl.de/msmb/images/CAM3.png" alt="What is this object?"  />
+<img src="https://www.huber.embl.de/msmb/images/CAM3.png" alt="What is this object?" width="60" />
 <p class="caption">
 Figure 1: What is this object?
 </p>
@@ -2281,16 +2281,16 @@ Figure 1: What is this object?
 <p>But when viewing an alternative reduction which has higher variance…</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-3"></span>
-<img src="https://www.huber.embl.de/msmb/images/CAM4.png" alt="Not so complicated now. Credit for this visualization goes to Professor Julie Josse, at Ecole Polytechnique."  />
+<img src="https://www.huber.embl.de/msmb/images/CAM4.png" alt="Not so complicated now. Credit for this example goes to Professor Julie Josse, at Ecole Polytechnique." width="170" data-distill-preview=1 />
 <p class="caption">
-Figure 2: Not so complicated now. Credit for this visualization goes to Professor Julie Josse, at Ecole Polytechnique.
+Figure 2: Not so complicated now. Credit for this example goes to Professor Julie Josse, at Ecole Polytechnique.
 </p>
 </div>
 </div>
 <ol start="6" type="1">
-<li><p>Principal Components Analysis (PCA) is the optimal dimensionality reduction under these three restrictions. Formally, PCA finds a matrix <span class="math inline">\(\Phi \in \reals{D \times K}\)</span> and a set of vector <span class="math inline">\(z_{i} \in \mathbb{R}^{K}\)</span> such that <span class="math inline">\(x_{i} \approx \Phi z_{i}\)</span> for all <span class="math inline">\(i\)</span>. The columns of <span class="math inline">\(\Phi\)</span> are called principal components, and they specify the structure of the derived linear features. The vector <span class="math inline">\(z_{i}\)</span> is called the score of <span class="math inline">\(x\_{i}\)</span> with respect to these components. The top component explains the most variance, the second captures the next most, and so on.</p></li>
-<li><p>For example, if one of the columns of <span class="math inline">\(\Phi\)</span> was equal to <span class="math inline">\(\left(\frac{1}{D}, \dots, \frac{1}{D}\right)\)</span>, then that feature computes the average of all coordinates (e.g., to get average brightness), and <span class="math inline">\(z_{i1}\)</span> would be a measure of how large the coordinates of sample <span class="math inline">\(i\)</span> are, on average.</p></li>
-<li><p>Geometrically, the columns of <span class="math inline">\(\Phi\)</span> span a plane that well approximates the data. The <span class="math inline">\(z_{i}\)</span> provide coordinates of points projected onto this plane.</p></li>
+<li><p>Principal Components Analysis (PCA) is the optimal dimensionality reduction under these three restrictions, in the sense that it finds derived features with the highest variance. Formally, PCA finds a matrix <span class="math inline">\(\Phi \in \mathbb{R}^{D \times K}\)</span> and a set of vector <span class="math inline">\(z_{i} \in \mathbb{R}^{K}\)</span> such that <span class="math inline">\(x_{i} \approx \Phi z_{i}\)</span> for all <span class="math inline">\(i\)</span>. The columns of <span class="math inline">\(\Phi\)</span> are called principal components, and they specify the structure of the derived linear features. The vector <span class="math inline">\(z_{i}\)</span> is called the score of <span class="math inline">\(x_{i}\)</span> with respect to these components. The top component explains the most variance, the second captures the next most, and so on.</p></li>
+<li><p>For example, if one of the columns of <span class="math inline">\(\Phi\)</span> was equal to <span class="math inline">\(\left(\frac{1}{D}, \dots, \frac{1}{D}\right)\)</span>, then that feature computes the average of all coordinates (e.g., to get average brightness), and the corresponding <span class="math inline">\(z_{i}\)</span> would be a measure of the average brightness of sample <span class="math inline">\(i\)</span>.</p></li>
+<li><p>Geometrically, the columns of <span class="math inline">\(\Phi\)</span> span a plane that approximates the data. The <span class="math inline">\(z_{i}\)</span> provide coordinates of points projected onto this plane.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure"><span id="fig:unnamed-chunk-4"></span>
@@ -2306,10 +2306,10 @@ Figure 3: PCA finds a low-dimensional linear subspace that closely approximates 
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>cocktails_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"https://uwmadison.box.com/shared/static/qyqof2512qsek8fpnkqqiw3p1jb77acf.csv"</span><span class='op'>)</span>
-<span class='va'>cocktails_df</span>
+<span class='va'>cocktails_df</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>6</span><span class='op'>]</span>
 </code></pre>
 </div>
-<pre><code># A tibble: 937 x 42
+<pre><code># A tibble: 937 x 6
    name     category   light_rum lemon_juice lime_juice sweet_vermouth
    &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt;
  1 Gauguin  Cocktail …      2           1          1               0  
@@ -2322,23 +2322,10 @@ Figure 3: PCA finds a low-dimensional linear subspace that closely approximates 
  8 Caribbe… Cocktail …      0.5         0          0               0  
  9 Amber A… Cordials …      0           0.25       0               0  
 10 The Joe… Whiskies        0           0.5        0               0  
-# … with 927 more rows, and 36 more variables: orange_juice &lt;dbl&gt;,
-#   powdered_sugar &lt;dbl&gt;, dark_rum &lt;dbl&gt;, cranberry_juice &lt;dbl&gt;,
-#   pineapple_juice &lt;dbl&gt;, bourbon_whiskey &lt;dbl&gt;, simple_syrup &lt;dbl&gt;,
-#   cherry_flavored_brandy &lt;dbl&gt;, light_cream &lt;dbl&gt;,
-#   triple_sec &lt;dbl&gt;, maraschino &lt;dbl&gt;, amaretto &lt;dbl&gt;,
-#   grenadine &lt;dbl&gt;, apple_brandy &lt;dbl&gt;, brandy &lt;dbl&gt;, gin &lt;dbl&gt;,
-#   anisette &lt;dbl&gt;, dry_vermouth &lt;dbl&gt;,
-#   apricot_flavored_brandy &lt;dbl&gt;, bitters &lt;dbl&gt;,
-#   straight_rye_whiskey &lt;dbl&gt;, benedictine &lt;dbl&gt;, egg_white &lt;dbl&gt;,
-#   half_and_half &lt;dbl&gt;, vodka &lt;dbl&gt;, grapefruit_juice &lt;dbl&gt;,
-#   blended_scotch_whiskey &lt;dbl&gt;, port &lt;dbl&gt;,
-#   white_creme_de_cacao &lt;dbl&gt;, citrus_flavored_vodka &lt;dbl&gt;,
-#   whole_egg &lt;dbl&gt;, egg_yolk &lt;dbl&gt;, blended_whiskey &lt;dbl&gt;,
-#   dubonnet &lt;dbl&gt;, blanco_tequila &lt;dbl&gt;, old_mr_boston_dry_gin &lt;dbl&gt;</code></pre>
+# … with 927 more rows</code></pre>
 </div>
 <ol start="10" type="1">
-<li>The <code>pca_rec</code> object defines a tidymodels recipe for performing PCA. Computation of the lower-dimensional representation is deferred until <code>prep()</code> is called. This delineation between workflow definition and execution helps clarify the overall workflow, and it is typical of the tidymodels package.</li>
+<li>The <code>pca_rec</code> object below defines a tidymodels recipe for performing PCA. Computation of the lower-dimensional representation is deferred until <code>prep()</code> is called. This delineation between workflow definition and execution helps clarify the overall workflow, and it is typical of the tidymodels package.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2352,8 +2339,8 @@ Figure 3: PCA finds a low-dimensional linear subspace that closely approximates 
 </div>
 </div>
 <ol start="11" type="1">
-<li><p>The <code>step_normalize</code> call is used to center and scale all the columns. This is needed because otherwise columns with larger variance will have more weight in the final dimensionality reduction, which is not meaningful in this case.</p></li>
-<li><p>We can <code>tidy</code> each element of a workflow. Since PCA was the second step in the workflow, we can extract the PCA components by calling tidy with an argument, “2.” The scores of each sample with respect to these components can be extracted using <code>juice.</code> We’ll see how to visualize and interpret these results in the next lecture.</p></li>
+<li><p>The <code>step_normalize</code> call is used to center and scale all the columns. This is needed because otherwise columns with larger variance will have more weight in the final dimensionality reduction, but this is not conceptually meaningful. For example, if one of the columns in a dataset were measuring length in kilometers, then we could artificially increase its influence in a PCA by expressing the same value in meters. To achieve invariance to this change in units, it would be important to normalize first.</p></li>
+<li><p>We can <code>tidy</code> each element of the workflow object. Since PCA was the second step in the workflow, the PCA components can be obtained by calling tidy with the argument “2.” The scores of each sample with respect to these components can be extracted using <code>juice.</code> The amount of variance explained by each dimension is also given by <code>tidy</code>, but with the argument <code>type = "variance"</code>. We’ll see how to visualize and interpret these results in the next lecture.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2363,16 +2350,16 @@ Figure 3: PCA finds a low-dimensional linear subspace that closely approximates 
 <pre><code># A tibble: 1,600 x 4
    terms             value component id       
    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    
- 1 light_rum        0.163  PC1       pca_3GYvM
- 2 lemon_juice     -0.0140 PC1       pca_3GYvM
- 3 lime_juice       0.224  PC1       pca_3GYvM
- 4 sweet_vermouth  -0.0661 PC1       pca_3GYvM
- 5 orange_juice     0.0308 PC1       pca_3GYvM
- 6 powdered_sugar  -0.476  PC1       pca_3GYvM
- 7 dark_rum         0.124  PC1       pca_3GYvM
- 8 cranberry_juice  0.0954 PC1       pca_3GYvM
- 9 pineapple_juice  0.119  PC1       pca_3GYvM
-10 bourbon_whiskey  0.0963 PC1       pca_3GYvM
+ 1 light_rum        0.163  PC1       pca_8fjBb
+ 2 lemon_juice     -0.0140 PC1       pca_8fjBb
+ 3 lime_juice       0.224  PC1       pca_8fjBb
+ 4 sweet_vermouth  -0.0661 PC1       pca_8fjBb
+ 5 orange_juice     0.0308 PC1       pca_8fjBb
+ 6 powdered_sugar  -0.476  PC1       pca_8fjBb
+ 7 dark_rum         0.124  PC1       pca_8fjBb
+ 8 cranberry_juice  0.0954 PC1       pca_8fjBb
+ 9 pineapple_juice  0.119  PC1       pca_8fjBb
+10 bourbon_whiskey  0.0963 PC1       pca_8fjBb
 # … with 1,590 more rows</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
@@ -2403,16 +2390,16 @@ Figure 3: PCA finds a low-dimensional linear subspace that closely approximates 
 <pre><code># A tibble: 160 x 4
    terms    value component id       
    &lt;chr&gt;    &lt;dbl&gt;     &lt;int&gt; &lt;chr&gt;    
- 1 variance  2.00         1 pca_3GYvM
- 2 variance  1.71         2 pca_3GYvM
- 3 variance  1.50         3 pca_3GYvM
- 4 variance  1.48         4 pca_3GYvM
- 5 variance  1.37         5 pca_3GYvM
- 6 variance  1.32         6 pca_3GYvM
- 7 variance  1.30         7 pca_3GYvM
- 8 variance  1.20         8 pca_3GYvM
- 9 variance  1.19         9 pca_3GYvM
-10 variance  1.18        10 pca_3GYvM
+ 1 variance  2.00         1 pca_8fjBb
+ 2 variance  1.71         2 pca_8fjBb
+ 3 variance  1.50         3 pca_8fjBb
+ 4 variance  1.48         4 pca_8fjBb
+ 5 variance  1.37         5 pca_8fjBb
+ 6 variance  1.32         6 pca_8fjBb
+ 7 variance  1.30         7 pca_8fjBb
+ 8 variance  1.20         8 pca_8fjBb
+ 9 variance  1.19         9 pca_8fjBb
+10 variance  1.18        10 pca_8fjBb
 # … with 150 more rows</code></pre>
 </div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>

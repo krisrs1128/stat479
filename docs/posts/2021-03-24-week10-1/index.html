@@ -87,7 +87,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
   <!--radix_placeholder_meta_tags-->
 <title>Statistical Data Visualization: Introduction to Dimensionality Reduction</title>
 
-<meta property="description" itemprop="description" content="What are high-dimensional data and when should we learn low-dimensional representations?"/>
+<meta property="description" itemprop="description" content="Examples of high-dimensional data."/>
 
 
 <!--  https://schema.org/Article -->
@@ -98,20 +98,20 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
 <meta property="og:title" content="Statistical Data Visualization: Introduction to Dimensionality Reduction"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="What are high-dimensional data and when should we learn low-dimensional representations?"/>
+<meta property="og:description" content="Examples of high-dimensional data."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
 <meta property="twitter:title" content="Statistical Data Visualization: Introduction to Dimensionality Reduction"/>
-<meta property="twitter:description" content="What are high-dimensional data and when should we learn low-dimensional representations?"/>
+<meta property="twitter:description" content="Examples of high-dimensional data."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Dimensionality Reduction"]},{"type":"character","attributes":{},"value":["What are high-dimensional data and when should we learn low-dimensional representations?"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-29"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Dimensionality Reduction"]},{"type":"character","attributes":{},"value":["Examples of high-dimensional data."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-03-29"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2212,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Introduction to Dimensionality Reduction","description":"What are high-dimensional data and when should we learn low-dimensional representations?","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-29T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"Introduction to Dimensionality Reduction","description":"Examples of high-dimensional data.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-29T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2238,7 +2238,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <h1>Introduction to Dimensionality Reduction</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>What are high-dimensional data and when should we learn low-dimensional representations?</p></p>
+<p><p>Examples of high-dimensional data.</p></p>
 </div>
 
 <div class="d-byline">
@@ -2248,9 +2248,9 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>,<a href="">Recording</a>,<a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-1/week10-1.Rmd">Rmarkdown</a></em></p>
 <ol type="1">
-<li><em>High-dimensional</em> data are data where many features are collected for each observation. If we organize our data.frame so that each observation is a separate row, then these data have many columns. The name comes from the fact that each row of the dataset can be viewed as a vector in a high-dimensional space (one dimension for each feature). These data are common in modern applications,</li>
+<li><em>High-dimensional data</em> are data where many features are collected for each observation. These tend to be wide datasets with many columns. The name comes from the fact that each row of the dataset can be viewed as a vector in a high-dimensional space (one dimension for each feature). These data are common in modern applications,</li>
 </ol>
 <ul>
 <li>Each cell in a genomics dataset might have measurements for hundreds of molecules.</li>
@@ -2259,9 +2259,9 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>Each document might have counts across several thousand relevant words.</li>
 </ul>
 <ol start="2" type="1">
-<li><p>For low-dimensional data, we could encode all the features in our data directly, either using properties of marks or through clever faceting. In high-dimensional data, this is no longer possible.</p></li>
-<li><p>Even though there are many features associated with each observation, it may still be possible to organize samples across a smaller number of meaningful, derived features.</p></li>
-<li><p>For example, consider the Metropolitan Museum of Art dataset, which contains images of many artworks. Abstractly, each artwork is a high-dimensional object, containing pixel intensities for many pixels. But it is reasonable to derive features based on the average brightness.</p></li>
+<li><p>For low-dimensional data, we could visually encode all the features in our data directly, either using properties of marks or through faceting. In high-dimensional data, this is no longer possible.</p></li>
+<li><p>However, though there are many features associated with each observation, it may still be possible to organize samples across a smaller number of meaningful, derived features.</p></li>
+<li><p>For example, consider the Metropolitan Museum of Art dataset, which contains images of many artworks. Abstractly, each artwork is a high-dimensional object, containing pixel intensities across many pixels. But it is reasonable to derive a feature based on the average brightness.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-1"></span>
@@ -2272,8 +2272,7 @@ Figure 1: An arrangement of artworks according to their average pixel brightness
 </div>
 </div>
 <ol start="5" type="1">
-<li><p>Informally, the goal of dimensionality reduction techniques is to produce a low-dimensional “atlas” relating members of a collection of complex objects. Samples that are similar to one another in the high-dimensional space should be placed near one another in the low-dimensional view.</p></li>
-<li><p>Continuing with the example, we might want to construct a lower-dimensional map that places similar artworks next to one another. However, manual feature construction can be difficult. Algorithmic approaches try streamline the process of generating these maps by optimizing some more generic criterion. Different algorithms use different criteria, which we will review in the next couple of lectures.</p></li>
+<li>In general, manual feature construction can be difficult. Algorithmic approaches try streamline the process of generating these maps by optimizing some more generic criterion. Different algorithms use different criteria, which we will review in the next couple of lectures.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-2"></span>
@@ -2283,6 +2282,9 @@ Figure 2: The dimensionality reduction algorithm in this animation converts a la
 </p>
 </div>
 </div>
+<ol start="6" type="1">
+<li>Informally, the goal of dimensionality reduction techniques is to produce a low-dimensional “atlas” relating members of a collection of complex objects. Samples that are similar to one another in the high-dimensional space should be placed near one another in the low-dimensional view. For example, we might want to make an atlas of artworks, with similar styles and historical periods being placed near to one another.</li>
+</ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

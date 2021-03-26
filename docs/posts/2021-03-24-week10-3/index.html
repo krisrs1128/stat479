@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>,<a href="">Recording</a>,<a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://juliasilge.com/blog/cocktail-recipes-umap/">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-3/week10-3.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
@@ -2269,7 +2269,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol type="1">
-<li>How should we visualize the results from PCA? There are two artifacts produced by the procedure — components and scores.</li>
+<li>How should we visualize the results from PCA? There are three artifacts produced by the procedure worth considering — components, scores, and variances. The components describe derived features, the scores lay samples out on a map, and the variances summarize how much information was preserved by each dimension.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2283,7 +2283,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol start="2" type="1">
-<li>First, let’s see how much variance is explained by each dimension of the PCA. Without detouring into the mathematical explanation, know that the more rapid the dropoff in variance explained, the better the low-dimensional approximation is. For example, if the data actually lie on a 2D plane in a high-dimensional space, then the first two bars contain all the variance (the rest would be zero).</li>
+<li>First, let’s see how much variance is explained by each dimension of the PCA. Without detouring into the mathematical explanation, the main idea is that, the more rapid the dropoff in variance explained, the better the low-dimensional approximation. For example, if the data actually lie on a 2D plane in a high-dimensional space, then the first two bars would contain all the variance (the rest would be zero).</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2292,35 +2292,40 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 <div class="figure"><span id="fig:unnamed-chunk-3"></span>
-<img src="week10-3_files/figure-html5/unnamed-chunk-3-1.png" alt="Proportion of variance explained by each component in the PCA." width="624" />
+<img src="week10-3_files/figure-html5/unnamed-chunk-3-1.png" alt="Proportion of variance explained by each component in the PCA." width="384" />
 <p class="caption">
 Figure 1: Proportion of variance explained by each component in the PCA.
 </p>
 </div>
 </div>
 <ol start="2" type="1">
-<li>Can interpret components by looking at how variables contribute. From the plot below, we see that the first PC mostly captures variation related to whether the drink is made with powdered sugar or simple syrup. Drinks with high values of PC1 are expected to be made from simple syrup, those with low values of PC1 are likely made from powdered sugar. From the two largest bars in PC2, we can see that it highlights vermouth vs. nonvermouth.</li>
+<li>We can interpret components by looking at the linear coefficients of the variables used to define them. From the plot below, we see that the first PC mostly captures variation related to whether the drink is made with powdered sugar or simple syrup. Drinks with high values of PC1 are usually to be made from simple syrup, those with low values of PC1 are usually made from powdered sugar. From the two largest bars in PC2, we can see that it highlights the vermouth vs. non-vermouth distinction.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>components</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>terms</span>, fill <span class='op'>=</span> <span class='va'>terms</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+<pre><code><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>components</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>terms</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span>show.legend <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>component</span>, nrow <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week10-3_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<img src="week10-3_files/figure-html5/unnamed-chunk-4-1.png" alt="The top 5 principal components associated with the cocktails dataset." width="624" />
+<p class="caption">
+Figure 2: The top 5 principal components associated with the cocktails dataset.
+</p>
+</div>
 </div>
 <ol start="3" type="1">
-<li>It is often easier read the components if we sort the bars according to their magnitude. Our usual approach to reordering axes labels, using either <code>reorder</code> or resetting the levels of the defining factor, will reorder all the facts in the same way. If we want to reorder each facet on its own, we can use the <code>reorder_within</code> function coupled with <code>scales_*_reorder</code>, both from the tidytext package.</li>
+<li>It is often easier read the components when the bars are sorted according to their magnitude. The usual ggplot approach to reordering axes labels, using either <code>reorder()</code> or releveling the associated factor, will reorder all the facets in the same way. If we want to reorder each facet on its own, we can use the <code>reorder_within</code> function coupled with <code>scale_*_reordered</code>, both from the tidytext package.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='va'>components_</span> <span class='op'>&lt;-</span> <span class='va'>components</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>component</span> <span class='op'>%in%</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_c.html'>str_c</a></span><span class='op'>(</span><span class='st'>"PC"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>mutate</span><span class='op'>(</span>terms <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/reorder_within.html'>reorder_within</a></span><span class='op'>(</span><span class='va'>terms</span>, <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>value</span><span class='op'>)</span>, <span class='va'>component</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>components_</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>terms</span>, fill <span class='op'>=</span> <span class='va'>terms</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>components_</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>value</span>, <span class='va'>terms</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span>show.legend <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>component</span>, scales <span class='op'>=</span> <span class='st'>"free_y"</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/reorder_within.html'>scale_y_reordered</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
@@ -2328,10 +2333,15 @@ Figure 1: Proportion of variance explained by each component in the PCA.
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week10-3_files/figure-html5/unnamed-chunk-5-1.png" width="960" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="week10-3_files/figure-html5/unnamed-chunk-5-1.png" alt="The top 3 principal components, with defining variables sorted by the magnitude of their coefficient." width="960" />
+<p class="caption">
+Figure 3: The top 3 principal components, with defining variables sorted by the magnitude of their coefficient.
+</p>
+</div>
 </div>
 <ol start="4" type="1">
-<li>Next, we can visualize the scores of each sample with respect to these components. The plot below shows <span class="math inline">\(\left(z_{i1}, z_{i2}\right)\)</span>. Suppose that the columns of <span class="math inline">\(\Phi\)</span> are <span class="math inline">\(\varphi_{1}, \dots, \varphi_{K}\)</span>. Then, since <span class="math inline">\(x_{i} \approx \varphi_{1}z_{i1} + \varphi_{2} z_{i2}\)</span>, they have large values for variables with large component values in the coordinate directions where <span class="math inline">\(z_{i}\)</span> is farther along.</li>
+<li>Next, we can visualize the scores of each sample with respect to these components. The plot below shows <span class="math inline">\(\left(z_{i1}, z_{i2}\right)\)</span>. Suppose that the columns of <span class="math inline">\(\Phi\)</span> are <span class="math inline">\(\varphi_{1}, \dots, \varphi_{K}\)</span>. Then, since <span class="math inline">\(x_{i} \approx \varphi_{1}z_{i1} + \varphi_{2} z_{i2}\)</span>, the samples have large values for variables with large component values in the coordinate directions where <span class="math inline">\(z_{i}\)</span> is farther along.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2341,13 +2351,17 @@ Figure 1: Proportion of variance explained by each component in the PCA.
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>/</span> <span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># rescale axes to reflect variance</span>
 </code></pre>
 </div>
-<p><img src="week10-3_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="week10-3_files/figure-html5/unnamed-chunk-6-1.png" alt="The scores associated with the cocktails dataset." width="624" data-distill-preview=1 />
+<p class="caption">
+Figure 4: The scores associated with the cocktails dataset.
+</p>
+</div>
 </div>
 <ol start="5" type="1">
-<li><p>For example, El Nino has high value for PC1, which means it has a high value of variables that are positive for PC1 (like simple syrup) and low value for those variables that are negative (like powdered sugar).</p></li>
-<li><p>Similarly, since <span class="math inline">\(\varphi_{2}\)</span> puts high positive weight on vermouth-related variables, H. P. W. Cocktail has many vermouth-related ingredients.</p></li>
+<li><p>For example, El Nino has high value for PC1, which means it has a high value of variables that are positive for PC1 (like simple syrup) and low value for those variables that are negative (like powdered sugar). Similarly, since <span class="math inline">\(\varphi_{2}\)</span> puts high positive weight on vermouth-related variables, so H. P. W. Cocktail has many vermouth-related ingredients.</p></li>
 <li><p>In practice, it will often be important to visualize several pairs of PC dimensions against one another, not just the top 2.</p></li>
-<li><p>Let’s examine the original code in a little more detail. We are using tidymodels, which is a package for decoupling the definition and the execution of a data pipeline. This compartmentalization makes it easier to design and reuse across settings.</p></li>
+<li><p>Let’s examine the original code in a little more detail. We are using tidymodels, which is a package for decoupling the definition and execution of a data pipeline. This compartmentalization makes it easier to design and reuse across settings.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2360,8 +2374,8 @@ Figure 1: Proportion of variance explained by each component in the PCA.
 </code></pre>
 </div>
 </div>
-<ol start="9" type="1">
-<li>Here is how you would apply PCA without the tidymodels package. You have to first split the data into the “metadata” that is used to interpret the resulting scores and the actual numerical variables used by PCA. Then at the end, you have to join it back in. It’s not impossible, but the result is not nearly as readable.</li>
+<ol start="8" type="1">
+<li>Here is how you would apply PCA without the tidymodels package. You have to first split the data into the “metadata” that is used to interpret the scores and the numerical variables used as input to PCA. Then at the end, you have to join the metadata back in. It’s not impossible, but the code is not as readable.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2382,18 +2396,23 @@ Figure 1: Proportion of variance explained by each component in the PCA.
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>/</span> <span class='va'>variances</span><span class='op'>$</span><span class='va'>value</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># rescale axes to reflect variance</span>
 </code></pre>
 </div>
-<p><img src="week10-3_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="week10-3_files/figure-html5/unnamed-chunk-8-1.png" alt="A plot of the PCA scores made without using tidymodels." width="624" />
+<p class="caption">
+Figure 5: A plot of the PCA scores made without using tidymodels.
+</p>
+</div>
 </div>
 <ol start="10" type="1">
 <li><p>The equivalent tidymodels implementation handles the difference between supplementary and modeling data less bluntly, setting the <code>name</code> and <code>category</code> variables to <code>id</code> roles, so that <code>all_predictors()</code> knows to skip them.</p></li>
-<li><p>We conclude with some characteristics of PCA, which are worth keeping in mind when choosing between alternative dimensionality reduction methods.</p></li>
+<li><p>We conclude with some characteristics of PCA, which can guide the choice between alternative dimensionality reduction methods.</p></li>
 </ol>
 <ul>
 <li><em>Global structure</em>: Since PCA is looking for high-variance overall, it tends to focus on global structure.</li>
-<li><em>Linear</em>: PCA can only consider linear functions of the original features. If we expect nonlinear features to be more meaningful, then another approach should be considered.</li>
+<li><em>Linear</em>: PCA can only consider linear combinations of the original features. If we expect nonlinear features to be more meaningful, then another approach should be considered.</li>
 <li><em>Interpretable features</em>: The PCA components exactly specify how to construct each of the derived features.</li>
 <li><em>Fast</em>: Compared to most dimensionality reduction methods, PCA is quite fast. Further, it is easy to implement approximate versions of PCA that scale to very large datasets.</li>
-<li><em>Deterministic</em>: Some embedding algorithms perform an optimization process, which means there might be some variation in the results due to randomness in the optimization. In contrast, PCA is deterministic, with the components being unique up to sign (i.e., you could reflect the components, but the effective features will always be the same).</li>
+<li><em>Deterministic</em>: Some embedding algorithms perform an optimization process, which means there might be some variation in the results due to randomness in the optimization. In contrast, PCA is deterministic, with the components being unique up to sign (i.e., you could reflect the components across an axis, but that is the most the results might change).</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
