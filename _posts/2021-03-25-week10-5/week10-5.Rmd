@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_Reading [1](https://juliasilge.com/blog/cocktail-recipes-umap/) and [2](https://pair-code.github.io/understanding-umap), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-25-week10-5/week10-5.Rmd)_
+_Reading [1](https://juliasilge.com/blog/cocktail-recipes-umap/) and [2](https://pair-code.github.io/understanding-umap), [Recording](https://mediaspace.wisc.edu/media/Week%2010%20%5B5%5D/1_nivmh3v2), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-25-week10-5/week10-5.Rmd)_
 
 ```{r}
 library("embed")

@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = FALSE)
 ```
 
-_[Reading](https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-1/week10-1.Rmd)_
+_[Reading](https://idyll.pub/post/visxai-dimensionality-reduction-1dbad0a67a092b007c526a45/), [Recording](https://mediaspace.wisc.edu/media/Week%2010%20%5B1%5D%20Introduction%20to%20Dimensionality%20Reduction/1_z4difn4d), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-1/week10-1.Rmd)_
 
 1. *High-dimensional data* are data where many features are collected for each
 observation. These tend to be wide datasets with many columns. The name comes

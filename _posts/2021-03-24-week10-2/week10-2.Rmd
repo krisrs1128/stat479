@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://juliasilge.com/blog/cocktail-recipes-umap/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-2/week10-2.Rmd)_
+_[Reading](https://juliasilge.com/blog/cocktail-recipes-umap/), [Recording](https://mediaspace.wisc.edu/media/Week%2010%20%5B2%5D%20Principal%20Components%20Analysis%20I/1_xc5q0v9t), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-2/week10-2.Rmd)_
 
 ```{r}
 library("tidymodels")
@@ -24,8 +24,8 @@ library("readr")
 ```
 
 1. In our last notes, we saw how we could organize a collection of images based
-on the average pixel brightness. We can think of average pixel brightness as a
-derived feature with which to build a low-dimensional map.
+on average pixel brightness. We can think of average pixel brightness as a
+derived feature that can be used to build a low-dimensional map.
 
 2. We can partially automate the process of deriving new features. Though, in
 general, finding the best way to combine raw features into derived ones is a

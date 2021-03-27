@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://pair-code.github.io/understanding-umap), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-4/week10-4.Rmd)_
+_[Reading](https://pair-code.github.io/understanding-umap), [Recording](https://mediaspace.wisc.edu/media/Week%2010%20%5B4%5D%20Uniform%20Manifold%20Approximation%20and%20Projection/1_8tb5x1es), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-4/week10-4.Rmd)_
 
 ```{r}
 library("ggplot2")

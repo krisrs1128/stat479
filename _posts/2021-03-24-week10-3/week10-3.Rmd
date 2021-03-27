@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://juliasilge.com/blog/cocktail-recipes-umap/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-3/week10-3.Rmd)_
+_[Reading](https://juliasilge.com/blog/cocktail-recipes-umap/), [Recording](https://mediaspace.wisc.edu/media/Week%2010%20%5B3%5D%20Principal%20Components%20Analysis%20II/1_uows5d33), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-24-week10-3/week10-3.Rmd)_
 
 ```{r}
 library("ggplot2")
