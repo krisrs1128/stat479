@@ -1,0 +1,118 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-04
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("tidytext")
+library("topicmodels")
+library("stringr")
+library("readr")
+library("dplyr")
+library("ggplot2")
+library("tidyr")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. In the last set of notes, we fit and extracted parameters from a topic model
+applied to the « Great Library Heist » dataset, but we did not visualize or
+interpret the results. We’ll continue that here, with eye towards the types of
+visualizations that might be generally useful whenever a topic model is fit.
+
+```{r}
+memberships <- read_csv("~/Desktop/memberships.csv")
+topics <- read_csv("~/Desktop/topics.csv")
+```
+
+2. A topic is a probability distribution across a collection of words. If the
+vocabulary isn’t too large, two appropriate visualization strategieis are,
+
+	* Faceted barplot: Each facet corresponds to a topic. The height of each bar
+	corresponds to a given word’s probability within the topic. The sum of heights
+	across all bars is 1. 
+	* Heatmap: Each row is a topic and each color is a word.
+	The color of the heatmap cells gives the probability of that word within the
+	given topic.
+	
+3. We can construct a faceted barplot using the tidied beta matrix.
+
+```{r}
+ggplot(topics %>% filter(beta > 3e-4), aes(term, beta)) +
+  geom_col() +
+  facet_grid(topic ~ .) +
+  theme(axis.text.x = element_blank())
+```
+
+4. For the heatmap, we need to pivot the topics, so that words appear along
+columns. From there, we can use superheatmap.
+
+```{r}
+library("superheat")
+topics %>%
+  filter(beta > 3e-4) %>%
+  pivot_wider(topic, term, values_from = "beta", values_fill = 0, names_repair = "unique") %>%
+  select(-1) %>%
+  superheat(pretty.order.cols = TRUE)
+```
+
+5. Both approaches breakdown when the vocabulary is very large — there are
+simply too many words to include a label for each. A workaround is to restrict
+attention to a subset of « interesting » words. For example, we could filter to,
+
+  * Top words overall: We can filter to words that appear above some threshold
+  across any topic. This is the approach used in the visualizations above,
+  though the threshold is very low (there are still too many words to add
+  labels).
+	* Top words per topic: We can sort the words within each topic in order from
+	highest to lowest probability, and then keep only the $S$ largest.
+	* Most discriminative words: Some words have high probability just because they
+	are common. They have high probability within each topic, and so are not truly
+	that interesting. Instead, we can focus on words that have very different
+	probabilities across the topics. For example, we can use the KL divergence,
+	
+6. To visualize the top words, we first filter the topic matrix. Then, we use
+the same `reorder_within` function from the PCA lectures to reorder words within
+each topic.
+
+7. To visualize discriminative words, we first compute the discrimination
+measure for each word and filter to those with the top score. The filtered
+results can be used in either the faceted barplot or heatmaps above.
+
+8. Both visualization approaches make it clear that the topics are recovering
+the book identities.
+
+9. Besides the topics, we are interested in knowing the topic proportions for
+each chapter. One compact approach is to visualize the proportions as a boxplot.
+
+10. An equivalent visualization is to use ridgeplots.
+
+11. Both approaches above consider the collection of documents in aggregate. If
+we want to avoid aggregation and visualize individual documents, we can use a
+heatmap. This approach is useful here because heatmap cells can be drawn very
+small — anything requiring more space would become unwieldy as the number of
+documents grows.
+
+12. Alternatively, we can use a « structure » plot. This is a type of stacked
+barplot where the colors of each bar corresponds to a topic. The documents can
+be sorted according to either the proportions of each topic or using an a
+hierarchical clustering, like in superheatmap’s `pretty.order.*` functions.

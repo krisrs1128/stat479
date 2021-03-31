@@ -1,0 +1,75 @@
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-04
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_Reading [1](), [Recording](), [Rmarkdown]()_
+
+```{r}
+```
+
+1. Topic modeling is a type of dimensionality reduction method that is
+especially useful for high-dimensional count matrices.
+
+2. In text data analysis, each row is a document and each column is a word. The
+$ij^{th}$ entry contains the count of the $j^{th}$ word in the $i^{th}$ document.
+
+3. In gene expression analysis, each row is a biological sample, and each column
+is a gene. The $ij^{th}$ entry contains the count of the number of sequencing
+reads in the $i^{th}$ sample that align with the the $j^{th}$ gene.
+
+4. For clarity, we will refer to samples as documents and features as words.
+However, keep in mind that these methods are in fact more general.
+
+5. For these type of data, topic models provide a compromise between clustering
+and PCA.
+
+6. In clustering, each document would have to be assigned to a single topic. In
+contrast, topic models allow each document to partially belong to several topics
+simultaneously. In this sense, they are more suitable to data that varies
+continuously along a gradient.
+
+7. In PCA, there is no notion of clusters. In contrast, topic models do estimate
+$K$ topics, which are analogous to a cluster centroids (though documents are
+usually a mix of several centroids).
+
+8. Without delving into the mathematical detail, topic models perform
+dimensionality reduction by supposing,
+
+* Each document is a mixture of topics.
+* Each topic is a mixture of words.
+
+5. To understand the first point, consider modeling a collection of newspaper
+articles. A set of articles might belong primarily to the « politics » topic,
+and others to the « business » topic. Articles that describe a monetary policy
+in the federal reserve might belong partially to both the « politics » and the
+« business » topic.
+
+6. To understand the second point, consider the difference in words that would
+appear in politics and business articles. Articles about politics might
+frequently include words like « congress » and « law », but only rarely words
+like « stock » and « NYSE. »
+
+7. Geometrically, LDA can be represented by the following picture. The corners
+of this simplex represent different words (in reality, there would be $V$
+different corners to this simplex). A topic is a point on this simplex. The
+closer the topic is to one of the corners, the more frequently that word appears
+in the topic.
+
+8. A document is a point intermediate between a set of topics. A document that’s
+very close to a particular topic has a word distribution just like that topic. A
+document that’s intermediate between two topics has a word distribution that
+mixes between both topics
