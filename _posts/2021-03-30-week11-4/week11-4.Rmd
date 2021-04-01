@@ -1,1 +1,168 @@
-temp
+---
+title: ""
+description: |
+
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-04
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_Reading [1](), [Recording](), [Rmarkdown]()_
+
+```{r}
+library("ggplot2")
+library("dplyr")
+library("forcats")
+library("tidyr")
+library("topicmodels")
+library("superheat")
+library("readr")
+library("tidytext")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. We have used text data analysis to motivate and illustrate the use of topic
+models. However, these models can be used whenever we have high-dimensional
+count data. To illustrate this broad applicability, this lecture will consider
+an example from gene expression analysis.
+
+2. The dataset we consider comes from the GTEX consortium. A variety of tissue
+samples have been subject to RNA-seq analysis, which measures how much of each
+type of gene is expressed within each sample. Intuitively, we relate,
+
+	* Documents $\arrow$ Tissue samples
+	* Words  $\arrow$ Genes
+	* Word Counts $\arrow$ Gene expression levels
+	
+The code below reads in the expression data.
+
+```{r}
+x <- read_csv("~/Desktop/gtex.csv")
+x_dtm <- cast_dtm(x, sample, gene, value)
+#fit <- LDA(x_dtm, k = 10, control = list(seed = 479))
+#save(fit, file = "~/Desktop/lda_gtex.rda")
+fit <- get(load("~/Desktop/lda_gtex.rda"))
+```
+	
+3. The goal here is like in the cluster stability lecture earlier: we want to
+find sets of genes that tend to be expressed together, because they be
+indications of some underlying biological processes. Unlike clustering, which
+assumes each sample is described by one gene expression profile, a topic model
+will be able to model each tissue sample as a mixture of profiles (i.e., a
+mixture of underlying biological processes).
+
+4. As a first step in our analysis, we need to prepare a `DocumentTermMatrix`
+for use by the topicmodels package. This is in fact more straightforward for
+this application than for the text example, since we don’t need to do any text
+parsing or pivoting. The data come to us as a wide count matrix.
+
+5. Next, we visualize the topics. Let’s consider the genes with the highest
+discrimination between topics. These are genes that are expressed highly in some
+topics, but not others. (interpret)
+
+```{r}
+tissue_info <- x %>%
+  select(sample, starts_with("tissue"))
+
+topics <- tidy(fit, matrix = "beta") %>%
+  mutate(topic = factor(topic))
+memberships <- tidy(fit, matrix = "gamma") %>%
+  mutate(topic = factor(topic)) %>%
+  left_join(tissue_info, by = c("document" = "sample"))
+```
+
+```{r, echo = FALSE}
+kl_div <- function(p1, p2) {
+  p1 * log(p1 / p2) + (p2 - p2)
+}
+
+kl_mat <- function(p) {
+  K <- matrix(0, nrow = length(p), ncol = length(p))
+  
+  for (i in seq_along(p)) {
+    for (j in seq_len(i - 1)) {
+      K[i, j] <- kl_div(p[i], p[j])
+    }
+  }
+  K
+}
+
+discrepancy <- function(p, lambda = 1e-7) {
+  p <- (p + lambda) / sum(p + lambda) # Laplace smoothing
+  K <- kl_mat(p)
+  max(K)
+}
+```
+
+```{r, fig.height = 8, fig.width = 4.5}
+discriminative_genes <- topics %>%
+  group_by(term) %>%
+  mutate(D = discrepancy(beta)) %>%
+  ungroup() %>%
+  slice_max(D, n = 400) %>%
+  mutate(term = fct_reorder(term, -D))
+
+discriminative_genes %>%
+  pivot_wider(term, topic, values_from = "beta") %>%
+  column_to_rownames("term") %>%
+  superheat(
+    pretty.order.rows = TRUE,
+    left.label.size = 1.5,
+    left.label.text.size = 3,
+    bottom.label.size = 0.05,
+    legend = FALSE
+  )
+```
+
+6. Now, let’s see what tissues express which topics. We can use a structure
+plot.
+
+```{r}
+```
+
+```{r}
+hclust_result <- hclust(dist(fit@gamma))
+document_order <- fit@documents[hclust_result$order]
+memberships <- memberships %>%
+  mutate(document = factor(document, levels = document_order))
+```
+
+```{r, fig.height = 10, fig.width = 5}
+keep_tissues <- memberships %>%
+  count(tissue) %>%
+  filter(n > 80) %>%
+  pull(tissue)
+
+memberships %>%
+  filter(tissue %in% keep_tissues) %>%
+  ggplot(aes(gamma, document, fill = topic, col = topic)) +
+  geom_col(position = position_stack()) +
+  facet_grid(tissue ~ ., scales = "free", space = "free") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_color_brewer(palette = "Set3") +
+  scale_fill_brewer(palette = "Set3") +
+  theme(
+    panel.spacing = unit(0.5, "lines"),
+    strip.switch.pad.grid = unit(0, "cm"),
+    strip.text.y = element_text(size = 8, angle = 0),
+    axis.text.y = element_blank(),
+  )
+```
+
+7. (interpret)

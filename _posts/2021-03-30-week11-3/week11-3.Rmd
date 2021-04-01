@@ -20,9 +20,13 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 library("tidytext")
 library("topicmodels")
 library("stringr")
+library("tibble")
+library("forcats")
 library("readr")
+library("ggridges")
 library("dplyr")
 library("ggplot2")
+library("superheat")
 library("tidyr")
 theme479 <- theme_minimal() + 
   theme(
@@ -67,7 +71,6 @@ ggplot(topics %>% filter(beta > 3e-4), aes(term, beta)) +
 columns. From there, we can use superheatmap.
 
 ```{r}
-library("superheat")
 topics %>%
   filter(beta > 3e-4) %>%
   pivot_wider(topic, term, values_from = "beta", values_fill = 0, names_repair = "unique") %>%
@@ -94,9 +97,70 @@ attention to a subset of « interesting » words. For example, we could filter
 the same `reorder_within` function from the PCA lectures to reorder words within
 each topic.
 
+```{r}
+top_terms <- topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10) %>%
+  mutate(term = reorder_within(term, beta, topic))
+ggplot(top_terms, aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  scale_y_reordered()
+```
+
 7. To visualize discriminative words, we first compute the discrimination
 measure for each word and filter to those with the top score. The filtered
 results can be used in either the faceted barplot or heatmaps above.
+
+```{r, echo = FALSE}
+kl_div <- function(p1, p2) {
+  p1 * log(p1 / p2) + (p2 - p2)
+}
+
+kl_mat <- function(p) {
+  K <- matrix(0, nrow = length(p), ncol = length(p))
+  
+  for (i in seq_along(p)) {
+    for (j in seq_len(i - 1)) {
+      K[i, j] <- kl_div(p[i], p[j])
+    }
+  }
+  K
+}
+
+discrepancy <- function(p, lambda = 1e-7) {
+  p <- (p + lambda) / sum(p + lambda) # Laplace smoothing
+  K <- kl_mat(p)
+  max(K)
+}
+```
+
+
+```{r}
+discriminative_terms <- topics %>%
+  group_by(term) %>%
+  mutate(D = discrepancy(beta)) %>%
+  ungroup() %>%
+  slice_max(D, n = 200) %>%
+  mutate(term = fct_reorder(term, -D))
+
+ggplot(discriminative_terms, aes(term, beta)) +
+  geom_col() +
+  facet_grid(topic ~ ., scales = "free") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+```{r, fig.height = 7, fig.width = 3}
+discriminative_terms %>%
+  pivot_wider(term, topic, values_from = "beta") %>%
+  column_to_rownames("term") %>%
+  superheat(
+    pretty.order.rows = TRUE,
+    left.label.size = 1.5,
+    left.label.text.size = 3,
+    bottom.label.size = 0.05,
+    legend = FALSE
+  )
+```
 
 8. Both visualization approaches make it clear that the topics are recovering
 the book identities.
@@ -104,15 +168,70 @@ the book identities.
 9. Besides the topics, we are interested in knowing the topic proportions for
 each chapter. One compact approach is to visualize the proportions as a boxplot.
 
+```{r}
+memberships <- memberships %>%
+  mutate(
+    book = str_extract(document, "[^_]+"),
+    topic = factor(topic)
+  )
+
+ggplot(memberships, aes(topic, gamma)) +
+  geom_boxplot()
+
+ggplot(memberships, aes(topic, gamma)) +
+  geom_boxplot() +
+  facet_wrap(~book)
+```
+
 10. An equivalent visualization is to use ridgeplots.
+
+```{r}
+ggplot(memberships, aes(gamma, topic)) +
+  geom_density_ridges(bandwidth = 0.01)
+
+ggplot(memberships, aes(gamma, topic)) +
+  geom_density_ridges(aes(fill = book), bandwidth = 0.01, alpha = 0.8)
+```
 
 11. Both approaches above consider the collection of documents in aggregate. If
 we want to avoid aggregation and visualize individual documents, we can use a
-heatmap. This approach is useful here because heatmap cells can be drawn very
-small — anything requiring more space would become unwieldy as the number of
-documents grows.
+heatmap or jittered scatterplot. These approaches are useful here because
+heatmap cells and individual points can be drawn very small — anything requiring
+more space would become unwieldy as the number of documents grows.
+
+```{r, fig.height = 10, fig.width = 3}
+memberships_wider <- memberships %>%
+  pivot_wider(document:book, topic, values_from = "gamma")
+
+superheat(
+  memberships_wider %>% column_to_rownames("document") %>% select(-book),
+  pretty.order.rows = TRUE,
+  bottom.label.size = 0.05,
+  legend = FALSE
+)
+```
+
+
+```{r, fig.height = 4, fig.width = 6}
+ggplot(memberships, aes(topic, gamma, col = book)) +
+  geom_point(position = position_jitter(h = 0.05, w = 0.3))
+```
 
 12. Alternatively, we can use a « structure » plot. This is a type of stacked
 barplot where the colors of each bar corresponds to a topic. The documents can
 be sorted according to either the proportions of each topic or using an a
 hierarchical clustering, like in superheatmap’s `pretty.order.*` functions.
+
+```{r, fig.height = 10, fig.width = 4}
+document_order <- memberships_wider %>%
+  arrange(book, `1`, `2`, `3`, `4`) %>%
+  pull(document)
+memberships <- memberships %>%
+  mutate(document = factor(document, levels = document_order))
+
+ggplot(memberships, aes(gamma, document, fill = topic, col = topic)) +
+  geom_col(position = position_stack()) +
+  facet_grid(book ~ ., scales = "free", space = "free") +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(axis.text.y = element_blank())
+```

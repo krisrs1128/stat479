@@ -56,8 +56,8 @@ titles <- c("Twenty Thousand Leagues under the Sea",
             "Great Expectations")
 books <- gutenberg_works(title %in% titles) %>%
   gutenberg_download(meta_fields = "title")
+books
 ```
-
 3. Since we imagine that the word distributions are not equal across the books,
 topic modeling is a reasonable candidate for recovering this information. Note
 that, in principle, other clustering and dimensionality reduction procedures
@@ -67,16 +67,27 @@ could also work.
 below contain the raw text of the four books. We split the raw texts anytime the
 word « Chapter » appears. We will keep track of the book names for each chapter,
 but note that it is not passed into the topic modeling routine.
+```{r}
+books %>%
+  filter(title == "Pride and Prejudice") %>%
+  mutate(
+    chapter = cumsum(str_detect(text, regex("chapter [0-9]+", ignore_case = TRUE)))
+  ) %>%
+  group_by(chapter) %>%
+  filter(n() > 10)
+```
 
 ```{r}
 # divide into documents, each representing one chapter
 by_chapter <- books %>%
   group_by(title) %>%
-  mutate(chapter = cumsum(str_detect(
-    text, regex("^chapter ", ignore_case = TRUE)
-  ))) %>%
+  mutate(
+    chapter = cumsum(str_detect(text, regex("chapter [0-9]+", ignore_case = TRUE)))
+  ) %>%
+  group_by(title, chapter) %>%
+  mutate(n = n()) %>%
+  filter(n > 5) %>%
   ungroup() %>%
-  filter(chapter > 0) %>%
   unite(document, title, chapter)
 
 # find document-word counts
@@ -85,8 +96,6 @@ word_counts <- by_chapter %>%
   anti_join(stop_words) %>%
   group_by(document, word) %>%
   summarise(n = n())
-  
-word_counts
 ```
 
 5. As it is, the text data are long character strings, giving actual text from
