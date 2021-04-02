@@ -1,11 +1,11 @@
 ---
-title: ""
+title: "Fitting Topic Models"
 description: |
-
+    Data preparation and model fitting code for topics.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 2021-04-04
+date: 2021-04-06
 output:
   distill::distill_article:
     self_contained: false
@@ -13,19 +13,19 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_Reading [1](), [Recording](), [Rmarkdown]()_
+_[Reading](https://www.tidytextmining.com/topicmodeling.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-2/week11-2.Rmd)_
 
 ```{r}
-library("tidytext")
-library("topicmodels")
-library("stringr")
-library("gutenbergr")
 library("dplyr")
 library("ggplot2")
+library("gutenbergr")
+library("stringr")
 library("tidyr")
+library("tidytext")
+library("topicmodels")
 theme479 <- theme_minimal() + 
   theme(
     panel.grid.minor = element_blank(),
@@ -43,11 +43,12 @@ counts of words (columns) across documents (rows). In practice, most of the
 effort required to fit a topic model goes into transforming the raw data into a
 suitable `DocumentTermMatrix`.
 
-2. To illustrate this process, let’s consider the « Great Library Heist »
-example from the reading. We imagine that a thief has taken four books — Great
+2. To illustrate this process, let’s consider the "Great Library Heist" example
+from the reading. We imagine that a thief has taken four books — Great
 Expectations, Twenty Thousand Leagues Under The Sea, War of the Worlds, and
 Pride & Prejudice — and torn all the chapters out. We are left with pieces of
-isolated pieces of text and have to determine from which book they are from.
+isolated pieces of text and have to determine from which book they are from. The
+block below downloads all the books into an R object.
 
 ```{r}
 titles <- c("Twenty Thousand Leagues under the Sea", 
@@ -59,66 +60,51 @@ books <- gutenberg_works(title %in% titles) %>%
 books
 ```
 3. Since we imagine that the word distributions are not equal across the books,
-topic modeling is a reasonable candidate for recovering this information. Note
-that, in principle, other clustering and dimensionality reduction procedures
-could also work.
+topic modeling is a reasonable approach for discovering the books associated
+with each chapter. Note that, in principle, other clustering and dimensionality
+reduction procedures could also work.
 
-4. First, let’s simulate the process of tearing the chapters out. The objects
-below contain the raw text of the four books. We split the raw texts anytime the
-word « Chapter » appears. We will keep track of the book names for each chapter,
-but note that it is not passed into the topic modeling routine.
-```{r}
-books %>%
-  filter(title == "Pride and Prejudice") %>%
-  mutate(
-    chapter = cumsum(str_detect(text, regex("chapter [0-9]+", ignore_case = TRUE)))
-  ) %>%
-  group_by(chapter) %>%
-  filter(n() > 10)
-```
+4. First, let’s simulate the process of tearing the chapters out. We split the
+raw texts anytime the word "Chapter" appears. We will keep track of the book
+names for each chapter, but this information is not passed into the topic
+modeling algorithm.
 
 ```{r}
-# divide into documents, each representing one chapter
 by_chapter <- books %>%
   group_by(title) %>%
   mutate(
-    chapter = cumsum(str_detect(text, regex("chapter [0-9]+", ignore_case = TRUE)))
+    chapter = cumsum(str_detect(text, regex("chapter", ignore_case = TRUE)))
   ) %>%
   group_by(title, chapter) %>%
   mutate(n = n()) %>%
   filter(n > 5) %>%
   ungroup() %>%
   unite(document, title, chapter)
-
-# find document-word counts
-word_counts <- by_chapter %>%
-  unnest_tokens(word, text) %>%
-  anti_join(stop_words) %>%
-  group_by(document, word) %>%
-  summarise(n = n())
 ```
 
 5. As it is, the text data are long character strings, giving actual text from
-the novels. LDA throws away information related to word order — it just wants
-counts of each word within each each chapter. To derive word counts, we first
-split the raw text into separate words using the tidytext package. Then, we can
-count the number of times each word appeared in each document using `count`, a
-shortcut for the usual `group_by` and `summarize(n = n())` pattern.
+the novels. To fit LDA, we only need counts of each word within each chapter --
+the algorithm throws away information related to word order. To derive word
+counts, we first split the raw text into separate words using the `unest_tokens`
+function in the tidytext package. Then, we can count the number of times each
+word appeared in each document using `count`, a shortcut for the usual
+`group_by` and `summarize(n = n())` pattern.
 
 ```{r}
 word_counts <- by_chapter %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_words) %>%
-  count(document, word)
+  count(document, word) # shortcut for group_by(document, word) %>% summarise(n = n())
 
 word_counts
 ```
 
-6. These wordcounts are still not in a format compatible with conversion to a
+6. These words counts are still not in a format compatible with conversion to a
 `DocumentTermMatrix`. The issue is that the `DocumentTermMatrix` expects words
 to be arranged along columns, but currently they are stored across rows. The
-line below converts the original « long » word counts dataset into a
-`DocumentTermMatrix` in one step.
+line below converts the original "long" word counts into a "wide"
+`DocumentTermMatrix` in one step. Across these 4 books, we have 65 chapters and
+a vocabulary of size 18325.
 
 ```{r}
 chapters_dtm <- word_counts %>%
@@ -127,7 +113,8 @@ chapters_dtm
 ```
 
 8. Once the data are in this format, we can use the `LDA` function to fit a
-topic model. Various hyperparameters can be set using the `control` argument.
+topic model. We choose $K = 4$ topics because we expect that each topic will
+match a book. Different hyperparameters can be set using the `control` argument.
 
 ```{r}
 chapters_lda <- LDA(chapters_dtm, k = 4, control = list(seed = 1234))
@@ -136,7 +123,7 @@ chapters_lda
 
 9. There are two types of outputs produced by the LDA model: the topic word
 distributions (for each topic, which words are common?) and the document-topic
-memberships (for which topics is does a document come from?). For visualization,
+memberships (from which topics does a document come from?). For visualization,
 it will be easiest to extract these parameters using the `tidy` function,
 specifying whether we want the topics (beta) or memberships (gamma).
 
@@ -145,9 +132,10 @@ topics <- tidy(chapters_lda, matrix = "beta")
 memberships <- tidy(chapters_lda, matrix = "gamma")
 ```
 
-10. This tidy approach is preferable to extracting the parameters directly
-because it ensures the output is a tidy data.frame, rather than a matrix, and
-tidy data.frames are easier to visualize in ggplot2.
+10. This tidy approach is preferable to extracting the parameters directly from
+the fitted model (e.g., using `chapters_lda@gamma`) because it ensures the
+output is a tidy data.frame, rather than a matrix. Tidy data.frames are easier
+to visualize using ggplot2.
 
 ```{r}
 # highest weight words per topic
@@ -157,5 +145,14 @@ topics %>%
 # topic memberships per document
 memberships %>%
   arrange(document, topic)
+```
+
+```{r}
+write_csv(topics, "~/Desktop/topics.csv")
+write_csv(memberships,"~/Desktop/memberships.csv")
+```
+
+```{r}
+table(memberships$document)
 ```
 
