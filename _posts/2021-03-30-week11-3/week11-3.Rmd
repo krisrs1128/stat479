@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_Reading [1](https://www.tidytextmining.com/topicmodeling.html) and [2](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd)_
+_Reading [1](https://www.tidytextmining.com/topicmodeling.html) and [2](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd), [Recording](https://mediaspace.wisc.edu/media/Week%2011%20%5B3%5D%20Visualizing%20Topic%20Models/1_t6bn2guv), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd)_
 
 ```{r}
 library("dplyr")
@@ -50,8 +50,10 @@ memberships <- read_csv("https://uwmadison.box.com/shared/static/c5k5iinwo9au44f
 topics <- read_csv("https://uwmadison.box.com/shared/static/uh34hhc1wnp072zcryisvgr3z0yh25ad.csv")
 ```
 
+### Visualizing Topics
+
 2. A topic is a probability distribution across a collection of words. If the
-vocabulary isn’t too large, two appropriate visualization strategieis are,
+vocabulary isn’t too large, two appropriate visualization strategies are,
   	* Faceted barplot: Each facet corresponds to a topic. The height of each bar
   	corresponds to a given word’s probability within the topic. The sum of heights
   	across all bars is 1. 
@@ -133,8 +135,8 @@ D\left(k, l\right) := \beta_{kw}\log\left(\frac{\beta_{kw}}{\beta_{lw}}\right) +
 \end{align*}
 for each word $w$. By maximizing over all pairs $k, l$, we can determine whether
 the word is discriminative between any pair of topics. This might seem like a
-mysterious formula, but it is just a function that is large when topic $l$ has
-much larger probability than topic $k$ (see the figure).
+mysterious formula, but it is just a function that is large when topic $k$ has
+much larger probability than topic $l$ (see the figure).
 
 ```{r, echo = FALSE}
 kl_div <- function(p1, p2) {
@@ -160,7 +162,7 @@ discrepancy <- function(p, lambda = 1e-7) {
 ```
 
 
-```{r, fig.cap = "An illustration of the formula used for computing a word's discrimination between topics. The value of D is large when topic l has much larger probability than topic k."}
+```{r, fig.cap = "An illustration of the formula used for computing a word's discrimination between topics. The value of D is large when topic k has much larger probability than topic l."}
 p <- seq(0.01, .99, length.out = 50)
 df <- expand.grid(p, p) %>%
   mutate(D = kl_div(Var1, Var2))
@@ -173,10 +175,11 @@ ggplot(df, aes(Var2, Var1)) +
   scale_color_distiller(direction = 1) +
   scale_fill_distiller(direction = 1) +
   labs(
-    x = expression(beta[kw]),
-    y = expression(beta[lw])
+    y = expression(beta[kw]),
+    x = expression(beta[lw])
   )
 ```
+
 8. An example heatmap of discriminative words is shown below. This backs up our
 interpretation from the figure above. It also has the advantage that it removes
 common words (e.g., hand, people, and time appeared in the plot above) and
@@ -202,6 +205,8 @@ discriminative_terms %>%
     legend = FALSE
   )
 ```
+
+### Visualizing Memberships
 
 9. Besides the topics, it is useful to study the topic proportions for each
 chapter. One compact approach is to use a boxplot. The result below suggest that
@@ -249,7 +254,6 @@ scatterplot above.
 gamma <- memberships %>%
   pivot_wider(document:book, topic, values_from = gamma)
 ```
-
 
 ```{r, fig.height = 10, fig.width = 4, fig.cap = "A structure plot view of each chapter's topic memberships."}
 hclust_result <- hclust(dist(gamma[, 3:6]))

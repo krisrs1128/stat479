@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://www.tidytextmining.com/topicmodeling.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-1/week11-1.Rmd)_
+_[Reading](https://www.tidytextmining.com/topicmodeling.html), [Recording](https://mediaspace.wisc.edu/media/Week%2011%20%5B1%5D%20Introduction%20to%20Topic%20Models/1_tqbn7u60), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-1/week11-1.Rmd)_
 
 1. Topic modeling is a type of dimensionality reduction method that is
 especially useful for high-dimensional count matrices. For example, it can be

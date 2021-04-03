@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em>Reading <a href="https://www.tidytextmining.com/topicmodeling.html">1</a> and <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd">2</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd">Rmarkdown</a></em></p>
+<p><em>Reading <a href="https://www.tidytextmining.com/topicmodeling.html">1</a> and <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd">2</a>, <a href="https://mediaspace.wisc.edu/media/Week%2011%20%5B3%5D%20Visualizing%20Topic%20Models/1_t6bn2guv">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-3/week11-3.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
@@ -2283,8 +2283,9 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 </div>
+<h3 id="visualizing-topics">Visualizing Topics</h3>
 <ol start="2" type="1">
-<li>A topic is a probability distribution across a collection of words. If the vocabulary isn’t too large, two appropriate visualization strategieis are,
+<li>A topic is a probability distribution across a collection of words. If the vocabulary isn’t too large, two appropriate visualization strategies are,
 <ul>
 <li>Faceted barplot: Each facet corresponds to a topic. The height of each bar corresponds to a given word’s probability within the topic. The sum of heights across all bars is 1.</li>
 <li>Heatmap: Each row is a topic and each column is a word. The color of the heatmap cells gives the probability of the word within the given topic.</li>
@@ -2361,7 +2362,7 @@ Figure 3: The top words associated with the four fitted topics from the Great Li
 <ol start="7" type="1">
 <li>To visualize discriminative words, we first compute a discrimination measure for each word and filter to those with the top score. The filtered results can be used in either faceted barplots or heatmaps. Specifically, to find the words that discriminate between topics <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span>, we compute <span class="math display">\[\begin{align*}
 D\left(k, l\right) := \beta_{kw}\log\left(\frac{\beta_{kw}}{\beta_{lw}}\right) + \left(\beta_{lw} - \beta_{kw}\right)
-\end{align*}\]</span> for each word <span class="math inline">\(w\)</span>. By maximizing over all pairs <span class="math inline">\(k, l\)</span>, we can determine whether the word is discriminative between any pair of topics. This might seem like a mysterious formula, but it is just a function that is large when topic <span class="math inline">\(l\)</span> has much larger probability than topic <span class="math inline">\(k\)</span> (see the figure).</li>
+\end{align*}\]</span> for each word <span class="math inline">\(w\)</span>. By maximizing over all pairs <span class="math inline">\(k, l\)</span>, we can determine whether the word is discriminative between any pair of topics. This might seem like a mysterious formula, but it is just a function that is large when topic <span class="math inline">\(k\)</span> has much larger probability than topic <span class="math inline">\(l\)</span> (see the figure).</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 
@@ -2370,25 +2371,25 @@ D\left(k, l\right) := \beta_{kw}\log\left(\frac{\beta_{kw}}{\beta_{lw}}\right) +
 <div class="sourceCode">
 <pre><code><span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0.01</span>, <span class='fl'>.99</span>, length.out <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 <span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span><span class='va'>p</span>, <span class='va'>p</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>D <span class='op'>=</span> <span class='fu'>kl_div</span><span class='op'>(</span><span class='va'>Var1</span>, <span class='va'>Var2</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>D <span class='op'>=</span> <span class='fu'>kl_div</span><span class='op'>(</span><span class='va'>Var1</span>, <span class='va'>Var2</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>df</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span><span class='va'>Var2</span>, <span class='va'>Var1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_tile.html'>geom_tile</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>D</span>, fill <span class='op'>=</span> <span class='va'>D</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_fixed</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_color_distiller</a></span><span class='op'>(</span>direction <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_brewer.html'>scale_fill_distiller</a></span><span class='op'>(</span>direction <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='va'>kw</span><span class='op'>]</span><span class='op'>)</span>,
-    y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='va'>lw</span><span class='op'>]</span><span class='op'>)</span>
+<span class='fu'>ggplot</span><span class='op'>(</span><span class='va'>df</span>, <span class='fu'>aes</span><span class='op'>(</span><span class='va'>Var2</span>, <span class='va'>Var1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>geom_tile</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>col <span class='op'>=</span> <span class='va'>D</span>, fill <span class='op'>=</span> <span class='va'>D</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_x_continuous</span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_y_continuous</span><span class='op'>(</span>expand <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>coord_fixed</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_color_distiller</span><span class='op'>(</span>direction <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_fill_distiller</span><span class='op'>(</span>direction <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>labs</span><span class='op'>(</span>
+    y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='va'>kw</span><span class='op'>]</span><span class='op'>)</span>,
+    x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='va'>lw</span><span class='op'>]</span><span class='op'>)</span>
   <span class='op'>)</span>
 </code></pre>
 </div>
 <div class="figure"><span id="fig:unnamed-chunk-7"></span>
-<img src="week11-3_files/figure-html5/unnamed-chunk-7-1.png" alt="An illustration of the formula used for computing a word's discrimination between topics. The value of D is large when topic l has much larger probability than topic k." width="624" />
+<img src="week11-3_files/figure-html5/unnamed-chunk-7-1.png" alt="An illustration of the formula used for computing a word's discrimination between topics. The value of D is large when topic k has much larger probability than topic l." width="624" />
 <p class="caption">
-Figure 4: An illustration of the formula used for computing a word’s discrimination between topics. The value of D is large when topic l has much larger probability than topic k.
+Figure 4: An illustration of the formula used for computing a word’s discrimination between topics. The value of D is large when topic k has much larger probability than topic l.
 </p>
 </div>
 </div>
@@ -2423,6 +2424,7 @@ Figure 5: A heatmap of the terms that are most discriminative across the four to
 </p>
 </div>
 </div>
+<h3 id="visualizing-memberships">Visualizing Memberships</h3>
 <ol start="9" type="1">
 <li>Besides the topics, it is useful to study the topic proportions for each chapter. One compact approach is to use a boxplot. The result below suggest that each chapter is very definitely assigned to one of the four topics, except for chapters from Great Expectations. Therefore, while the model had the flexibility to learn more complex mixtures, it decided that a clustering structure made the most sense for Pride &amp; Prejudice, War of the Worlds, and 20,000 Leagues Under the Sea.</li>
 </ol>

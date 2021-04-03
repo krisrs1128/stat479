@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://www.tidytextmining.com/topicmodeling.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-2/week11-2.Rmd)_
+_[Reading](https://www.tidytextmining.com/topicmodeling.html), [Recording](https://mediaspace.wisc.edu/media/Week%2011%20%5B2%5D%20Fitting%20Topic%20Models/1_44m6jcvy), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-30-week11-2/week11-2.Rmd)_
 
 ```{r}
 library("dplyr")
@@ -146,13 +146,3 @@ topics %>%
 memberships %>%
   arrange(document, topic)
 ```
-
-```{r}
-write_csv(topics, "~/Desktop/topics.csv")
-write_csv(memberships,"~/Desktop/memberships.csv")
-```
-
-```{r}
-table(memberships$document)
-```
-
