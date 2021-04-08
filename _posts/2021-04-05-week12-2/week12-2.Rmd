@@ -43,15 +43,15 @@ complicated.
 
 ### Interactions
 
-3. We say that there is an interaction between variables $j$ and $j^{\prime}$
-if the relationship between $x\_{j}$ and $y$ is modulated by variable
-$j^{\prime}$. For example, in the figure below, the slope of cross-sections
-across $j$ depends on $j^{\prime}$.
+3. We say that there is an interaction between variables $j$ and $j^{\prime}$ if
+the relationship between $x_{j}$ and $y$ is modulated by variable $j^{\prime}$.
+For example, in the figure below, the slope of cross-sections across $j$ depends
+on $j^{\prime}$.
 
 4. Using the language of CP profiles, the figure above means that the shape of
 the CP profile in $j$ depends on the particular setting of $j^{\prime}$. This
 motivates the use of Grouped PD profiles — we compute several PD profiles in
-$j$, restricting attention to CP profiles whose value $x\_{j^{\prime}}$ lies
+$j$, restricting attention to CP profiles whose value $x_{j^{\prime}}$ lies
 within a prespecified range.
 
 5. To illustrate, we revisit the CP profiles for age from the Titanic dataset.
