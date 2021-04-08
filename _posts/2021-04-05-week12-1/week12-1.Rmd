@@ -1,0 +1,144 @@
+---
+title: "Partial Dependence Profiles I"
+description: |
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-12
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+```{r}
+library("readr")
+library("caret")
+library("dplyr")
+library("DALEX")
+library("ggplot2")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. As more complex models become more common in practice, visualization has
+emerged as a key way for (a) summarizing their essential structure and (b)
+motivating further modeling refinements.
+
+2. To ground the discussion, we imagine the standard supervised learning setup.
+We approximate the relationship between a $D$-dimensional covariate $x$ and a
+univariate response $y$ by a function $f$. We are given a sample of $n$ pairs
+$\left(x_{i}, y_{i}\right)$ with which to learn this relationship, and we hope
+that the function we learn will generalize to future observations.
+
+3. Some further notation: We will write $x_{j}$ for the $j^{th}$ coordinate of
+$x$. We will write $x^{j\vert = z}$ to denote the observation $x$ with the
+$j^{th}$ coordinate set to $z$.
+
+4.  Simple linear models are simple enough that they don’t require any follow-up
+visual inspection. Since they assume $f\left(x\right) = \hat{\beta}^{T}x$, they
+are completely described by the vector of coefficients $\hat{\beta}$. We can
+exactly describe what happens to $f$ when we increase $x_{j}$ by one unit: we
+just increase the prediction by $\hat{\beta}_{j}$.
+
+5. More complex models — think random forests or neural networks — don’t have
+this property. While these models often have superior performance, it’s hard to
+say how changes in particular input features will affect the prediction.
+
+6. Partial dependence plots try to address this problem. They provide a
+description for how changing the $j^{th}$ input feature affects the predictions
+made by complex models.
+
+7. To motivate the definition, consider the toy example below. The surface is
+the fitted function $f\left(x\right)$, mapping a two dimensional input $x$ to a
+real-valued response. How would you summarize the relationship between $x_{1}$
+and $y$? The main problem is that the shape of the relationship depends on which
+value of $x_{2}$ we start at.
+
+8. One idea is to consider the values of $x_{2}$ that we actually observed in
+our dataset. Then, we can evaluate our model over a range of values $x_{1}$
+after fixing those values of $x_{2}$. These curves are called « Ceteris
+Paribus » profiles^[Ceteris Paribus means « All Else Held Equal. »].
+
+9. The same principle holds in higher dimensions. We can fix $D - 1$ coordinates
+of an observation and then evaluate what happens to a sample’s predictions when
+we vary coordinate $j$. Mathematically, this is expressed by $h_{x}^{f,
+j}\left(z\right) := f\left(x^{j\vert= z}\right)$.
+
+10. For example, let's consider how CP can be used to understand a model fitted
+to a housing prices dataset. Each row of the dataset is a different
+neighborhood, and various features about them are collected, like the average
+home age and median income of residents. Below, a random forest is used to
+predict the median price of homes in these neighborhoods.
+
+```{r}
+data(titanic)
+titanic <- titanic %>%
+  select(-country) %>%
+  na.omit()
+
+x <- select(titanic, -survived)
+hyper <- data.frame(n.trees = 100, interaction.depth = 8, shrinkage = 0.1, n.minobsinnode = 10)
+fit <- train(x = x, y = titanic$survived, method = "gbm", tuneGrid = hyper, verbose = F)
+```
+
+11. Next, we can compute the CP profiles. We are showing median income, though
+any subset of variables could be requested. The bold curve is a Partial
+Dependence (PD) profile, which we will discuss below. Each of the other curves
+corresponds to a neighborhood, though only a subsample of neighborhoods are
+shown. The curves are obtained by fixing all the features of a neighborhood
+except for the median income, and then seeing what happens to the prediction
+when the median income feature is increased or decreased.
+
+```{r, fig.cap = "CP and PDP profiles for median income, for a random forest fitted to the California housing prices dataset."}
+explanation <- explain(model = fit, data = x, y = titanic$survived)
+profile <- model_profile(explainer = explanation)
+plot(profile, geom = "profiles", variables = "age") +
+  theme479
+```
+
+12. It seems that, up to a certain income, the median income is linearly related
+to predicted median home price. Beyond this point, the predictions flatten out.
+Beyond that point, there are likely too few observations to make a good
+prediction, so the model fixes its value for all neighborhoods with larger
+incomes. Notice that the profiles seem to vertically offset from one
+neighborhood to another, this is because, aside from median income, each
+neighborhood has features that make it more or less likely to have high median
+home prices.
+
+13. We used the DALEX package to produce these curves. The `explain` function
+takes the fitted model and original dataset as input. It returns an object with
+many kinds of model summaries. To extract the CP profiles from these summaries,
+we use `model_profile`. The output of this function has been designed so that
+calling `plot` with `geom = "profiles"` will show the CP profiles.
+
+14. The PD profile is computed by averaging across all the CP profiles. It is a
+more concise alternative to CP profiles, showing one curve per features, rather
+than one curve per sample.
+
+```{r, fig.width = 10, fig.height = 5}
+plot(profile, geom = "aggregates") +
+  theme479
+```
+
+14. Not only are the PD plots simpler to read than the full collection of CP
+profiles — by performing this aggregation step, subtle patterns may become more
+salient, for the same reason that an average carries more information than any
+subset of observations.
+
+```{r}
+save(fit, file = "~/Desktop/fit.rda")
+```
+

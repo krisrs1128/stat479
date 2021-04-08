@@ -1,0 +1,143 @@
+---
+title: "Partial Dependence Profiles II"
+description: |
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-12
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+```{r}
+library("ggplot2")
+library("DALEX")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. Partial dependence (PD) plots help answer the question, « How is feature $j$
+used by my model $f$? » Slight variations on PD plots are useful for some
+related followup questions,
+  	* Has my model $f$ learned interactions between features $j$ and $j^{\prime}$?
+  	* How do the models $f$ and $f^{\prime}$ differ in the way that they use feature $j$?
+  	
+2. The variants, called Grouped and Contrastive PD plots, reduce the original CP
+profiles less aggressively than PD plots, but without becoming overwhelmingly
+complicated.
+
+### Interactions
+
+3. We say that there is an interaction between variables $j$ and $j^{\prime}$
+if the relationship between $x\_{j}$ and $y$ is modulated by variable
+$j^{\prime}$. For example, in the figure below, the slope of cross-sections
+across $j$ depends on $j^{\prime}$.
+
+4. Using the language of CP profiles, the figure above means that the shape of
+the CP profile in $j$ depends on the particular setting of $j^{\prime}$. This
+motivates the use of Grouped PD profiles — we compute several PD profiles in
+$j$, restricting attention to CP profiles whose value $x\_{j^{\prime}}$ lies
+within a prespecified range.
+
+5. For example, consider the housing dataset. We’ve faceted the CP profiles in
+$j$ depending on ….
+
+```{r, fig.cap = "Grouping the CP profiles for average occupancy by home age reveals an interaction effect."}
+fit <- get(load("~/Desktop/fit.rda"))
+data(titanic)
+titanic <- titanic %>%
+  select(-country) %>%
+  na.omit()
+x <- select(titanic, -survived)
+
+explanation <- explain(model = fit, data = x, y = titanic$survived)
+profiles <- model_profile(explainer = explanation, groups = "class")
+plot(profiles, geom = "profiles", variables = "age") +
+  scale_color_brewer(palette = "Set2") +
+  theme479
+```
+
+6. What should we do if there are many input variables and we don’t have a
+priori knowledge about which variables $j^{\prime}$ might be interacting with
+$j$? One idea is to try to *discover* relevant interactions by clustering the
+original set of CP profiles.
+
+```{r}
+profiles <- model_profile(explainer = explanation, variables = "age", k = 3)
+plot(profiles, geom = "profiles", variables = "age") +
+  scale_color_brewer(palette = "Set2") +
+  theme479
+```
+
+7. The idea is to compute the CP profiles for all the samples, and then see
+whether there are subsets of profiles that all look similar. If we can find
+features $j^{\prime}$ that characterize these groupings, then we have found
+features that interact with $j$ (with respect to the fitted model $f$).
+
+### Model Comparison
+
+8. The comparison of different models’ PD profiles can be used to,
+  	* Validate a simple model
+  	* Guide the design of new features, and
+  	* Characterizing overfitting
+  	PD profiles that are used to compare different models are sometimes called
+  	« Contrastive » PD profiles.
+  	
+9. To validate a simple model, we can compare its PD profiles with those of a
+more sophisticated model. For example, in the display below, the random forest
+learns linear relationships with price for both the surface and floor variables.
+If all the effects were like this, then we would have a good reason for
+preferring the linear model.
+
+```{r}
+data(apartments)
+x <- select(apartments, -m2.price)
+profiles_lm <- train(x, apartments$m2.price, method = "lm") %>%
+  explain(x, apartments$m2.price, label = "LM") %>%
+  model_profile()
+profiles_rf <- train(x, apartments$m2.price, method = "rf", tuneGrid = data.frame(mtry = 10)) %>%
+  explain(x, apartments$m2.price, label = "RF") %>%
+  model_profile()
+```
+
+```{r}
+plot(profiles_lm, profiles_rf, variables = c("surface", "floor")) +
+  scale_color_brewer(palette = "Set2") +
+  theme479
+```
+
+10. When making the comparison between a simple and a complex model, certain
+discrepancies might become apparent. For example, important nonlinearities or
+interactions might be visible from the PD profiles of the complex model. This
+information can guide the design of new features in the simpler model, so that
+it can continue to be used. This is exactly the case in the apartments dataset
+above -- there is a strong nonlinear relationship for the construction year
+variables. This suggests that, if a linear model is still desired, then a new
+feature should be defined that identifies whether the apartment was built
+between 1935 and 1990.
+
+```{r}
+plot(profiles_lm, profiles_rf, variables = "construction.year") +
+  scale_color_brewer(palette = "Set2") +
+  theme479
+```
+
+11. Suppose you have found that a model is overfitting (e.g., by finding that
+it’s training error is much lower than its test error). One way to address this
+overfitting is to compare the PD profiles between the simple and complex models.
+If the profiles are very different for one of the features, then that feature
+may be the source of overfitting.

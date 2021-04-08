@@ -1,5 +1,90 @@
 [
   {
+    "path": "posts/2021-04-05-week12-1/",
+    "title": "Partial Dependence Profiles I",
+    "description": {},
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-04-12",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\nAs more complex models become more common in practice, visualization has emerged as a key way for (a) summarizing their essential structure and (b) motivating further modeling refinements.\nTo ground the discussion, we imagine the standard supervised learning setup. We approximate the relationship between a \\(D\\)-dimensional covariate \\(x\\) and a univariate response \\(y\\) by a function \\(f\\). We are given a sample of \\(n\\) pairs \\(\\left(x_{i}, y_{i}\\right)\\) with which to learn this relationship, and we hope that the function we learn will generalize to future observations.\nSome further notation: We will write \\(x_{j}\\) for the \\(j^{th}\\) coordinate of \\(x\\). We will write \\(x^{j\\vert = z}\\) to denote the observation \\(x\\) with the \\(j^{th}\\) coordinate set to \\(z\\).\nSimple linear models are simple enough that they don’t require any follow-up visual inspection. Since they assume \\(f\\left(x\\right) = \\hat{\\beta}^{T}x\\), they are completely described by the vector of coefficients \\(\\hat{\\beta}\\). We can exactly describe what happens to \\(f\\) when we increase \\(x_{j}\\) by one unit: we just increase the prediction by \\(\\hat{\\beta}_{j}\\).\nMore complex models — think random forests or neural networks — don’t have this property. While these models often have superior performance, it’s hard to say how changes in particular input features will affect the prediction.\nPartial dependence plots try to address this problem. They provide a description for how changing the \\(j^{th}\\) input feature affects the predictions made by complex models.\nTo motivate the definition, consider the toy example below. The surface is the fitted function \\(f\\left(x\\right)\\), mapping a two dimensional input \\(x\\) to a real-valued response. How would you summarize the relationship between \\(x_{1}\\) and \\(y\\)? The main problem is that the shape of the relationship depends on which value of \\(x_{2}\\) we start at.\nOne idea is to consider the values of \\(x_{2}\\) that we actually observed in our dataset. Then, we can evaluate our model over a range of values \\(x_{1}\\) after fixing those values of \\(x_{2}\\). These curves are called « Ceteris Paribus » profiles1.\nThe same principle holds in higher dimensions. We can fix \\(D - 1\\) coordinates of an observation and then evaluate what happens to a sample’s predictions when we vary coordinate \\(j\\). Mathematically, this is expressed by \\(h_{x}^{f, j}\\left(z\\right) := f\\left(x^{j\\vert= z}\\right)\\).\nFor example, here are CP profiles for a random forest model fitted to a fishing dataset. The model was trained to predict (…?). We can see how depth influenced the prediction. Notice that some of the curves are larger overall, because their \\(D - 1\\) other coordinates suggest that it is likely (…?).\n\n\n\nWe used the DALEX package to produce these curves. The explain function takes the fitted model and original dataset as input. It returns an object with a variety of summaries; the CP profiles can be visualized using the profiles argument to the plot geom.\nCP profiles get us closer to understanding the relationship between input \\(j\\) and the fitted response, like the coefficient \\(\\hat{\\beta}_{j}\\) in linear regression. However, it can be a somewhat unwieldy summary, since we are left with \\(n\\) curves for each feature \\(j\\) of interest.\nPartial dependence (PD) profiles simply average across these CP profiles. This leaves us with one summary curve for each dimension. For example, for the fisheries dataset, …\nNot only are the PD plots simpler to read than the full collection of CP profiles — by performing this aggregation step, subtle patterns may become more salient, for the same reason that an average carries more information than any subset of observations.\n\nCeteris Paribus means « All Else Held Equal. »↩︎\n",
+    "preview": {},
+    "last_modified": "2021-04-06T14:32:52-05:00",
+    "input_file": "week12-1.utf8.md"
+  },
+  {
+    "path": "posts/2021-04-05-week12-2/",
+    "title": "Partial Dependence Profiles II",
+    "description": {},
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-04-12",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\nPartial dependence (PD) plots help answer the question, « How is feature \\(j\\) used by my model \\(f\\)? » Slight variations on PD plots are useful for some related followup questions,\nHas my model \\(f\\) learned interactions between features \\(j\\) and \\(j^{\\prime}\\)?\nHow do the models \\(f\\) and \\(f^{\\prime}\\) differ in the way that they use feature \\(j\\)?\n\nThe variants, called Grouped and Contrastive PD plots, reduce the original CP profiles less aggressively than PD plots, but without becoming overwhelmingly complicated.\nInteractions\nWe say that there is an interaction between variables \\(j\\) and \\(j^{\\prime}\\) if the relationship between \\(x\\_{j}\\) and \\(y\\) is modulated by variable \\(j^{\\prime}\\). For example, in the figure below, the slope of cross-sections across \\(j\\) depends on \\(j^{\\prime}\\).\nUsing the language of CP profiles, the figure above means that the shape of the CP profile in \\(j\\) depends on the particular setting of \\(j^{\\prime}\\). This motivates the use of Grouped PD profiles — we compute several PD profiles in \\(j\\), restricting attention to CP profiles whose value \\(x\\_{j^{\\prime}}\\) lies within a prespecified range.\nFor example, consider the ____ dataset. We’ve faceted the CP profiles in \\(j\\) depending on ….\nWhat should we do if there are many input variables and we don’t have a priori knowledge about which variables \\(j^{\\prime}\\) might be interacting with \\(j\\)? One idea is to try to discover relevant interactions by clustering the original set of CP profiles.\nThe idea is to compute the CP profiles for all the samples, and then see whether there are subsets of profiles that all look similar. If we can find features \\(j^{\\prime}\\) that characterize these groupings, then we have found features that interact with \\(j\\) (with respect to the fitted model \\(f\\)).\nModel Comparison\nThe comparison of different models’ PD profiles can be used to,\nValidate a simple model\nGuide the design of new features, and\nCharacterizing overfitting PD profiles that are used to compare different models are sometimes called « Contrastive » PD profiles.\n\nTo validate a simple model, we can compare its PD profiles with those of a more sophisticated model. For example, in the display below, the random forest learns a linear effect comparable to what is found in the linear model. The linear model should be preferred, for parsimony reasons.\nWhen making the comparison between a simple and a complex model, certain discrepancies might become apparent. For example, important nonlinearities or interactions might be visible from the PD profiles of the complex model. This information can guide the design of new features in the simpler model, so that it can continue to be used.\nSuppose you have found that a model is overfitting (e.g., by finding that it’s training error is much lower than its test error). One way to address this overfitting is to compare the PD profiles between the simple and complex models. If the profiles are very different for one of the features, then that feature may be the source of overfitting.\n\n\n\n",
+    "preview": {},
+    "last_modified": "2021-04-06T14:29:12-05:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/2021-04-05-week12-3/",
+    "title": "Visualization for Model Building",
+    "description": {},
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-04-12",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\nExploratory data analysis and model building complement each other well. In practical problems, visualization can guide us towards more plausible models.\nWe rarely know the exact form of a model in advance, but usually have a few reasonable candidates. Exploratory analysis can rule out some candidates and suggest new, previously unanticipated, relationships.\nWe will illustrate these ideas using an example. A researcher is interested in monitoring the level of PM2.5, a type of small air particlute that can be bad for public health. High quality data are available from weather stations scattered around the world, but their data only apply locally. On the other hand, low quality data, available from satellites, are available everywhere. A model is desired that uses the weather station measurements to calibrate the satellite data. If it works well, it could be used to monitor PM2.5 levels at global scale.\nThe simplest model simply fits \\(\\~station = a + b \\* satellite\\) at locations where they are both available. This model was used in practice by the Global Burden of Disease project until 2016.\nHowever, when we plot these two variables against one another, we notice that there is still quite a bit of heterogeneity. The residuals are large — what features might be correlated with these residuals, which if included, would improve the model fit?\nRemember, the error \\(\\epsilon_{i}\\) in a model \\(y_i = f\\left(x_{i}\\right) +  \\epsilon\\_{i}\\) is just a stand in for our ignorance1 of the myriad of unmeasured factors that determine the relationship between \\(x\\) and \\(y\\).\nFor example, desert sand is known to increase PM2.5, but it is not visible from space. The residuals are probably correlated with whether the model is in a desert area (we underpredict PM2.5 in deserts), and so would be improved if we included a term with this feature.\n\n\nOne hypothesis is that country region is an important factor. Below, we fit regression lines separately for different country super-regions, as specified by the WHO. The fact that the slopes are not the same in each region means that we should modify our model to have a different slope in each region2.\nThe WHO categorizations are somewhat arbitrary. Maybe there are better country groupings, tailored specifically to the PM2.5 problem? One idea is to cluster the ground stations based on PM2.5 level and use these clusters as a different region grouping.\nWe now have a « network » of models. We’re going to want more refined tools for distinguishing between them. This is the subject of the next two lectures.\n\nAs a thought experiment, if we knew the position and velocity of every atom in the universe, we would not need \\(\\epsilon\\_{i}\\).↩︎\nViewed differently, this is like adding an interaction between the satellite measurements and WHO region.↩︎\n",
+    "preview": {},
+    "last_modified": "2021-04-06T14:29:12-05:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/2021-04-05-week12-4/",
+    "title": "Prior and Posterior Predictives",
+    "description": {},
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-04-12",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\nFrom the previous notes, we see that an exploratory analysis can motivate few plausible models for a dataset. How should we go about choosing between them?\nIn some of your other classes, you might have seen people use cross-validation / test set error. While this is useful (and relatively automatic), it can be a black box. An alternative which often brings mores insight into the structure of the problem is to use prior and posterior predictive distributions for (visual) model comparison.\nPrior predictive distributions\nThe prior predictive distribution can be used to decide whether certain model families are reasonable candidates for a problem, before formally incorporating the evidence coming from the data.\nThe idea is that if we can write down a generative model, then we can simulate different datasets with it, even before estimating the model parameters. This is often the case in Bayesian models, where we can (a) sample parameters from the prior, and (b) simulate data from the model with those parameters.\nIf the simulated datasets are plausible, then the overall model class is a reasonable one. If they are not, then the model class should be modified. Either the prior or the likelihood might need revision.\nFor example, in the example below, we simulate datasets using both a vague and an informative prior. Vague priors are often recommended because they are « more objective » in some sense. However, in this case, we see that the simulated datasets are not even remotely plausible. It makes more sense to use a subjective, informative prior in this case1\nNote, the samples from the prior predictive do not need to look exactly like the observed data — if they did, there would be no need to fit model parameters! Instead, they should look like plausible datasets that might have been observed.\nPhilosophically, this prior predictive analysis is based on the idea that, though probability is subjective, evidence can be used to update our beliefs. The idea of the prior predictive is to visually encode subjective beliefs about the problem under study before gathering new evidence.\nPosterior predictive distributions\nOnce the prior predictive is calibrated, we can fit the model. To evaluate it’s quality, we can use the posterior predictive.\nThe posterior predictive is just like the prior predictive, except that it samples model parameters from the data-informed posterior, rather than the data-ignorant prior.\nFormally, it is the distribution of new datasets when drawing parameters from the posterior. The simulation mechanism is (a) draw model parameters from the posterior and (b) simulate a dataset using parameters from (a).\nWe can verify that features of the real dataset are accurately captured by features of the posterior predictive. Show example with skewness.\nOne subtlety is that there is a danger of overfitting features in the posterior predictive. It is best to choose features of the data that are not directly modeled (e.g., if you use slope in the model estimation, then don’t evaluate the posterior predictive using the slope, since by definition this will be well-captured).\n\nThis situation is so extreme that there is unlikely that even a frequentist would have an objection. However, in less black-and-white situations, there might still be some debate about what really to do.↩︎\n",
+    "preview": {},
+    "last_modified": "2021-04-06T14:29:13-05:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/2021-04-05-week12-5/",
+    "title": "Pointwise Diagnostics",
+    "description": {},
+    "author": [
+      {
+        "name": "Kris Sankaran",
+        "url": {}
+      }
+    ],
+    "date": "2021-04-12",
+    "categories": [],
+    "contents": "\nReading, Recording, Rmarkdown\nAll the model visualization strategies we’ve looked at in the last few lectures have been dataset-wide. That is., we looked at properties of the dataset as a whole, and whether the model made sense globally, across the whole dataset. Individual observations might warrant special attention, though.\nA first diagnostic to consider is the leave-one-out predictive distribution. This is the probability \\(p\\left(y_{i} \\vert y_{-i}\\right)\\) of sample \\(i\\) after having fitted a model to all samples except \\(i\\). Ideally, most observations in the dataset to have high predictive probability.\nNote that this can be used for model comparison. Some models might have better per-sample leave-one-out predictives than others.\nThis is similar to a leave-one-out residual.\n\n\nAnother diagnostic is to consider the influence of an observation. Formally, the influence is a measure of how much the posterior predictive distribution changes when we leave one sample out. The idea is to measure the difference between the posterior predictives using a form of KL divergence, and note down the observations that lead to a very large difference in divergence.\n\n\n\n",
+    "preview": {},
+    "last_modified": "2021-04-06T14:29:14-05:00",
+    "input_file": {}
+  },
+  {
     "path": "posts/2021-03-30-week11-4/",
     "title": "Topic Modeling Case Study",
     "description": "An application to a gene expression dataset.",

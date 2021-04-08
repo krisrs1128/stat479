@@ -1,0 +1,235 @@
+---
+title: "Prior and Posterior Predictives"
+description: |
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-12
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+```{r}
+library("dplyr")
+library("ggplot2")
+library("purrr")
+library("rstan")
+library("tidyr")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. From the previous notes, we see that an exploratory analysis can motivate few
+plausible models for a dataset. How should we go about choosing between them?
+
+```{r}
+GM <- get(load("~/Desktop/GM.rda"))
+```
+
+2. In some of your other classes, you might have seen people use
+cross-validation / test set error. While this is useful (and relatively
+automatic), it can  be a black box. An alternative which often brings mores
+insight into the structure of the problem is to use prior and posterior
+predictive distributions for (visual) model comparison.
+
+### Prior predictive distributions
+
+3. The prior predictive distribution can be used to decide whether certain model
+families are reasonable candidates for a problem, before formally incorporating
+the evidence coming from the data.
+
+4. The idea is that if we can write down a generative model, then we can
+simulate different datasets with it, even before estimating the model
+parameters. This is often the case in Bayesian models, where we can (a) sample
+parameters from the prior, and (b) simulate data from the model with those
+parameters.
+
+5.  If the simulated datasets are plausible, then the overall model class is a
+reasonable one. If they are not, then the model class should be modified. Either
+the prior or the likelihood might need revision.
+
+6. For example, in the example below, we simulate datasets using both a vague
+and an informative prior. Vague priors are often recommended because they are
+« more objective » in some sense. However, in this case, we see that the
+simulated datasets are not even remotely plausible. It makes more sense to use a
+subjective, informative prior in this case^[This situation is so extreme that
+there is unlikely that even a frequentist would have an objection. However, in
+less black-and-white situations, there might still be some debate about what
+really to do.]
+
+```{r}
+prior1 <- function(Nsim) {
+  tau0 <- 1 / sqrt(rgamma(1, 1, rate = 100))
+  tau1 <- 1 / sqrt(rgamma(1, 1, rate = 100))
+  sigma <- 1 / sqrt(rgamma(1, 1, rate = 100))
+  beta0i <- rnorm(7, 0, tau0)
+  beta1i <- rnorm(7, 0, tau1)
+  beta0 <- rnorm(1, 0, 100)
+  beta1 <- rnorm(1, 0, 100)
+  
+  epsilon <- rnorm(Nsim, 0, sigma)
+  data.frame(
+    log_pm25 = GM$log_pm25,
+    region = GM$super_region_name,
+    sim = beta0 + beta0i[GM$super_region] + (beta1 + beta1i[GM$super_region]) * GM$log_sat + epsilon
+  )
+}
+
+prior2 <- function(Nsim) {
+  tau0 <- abs(rnorm(1, 0, 1))
+  tau1 <- abs(rnorm(1, 0, 1))
+  sigma <- abs(rnorm(1, 0, 1))
+  beta0i <- rnorm(7, 0, tau0)
+  beta1i <- rnorm(7, 0, tau1)
+  beta0 <- rnorm(1, 0, 1)
+  beta1 <- rnorm(1, 1, 1)
+  
+  epsilon <- rnorm(Nsim, 0, sigma)
+  data.frame(
+    log_pm25 = GM$log_pm25,
+    region = GM$super_region_name,
+    sim = beta0 + beta0i[GM$super_region] + (beta1 + beta1i[GM$super_region]) * GM$log_sat + epsilon
+  )
+}
+```
+
+
+```{r}
+prior1_data <- map_dfr(1:12, ~ prior1(Nsim = nrow(GM@data)), .id = "replicate")
+ggplot(prior1_data, aes(x = log_pm25, y = sim)) + 
+  geom_abline(slope = 1) +
+  geom_point(aes(col = region), alpha = 0.1, size = 0.4) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = "True station data", y = "Simulated station data") +
+  facet_wrap(~ replicate, scale = "free_y")
+```
+
+```{r}
+prior2_data <- map_dfr(1:12, ~ prior2(Nsim = nrow(GM@data)), .id = "replicate")
+ggplot(prior2_data, aes(x = log_pm25, y = sim)) + 
+  geom_abline(slope = 1) +
+  geom_point(aes(col = region), alpha = 0.1, size = 0.4) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = "True station data", y = "Simulated station data") +
+  facet_wrap(~ replicate, scale = "free_y")
+```
+
+7. Note, the samples from the prior predictive do not need to look exactly like
+the observed data — if they did, there would be no need to fit model parameters!
+Instead, they should look like plausible datasets that might have been observed.
+
+8. Philosophically, this prior predictive analysis is based on the idea that,
+though probability is subjective, evidence can be used to update our beliefs.
+The idea of the prior predictive is to visually encode subjective beliefs about
+the problem under study before gathering new evidence.
+
+### Posterior predictive distributions
+
+9. Once the prior predictive is calibrated, we can fit the model. To evaluate
+it’s quality, we can use the posterior predictive.
+
+10. The posterior predictive is just like the prior predictive, except that it
+samples model parameters from the data-informed posterior, rather than the
+data-ignorant prior.
+
+11. Formally, it is the distribution of new datasets when drawing parameters
+from the posterior. The simulation mechanism is (a) draw model parameters from
+the posterior and (b) simulate a dataset using parameters from (a).
+
+```{r}
+datasets <- list(
+  "lm" = with(GM@data, list(N = length(log_pm25), y = log_pm25, x = log_sat)),
+  "regions" = with(
+    GM@data, 
+    list(N = length(log_pm25), y = log_pm25, x = log_sat, group = super_region, R = n_distinct(super_region))
+  ),
+  "clusters" = with(
+    GM@data, 
+    list(N = length(log_pm25), y = log_pm25, x = log_sat, group = cluster_region, R = n_distinct(cluster_region))
+  )
+)
+
+model_def <- list(
+  "lm" = stan_model("~/Desktop/lm.stan"),
+  "hier" = stan_model("~/Desktop/hierarchical.stan")
+)
+```
+
+```{r}
+controls <- list(max_treedepth = 15, adapt_delta = 0.99)
+models <- list(
+  "lm" = sampling(model_def$lm, data = datasets$lm, chains = 1, control = controls),
+  "regions" = sampling(model_def$hier, data = datasets$regions, chains = 1, control = controls),
+  "clusters" = sampling(model_def$hier, data = datasets$clusters, chains = 1, control = controls)
+)
+```
+
+```{r}
+save(models, file = "~/Desktop/models.rda")
+#models <- get(load("~/Desktop/models.rda"))
+```
+
+12. We can verify that features of the real dataset are accurately captured by
+features of the posterior predictive.
+
+```{r, fig.width = 10, fig.height = 6}
+posterior_samples <- as.matrix(models$clusters, pars = "log_pm_rep")[100:111, ] %>%
+  t() %>%
+  as_tibble() %>%
+  bind_cols(GM@data) %>%
+  pivot_longer(V1:V12, names_to = "replicate", values_to = "log_pm25_sim")
+
+ggplot(posterior_samples, aes(log_pm25, log_pm25_sim)) +
+  geom_abline(slope = 1) +
+  geom_point(aes(col = cluster_region), size = 0.4, alpha = 0.1) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = "True station data", y = "Simulated station data") +
+  facet_wrap(~ replicate, scale = "free_y")
+```
+
+13. One subtlety is that there is a danger of overfitting features in the
+posterior predictive. It is best to choose features of the data that are not
+directly modeled (e.g., if you use slope in the model estimation, then don’t
+evaluate the posterior predictive using the slope, since by definition this will
+be well-captured).
+
+```{r, fig.height = 3, fig.width = 10}
+apply_stat <- function(x, f) {
+  z <- as.matrix(x, pars = "y_sim")
+  tibble(
+    "replicate" = seq_len(nrow(z)),
+    "statistic" = apply(z, 1, f)
+  )
+}
+
+skew <- function(x) {
+  xdev <- x - mean(x)
+  n <- length(x)
+  r <- sum(xdev^3) / sum(xdev^2)^1.5
+  r * sqrt(n) * (1 - 1/n)^1.5
+}
+```
+
+
+```{r, fig.height = 3, fig.width = 10}
+posteriors <- map_dfr(models, ~ apply_stat(., skew), .id = "model")
+truth <- skew(GM@data$log_pm25)
+ggplot(posteriors, aes(statistic)) +
+  geom_vline(xintercept = truth, col = "red") +
+  geom_histogram(aes(fill = model), binwidth = 0.01) +
+  scale_fill_brewer(palette = "Set1")
+```
