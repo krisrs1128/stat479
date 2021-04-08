@@ -1,6 +1,7 @@
 ---
 title: "Partial Dependence Profiles I"
-description: |
+description: | 
+  An introduction to partial dependence profiles.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -12,17 +13,17 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-1/week12-1.Rmd)_
 
 ```{r}
-library("readr")
+library("DALEX")
 library("caret")
 library("dplyr")
-library("DALEX")
 library("ggplot2")
+library("readr")
 theme479 <- theme_minimal() + 
   theme(
     panel.grid.minor = element_blank(),
@@ -37,21 +38,26 @@ theme_set(theme479)
 emerged as a key way for (a) summarizing their essential structure and (b)
 motivating further modeling refinements.
 
-2. To ground the discussion, we imagine the standard supervised learning setup.
-We approximate the relationship between a $D$-dimensional covariate $x$ and a
-univariate response $y$ by a function $f$. We are given a sample of $n$ pairs
-$\left(x_{i}, y_{i}\right)$ with which to learn this relationship, and we hope
-that the function we learn will generalize to future observations.
+2. In modern machine learning, it's common to use a function $f$ to approximate
+the relationship between a $D$-dimensional input $\mathbf{x}$ and a univariate
+response $y$. We are given a sample of $n$ pairs $\left(\mathbf{x}_{i},
+y_{i}\right)$ with which to learn this relationship, and we hope that the
+function we learn will generalize to future observations.
 
 3. Some further notation: We will write $x_{j}$ for the $j^{th}$ coordinate of
-$x$. We will write $x^{j\vert = z}$ to denote the observation $x$ with the
-$j^{th}$ coordinate set to $z$.
+$\mathbf{x}$. We will write $\mathbf{x}^{j\vert = z}$ to denote the observation
+$\mathbf{x}$ with the $j^{th}$ coordinate set to $z$.
 
-4.  Simple linear models are simple enough that they don’t require any follow-up
-visual inspection. Since they assume $f\left(x\right) = \hat{\beta}^{T}x$, they
-are completely described by the vector of coefficients $\hat{\beta}$. We can
-exactly describe what happens to $f$ when we increase $x_{j}$ by one unit: we
-just increase the prediction by $\hat{\beta}_{j}$.
+```{r, fig.cap = "Illustration of the $\\mathbf{x}^{j \\vert = z}$ operation. The $j^{th}$ coordinate (1 in this case) for a selected observation is set equal to $z$.", echo = FALSE, out.width = 700}
+include_graphics("https://uwmadison.box.com/shared/static/l6u0y1l8ww6fikiihjin5ov60pc6qr8b.png")
+```
+
+4.  Linear models are simple enough that they don’t require any follow-up visual
+inspection. Since they assume $f\left(\mathbf{x}\right) =
+\hat{\beta}^{T}\mathbf{x}$, they are completely described by the vector of
+coefficients $\hat{\beta}$. We can exactly describe what happens to $f$ when we
+increase $x_{j}$ by one unit: we just increase the prediction by
+$\hat{\beta}_{j}$.
 
 5. More complex models — think random forests or neural networks — don’t have
 this property. While these models often have superior performance, it’s hard to
@@ -62,31 +68,38 @@ description for how changing the $j^{th}$ input feature affects the predictions
 made by complex models.
 
 7. To motivate the definition, consider the toy example below. The surface is
-the fitted function $f\left(x\right)$, mapping a two dimensional input $x$ to a
-real-valued response. How would you summarize the relationship between $x_{1}$
-and $y$? The main problem is that the shape of the relationship depends on which
-value of $x_{2}$ we start at.
+the fitted function $f\left(\mathbf{x}\right)$, mapping a two dimensional input
+$\mathbf{x}$ to a real-valued response. How would you summarize the relationship
+between $x_{1}$ and $y$? The main problem is that the shape of the relationship
+depends on which value of $x_{2}$ we start at.
 
-8. One idea is to consider the values of $x_{2}$ that we actually observed in
-our dataset. Then, we can evaluate our model over a range of values $x_{1}$
-after fixing those values of $x_{2}$. These curves are called « Ceteris
-Paribus » profiles^[Ceteris Paribus means « All Else Held Equal. »].
+```{r, fig.cap = "An example of why it is difficult to summarize the relationship between an input variable and a fitted surface for nonlinear models.", echo = FALSE, out.width = 500}
+include_graphics("https://uwmadison.box.com/shared/static/moztt0q240waytarit786j4ry1xe93g6.png")
+```
+
+8. One idea is to consider the values of $x_{2}$ that were observed in our
+dataset. Then, we can evaluate our model over a range of values $x_{1}$ after
+fixing those values of $x_{2}$. These curves are called Ceteris Paribus
+profiles^[Ceteris Paribus means « All Else Held Equal. »].
 
 9. The same principle holds in higher dimensions. We can fix $D - 1$ coordinates
 of an observation and then evaluate what happens to a sample’s predictions when
 we vary coordinate $j$. Mathematically, this is expressed by $h_{x}^{f,
-j}\left(z\right) := f\left(x^{j\vert= z}\right)$.
+j}\left(z\right) := f\left(\mathbf{x}^{j\vert= z}\right)$.
+
+```{r, fig.cap = "Visual intuition behind the CP profile. Varying the $j^{th}$ coordinate for an observation traces out a curve in the prediction surface.", preview = TRUE, echo = FALSE, out.width = 700}
+include_graphics("https://uwmadison.box.com/shared/static/mpe45nor6xm4gt1idhedayw9ik754c2k.png")
+```
 
 10. For example, let's consider how CP can be used to understand a model fitted
-to a housing prices dataset. Each row of the dataset is a different
-neighborhood, and various features about them are collected, like the average
-home age and median income of residents. Below, a random forest is used to
-predict the median price of homes in these neighborhoods.
+to the Titanic dataset. This is a dataset that was used to understand what
+characteristics survivors of the Titanic disaster had in common. It's not
+obvious in advance which characteristics of passengers made them more likely to
+survive, so a model is fitted to predict survival.
 
 ```{r}
 data(titanic)
-titanic <- titanic %>%
-  select(-country) %>%
+titanic <- select(titanic, -country) %>%
   na.omit()
 
 x <- select(titanic, -survived)
@@ -94,29 +107,27 @@ hyper <- data.frame(n.trees = 100, interaction.depth = 8, shrinkage = 0.1, n.min
 fit <- train(x = x, y = titanic$survived, method = "gbm", tuneGrid = hyper, verbose = F)
 ```
 
-11. Next, we can compute the CP profiles. We are showing median income, though
-any subset of variables could be requested. The bold curve is a Partial
-Dependence (PD) profile, which we will discuss below. Each of the other curves
-corresponds to a neighborhood, though only a subsample of neighborhoods are
-shown. The curves are obtained by fixing all the features of a neighborhood
-except for the median income, and then seeing what happens to the prediction
-when the median income feature is increased or decreased.
+11. Next, we can compute the CP profiles. We are showing the relationship
+between age and survival, though any subset of variables could be requested. The
+bold curve is a Partial Dependence (PD) profile, which we will discuss below.
+Each of the other curves corresponds to a passenger, though only a subsample is
+shown. The curves are obtained by fixing all the characteristics of the
+passanger except for age, and then seeing what happens to the prediction when
+the age variable is increased or decreased.
 
-```{r, fig.cap = "CP and PDP profiles for median income, for a random forest fitted to the California housing prices dataset."}
+```{r, fig.cap = "CP and PDP profiles for age, for a GBM fitted to the Titanic dataset."}
 explanation <- explain(model = fit, data = x, y = titanic$survived)
 profile <- model_profile(explainer = explanation)
 plot(profile, geom = "profiles", variables = "age") +
   theme479
 ```
 
-12. It seems that, up to a certain income, the median income is linearly related
-to predicted median home price. Beyond this point, the predictions flatten out.
-Beyond that point, there are likely too few observations to make a good
-prediction, so the model fixes its value for all neighborhoods with larger
-incomes. Notice that the profiles seem to vertically offset from one
-neighborhood to another, this is because, aside from median income, each
-neighborhood has features that make it more or less likely to have high median
-home prices.
+12. It seems that children had the highest probability^[Technically, these are
+all predicted probabilities from the model.] of survival. The relationship is
+far from linear, with those between 40 and 60 all having about the same
+probabilities. Notice that the profiles are vertically offset from one passenger
+to another. This is because, aside from age, each passenger had characteristics
+that made them more or less likely to survive.
 
 13. We used the DALEX package to produce these curves. The `explain` function
 takes the fitted model and original dataset as input. It returns an object with
@@ -138,7 +149,7 @@ profiles — by performing this aggregation step, subtle patterns may become mor
 salient, for the same reason that an average carries more information than any
 subset of observations.
 
-```{r}
+```{r, include = FALSE}
 save(fit, file = "~/Desktop/fit.rda")
 ```
 

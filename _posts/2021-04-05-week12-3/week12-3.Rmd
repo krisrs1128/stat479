@@ -1,10 +1,11 @@
 ---
 title: "Visualization for Model Building"
-description: |
+description: | 
+  The relationship between exploratory analysis and model development.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 2021-04-12
+date: 2021-04-14
 output:
   distill::distill_article:
     self_contained: false
@@ -12,7 +13,7 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
 _[Reading](), [Recording](), [Rmarkdown]()_
@@ -60,14 +61,19 @@ GM@data <- GM@data %>%
   )
 ```
 
-4. The simplest model simply fits $\~station = a + b \* satellite$ at locations
-where they are both available. This model was used in practice by the Global
-Burden of Disease project until 2016.
+4. The simplest model simply fits $\text{station} = a + b \times
+\text{satellite}$ at locations where they are both available. This model was
+used in practice by the Global Burden of Disease project until 2016.
 
-```{r}
-ggplot(GM@data, aes(log_pm25, log_sat)) +
+```{r, fig.cap = "The relationship between satellite and ground station estimates of PM2.5."}
+ggplot(GM@data, aes(log_sat, log_pm25)) +
   geom_point(aes(col = super_region_name), size = 0.8, alpha = 0.7) +
   scale_color_brewer(palette = "Set2") +
+  labs(
+    x = "log(satellite)",
+    y = "log(ground station)",
+    col = "WHO Region"
+  ) +
   coord_fixed()
 ```
 
@@ -75,15 +81,13 @@ ggplot(GM@data, aes(log_pm25, log_sat)) +
 there is still quite a bit of heterogeneity. The residuals are large — what
 features might be correlated with these residuals, which if included, would
 improve the model fit?
-  	* Remember, the error $\epsilon_{i}$ in a model $y_i = f\left(x_{i}\right) +
-  	\epsilon\_{i}$ is just a stand in for our ignorance^[As a thought experiment,
-  	if we knew the position and velocity of every atom in the universe, we would
-  	not need $\epsilon\_{i}$.] of the myriad of unmeasured factors that determine
-  	the relationship between $x$ and $y$.
-		* For example, desert sand is known to increase PM2.5, but it is not visible
-		from space. The residuals are probably correlated with whether the model is in
-		a desert area (we underpredict PM2.5 in deserts), and so would be improved if
-		we included a term with this feature.
+  	* The error $\epsilon_{i}$ in a model $y_i = f\left(x_{i}\right) +
+  	\epsilon_{i}$ represents out our ignorance of the myriad of unmeasured
+  	factors that determine the relationship between $x$ and $y$.
+	* For example, desert sand is known to increase PM2.5, but it is not visible
+	from space. The residuals are probably correlated with whether the model is in
+	a desert area (we underpredict PM2.5 in deserts), and so would be improved if
+	we included a term with this feature.
 
 6. One hypothesis is that country region is an important factor. Below, we fit
 regression lines separately for different country super-regions, as specified by
@@ -92,7 +96,7 @@ should modify our model to have a different slope in each region^[Viewed
 differently, this is like adding an interaction between the satellite
 measurements and WHO region.].
 
-```{r}
+```{r, fig.cap = "The relationship between these variables is not the same across regions."}
 ggplot(GM@data, aes(log_sat, log_pm25)) +
   geom_point(aes(col = super_region_name), size = 0.4, alpha = 0.7) +
   geom_smooth(aes(col = super_region_name), method = "lm", se = F, size = 2) +
@@ -110,7 +114,7 @@ country groupings, tailored specifically to the PM2.5 problem? One idea is to
 cluster the ground stations based on PM2.5 level and use these clusters as a
 different region grouping.
 
-```{r}
+```{r, fig.cap = "We can define clusters of regions on our own, using a hierarchical clustering."}
 average <- GM@data %>% 
   group_by(iso3) %>% 
   summarise(pm25 = mean(pm25))
@@ -120,7 +124,6 @@ clust <- dist(average) %>%
   cutree(k = 6)
 
 GM@data$cluster_region <- map_chr(GM@data$iso3, ~ clust[which(average$iso3 == .)])
-
 ggplot(GM@data, aes(log_sat, log_pm25)) +
   geom_point(aes(col = cluster_region), size = 0.4, alpha = 0.7) +
   geom_smooth(aes(col = cluster_region), method = "lm", se = F, size = 2) +

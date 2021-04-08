@@ -1,10 +1,11 @@
 ---
 title: "Partial Dependence Profiles II"
-description: |
+description: | 
+  Discovering richer structure in partial dependence profiles.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
-date: 2021-04-12
+date: 2021-04-13
 output:
   distill::distill_article:
     self_contained: false
@@ -12,10 +13,10 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-2/week12-2.Rmd)_
 
 ```{r}
 library("ggplot2")
@@ -53,11 +54,17 @@ motivates the use of Grouped PD profiles — we compute several PD profiles in
 $j$, restricting attention to CP profiles whose value $x\_{j^{\prime}}$ lies
 within a prespecified range.
 
-5. For example, consider the housing dataset. We’ve faceted the CP profiles in
-$j$ depending on ….
+5. To illustrate, we revisit the CP profiles for age from the Titanic dataset.
+Below, the profiles are grouped according to the class of the ticket holder. The
+result shows that the relationship between age and survival was not the same
+across all passengers. For all classes, there was a decrease in survival
+probability for adults, but the dropoff was most severe for crew members.
 
-```{r, fig.cap = "Grouping the CP profiles for average occupancy by home age reveals an interaction effect."}
-fit <- get(load("~/Desktop/fit.rda"))
+```{r, fig.cap = "Grouping the CP profiles by ticket class reveals an interaction effect with age in the Titanic dataset."}
+f <- tempfile()
+download.file("https://uwmadison.box.com/shared/static/nau695mppsoxx0f6bns1ieo7kh1bje0j.rda", f)
+fit <- get(load(f))
+
 data(titanic)
 titanic <- titanic %>%
   select(-country) %>%
@@ -76,17 +83,20 @@ priori knowledge about which variables $j^{\prime}$ might be interacting with
 $j$? One idea is to try to *discover* relevant interactions by clustering the
 original set of CP profiles.
 
-```{r}
+7. In more detail, we can compute the CP profiles for all the samples, and then
+see whether there are subsets of profiles that all look similar. If we find
+features $j^{\prime}$ that characterize these groupings, then we have found
+features that interact with $j$ (with respect to the fitted model $f$). The plot
+below shows the same profiles as above, but clustering directly. It seems to
+recover the interaction between age and class, even though we have not
+explicitly provided this grouping variable.
+
+```{r, fig.cap = "Discovered groupings in the CP profiles for age reveals an interaction effect."}
 profiles <- model_profile(explainer = explanation, variables = "age", k = 3)
 plot(profiles, geom = "profiles", variables = "age") +
   scale_color_brewer(palette = "Set2") +
   theme479
 ```
-
-7. The idea is to compute the CP profiles for all the samples, and then see
-whether there are subsets of profiles that all look similar. If we can find
-features $j^{\prime}$ that characterize these groupings, then we have found
-features that interact with $j$ (with respect to the fitted model $f$).
 
 ### Model Comparison
 
@@ -98,10 +108,11 @@ features that interact with $j$ (with respect to the fitted model $f$).
   	« Contrastive » PD profiles.
   	
 9. To validate a simple model, we can compare its PD profiles with those of a
-more sophisticated model. For example, in the display below, the random forest
-learns linear relationships with price for both the surface and floor variables.
-If all the effects were like this, then we would have a good reason for
-preferring the linear model.
+more sophisticated model. We will illustrate this by fitting linear and random
+forest models to a dataset of apartment prices^[It is a simulated dataset, but
+designed to reflect properties of a real dataset.]. Given various properties of
+an apartment, the goal is to determine its price. The code below fits the two
+models and extracts their CP and PD profiles.
 
 ```{r}
 data(apartments)
@@ -114,13 +125,18 @@ profiles_rf <- train(x, apartments$m2.price, method = "rf", tuneGrid = data.fram
   model_profile()
 ```
 
-```{r}
+10. The PD profile below shows that the random forest learns linear
+relationships with price for both the surface and floor variables. If all the
+effects were like this, then we would have a good reason for preferring the
+linear model.
+
+```{r, fig.cap = "A contrastive PD display suggests that the floor and surface features are linearly related with apartment price."}
 plot(profiles_lm, profiles_rf, variables = c("surface", "floor")) +
   scale_color_brewer(palette = "Set2") +
   theme479
 ```
 
-10. When making the comparison between a simple and a complex model, certain
+11.. When making the comparison between a simple and a complex model, certain
 discrepancies might become apparent. For example, important nonlinearities or
 interactions might be visible from the PD profiles of the complex model. This
 information can guide the design of new features in the simpler model, so that
@@ -130,7 +146,7 @@ variables. This suggests that, if a linear model is still desired, then a new
 feature should be defined that identifies whether the apartment was built
 between 1935 and 1990.
 
-```{r}
+```{r, fig.cap = "The random forest learns a nonlinear relationship between construction year and apartment price. This suggests designing new features to include in the linear model."}
 plot(profiles_lm, profiles_rf, variables = "construction.year") +
   scale_color_brewer(palette = "Set2") +
   theme479
