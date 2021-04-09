@@ -43,9 +43,14 @@ dataset. Individual observations might warrant special attention, though.
 2. The block below loads in the fitted models from the previous set of notes.
 		
 ```{r}
-f <- tempfile()
-download.file("https://uwmadison.box.com/shared/static/x7dotair443mhx34yzie3m3lrsvhk19a.rda", f)
-models <- get(load(f))
+downloader <- function(link) {
+  f <- tempfile()
+  download.file(link, f)
+  get(load(f))
+}
+
+models <- downloader("https://uwmadison.box.com/shared/static/x7dotair443mhx34yzie3m3lrsvhk19a.rda")
+GM <- downloader("https://uwmadison.box.com/shared/static/2pzgdu7gyobhl5tezo63tns7by1aiy6d.rda")
 ```
 
 3. A first diagnostic to consider is the leave-one-out predictive distribution.
@@ -93,6 +98,7 @@ ggplot(elpd_diffs, aes(ID, diff23)) +
     aes(label = City_locality),
     size = 3 
   ) +
+  scale_color_brewer(palette = "Set2") +
   labs(
     y = "Influence (Model 2 vs. 3)",
     col = "WHO Region"
@@ -116,12 +122,17 @@ below, observation 2674 (Ulaanbaatar again) is highly influential.
 
 ```{r, fig.cap = "The influence of each sample on the final posterior distribution."}
 loglik <- map(models, ~ as.matrix(., pars = "log_lik"))
-k <- psis(loglik[[2]])$diagnostics$pareto_k
-kdata <- data.frame(Index = seq_along(k), k_hat = k)
+kdata <- GM@data %>%
+  mutate(
+    k_hat = psis(loglik[[2]])$diagnostics$pareto_k,
+    Index = row_number()
+  )
 outliers <- kdata %>%
   filter(k_hat > 0.25)
+
 ggplot(kdata, aes(x = Index, y = k_hat)) + 
-  geom_point(size = 0.5, alpha = 0.9) + 
+  geom_point(aes(col = super_region_name), size = 0.5, alpha = 0.9) + 
+  scale_color_brewer(palette = "Set2") +
   geom_text_repel(data = outliers, aes(label = Index)) +
   labs(y = "k-hat")
 ```

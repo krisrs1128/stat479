@@ -38,7 +38,9 @@ theme_set(theme479)
 plausible models for a dataset. How should we go about choosing between them?
 
 ```{r}
-GM <- get(load("~/Desktop/GM.rda"))
+f <- tempfile()
+download.file("https://uwmadison.box.com/shared/static/2pzgdu7gyobhl5tezo63tns7by1aiy6d.rda", f)
+GM <- get(load(f))
 ```
 
 2. In some of your other classes, you might have seen people use
@@ -257,7 +259,7 @@ skew <- function(x) {
 posteriors <- map_dfr(models, ~ apply_stat(., skew), .id = "model")
 truth <- skew(GM@data$log_pm25)
 ggplot(posteriors, aes(statistic)) +
-  geom_vline(xintercept = truth, col = "red") +
   geom_histogram(aes(fill = model), binwidth = 0.01) +
-  scale_fill_brewer(palette = "Set1")
+  geom_vline(xintercept = truth, col = "red") +
+  scale_fill_brewer(palette = "Set3")
 ```
