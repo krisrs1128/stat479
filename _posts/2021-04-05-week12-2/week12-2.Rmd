@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-2/week12-2.Rmd)_
+_[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](https://mediaspace.wisc.edu/media/Week%2012%20%5B2%5D%20Partial%20Dependence%20Profiles%20II/1_3e93x8o8), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-2/week12-2.Rmd)_
 
 ```{r}
 library("ggplot2")

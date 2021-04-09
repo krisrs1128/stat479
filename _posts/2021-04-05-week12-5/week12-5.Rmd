@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://arxiv.org/abs/1709.01449), [Recording](https://mediaspace.wisc.edu/media/Week%2012%20%5B5%5D%20Pointwise%20Diagnostics/1_hpoqug2d), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-5/week12-5.Rmd)_
 
 ```{r}
 library("dplyr")
