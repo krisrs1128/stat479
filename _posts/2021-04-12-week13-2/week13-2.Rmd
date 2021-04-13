@@ -1,0 +1,58 @@
+---
+title: ""
+description: | 
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-20
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. In the last lecture, we discussed the conceptual foundations of feature
+learning. In this lecture, we’ll see how to extract and visualize features
+learned by a computer vision model.
+
+2. The model at this link was trained to distinguish between photos of cats and
+dogs. Let’s take a look at a few examples from the training dataset.
+
+3. The `array_branch` function above splits the 4 dimensional array into a
+collection of 3 dimensional slices. Each of these 3D slices corresponds to one
+image — the three channels correspond to Red, Green, and Blue colors,
+respectively.
+
+4. Next, let’s consider what types of features the model has learned, in order
+to distinguish between cats and dogs.
+
+5. We will create an R object to retrieve all the intermediate feature
+activations associated with a single image. Every time we call this object on a
+new input image, it will return the activations for features at all layers.
+
+6. Each element of the list corresponds to a different layer. Within a single
+layer, the 3D array of activations provides the activations of each feature
+across different spatial context. For example, for the first layer, there are X
+features, spread over Y x Z spatial contexts.
+
+7. Let’s visualize a few of these features. Notice that a few of them are edge
+detectors — they have high values when there are sharp changes in color in the
+underlying images. This is consistent with our earlier claim that the first
+layer of a network learns to recognize pixel-level interactions.
+
+8. Next, we visualize features at a higher level in the network. At this point,
+each activation corresponds to a larger spatial context in the original image,
+so there are fewer activations per feature (There are more feature maps total,
+but each is smaller).
+
+9. It seems that some of the features have learned to recognize higher-level
+concepts in the image, like the presence of a cat eye or ear. However, it’s hard
+to know definitively, since we are only considering a single image. In the next
+set of notes, we will examine the same neuron across many dataset examples, and
+this will give us more confidence in our interpretations of individual neurons.

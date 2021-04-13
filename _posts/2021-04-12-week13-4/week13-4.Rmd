@@ -1,0 +1,59 @@
+---
+title: "Visualizing Convolutional Filters"
+description: | 
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-22
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. So far, we’ve visualized neural networks by analyzing the activations of
+learned features across observed samples. A complementary approach is to ask
+instead — is there a hypothetical image that would maximize the activation of a
+particular neuron? If we can construct such an image, then we might have a
+better sense of the types of image concepts that a neuron is highly sensitive
+to.
+
+2. We will illustrate these ideas on a network that has been trained on
+imagenet. This is a large image dataset with many (thousands) of class labels,
+and it is often used to evaluate image classification algorithms. The network is
+loaded below and a summary of its layers is printed.
+
+3. The main idea is to setup an optimization problem that searches through image
+space for an image that maximies the activation for a particular neuron.
+
+4. To implement this, we can compute the gradient of a neuron’s activation with
+respect to image pixel values. This is a measure of how much the activation
+would change when individual pixel values are perturbed.
+
+	1. (draw a picture)
+	2. (give code example)
+	
+5. Once these gradients can be computed, it’s possible to perform gradient
+ascent to solve the activation maximization problem.
+
+	1. (draw a picture)
+	2. (give code example)
+	
+6. We can now visualize the image that would have optimized the activation for
+neuron 1 in layer 1. It seems to be most responsive to. A look at a few other
+neurons at this layer suggest that this layers has learned to recognize …
+patterns.
+
+7. We can think of these features as analogous to a collection of basis
+functions. At the first layer, the network is representing each image as a
+combination of « basis » images, related to particular edge or color patterns.
+
+8. We can compare these activation maximizing inputs with those associated with
+later layers. It seems that the basis images at this level are more intricate,
+reflecting textures and common objects across this dataset.

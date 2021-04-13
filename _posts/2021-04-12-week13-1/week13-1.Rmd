@@ -1,0 +1,91 @@
+---
+title: "Introduction to Feature Learning"
+description: | 
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-19
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. In classical machine learning, we assume that the features most relevant to
+prediction are already available. E.g., when we want to predict home price, we
+already have features about square feet and neighborhood income, which are
+clearly relevant to the prediction task.
+
+2. In many modern problems though, we have only access to « raw » data where the
+most relevant features are not directly encoded.
+
+  	* In image classification, we only have raw pixel values. Say we want to
+  	identify where the pedestrians are in an image.
+  	* For sentiment analysis, we want to identify whether a piece of text is a
+  	positive or negative valence. We only have access to the raw sequence of words.
+	
+3. The features that are truly relevant only arise as complex interactions
+between these elements.
+  
+  	* To recognize a pedestrian, need many adjacent pixels to have a certain
+  	configuration of values, each which becomes recognizable as a part of a
+  	person.
+  	* To recognize a positive or negative sentiment, need to recognize
+  	interactions between words. "The movie was good until" clearly has bad
+  	sentiment, but you cannot tell that from the isolated word counts alone.
+	
+4. The main idea of deep learning is to learn these more complex features one
+layer at a time.
+
+	1. For image data, it has this structure.
+	2. The first layer recognizes interactions between individual pixels.
+	Specifically, individual features are designed to « activate » when particular
+	pixel interactions are present.
+	3. The second layer learns to recognize interactions between features in the
+	first layer.
+	4. And so on, until the learned features correspond to more « high-level »
+	concepts, like sidewalk or pedestrian.
+	5. Notion of feature maps. Large value when it recognizes a feature within a
+	given spatial context.
+	
+5. At the end of the feature extraction process, all the features are passed
+into a final linear or logistic regression module that completes the regression
+or classification task, respectively.
+
+6. It is common to refer to each feature map as a « neuron. » Different neurons
+activate when different patterns are present in the original, underlying image.
+
+7. Illustrate this on real dataset
+	1. Load a model and show the shapes of the features.
+	2. There are many types of layers shown here. Each type of layer contributes in
+	a different way to the feature learning goal, and learning how design and
+	compose these different types of layers is one of the central concerns of deep
+	learning (we won’t touch on this any further).
+	3. We will see how to load and inspect the features in the next lecture
+	
+8. This idea is not limited to image data.
+	1. In sentiment analysis, first layer features activate when specific
+	interactions between words are present
+	2. The next layer learns interactions between phrases,…
+	3. In the handwriting example, learn the interactions between points where the
+	pen was registered.
+	4. Then new features that activate when particular curves or handwriting
+	strokes are present.
+	
+9. Deep learning is often called a black box because these intermediate features
+are often complex and not directly interpretable according to human concepts
+	1. This is further complicated by the fact that features are « distributed »
+	2. Individual human concepts are not associated with individual deep learning
+	features. Instead, a single human concept is encoded by a configuration of
+	multiple features. On the flipside, the same model feature can encode several
+	human concepts.
+	
+10. Nonetheless, a growing literature addresses the question of model
+interpretability by attempting to visualize and interact with these learned
+features.
