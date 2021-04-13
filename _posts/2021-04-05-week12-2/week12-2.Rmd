@@ -20,6 +20,8 @@ _[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](http
 
 ```{r}
 library("ggplot2")
+library("dplyr")
+library("caret")
 library("DALEX")
 theme479 <- theme_minimal() + 
   theme(

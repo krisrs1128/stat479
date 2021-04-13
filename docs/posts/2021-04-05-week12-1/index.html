@@ -2248,14 +2248,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="http://ema.drwhy.ai/partialDependenceProfiles.html">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-1/week12-1.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="http://ema.drwhy.ai/partialDependenceProfiles.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%2012%20%5B1%5D%20Partial%20Dependence%20Profiles%20I/1_51vpyf5q">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-1/week12-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dalex.drwhy.ai'>"DALEX"</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/topepo/caret/'>"caret"</a></span><span class='op'>)</span>
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/topepo/caret/'>"caret"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://readr.tidyverse.org'>"readr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dalex.drwhy.ai'>"DALEX"</a></span><span class='op'>)</span>
 <span class='va'>theme479</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> 
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
     panel.grid.minor <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,
@@ -2326,7 +2326,7 @@ Figure 3: Visual intuition behind the CP profile. Varying the <span class="math 
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre><code><span class='va'>explanation</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dalex.drwhy.ai/reference/explain.html'>explain</a></span><span class='op'>(</span>model <span class='op'>=</span> <span class='va'>fit</span>, data <span class='op'>=</span> <span class='va'>x</span>, y <span class='op'>=</span> <span class='va'>titanic</span><span class='op'>$</span><span class='va'>survived</span><span class='op'>)</span>
+<pre><code><span class='va'>explanation</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/explain.html'>explain</a></span><span class='op'>(</span>model <span class='op'>=</span> <span class='va'>fit</span>, data <span class='op'>=</span> <span class='va'>x</span>, y <span class='op'>=</span> <span class='va'>titanic</span><span class='op'>$</span><span class='va'>survived</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>Preparation of a new explainer is initiated
@@ -2340,7 +2340,7 @@ Figure 3: Visual intuition behind the CP profile. Varying the <span class="math 
   -&gt; model_info        :  By deafult classification tasks supports only numercical &#39;y&#39; parameter. 
   -&gt; model_info        :  Consider changing to numerical vector with 0 and 1 values.
   -&gt; model_info        :  Otherwise I will not be able to calculate residuals or loss function.
-  -&gt; predicted values  :  numerical, min =  0.01648626 , mean =  0.3243433 , max =  0.9905907  
+  -&gt; predicted values  :  numerical, min =  0.01116753 , mean =  0.3242713 , max =  0.9890543  
   -&gt; residual function :  difference between y and yhat ( [33m default [39m )
   -&gt; residuals         :  numerical, min =  NA , mean =  NA , max =  NA  
  [32m A new explainer has been created! [39m </code></pre>

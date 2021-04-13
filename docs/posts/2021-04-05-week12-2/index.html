@@ -2248,10 +2248,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="http://ema.drwhy.ai/partialDependenceProfiles.html">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-2/week12-2.Rmd">Rmarkdown</a></em></p>
+<p><em><a href="http://ema.drwhy.ai/partialDependenceProfiles.html">Reading</a>, <a href="https://mediaspace.wisc.edu/media/Week%2012%20%5B2%5D%20Partial%20Dependence%20Profiles%20II/1_3e93x8o8">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-2/week12-2.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://ggplot2.tidyverse.org'>"ggplot2"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/topepo/caret/'>"caret"</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dalex.drwhy.ai'>"DALEX"</a></span><span class='op'>)</span>
 <span class='va'>theme479</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> 
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>
@@ -2290,7 +2292,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>titanic</span>, <span class='op'>-</span><span class='va'>survived</span><span class='op'>)</span>
 
-<span class='va'>explanation</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dalex.drwhy.ai/reference/explain.html'>explain</a></span><span class='op'>(</span>model <span class='op'>=</span> <span class='va'>fit</span>, data <span class='op'>=</span> <span class='va'>x</span>, y <span class='op'>=</span> <span class='va'>titanic</span><span class='op'>$</span><span class='va'>survived</span><span class='op'>)</span>
+<span class='va'>explanation</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/explain.html'>explain</a></span><span class='op'>(</span>model <span class='op'>=</span> <span class='va'>fit</span>, data <span class='op'>=</span> <span class='va'>x</span>, y <span class='op'>=</span> <span class='va'>titanic</span><span class='op'>$</span><span class='va'>survived</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code>Preparation of a new explainer is initiated
@@ -2356,7 +2358,7 @@ Figure 2: Discovered groupings in the CP profiles for age reveals an interaction
 <pre><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>apartments</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>apartments</span>, <span class='op'>-</span><span class='va'>m2.price</span><span class='op'>)</span>
 <span class='va'>profiles_lm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, method <span class='op'>=</span> <span class='st'>"lm"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dalex.drwhy.ai/reference/explain.html'>explain</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, label <span class='op'>=</span> <span class='st'>"LM"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/explain.html'>explain</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, label <span class='op'>=</span> <span class='st'>"LM"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dalex.drwhy.ai/reference/model_profile.html'>model_profile</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -2373,7 +2375,7 @@ Figure 2: Discovered groupings in the CP profiles for age reveals an interaction
  [32m A new explainer has been created! [39m </code></pre>
 <div class="sourceCode">
 <pre><code><span class='va'>profiles_rf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, method <span class='op'>=</span> <span class='st'>"rf"</span>, tuneGrid <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>mtry <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dalex.drwhy.ai/reference/explain.html'>explain</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, label <span class='op'>=</span> <span class='st'>"RF"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/explain.html'>explain</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>apartments</span><span class='op'>$</span><span class='va'>m2.price</span>, label <span class='op'>=</span> <span class='st'>"RF"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dalex.drwhy.ai/reference/model_profile.html'>model_profile</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -2384,9 +2386,9 @@ Figure 2: Discovered groupings in the CP profiles for age reveals an interaction
   -&gt; predict function  :  yhat.train  will be used ( [33m default [39m )
   -&gt; predicted values  :  No value for predict function target column. ( [33m default [39m )
   -&gt; model_info        :  package caret , ver. 6.0.86 , task regression ( [33m default [39m ) 
-  -&gt; predicted values  :  numerical, min =  1658.377 , mean =  3486.058 , max =  6382.877  
+  -&gt; predicted values  :  numerical, min =  1658.777 , mean =  3486.158 , max =  6375.731  
   -&gt; residual function :  difference between y and yhat ( [33m default [39m )
-  -&gt; residuals         :  numerical, min =  -222.4284 , mean =  0.9607209 , max =  264.0402  
+  -&gt; residuals         :  numerical, min =  -228.5476 , mean =  0.8606697 , max =  268.4641  
  [32m A new explainer has been created! [39m </code></pre>
 </div>
 <ol start="10" type="1">

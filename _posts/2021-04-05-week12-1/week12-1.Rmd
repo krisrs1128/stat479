@@ -19,11 +19,11 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 _[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](https://mediaspace.wisc.edu/media/Week%2012%20%5B1%5D%20Partial%20Dependence%20Profiles%20I/1_51vpyf5q), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-1/week12-1.Rmd)_
 
 ```{r}
-library("DALEX")
 library("caret")
 library("dplyr")
 library("ggplot2")
 library("readr")
+library("DALEX")
 theme479 <- theme_minimal() + 
   theme(
     panel.grid.minor = element_blank(),
