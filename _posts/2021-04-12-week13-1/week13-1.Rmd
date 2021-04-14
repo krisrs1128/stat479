@@ -17,6 +17,10 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 
 _[Reading](), [Recording](), [Rmarkdown]()_
 
+```{r}
+library("keras")
+```
+
 1. In classical machine learning, we assume that the features most relevant to
 prediction are already available. E.g., when we want to predict home price, we
 already have features about square feet and neighborhood income, which are
@@ -68,7 +72,13 @@ activate when different patterns are present in the original, underlying image.
 	compose these different types of layers is one of the central concerns of deep
 	learning (we won’t touch on this any further).
 	3. We will see how to load and inspect the features in the next lecture
-	
+
+```{r}
+f <- tempfile()
+download.file("https://uwmadison.box.com/shared/static/9wu6amgizhgnnefwrnyqzkf8glb6ktny.h5", f)
+model <- load_model_hdf5(f)
+model
+```
 8. This idea is not limited to image data.
 	1. In sentiment analysis, first layer features activate when specific
 	interactions between words are present

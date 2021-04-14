@@ -17,6 +17,13 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 
 _[Reading](), [Recording](), [Rmarkdown]()_
 
+```{r}
+library("dplyr")
+library("purrr")
+library("keras")
+library("tensorflow")
+```
+
 1. So far, we’ve visualized neural networks by analyzing the activations of
 learned features across observed samples. A complementary approach is to ask
 instead — is there a hypothetical image that would maximize the activation of a
@@ -25,10 +32,67 @@ better sense of the types of image concepts that a neuron is highly sensitive
 to.
 
 2. We will illustrate these ideas on a network that has been trained on
-imagenet. This is a large image dataset with many (thousands) of class labels,
+Imagenet. This is a large image dataset with many (thousands) of class labels,
 and it is often used to evaluate image classification algorithms. The network is
 loaded below and a summary of its layers is printed.
 
+```{r}
+model <- application_vgg16(
+  weights = "imagenet", 
+  include_top = FALSE
+)
+activation_model <- keras_model(inputs = model$input, outputs = model$layers[[8]]$output)
+```
+
+
+```{r}
+mean_activation <- function(image, layer, filter_ix=1) {
+  h <- layer(image)
+  k_mean(h[,,, filter_ix])
+}
+
+squash <- function(im) {
+  (im - min(im)) / (max(im) - min(im))
+}
+
+gradient_step <- function(image, layer, filter_ix=1, lr=1e-3) {
+  with(tf$GradientTape() %as% tape, {
+    tape$watch(image)
+    objective <- mean_activation(image, layer, filter_ix)
+  })
+  grad <- tape$gradient(objective, image)
+  image <- image + lr * grad
+}
+  
+random_image <- function() {
+  tf$random$uniform(map(c(1, 150, 150, 3), as.integer))
+}
+
+visualize_filter <- function(layer, filter_ix = 1, n_iter = 100, lr = 10) {
+  im_seq <- array(0, dim = c(n_iter, 150, 150, 3))
+  image <- random_image()
+  for (i in seq_len(n_iter)) {
+    image <- gradient_step(image, layer, filter_ix, lr)
+    im_seq[i,,,] <- as.array(image[1,,,])
+  }
+  
+  im_seq
+}
+```
+
+
+```{r}
+image <- random_image()
+updated_image <- gradient_step(image, activation_model)
+```
+
+```{r, fig.show = "animate"}
+activation_model <- keras_model(inputs = model$input, outputs = model$layers[[3]]$output)
+im_seq <- visualize_filter(activation_model)
+for (i in seq_len(100)) {
+  plot(as.raster(squash(im_seq[i,,,])))
+}
+```
 3. The main idea is to setup an optimization problem that searches through image
 space for an image that maximies the activation for a particular neuron.
 
