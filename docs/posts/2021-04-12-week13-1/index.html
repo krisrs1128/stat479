@@ -87,6 +87,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
   <!--radix_placeholder_meta_tags-->
 <title>Statistical Data Visualization: Introduction to Feature Learning</title>
 
+<meta property="description" itemprop="description" content="An introduction to compositional feature learning."/>
 
 
 <!--  https://schema.org/Article -->
@@ -97,18 +98,20 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
 <meta property="og:title" content="Statistical Data Visualization: Introduction to Feature Learning"/>
 <meta property="og:type" content="article"/>
+<meta property="og:description" content="An introduction to compositional feature learning."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Statistical Data Visualization"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
 <meta property="twitter:title" content="Statistical Data Visualization: Introduction to Feature Learning"/>
+<meta property="twitter:description" content="An introduction to compositional feature learning."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Feature Learning"]},{"type":"NULL"},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-04-19"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Introduction to Feature Learning"]},{"type":"character","attributes":{},"value":["An introduction to compositional feature learning."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Kris Sankaran"]},{"type":"character","attributes":{},"value":["UW Madison"]}]}]},{"type":"character","attributes":{},"value":["2021-04-19"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2209,7 +2212,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Introduction to Feature Learning","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-19T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
+{"title":"Introduction to Feature Learning","description":"An introduction to compositional feature learning.","authors":[{"author":"Kris Sankaran","authorURL":"#","affiliation":"UW Madison","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-19T00:00:00.000-05:00","citationText":"Sankaran, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2235,7 +2238,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <h1>Introduction to Feature Learning</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-
+<p><p>An introduction to compositional feature learning.</p></p>
 </div>
 
 <div class="d-byline">
@@ -2245,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em><a href="">Reading</a>, <a href="">Recording</a>, <a href="">Rmarkdown</a></em></p>
+<p><em><a href="https://distill.pub/2016/handwriting/">Reading</a>, <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-1/week13-1.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://keras.rstudio.com'>"keras"</a></span><span class='op'>)</span>
@@ -2254,32 +2257,36 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 <ol type="1">
 <li><p>In classical machine learning, we assume that the features most relevant to prediction are already available. E.g., when we want to predict home price, we already have features about square feet and neighborhood income, which are clearly relevant to the prediction task.</p></li>
-<li><p>In many modern problems though, we have only access to « raw » data where the most relevant features are not directly encoded.</p>
+<li><p>In many modern problems though, we have only access to data where the most relevant features have not been directly encoded.</p>
 <ul>
-<li>In image classification, we only have raw pixel values. Say we want to identify where the pedestrians are in an image.</li>
-<li>For sentiment analysis, we want to identify whether a piece of text is a positive or negative valence. We only have access to the raw sequence of words.</li>
-</ul></li>
-<li><p>The features that are truly relevant only arise as complex interactions between these elements.</p>
+<li>In image classification, we only have raw pixel values. We may want to predict whether a pedestrian is in an image taken from a self-driving car, but we have only the pixels to work with. It would be useful to have an algorithm come up with labeled boxes like those in the examples below.</li>
+<li>For sentiment analysis, we want to identify whether a piece of text is a positive or negative sentiment. However, we only have access to the raw sequence of words, without any other context. Examples from the IMDB dataset are shown below.</li>
+</ul>
+<p>In both of these examples, this information could be encoded manually, but it would a substantial of effort, and the manual approach could not be used in applications that are generating data constantly.</p></li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<img src="https://uwmadison.box.com/shared/static/wdykaqy9wwzkwneoqqva0550vpni6vfo.jpeg" alt="An example of the types of labels that would be useful to have, starting from just the raw image."  />
+<p class="caption">
+Figure 1: An example of the types of labels that would be useful to have, starting from just the raw image.
+</p>
+</div>
+</div>
+<pre><code>&quot;A wonderful little production. &lt;br /&gt;&lt;br /&gt;The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. &lt;br /&gt;&lt;br /&gt;The actors are extremely well chosen- Michael Sheen not only &quot;&quot;has got all the polari ....&quot;,positive
+&quot;I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ...&quot;,positive
+&quot;Basically there&#39;s a family where a little boy (Jake) thinks there&#39;s a zombie in his closet &amp; his parents are fighting all the time.&lt;br /&gt;&lt;br /&gt;This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.&lt;br /&gt;&lt;br /&gt;OK, first of all when you&#39;re going to ...&quot;,negative
+&quot;Petter Mattei&#39;s &quot;&quot;Love in the Time of Money&quot;&quot; is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. &lt;br /&gt;&lt;br /&gt;This being a ...&quot;,positive</code></pre>
+<ol start="3" type="1">
+<li><p>In these problems, the relevant features only arise as complex interactions between the raw data elements.</p>
 <ul>
-<li>To recognize a pedestrian, need many adjacent pixels to have a certain configuration of values, each which becomes recognizable as a part of a person.</li>
-<li>To recognize a positive or negative sentiment, need to recognize interactions between words. “The movie was good until” clearly has bad sentiment, but you cannot tell that from the isolated word counts alone.</li>
+<li>To recognize a pedestrian, we need many adjacent pixels to have a particular configuration of values, leading to combinations of edges and shapes, which when viewed together, become recognizable as a person.</li>
+<li>To recognize a positive or negative sentiment, we need to recognize interactions between words. “The movie was good until” clearly has bad sentiment, but you cannot tell that from the isolated word counts alone.</li>
 </ul></li>
-<li><p>The main idea of deep learning is to learn these more complex features one layer at a time.</p>
-<ol type="1">
-<li>For image data, it has this structure.</li>
-<li>The first layer recognizes interactions between individual pixels. Specifically, individual features are designed to « activate » when particular pixel interactions are present.</li>
-<li>The second layer learns to recognize interactions between features in the first layer.</li>
-<li>And so on, until the learned features correspond to more « high-level » concepts, like sidewalk or pedestrian.</li>
-<li>Notion of feature maps. Large value when it recognizes a feature within a given spatial context.</li>
-</ol></li>
+<li><p>The main idea of deep learning is to learn these more complex features one layer at a time. For image data, the first layer recognizes interactions between individual pixels. Specifically, individual features are designed to “activate” when particular pixel interactions are present. The second layer learns to recognize interactions between features in the first layer, and so on, until the learned features correspond to more “high-level” concepts, like sidewalk or pedestrian.</p></li>
+<li><p>Below is an example of an image along with feature activations from two different layers. Each pixel within the feature maps correspond to a patch of pixels in the original image – those later in the network have a larger field of view than those early on. A pixel in a feature map has a large value if any of the image features that it is sensitive to are present within its field of vision.</p></li>
 <li><p>At the end of the feature extraction process, all the features are passed into a final linear or logistic regression module that completes the regression or classification task, respectively.</p></li>
-<li><p>It is common to refer to each feature map as a « neuron. » Different neurons activate when different patterns are present in the original, underlying image.</p></li>
-<li><p>Illustrate this on real dataset</p>
-<ol type="1">
-<li>Load a model and show the shapes of the features.</li>
-<li>There are many types of layers shown here. Each type of layer contributes in a different way to the feature learning goal, and learning how design and compose these different types of layers is one of the central concerns of deep learning (we won’t touch on this any further).</li>
-<li>We will see how to load and inspect the features in the next lecture</li>
-</ol></li>
+<li><p>It is common to refer to each feature map as a neuron. Different neurons activate when different patterns are present in the original, underlying image.</p></li>
+<li><p>Below, we load a model to illustrate the concept of multilayer networks. This model has 11 layers followed by a final logistic regression layer. There are many types of layers. Each type of layer contributes in a different way to the feature learning goal, and learning how design and compose these different types of layers is one of the central concerns of deep learning. The Output Shape column describes the number and shape of feature maps associated with each layer. For example, the first layer has 32 feature maps, each of size <span class="math inline">\(148 \times 148\)</span>. Deeper parts of the network have more layers, but each is smaller. We will see how to load and inspect these features in the next lecture.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2324,21 +2331,11 @@ Non-trainable params: 0
 ______________________________________________________________________</code></pre>
 </div>
 <ol start="8" type="1">
-<li>This idea is not limited to image data.
-<ol type="1">
-<li>In sentiment analysis, first layer features activate when specific interactions between words are present</li>
-<li>The next layer learns interactions between phrases,…</li>
-<li>In the handwriting example, learn the interactions between points where the pen was registered.</li>
-<li>Then new features that activate when particular curves or handwriting strokes are present.</li>
-</ol></li>
-<li>Deep learning is often called a black box because these intermediate features are often complex and not directly interpretable according to human concepts
-<ol type="1">
-<li>This is further complicated by the fact that features are « distributed »</li>
-<li>Individual human concepts are not associated with individual deep learning features. Instead, a single human concept is encoded by a configuration of multiple features. On the flipside, the same model feature can encode several human concepts.</li>
-</ol></li>
-<li>Nonetheless, a growing literature addresses the question of model interpretability by attempting to visualize and interact with these learned features.</li>
+<li><p>While we will only consider image data in this course, the idea of learning complex features by composing a few types of layers is a general one. For example, in sentiment analysis, the first layer learns features that activate when specific combinations of words are present in close proximity to one another. The next layer learns interactions between phrases, and later layers are responsive to more sophisticated grammar.</p></li>
+<li><p>Deep learning is often called a black box because these intermediate features are often complex and not directly interpretable according to human concepts. The problem is further complicated by the fact that features are “distributed” in the sense that a single human concept can be encoded by a configuration of multiple features. Conversely, the same model feature can encode several human concepts.</p></li>
+<li><p>For this reason, a literature has grown around the question of interpreting neural networks. The field relies on visualization and interaction to attempt to understand the learned representations, with the goal of increasing the safety and scientific usability of deep learning models. While our class will not discuss how to design or develop deep learning models, we will get a taste of the interpretability literature in the next few lectures.</p></li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2346,6 +2343,15 @@ ______________________________________________________________________</code></p
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->

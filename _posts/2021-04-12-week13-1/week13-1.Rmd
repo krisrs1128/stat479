@@ -44,7 +44,7 @@ relevant features have not been directly encoded.
     in applications that are generating data constantly.
     
 ```{r, echo = FALSE, fig.cap = "An example of the types of labels that would be useful to have, starting from just the raw image."}
-include_graphcis("https://uwmadison.box.com/shared/static/wdykaqy9wwzkwneoqqva0550vpni6vfo.jpeg")
+include_graphics("https://uwmadison.box.com/shared/static/wdykaqy9wwzkwneoqqva0550vpni6vfo.jpeg")
 ```
 
 ```
