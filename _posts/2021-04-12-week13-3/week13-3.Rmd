@@ -1,6 +1,7 @@
 ---
 title: "Collections of Features"
 description: | 
+    Analyzing feature activations across datasets
 author:
   - name: Kris Sankaran
     affiliation: UW Madison

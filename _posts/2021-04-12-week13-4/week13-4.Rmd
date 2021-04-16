@@ -1,6 +1,7 @@
 ---
-title: "Visualizing Convolutional Filters"
+title: "Optimizing Feature Maps"
 description: | 
+    Interpreting neurons by finding optimal inputs
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
