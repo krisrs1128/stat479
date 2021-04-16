@@ -13,7 +13,7 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
 _[Reading](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-4/week13-4.Rmd)_
@@ -120,7 +120,7 @@ later layers. It seems that the basis images at this level are more intricate,
 reflecting textures and common objects across this dataset. For example, the
 polka dot pattern may be strongly activated by cat eyes.
 
-```{r, fig.show = "hold", panel = TRUE}
+```{r, fig.show = "hold", preview = TRUE}
 par(mfrow = c(5, 8), mai = rep(0.00, 4))
 activation_model <- keras_model(inputs = model$input, outputs = model$layers[[8]]$output)
 for (i in seq_len(40)) {

@@ -115,7 +115,7 @@ horizontal edge detectors — features with high values at sharp changes in colo
 in the underlying images. This is consistent with our earlier claim that the
 first layer of a network learns to recognize pixel-level interactions.
 
-```{r, layout = "l-body-ouset"}
+```{r, layout = "l-body-ouset", preview = TRUE}
 par(mfrow = c(6, 7), mai = rep(0.00, 4))
 out <- features[[2]][ix,,,] %>%
   array_branch(margin = 3) %>%
