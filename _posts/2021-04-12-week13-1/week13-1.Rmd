@@ -1,6 +1,7 @@
 ---
 title: "Introduction to Feature Learning"
 description: | 
+  An introduction to compositional feature learning.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -15,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://distill.pub/2016/handwriting/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-1/week13-1.Rmd)_
 
 ```{r}
 library("keras")
@@ -26,52 +27,74 @@ prediction are already available. E.g., when we want to predict home price, we
 already have features about square feet and neighborhood income, which are
 clearly relevant to the prediction task.
 
-2. In many modern problems though, we have only access to « raw » data where the
-most relevant features are not directly encoded.
+2. In many modern problems though, we have only access to data where the most
+relevant features have not been directly encoded.
 
-  	* In image classification, we only have raw pixel values. Say we want to
-  	identify where the pedestrians are in an image.
+  	* In image classification, we only have raw pixel values. We may want to
+  	predict whether a pedestrian is in an image taken from a self-driving car,
+  	but we have only the pixels to work with. It would be useful to have an
+  	algorithm come up with labeled boxes like those in the examples below.
   	* For sentiment analysis, we want to identify whether a piece of text is a
-  	positive or negative valence. We only have access to the raw sequence of words.
-	
-3. The features that are truly relevant only arise as complex interactions
-between these elements.
+  	positive or negative sentiment. However, we only have access to the raw
+  	sequence of words, without any other context. Examples from the IMDB dataset
+  	are shown below.
+  	
+    In both of these examples, this information could be encoded manually, but
+    it would a substantial of effort, and the manual approach could not be used
+    in applications that are generating data constantly.
+    
+```{r, echo = FALSE, fig.cap = "An example of the types of labels that would be useful to have, starting from just the raw image."}
+include_graphcis("https://uwmadison.box.com/shared/static/wdykaqy9wwzkwneoqqva0550vpni6vfo.jpeg")
+```
+
+```
+"A wonderful little production. <br /><br />The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. <br /><br />The actors are extremely well chosen- Michael Sheen not only ""has got all the polari ....",positive
+"I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ...",positive
+"Basically there's a family where a little boy (Jake) thinks there's a zombie in his closet & his parents are fighting all the time.<br /><br />This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.<br /><br />OK, first of all when you're going to ...",negative
+"Petter Mattei's ""Love in the Time of Money"" is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. <br /><br />This being a ...",positive
+```
+
+3. In these problems, the relevant features only arise as complex interactions
+between the raw data elements.
   
-  	* To recognize a pedestrian, need many adjacent pixels to have a certain
-  	configuration of values, each which becomes recognizable as a part of a
-  	person.
-  	* To recognize a positive or negative sentiment, need to recognize
+  	* To recognize a pedestrian, we need many adjacent pixels to have a
+  	particular configuration of values, leading to combinations of edges and
+  	shapes, which when viewed together, become recognizable as a person.
+  	* To recognize a positive or negative sentiment, we need to recognize
   	interactions between words. "The movie was good until" clearly has bad
   	sentiment, but you cannot tell that from the isolated word counts alone.
 	
 4. The main idea of deep learning is to learn these more complex features one
-layer at a time.
+layer at a time. For image data, the first layer recognizes interactions between
+individual pixels. Specifically, individual features are designed to "activate"
+when particular pixel interactions are present. The second layer learns to
+recognize interactions between features in the first layer, and so on, until the
+learned features correspond to more "high-level" concepts, like sidewalk or
+pedestrian.
 
-	1. For image data, it has this structure.
-	2. The first layer recognizes interactions between individual pixels.
-	Specifically, individual features are designed to « activate » when particular
-	pixel interactions are present.
-	3. The second layer learns to recognize interactions between features in the
-	first layer.
-	4. And so on, until the learned features correspond to more « high-level »
-	concepts, like sidewalk or pedestrian.
-	5. Notion of feature maps. Large value when it recognizes a feature within a
-	given spatial context.
+5. Below is an example of an image along with feature activations from two
+different layers. Each pixel within the feature maps correspond to a patch of
+pixels in the original image -- those later in the network have a larger field
+of view than those early on. A pixel in a feature map has a large value if any
+of the image features that it is sensitive to are present within its field of
+vision.
 	
-5. At the end of the feature extraction process, all the features are passed
+6. At the end of the feature extraction process, all the features are passed
 into a final linear or logistic regression module that completes the regression
 or classification task, respectively.
 
-6. It is common to refer to each feature map as a « neuron. » Different neurons
+6. It is common to refer to each feature map as a neuron. Different neurons
 activate when different patterns are present in the original, underlying image.
 
-7. Illustrate this on real dataset
-	1. Load a model and show the shapes of the features.
-	2. There are many types of layers shown here. Each type of layer contributes in
-	a different way to the feature learning goal, and learning how design and
-	compose these different types of layers is one of the central concerns of deep
-	learning (we won’t touch on this any further).
-	3. We will see how to load and inspect the features in the next lecture
+7. Below, we load a model to illustrate the concept of multilayer networks. This
+model has 11 layers followed by a final logistic regression layer. There are
+many types of layers. Each type of layer contributes in a different way to the
+feature learning goal, and learning how design and compose these different types
+of layers is one of the central concerns of deep learning. The Output Shape
+column describes the number and shape of feature maps associated with each
+layer. For example, the first layer has 32 feature maps, each of size $148
+\times 148$. Deeper parts of the network have more layers, but each is smaller.
+We will see how to load and inspect these features in the next lecture.
 
 ```{r}
 f <- tempfile()
@@ -79,23 +102,24 @@ download.file("https://uwmadison.box.com/shared/static/9wu6amgizhgnnefwrnyqzkf8g
 model <- load_model_hdf5(f)
 model
 ```
-8. This idea is not limited to image data.
-	1. In sentiment analysis, first layer features activate when specific
-	interactions between words are present
-	2. The next layer learns interactions between phrases,…
-	3. In the handwriting example, learn the interactions between points where the
-	pen was registered.
-	4. Then new features that activate when particular curves or handwriting
-	strokes are present.
-	
+
+8. While we will only consider image data in this course, the idea of learning
+complex features by composing a few types of layers is a general one. For
+example, in sentiment analysis, the first layer learns features that activate
+when specific combinations of words are present in close proximity to one
+another. The next layer learns interactions between phrases, and later layers
+are responsive to more sophisticated grammar.
+
 9. Deep learning is often called a black box because these intermediate features
-are often complex and not directly interpretable according to human concepts
-	1. This is further complicated by the fact that features are « distributed »
-	2. Individual human concepts are not associated with individual deep learning
-	features. Instead, a single human concept is encoded by a configuration of
-	multiple features. On the flipside, the same model feature can encode several
-	human concepts.
+are often complex and not directly interpretable according to human concepts.
+The problem is further complicated by the fact that features are "distributed"
+in the sense that a single human concept can be encoded by a configuration of
+multiple features. Conversely, the same model feature can encode several human
+concepts.
 	
-10. Nonetheless, a growing literature addresses the question of model
-interpretability by attempting to visualize and interact with these learned
-features.
+10. For this reason, a literature has grown around the question of interpreting
+neural networks. The field relies on visualization and interaction to attempt to
+understand the learned representations, with the goal of increasing the safety
+and scientific usability of deep learning models. While our class will not
+discuss how to design or develop deep learning models, we will get a taste of
+the interpretability literature in the next few lectures.
