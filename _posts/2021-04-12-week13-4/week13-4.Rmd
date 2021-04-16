@@ -57,7 +57,7 @@ mean_activation <- function(image, layer, ix=1) {
 activation with respect to input image pixel values. This is a measure of how
 much the activation would change when individual pixel values are perturbed. The
 function below moves an input image in the direction of steepest ascent for the
-`mean_activation` function above. (draw picture)
+`mean_activation` function above.
 
 ```{r}
 gradient_step <- function(image, layer, ix=1, lr=1e-3) {
@@ -70,12 +70,15 @@ gradient_step <- function(image, layer, ix=1, lr=1e-3) {
 }
 ```
 	
+```{r fig.cap = "Starting from a random image, we can take a gradient step in the image space to increase a given neuron's mean activation.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/pdbsv8xg4qqxxhv6gqip40w0mck6bz3s.png")
+```
 	
 5. Once these gradients can be computed, it’s possible to perform gradient
 ascent to solve the activation maximization problem. This ascent is encoded by
 the function below. We initialize with a random uniform image and then take
 `n_iter` gradient steps in the direction that maximizes the activation of
-feature `ix`. (draw picture)
+feature `ix`.
 	
 ```{r}
 random_image <- function() {
@@ -93,12 +96,16 @@ gradient_ascent <- function(layer, ix = 1, n_iter = 100, lr = 10) {
   im_seq
 }
 ```
+
+```{r, fig.cap = "Taking many gradient steps leads us towards an image that optimizes a neuron's activation.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/8zgkt3z6g00272q1e4phsa7nb9q61zib.png")
+```
 	
 6. Below, we visualize the images that optimize the activations for a few
 neurons in layer 3. These neurons seem to be most responsive particular colors
 and edge orientations.
 
-```{r}
+```{r, fig.cap = "The hypothetical images that maximize the activations for 40 different neurons. These neurons seem to pull out features related to color and edge orientations."}
 squash <- function(x) {
   (x - min(x)) / (max(x) - min(x))
 }
@@ -120,7 +127,7 @@ later layers. It seems that the basis images at this level are more intricate,
 reflecting textures and common objects across this dataset. For example, the
 polka dot pattern may be strongly activated by cat eyes.
 
-```{r, fig.show = "hold", preview = TRUE}
+```{r, fig.show = "hold", preview = TRUE, fig.cap = "The results of the corresponding optimization for 40 neurons in layer 8."}
 par(mfrow = c(5, 8), mai = rep(0.00, 4))
 activation_model <- keras_model(inputs = model$input, outputs = model$layers[[8]]$output)
 for (i in seq_len(40)) {

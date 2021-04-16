@@ -2262,7 +2262,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <li>In image classification, we only have raw pixel values. We may want to predict whether a pedestrian is in an image taken from a self-driving car, but we have only the pixels to work with. It would be useful to have an algorithm come up with labeled boxes like those in the examples below.</li>
 <li>For sentiment analysis, we want to identify whether a piece of text is a positive or negative sentiment. However, we only have access to the raw sequence of words, without any other context. Examples from the IMDB dataset are shown below.</li>
 </ul>
-<p>In both of these examples, this information could be encoded manually, but it would a substantial of effort, and the manual approach could not be used in applications that are generating data constantly.</p></li>
+<p>In both of these examples, this information could be encoded manually, but it would a substantial of effort, and the manual approach could not be used in applications that are generating data constantly. In a way, the goal of these algorithms is to distill the raw data down into a succinct set of descriptors that can be used for more classical machine learning or decision making.</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure"><span id="fig:unnamed-chunk-2"></span>
@@ -2284,10 +2284,30 @@ Figure 1: An example of the types of labels that would be useful to have, starti
 <li>To recognize a positive or negative sentiment, we need to recognize interactions between words. “The movie was good until” clearly has bad sentiment, but you cannot tell that from the isolated word counts alone.</li>
 </ul></li>
 <li><p>The main idea of deep learning is to learn these more complex features one layer at a time. For image data, the first layer recognizes interactions between individual pixels. Specifically, individual features are designed to “activate” when particular pixel interactions are present. The second layer learns to recognize interactions between features in the first layer, and so on, until the learned features correspond to more “high-level” concepts, like sidewalk or pedestrian.</p></li>
-<li><p>Below is an example of an image along with feature activations from two different layers. Each pixel within the feature maps correspond to a patch of pixels in the original image – those later in the network have a larger field of view than those early on. A pixel in a feature map has a large value if any of the image features that it is sensitive to are present within its field of vision.</p></li>
+<li><p>Below is a toy example of how an image is processed into feature activations along a sequence of layers. Each pixel within the feature maps correspond to a patch of pixels in the original image – those later in the network have a larger field of view than those early on. A pixel in a feature map has a large value if any of the image features that it is sensitive to are present within its field of vision.</p></li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:unnamed-chunk-3"></span>
+<img src="https://uwmadison.box.com/shared/static/dlglc32rea1ovqrwgj9in6yxje5ml036.png" alt="A toy diagram of feature maps from the model loaded below. Early layers have fewer, but larger feature maps, while later layers have many, but small ones. The later layers typically contain higher-level concepts used in the final predictions."  />
+<p class="caption">
+Figure 2: A toy diagram of feature maps from the model loaded below. Early layers have fewer, but larger feature maps, while later layers have many, but small ones. The later layers typically contain higher-level concepts used in the final predictions.
+</p>
+</div>
+</div>
+<ol start="6" type="1">
 <li><p>At the end of the feature extraction process, all the features are passed into a final linear or logistic regression module that completes the regression or classification task, respectively.</p></li>
 <li><p>It is common to refer to each feature map as a neuron. Different neurons activate when different patterns are present in the original, underlying image.</p></li>
-<li><p>Below, we load a model to illustrate the concept of multilayer networks. This model has 11 layers followed by a final logistic regression layer. There are many types of layers. Each type of layer contributes in a different way to the feature learning goal, and learning how design and compose these different types of layers is one of the central concerns of deep learning. The Output Shape column describes the number and shape of feature maps associated with each layer. For example, the first layer has 32 feature maps, each of size <span class="math inline">\(148 \times 148\)</span>. Deeper parts of the network have more layers, but each is smaller. We will see how to load and inspect these features in the next lecture.</p></li>
+</ol>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<img src="https://uwmadison.box.com/shared/static/uez7srm4vjzev1qsg93tb03vjgkqpt81.png" alt="An illustration of the different spatial contexts of feature maps at different layers. An element of a feature map has a large value (orange in the picture) if the feature that it is sensitive to is present in its spatial context. Higher-level feature maps are smaller, but each pixel within it has a larger spatial context."  />
+<p class="caption">
+Figure 3: An illustration of the different spatial contexts of feature maps at different layers. An element of a feature map has a large value (orange in the picture) if the feature that it is sensitive to is present in its spatial context. Higher-level feature maps are smaller, but each pixel within it has a larger spatial context.
+</p>
+</div>
+</div>
+<ol start="8" type="1">
+<li>Below, we load a model to illustrate the concept of multilayer networks. This model has 11 layers followed by a final logistic regression layer. There are many types of layers. Each type of layer contributes in a different way to the feature learning goal, and learning how design and compose these different types of layers is one of the central concerns of deep learning. The Output Shape column describes the number and shape of feature maps associated with each layer. For example, the first layer has 32 feature maps, each of size <span class="math inline">\(148 \times 148\)</span>. Deeper parts of the network have more layers, but each is smaller. We will see how to load and inspect these features in the next lecture.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">

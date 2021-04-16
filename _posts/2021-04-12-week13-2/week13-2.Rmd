@@ -50,7 +50,7 @@ dim(images) # 20 sample images
 sampled 10 dogs and 10 cats. The command `par` allows us to plot many images
 side by side (in this case, in a $4 \times 5$ grid).
 
-```{r, layout = "l-body-ouset"}
+```{r, layout = "l-body-ouset", fig.cap = "A sample of 20 random images from the dog vs. cat training dataset."}
 par(mfrow = c(4, 5), mai = rep(0.00, 4))
 out <- images %>%
   array_tree(1) %>%
@@ -99,7 +99,7 @@ edge detector -- it activates whenever there are transitions from dark to light
 areas when moving vertically. For example, when the white leash goes over the
 shadow in the background, this feature has some of its highest activations.
 
-```{r, fig.show = "hold", out.width = "47%", fig.height = 7}
+```{r, fig.show = "hold", out.width = "47%", fig.height = 7, fig.cap = "An image and its activations for the first neuron in layer 1."}
 plot_feature <- function(feature) {
   rotate <- function(x) t(apply(x, 2, rev))
   image(rotate(feature), axes = FALSE, asp = 1, col = brewer.pal(4, "Blues"))
@@ -115,7 +115,7 @@ horizontal edge detectors — features with high values at sharp changes in colo
 in the underlying images. This is consistent with our earlier claim that the
 first layer of a network learns to recognize pixel-level interactions.
 
-```{r, layout = "l-body-ouset", preview = TRUE}
+```{r, layout = "l-body-ouset", preview = TRUE, fig.cap = "Activations for a collection of neurons at layer 2, for the same image as given above."}
 par(mfrow = c(6, 7), mai = rep(0.00, 4))
 out <- features[[2]][ix,,,] %>%
   array_branch(margin = 3) %>%
@@ -129,7 +129,7 @@ but each is smaller. It's not so clear what these feature maps correspond to,
 but there do seem to be a few that are clearly activated within the dog, and
 others that are sensitive to the foliage in the background.
 
-```{r, layout = "l-body-ouset"}
+```{r, layout = "l-body-ouset", fig.cap = "Activations for a collection of neurons at layer 6."}
 par(mfrow = c(6, 7), mai = rep(0.00, 4))
 out <- features[[6]][ix,,,1:40] %>%
   array_branch(margin = 3) %>%

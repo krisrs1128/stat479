@@ -97,7 +97,7 @@ particular neuron? In the block below, we find the 20 images that activate the
 most for the third feature map in layer 6. This neuron seems to have learned to
 recognize grass. Perhaps unsurprisingly, all the images are of dogs.
 
-```{r, fig.height = 7}
+```{r, fig.height = 7, fig.cap = "The 20 images in the training dataset with the highest activations for neuron 3 in layer 6. This neuron seems to be sensitive to the presence of grass in an image (which happens to be correlated with whether a dog is present)."}
 top_ims <- h %>%
   slice_max(feature_3, n = 20) %>%
   pull(id)
@@ -122,7 +122,7 @@ either layers 6 or 8. A similar example is given in the reading, where
 coordinated views reveal that certain patterns of neuron activation encode the
 lifts of the pen or specific curve shapes in a handwriting generation network.
 
-```{r}
+```{r, fig.cap = "A heatmap of feature map activations for layers 6 and 8, across the entire dataset. Each row is an image, and each column is a neuron. There is limited clustering structure, but there are substantial differences in how strongly different neurons activate on average."}
 superheat(
   h %>% select(-id),
   pretty.order.rows = TRUE,
@@ -144,7 +144,7 @@ that it is forced to discover features that are unrelated to color^[In the deep
 learning community, this would be called using color augmentation to enforce
 invariance.].
 
-```{r, fig.height = 7}
+```{r, fig.height = 7, fig.cap = "The 20 images closest to the centroid of cluster 3 in the feature activation space. This cluster seems to include images with many orange pixels."}
 sub <- function(x) {
   select(x, starts_with("feature"))
 }

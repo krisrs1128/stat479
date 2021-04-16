@@ -116,7 +116,7 @@ code span.wa { color: #545454; font-weight: bold; font-style: italic; } /* Warni
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["week13-4_files/anchor-4.2.2/anchor.min.js","week13-4_files/bowser-1.9.3/bowser.min.js","week13-4_files/distill-2.2.21/template.v2.js","week13-4_files/figure-html5/unnamed-chunk-6-1.png","week13-4_files/figure-html5/unnamed-chunk-7-1.png","week13-4_files/header-attrs-2.6/header-attrs.js","week13-4_files/jquery-1.11.3/jquery.min.js","week13-4_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["week13-4_files/anchor-4.2.2/anchor.min.js","week13-4_files/bowser-1.9.3/bowser.min.js","week13-4_files/distill-2.2.21/template.v2.js","week13-4_files/figure-html5/unnamed-chunk-6-1.png","week13-4_files/figure-html5/unnamed-chunk-7-1.png","week13-4_files/figure-html5/unnamed-chunk-8-1.png","week13-4_files/figure-html5/unnamed-chunk-9-1.png","week13-4_files/header-attrs-2.6/header-attrs.js","week13-4_files/jquery-1.11.3/jquery.min.js","week13-4_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2281,7 +2281,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 </div>
 <ol start="4" type="1">
-<li>To implement this, we can compute the gradient of a neuron’s average activation with respect to input image pixel values. This is a measure of how much the activation would change when individual pixel values are perturbed. The function below moves an input image in the direction of steepest ascent for the <code>mean_activation</code> function above. (draw picture)</li>
+<li>To implement this, we can compute the gradient of a neuron’s average activation with respect to input image pixel values. This is a measure of how much the activation would change when individual pixel values are perturbed. The function below moves an input image in the direction of steepest ascent for the <code>mean_activation</code> function above.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2296,8 +2296,16 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 </div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="https://uwmadison.box.com/shared/static/pdbsv8xg4qqxxhv6gqip40w0mck6bz3s.png" alt="Starting from a random image, we can take a gradient step in the image space to increase a given neuron's mean activation."  />
+<p class="caption">
+Figure 1: Starting from a random image, we can take a gradient step in the image space to increase a given neuron’s mean activation.
+</p>
+</div>
+</div>
 <ol start="5" type="1">
-<li>Once these gradients can be computed, it’s possible to perform gradient ascent to solve the activation maximization problem. This ascent is encoded by the function below. We initialize with a random uniform image and then take <code>n_iter</code> gradient steps in the direction that maximizes the activation of feature <code>ix</code>. (draw picture)</li>
+<li>Once these gradients can be computed, it’s possible to perform gradient ascent to solve the activation maximization problem. This ascent is encoded by the function below. We initialize with a random uniform image and then take <code>n_iter</code> gradient steps in the direction that maximizes the activation of feature <code>ix</code>.</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2318,6 +2326,14 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </code></pre>
 </div>
 </div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="https://uwmadison.box.com/shared/static/8zgkt3z6g00272q1e4phsa7nb9q61zib.png" alt="Taking many gradient steps leads us towards an image that optimizes a neuron's activation."  />
+<p class="caption">
+Figure 2: Taking many gradient steps leads us towards an image that optimizes a neuron’s activation.
+</p>
+</div>
+</div>
 <ol start="6" type="1">
 <li>Below, we visualize the images that optimize the activations for a few neurons in layer 3. These neurons seem to be most responsive particular colors and edge orientations.</li>
 </ol>
@@ -2335,7 +2351,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span class='op'>}</span>
 </code></pre>
 </div>
-<p><img src="week13-4_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="week13-4_files/figure-html5/unnamed-chunk-8-1.png" alt="The hypothetical images that maximize the activations for 40 different neurons. These neurons seem to pull out features related to color and edge orientations." width="624" />
+<p class="caption">
+Figure 3: The hypothetical images that maximize the activations for 40 different neurons. These neurons seem to pull out features related to color and edge orientations.
+</p>
+</div>
 </div>
 <ol start="7" type="1">
 <li><p>We can think of these features as analogous to a collection of basis functions. At the first layer, the network is representing each image as a combination of basis images, related to particular color or edge patterns.</p></li>
@@ -2351,7 +2372,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span class='op'>}</span>
 </code></pre>
 </div>
-<p><img src="week13-4_files/figure-html5/unnamed-chunk-7-1.png" width="624" data-distill-preview=1 /></p>
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<img src="week13-4_files/figure-html5/unnamed-chunk-9-1.png" alt="The results of the corresponding optimization for 40 neurons in layer 8." width="624" data-distill-preview=1 />
+<p class="caption">
+Figure 4: The results of the corresponding optimization for 40 neurons in layer 8.
+</p>
+</div>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
