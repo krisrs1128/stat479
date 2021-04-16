@@ -2272,10 +2272,11 @@ Figure 1: An example of the types of labels that would be useful to have, starti
 </p>
 </div>
 </div>
-<pre><code>&quot;A wonderful little production. &lt;br /&gt;&lt;br /&gt;The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. &lt;br /&gt;&lt;br /&gt;The actors are extremely well chosen- Michael Sheen not only &quot;&quot;has got all the polari ....&quot;,positive
-&quot;I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ...&quot;,positive
-&quot;Basically there&#39;s a family where a little boy (Jake) thinks there&#39;s a zombie in his closet &amp; his parents are fighting all the time.&lt;br /&gt;&lt;br /&gt;This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.&lt;br /&gt;&lt;br /&gt;OK, first of all when you&#39;re going to ...&quot;,negative
-&quot;Petter Mattei&#39;s &quot;&quot;Love in the Time of Money&quot;&quot; is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. &lt;br /&gt;&lt;br /&gt;This being a ...&quot;,positive</code></pre>
+<p>Example reviews from the IMDB dataset:</p>
+<pre><code>  positive,&quot;A wonderful little production. &lt;br /&gt;&lt;br /&gt;The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. &lt;br /&gt;&lt;br /&gt;The actors are extremely well chosen- Michael Sheen not only &quot;&quot;has got all the polari ....&quot;
+  positive,&quot;I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ...&quot;
+  negative,&quot;Basically there&#39;s a family where a little boy (Jake) thinks there&#39;s a zombie in his closet &amp; his parents are fighting all the time.&lt;br /&gt;&lt;br /&gt;This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.&lt;br /&gt;&lt;br /&gt;OK, first of all when you&#39;re going to ...&quot;
+  positive,&quot;Petter Mattei&#39;s &quot;&quot;Love in the Time of Money&quot;&quot; is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. &lt;br /&gt;&lt;br /&gt;This being a ...&quot;</code></pre>
 <ol start="3" type="1">
 <li><p>In these problems, the relevant features only arise as complex interactions between the raw data elements.</p>
 <ul>
@@ -2330,7 +2331,7 @@ Trainable params: 3,453,121
 Non-trainable params: 0
 ______________________________________________________________________</code></pre>
 </div>
-<ol start="8" type="1">
+<ol start="9" type="1">
 <li><p>While we will only consider image data in this course, the idea of learning complex features by composing a few types of layers is a general one. For example, in sentiment analysis, the first layer learns features that activate when specific combinations of words are present in close proximity to one another. The next layer learns interactions between phrases, and later layers are responsive to more sophisticated grammar.</p></li>
 <li><p>Deep learning is often called a black box because these intermediate features are often complex and not directly interpretable according to human concepts. The problem is further complicated by the fact that features are “distributed” in the sense that a single human concept can be encoded by a configuration of multiple features. Conversely, the same model feature can encode several human concepts.</p></li>
 <li><p>For this reason, a literature has grown around the question of interpreting neural networks. The field relies on visualization and interaction to attempt to understand the learned representations, with the goal of increasing the safety and scientific usability of deep learning models. While our class will not discuss how to design or develop deep learning models, we will get a taste of the interpretability literature in the next few lectures.</p></li>

@@ -47,11 +47,13 @@ relevant features have not been directly encoded.
 include_graphics("https://uwmadison.box.com/shared/static/wdykaqy9wwzkwneoqqva0550vpni6vfo.jpeg")
 ```
 
+Example reviews from the IMDB dataset:
+
 ```
-"A wonderful little production. <br /><br />The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. <br /><br />The actors are extremely well chosen- Michael Sheen not only ""has got all the polari ....",positive
-"I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ...",positive
-"Basically there's a family where a little boy (Jake) thinks there's a zombie in his closet & his parents are fighting all the time.<br /><br />This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.<br /><br />OK, first of all when you're going to ...",negative
-"Petter Mattei's ""Love in the Time of Money"" is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. <br /><br />This being a ...",positive
+  positive,"A wonderful little production. <br /><br />The filming technique is very unassuming- very old-time-BBC fashion and gives a comforting, and sometimes discomforting, sense of realism to the entire piece. <br /><br />The actors are extremely well chosen- Michael Sheen not only ""has got all the polari ...."
+  positive,"I thought this was a wonderful way to spend time on a too hot summer weekend, sitting in the air conditioned theater and watching a light-hearted comedy. The plot is simplistic, but the dialogue is witty and the characters are likable (even the well bread suspected serial killer). While some may be ..."
+  negative,"Basically there's a family where a little boy (Jake) thinks there's a zombie in his closet & his parents are fighting all the time.<br /><br />This movie is slower than a soap opera... and suddenly, Jake decides to become Rambo and kill the zombie.<br /><br />OK, first of all when you're going to ..."
+  positive,"Petter Mattei's ""Love in the Time of Money"" is a visually stunning film to watch. Mr. Mattei offers us a vivid portrait about human relations. This is a movie that seems to be telling us what money, power and success do to people in the different situations we encounter. <br /><br />This being a ..."
 ```
 
 3. In these problems, the relevant features only arise as complex interactions
@@ -83,10 +85,10 @@ vision.
 into a final linear or logistic regression module that completes the regression
 or classification task, respectively.
 
-6. It is common to refer to each feature map as a neuron. Different neurons
+7. It is common to refer to each feature map as a neuron. Different neurons
 activate when different patterns are present in the original, underlying image.
 
-7. Below, we load a model to illustrate the concept of multilayer networks. This
+8. Below, we load a model to illustrate the concept of multilayer networks. This
 model has 11 layers followed by a final logistic regression layer. There are
 many types of layers. Each type of layer contributes in a different way to the
 feature learning goal, and learning how design and compose these different types
@@ -103,21 +105,21 @@ model <- load_model_hdf5(f)
 model
 ```
 
-8. While we will only consider image data in this course, the idea of learning
+9. While we will only consider image data in this course, the idea of learning
 complex features by composing a few types of layers is a general one. For
 example, in sentiment analysis, the first layer learns features that activate
 when specific combinations of words are present in close proximity to one
 another. The next layer learns interactions between phrases, and later layers
 are responsive to more sophisticated grammar.
 
-9. Deep learning is often called a black box because these intermediate features
+10. Deep learning is often called a black box because these intermediate features
 are often complex and not directly interpretable according to human concepts.
 The problem is further complicated by the fact that features are "distributed"
 in the sense that a single human concept can be encoded by a configuration of
 multiple features. Conversely, the same model feature can encode several human
 concepts.
 	
-10. For this reason, a literature has grown around the question of interpreting
+11. For this reason, a literature has grown around the question of interpreting
 neural networks. The field relies on visualization and interaction to attempt to
 understand the learned representations, with the goal of increasing the safety
 and scientific usability of deep learning models. While our class will not
