@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_Reading ([1](https://distill.pub/2016/handwriting/), [2](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html)), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-3/week13-3.Rmd)_
+_Reading ([1](https://distill.pub/2016/handwriting/), [2](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html)), [Recording](https://mediaspace.wisc.edu/media/Week%2013%20%5B3%5D%20Collections%20of%20Features/1_3thmlj5q), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-3/week13-3.Rmd)_
 
 ```{r}
 library("dplyr")

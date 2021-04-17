@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-2/week13-2.Rmd)_
+_[Reading](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html), [Recording](https://mediaspace.wisc.edu/media/Week%2013%20%5B2%5D%20Visualizing%20Learned%20Features/1_zausb086), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-2/week13-2.Rmd)_
 
 ```{r}
 library("dplyr")
@@ -99,13 +99,14 @@ edge detector -- it activates whenever there are transitions from dark to light
 areas when moving vertically. For example, when the white leash goes over the
 shadow in the background, this feature has some of its highest activations.
 
-```{r, fig.show = "hold", out.width = "47%", fig.height = 7, fig.cap = "An image and its activations for the first neuron in layer 1."}
+```{r, fig.cap = "An image and its activations for the first neuron in layer 1."}
 plot_feature <- function(feature) {
   rotate <- function(x) t(apply(x, 2, rev))
   image(rotate(feature), axes = FALSE, asp = 1, col = brewer.pal(4, "Blues"))
 }
 
 ix <- 3
+par(mfrow = c(1, 2), mai = rep(0.00, 4))
 plot(as.raster(images[ix,,, ], max = 255))
 plot_feature(features[[1]][ix,,, 1])
 ```

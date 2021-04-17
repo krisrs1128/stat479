@@ -2248,7 +2248,7 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 </div>
 
 <div class="d-article">
-<p><em>Reading (<a href="https://distill.pub/2016/handwriting/">1</a>, <a href="https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html">2</a>), <a href="">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-3/week13-3.Rmd">Rmarkdown</a></em></p>
+<p><em>Reading (<a href="https://distill.pub/2016/handwriting/">1</a>, <a href="https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html">2</a>), <a href="https://mediaspace.wisc.edu/media/Week%2013%20%5B3%5D%20Collections%20of%20Features/1_3thmlj5q">Recording</a>, <a href="https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-3/week13-3.Rmd">Rmarkdown</a></em></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span><span class='op'>)</span>
@@ -2323,7 +2323,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span><span class='op'>~</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/grDevices/as.raster.html'>as.raster</a></span><span class='op'>(</span><span class='va'>.</span>, max <span class='op'>=</span> <span class='fl'>255</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week13-3_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="week13-3_files/figure-html5/unnamed-chunk-5-1.png" alt="The 20 images in the training dataset with the highest activations for neuron 3 in layer 6. This neuron seems to be sensitive to the presence of grass in an image (which happens to be correlated with whether a dog is present)." width="624" />
+<p class="caption">
+Figure 1: The 20 images in the training dataset with the highest activations for neuron 3 in layer 6. This neuron seems to be sensitive to the presence of grass in an image (which happens to be correlated with whether a dog is present).
+</p>
+</div>
 </div>
 <ol start="8" type="1">
 <li><p>This particular example should serve as a kind of warning. While it’s easy to imbue models with human-like characteristics, they often arrive at the answers they need in unexpected ways. We asked the model to distinguish between cats and dogs, but it is using whether the image has grass in it as a predictor. While for this dataset this may be accurate, I would expect this model to fail on an image of a cat in a grassy field.</p></li>
@@ -2339,7 +2344,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
 <span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week13-3_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="week13-3_files/figure-html5/unnamed-chunk-6-1.png" alt="A heatmap of feature map activations for layers 6 and 8, across the entire dataset. Each row is an image, and each column is a neuron. There is limited clustering structure, but there are substantial differences in how strongly different neurons activate on average." width="624" />
+<p class="caption">
+Figure 2: A heatmap of feature map activations for layers 6 and 8, across the entire dataset. Each row is an image, and each column is a neuron. There is limited clustering structure, but there are substantial differences in how strongly different neurons activate on average.
+</p>
+</div>
 </div>
 <ol start="10" type="1">
 <li>We can also apply clustering and dimensionality reduction ideas to understand the collection of mean feature activations. For example, below we run <span class="math inline">\(K\)</span>-means across images, with the hope of finding images that are viewed similarly according to the model. The 20 images closest to the centroid of cluster 3 are printed below. It seems like the model has learned to cluster all the orange images together<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. This is a little surprising, considering that there are both cats and dogs that are orange, so this isn’t a particularly discriminating feature. It also suggests a way to improve the model – we could train it on recolorized input images, so that it is forced to discover features that are unrelated to color<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
@@ -2362,7 +2372,12 @@ d-article ul > li { /*to add back in space between bullet items that I took away
   <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span><span class='op'>~</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/grDevices/as.raster.html'>as.raster</a></span><span class='op'>(</span><span class='va'>.</span>, max <span class='op'>=</span> <span class='fl'>255</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="week13-3_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="week13-3_files/figure-html5/unnamed-chunk-7-1.png" alt="The 20 images closest to the centroid of cluster 3 in the feature activation space. This cluster seems to include images with many orange pixels." width="624" />
+<p class="caption">
+Figure 3: The 20 images closest to the centroid of cluster 3 in the feature activation space. This cluster seems to include images with many orange pixels.
+</p>
+</div>
 </div>
 <ol start="11" type="1">
 <li>In general, we can treat the activations generated by a deep learning model as themselves the object of data analysis. This can help us determine whether the kinds of features that we want it to (high-level concepts, rather than just colors or textures). It can also highlight instances where the model learns features associated with concepts that we would rather it be invariant to (e.g., changes in season, variations in lighting).</li>

@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](https://distill.pub/2016/handwriting/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-1/week13-1.Rmd)_
+_[Reading](https://distill.pub/2016/handwriting/), [Recording](https://mediaspace.wisc.edu/media/Week%2013%20%5B1%5D%20%20Introduction%20to%20Feature%20Learning/1_7qiw6ydn), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-1/week13-1.Rmd)_
 
 ```{r}
 library("keras")
@@ -84,7 +84,7 @@ larger field of view than those early on. A pixel in a feature map has a large
 value if any of the image features that it is sensitive to are present within
 its field of vision.
 
-```{r, fig.cap = "A toy diagram of feature maps from the model loaded below. Early layers have fewer, but larger feature maps, while later layers have many, but small ones. The later layers typically contain higher-level concepts used in the final predictions." , echo = FALSE, panel = TRUE}
+```{r, fig.cap = "A toy diagram of feature maps from the model loaded below. Early layers have fewer, but larger feature maps, while later layers have many, but small ones. The later layers typically contain higher-level concepts used in the final predictions." , echo = FALSE, preview = TRUE}
 include_graphics("https://uwmadison.box.com/shared/static/dlglc32rea1ovqrwgj9in6yxje5ml036.png")
 ```
 	
