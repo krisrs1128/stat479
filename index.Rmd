@@ -40,7 +40,7 @@ homepage](https://canvas.wisc.edu/courses/243146).
 | 13 <br/> <img width=200 src="assets/dl.png"/>| Visualizing Deep Learning Models | (1) [Four Experiments in Handwriting with a Neural Network](https://distill.pub/2016/handwriting/) <br/> (2) [Visualizing what convnets learn](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html) |
 | 13 (optional) | | [Automation Makes Us Dumb](https://www-proquest-com.ezproxy.library.wisc.edu/docview/1626773318/E4C6F4FD50AF4437PQ/1?accountid=465) |
 | 14 <br/> <img width=200 src="assets/community.png"/>| Conclusion | (1) [655 Frustrations of Doing Data Visualization](https://www.datasketch.es/project/655-frustrations-doing-data-visualization) <br/> (2) [Tukey, Design Thinking, and Better Questions](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/) |
-| 14 (optional) | | [As We May Think](https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881) |
+| 14 (optional) | | [A Brief History of Data Visualization](https://datavis.ca/papers/hbook.pdf) |
 
 ## Lectures
 
