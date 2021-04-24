@@ -25,10 +25,11 @@ data visualization genius like Shirley Wu. We're lucky that she has documented
 this process for us, so that we might be able to take away a few lessons for our
 own reflection.
 
-2. Her visualization, "655 Frustration of Data Visualization," is based on an
-online data visualization survey. It had 45 questions ("How many years have you
-been doing data visualization? What percent of your day is focused on data prep
-work? ...). There are 981 responses, probably mostly submitted by the survey
+2. Her visualization, ["655 Frustration of Data
+Visualization"](https://shirleywu.studio/community/)), is based on an online
+data visualization survey. It had 45 questions ("How many years have you been
+doing data visualization? What percent of your day is focused on data prep work?
+...). There are 981 responses, probably mostly submitted by the survey
 initiator's internet following.
 
 ```{r, fig.cap = "A few entries from the data visualization survey. The full data are publicly available [here](https://github.com/data-visualization-society/data_visualization_survey/blob/master/data/cleaned_survey_results_2017.csv)."}
@@ -44,12 +45,11 @@ activity and visibility in industry, data visualization seemed to be cooling
 down. However, this question was not directly answerable with the data at hand,
 so instead, she focused on the proxy question, "Do you want to spend more time
 or less time visualizing data in the future?"
-
-  * This is an important lesson: there is often a distinction between what we
-  really want to know and what the data can tell us.
-  * We will revisit this theme of asking sharper questions in the next reading.
-  Data analysis should be driven by curiosity about the world, not simply the
-  data that happen to be conveniently accessible.
+    * This is an important lesson: there is often a distinction between what we
+    really want to know and what the data can tell us.
+    * We will revisit this theme of asking sharper questions in the next reading.
+    Data analysis should be driven by curiosity about the world, not simply the
+    data that happen to be conveniently accessible.
 
 4. To see what within the data are relevant to this guiding question, she then
 conducted an exploratory analysis^[Using vega-lite!], studying the marginal
@@ -58,7 +58,7 @@ distributions of all the available questions. For example, visualizing the
 of multiple data-related tasks in their work -- the particular mix might help
 understand whether people want to stay in the field.
 
-```{r, fig.cap = "Example exploratory displays of the 'percentage of time' questions on the data science survey."}
+```{r, fig.cap = "Example exploratory displays of the 'percentage of time' questions on the data science survey.", out.width=400}
 include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc310e3c74f94ee343a_percenttime.jpeg")
 ```
 
@@ -143,7 +143,7 @@ guiding the actions we take (either in the short or long-term). If it's hard to
 draw these sorts of inferences, then a visualization is not particularly
 functional.
 
-```{r, fig.cap = "A screenshot of notes from the author's interaction with the resulting visualization."}
+```{r, fig.cap = "A screenshot of notes from the designer's exploration of the resulting visualization."}
 include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc4d7219332619180f9_frustrations1.jpeg")
 ```
 
