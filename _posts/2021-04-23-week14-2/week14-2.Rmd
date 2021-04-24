@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Design Process Case Study"
 description: | 
 author:
   - name: Kris Sankaran
@@ -12,10 +12,10 @@ output:
 
 ```{r setup, include=FALSE}
 library("knitr")
-opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = FALSE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown]()_
+_[Reading](https://www.datasketch.es/project/655-frustrations-doing-data-visualization), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-2/week14-2.Rmd)_
 
 1. How does a visualization expert go about creating a data visualization?
 Perhaps the most useful lesson from this reading is that good visualizations
@@ -30,6 +30,10 @@ online data visualization survey. It had 45 questions ("How many years have you
 been doing data visualization? What percent of your day is focused on data prep
 work? ...). There are 981 responses, probably mostly submitted by the survey
 initiator's internet following.
+
+```{r, fig.cap = "A few entries from the data visualization survey. The full data are publicly available [here](https://github.com/data-visualization-society/data_visualization_survey/blob/master/data/cleaned_survey_results_2017.csv)."}
+include_graphics("https://uwmadison.box.com/shared/static/isvmdbb6ki3olgzpnouq9pl45i0pd9c0.png")
+```
 
 ## Question Formulation
 
@@ -54,12 +58,17 @@ distributions of all the available questions. For example, visualizing the
 of multiple data-related tasks in their work -- the particular mix might help
 understand whether people want to stay in the field.
 
-5. The exploratory analysis also revealed that there are some questions that
-would not be useful for answering the guiding question. For example, many of the
-qualitative responses were not useful^[Are there really 100x more pie charts
-than scatterplots in industry??]. It's easy to feel responsible for visualizing
-all the data that are available, but this is not necessary. It's far more
-important to focus on the guiding question(s).
+```{r, fig.cap = "Example exploratory displays of the 'percentage of time' questions on the data science survey."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc310e3c74f94ee343a_percenttime.jpeg")
+```
+
+5. The exploratory analysis also revealed that there are [some
+questions](https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc3f46a9b23e56d8ad8_qualitative.jpeg)
+that would not be useful for answering the guiding question. For example, many
+of the qualitative responses were not useful^[Are there really 100x more pie
+charts than scatterplots in industry??]. It's easy to feel responsible for
+visualizing all the data that are available, but this is not necessary. It's far
+more important to focus on the guiding question(s).
 
 ## Initial Design
 
@@ -70,11 +79,17 @@ stacked barchart. However, the display was not that informative, because most
 respondents wanted to do more data visualization in the future^[Perhaps an
 instance of selection bias.].
 
-(barchart)
+```{r, fig.cap = "The initial design used a bar chart to see whether experience was related to interest in further work in data visualization."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc4bad27a0e9fbb781e_histogram.png")
+```
 
 7. In this situation, it seemed like perhaps additional context would help.
 However, the resulting faceted barchart was difficult to make sense of, again
 because any relationships between variables were weak or nonexistent.
+
+```{r, fig.cap = "The faceted barchart did not add much information relevant to the guiding question."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc3bbf6c48498703734_split_histogram.png")
+```
 
 ## Redesigns
 
@@ -86,6 +101,10 @@ question, but shows much more variation across respondents. For the design, the
 encoding changed from a stacked barchart to a beeswarm plot. Unlike the
 barchart, which aggregates responses into bins, the beeswarm makes it possible
 to see every single respondent.
+
+```{r, fig.cap = "A redesigned plot. The left and right panels separate respondents with and without frustrations, vertical position encodes job role, and color gives number of years of experience."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc41f5b4208e98d517f_beeswarm.png")
+```
 
 9. A few more refinements were made. Instead of placing those with and without
 frustrations far apart on the page, they were rearranged to share the same
@@ -102,6 +121,10 @@ just plotting the points in two parallel regions, they were made to "rise" and
 frustrations. This kind of visual metaphor takes the visualization to another
 level; it becomes more than functional, it becomes evocative.
 
+```{r, fig.cap = "The final version of the static visualization.", out.width = "90%", preview = TRUE}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc4356e0d312965c372_split_beeswarm.png")
+```
+
 ## Interpretation
 
 11. Only at this point is interactivity introduced into the visualization. The
@@ -109,12 +132,20 @@ interactivity is simple -- views transition into one another depending on
 selected questions -- but provides an effective alternative to simply faceting
 all pairs of questions.
 
+```{r, fig.cap = "The visualization above with interactivity added in."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc45c83ddedf6089f0c_brush.gif")
+```
+
 12. Finally, this interactive visualization is used for an extensive
 exploration. This is often when the effectiveness of a visualization can be
 evaluated. Ultimately, visualization should help inform our body of beliefs,
 guiding the actions we take (either in the short or long-term). If it's hard to
 draw these sorts of inferences, then a visualization is not particularly
 functional.
+
+```{r, fig.cap = "A screenshot of notes from the author's interaction with the resulting visualization."}
+include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc4d7219332619180f9_frustrations1.jpeg")
+```
 
 13. To guide the reader, this investigative work was then incorporated into the
 visualization. These additional details allow the visualization to stand alone,
