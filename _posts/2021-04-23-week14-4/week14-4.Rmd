@@ -1,0 +1,46 @@
+---
+title: ""
+description: | 
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-29
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
+1. 
+
+
+# 1800 - 1850
+
+This was a period of maturation for the field of data visualization. By this
+point, visualization had become standard in scientific publications. Advances in
+printing technology also made it also became easier to mass produce
+visualizations.
+
+It was also around this time that the scope of problems studied through
+visualization began to expand beyond display of purely physical (geographical
+and astronomical) applications. For example, two new threads concerned
+visualization for social sciences and for engineering.
+
+Visualization in the social sciences emerged in response to government sponsored
+collection of social statistics -- data about urbanization, births, and deaths.
+This wasn't a purely intellectual exercise: understanding demographic trends was
+important for countries that were often at war with another.
+
+In engineering, the idea that visualization could serve as a computational aid
+become more and more common. For example, rather the chart below, by Charles
+Joseph Minard, displays the cost of transporting goods across different
+stretches of a canal. Vertical breaks correspond to cities along the canal, and
+the area of the square between cities encodes the cost of transportation between
+those cities. While the information could be stored in a table, it becomes
+easier to perform mental computations (and make guesstimates) using the display.

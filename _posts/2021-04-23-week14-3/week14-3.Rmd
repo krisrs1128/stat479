@@ -1,0 +1,19 @@
+---
+title: ""
+description: | 
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-28
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](), [Recording](), [Rmarkdown]()_
+
