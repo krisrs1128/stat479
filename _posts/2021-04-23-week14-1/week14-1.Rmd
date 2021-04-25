@@ -1,6 +1,7 @@
 ---
 title: "Final Takeaways"
 description: | 
+  Some major themes from STAT 479, in a nutshell.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison

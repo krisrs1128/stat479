@@ -1,6 +1,7 @@
 ---
 title: "Asking Better Questions"
 description: | 
+  What is the purpose of data analysis?
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
@@ -17,7 +18,7 @@ opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = FALSE)
 
 _[Reading](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-3/week14-3.Rmd)_
 
-1. In these notes, we will review "Tukey, Design Thinking, and Design Thinking,"
+1. In these notes, we will review "Tukey, Design Thinking, and Better Questions,"
 a blog post by Roger Peng. In the post, he discusses the importance of
 formulating good questions in data analysis. While the process of refining
 questions is central to any successful, real-world analysis, it is rarely

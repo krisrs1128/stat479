@@ -1,6 +1,7 @@
 ---
 title: "A History of Data Visualization up to 1900"
 description: | 
+   A look at the origins of the field.
 author:
   - name: Kris Sankaran
     affiliation: UW Madison

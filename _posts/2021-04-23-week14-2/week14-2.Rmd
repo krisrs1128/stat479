@@ -1,6 +1,7 @@
 ---
 title: "Design Process Case Study"
 description: | 
+  Tracing the refinement of questions and design. 
 author:
   - name: Kris Sankaran
     affiliation: UW Madison
