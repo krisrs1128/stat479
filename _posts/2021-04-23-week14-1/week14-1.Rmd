@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-_[Reading](), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-1/week14-1.Rmd)_
+_[Recording](https://mediaspace.wisc.edu/media/Week%2014%20%5B1%5D%20Final%20Takeaways/1_g0ijyqpn), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-1/week14-1.Rmd)_
 
 1. We've covered many practical visualization strategies in this course.
 However, I hope a few overarching themes have come across as well. In these

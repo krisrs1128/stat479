@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = FALSE, fig.align = "center")
 ```
 
-_[Reading](https://datavis.ca/papers/hbook.pdf), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-4/week14-4.Rmd)_
+_[Reading](https://datavis.ca/papers/hbook.pdf), [Recording](lhttps://mediaspace.wisc.edu/media/Week%2014%20%5B4%5D%20A%20History%20of%20Data%20Visualization%20up%20to%201900/1_ki8vpb8b), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-4/week14-4.Rmd)_
 
 1. There could probably be an entire class taught on the history of data
 visualization. The reason it is worth covering in an otherwise

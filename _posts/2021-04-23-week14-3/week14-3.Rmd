@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = FALSE)
 ```
 
-_[Reading](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-3/week14-3.Rmd)_
+_[Reading](https://simplystatistics.org/2019/04/17/tukey-design-thinking-and-better-questions/), [Recording](https://mediaspace.wisc.edu/media/Week%2014%20%5B3%5D%20Asking%20Better%20Questions/1_de62tpn9), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-3/week14-3.Rmd)_
 
 1. In these notes, we will review "Tukey, Design Thinking, and Better Questions,"
 a blog post by Roger Peng. In the post, he discusses the importance of

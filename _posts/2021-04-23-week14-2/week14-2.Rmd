@@ -16,7 +16,7 @@ library("knitr")
 opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = FALSE)
 ```
 
-_[Reading](https://www.datasketch.es/project/655-frustrations-doing-data-visualization), [Recording](), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-2/week14-2.Rmd)_
+_[Reading](https://www.datasketch.es/project/655-frustrations-doing-data-visualization), [Recording](https://mediaspace.wisc.edu/media/Week%2014%20%5B2%5D%20Design%20Process%20Case%20Study/1_pqp834l9), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-2/week14-2.Rmd)_
 
 1. How does a visualization expert go about creating a data visualization?
 Perhaps the most useful lesson from this reading is that good visualizations
