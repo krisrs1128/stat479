@@ -26,8 +26,8 @@ data visualization genius like Shirley Wu. We're lucky that she has documented
 this process for us, so that we might be able to take away a few lessons for our
 own reflection.
 
-2. Her visualization, ["655 Frustration of Data
-Visualization"](https://shirleywu.studio/community/)), is based on an online
+2. Her visualization, ["655 Frustrations of Data
+Visualization"](https://shirleywu.studio/community/), is based on an online
 data visualization survey. It had 45 questions ("How many years have you been
 doing data visualization? What percent of your day is focused on data prep work?
 ...). There are 981 responses, probably mostly submitted by the survey
@@ -37,7 +37,7 @@ initiator's internet following.
 include_graphics("https://uwmadison.box.com/shared/static/isvmdbb6ki3olgzpnouq9pl45i0pd9c0.png")
 ```
 
-## Question Formulation
+### Question Formulation
 
 3. At the start of the project -- before writing code -- there is the problem of
 choosing a guiding question. Her initial question was "Why might people leave
@@ -71,7 +71,7 @@ charts than scatterplots in industry??]. It's easy to feel responsible for
 visualizing all the data that are available, but this is not necessary. It's far
 more important to focus on the guiding question(s).
 
-## Initial Design
+### Initial Design
 
 6. The initial design answered whether there is a relationship between (a) the
 survey respondent wanting to do more data visualization in the future, and (b)
@@ -92,7 +92,7 @@ because any relationships between variables were weak or nonexistent.
 include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc3bbf6c48498703734_split_histogram.png")
 ```
 
-## Redesigns
+### Redesigns
 
 8. At this point, two significant changes to the design were made, one to the
 question, and one to the design. The question was reframed from "do you want to
@@ -126,7 +126,7 @@ level; it becomes more than functional, it becomes evocative.
 include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61cc4356e0d312965c372_split_beeswarm.png")
 ```
 
-## Interpretation
+### Interpretation
 
 11. Only at this point is interactivity introduced into the visualization. The
 interactivity is simple -- views transition into one another depending on
@@ -152,7 +152,7 @@ include_graphics("https://uploads-ssl.webflow.com/5fa9d88da1855554db37b1e1/5fc61
 visualization. These additional details allow the visualization to stand alone,
 it becomes a self-explanatory intellectual artifact.
 
-## Conclusion
+### Conclusion
 
 14. Wrapping up, the final visualization is clearly the culmination of
 substantial intellectual labor over the course of weeks (if not months). The
