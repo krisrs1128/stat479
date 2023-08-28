@@ -1,0 +1,138 @@
+---
+title: "Optimizing Feature Maps"
+description: | 
+    Interpreting neurons by finding optimal inputs
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-22
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/5.4-visualizing-what-convnets-learn.nb.html), [Recording](https://mediaspace.wisc.edu/media/Week%2013%20%5B4%5D%20%20Optimizing%20Feature%20Maps/1_2wu0e8qy), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-12-week13-4/week13-4.Rmd)_
+
+```{r}
+library("dplyr")
+library("purrr")
+library("keras")
+library("tensorflow")
+```
+
+1. So far, we’ve visualized neural networks by analyzing the activations of
+learned features across observed samples. A complementary approach is to ask
+instead — is there a hypothetical image that would maximize the activation of a
+particular neuron? If we can construct such an image, then we might have a
+better sense of the types of image concepts to which a neuron is highly
+sensitive.
+
+2. We will illustrate these ideas on a network that has been trained on
+Imagenet. This is a large image dataset with many (thousands of) class labels,
+and it is often used to evaluate image classification algorithms. The network is
+loaded below.
+
+```{r}
+model <- application_vgg16(weights = "imagenet", include_top = FALSE)
+```
+
+3. The main idea is to setup an optimization problem that searches through image
+space for an image that maximizes the activation for a particular neuron. The
+function below computes the average activation of a one of the feature maps. The
+goal is to find an image that maximizes this value for a given feature.
+
+```{r}
+mean_activation <- function(image, layer, ix=1) {
+  h <- layer(image)
+  k_mean(h[,,, ix])
+}
+```
+
+4. To implement this, we can compute the gradient of a neuron’s average
+activation with respect to input image pixel values. This is a measure of how
+much the activation would change when individual pixel values are perturbed. The
+function below moves an input image in the direction of steepest ascent for the
+`mean_activation` function above.
+
+```{r}
+gradient_step <- function(image, layer, ix=1, lr=1e-3) {
+  with(tf$GradientTape() %as% tape, {
+    tape$watch(image)
+    objective <- mean_activation(image, layer, ix)
+  })
+  grad <- tape$gradient(objective, image)
+  image <- image + lr * grad
+}
+```
+	
+```{r fig.cap = "Starting from a random image, we can take a gradient step in the image space to increase a given neuron's mean activation.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/pdbsv8xg4qqxxhv6gqip40w0mck6bz3s.png")
+```
+	
+5. Once these gradients can be computed, it’s possible to perform gradient
+ascent to solve the activation maximization problem. This ascent is encoded by
+the function below. We initialize with a random uniform image and then take
+`n_iter` gradient steps in the direction that maximizes the activation of
+feature `ix`.
+	
+```{r}
+random_image <- function() {
+  tf$random$uniform(map(c(1, 150, 150, 3), as.integer))
+}
+
+gradient_ascent <- function(layer, ix = 1, n_iter = 100, lr = 10) {
+  im_seq <- array(0, dim = c(n_iter, 150, 150, 3))
+  image <- random_image()
+  for (i in seq_len(n_iter)) {
+    image <- gradient_step(image, layer, ix, lr)
+    im_seq[i,,,] <- as.array(image[1,,,])
+  }
+  
+  im_seq
+}
+```
+
+```{r, fig.cap = "Taking many gradient steps leads us towards an image that optimizes a neuron's activation.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/8zgkt3z6g00272q1e4phsa7nb9q61zib.png")
+```
+	
+6. Below, we visualize the images that optimize the activations for a few
+neurons in layer 3. These neurons seem to be most responsive particular colors
+and edge orientations.
+
+```{r, fig.cap = "The hypothetical images that maximize the activations for 40 different neurons. These neurons seem to pull out features related to color and edge orientations."}
+squash <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+par(mfrow = c(5, 8), mai = rep(0.00, 4))
+activation_model <- keras_model(inputs = model$input, outputs = model$layers[[3]]$output)
+for (i in seq_len(40)) {
+  im_seq <- gradient_ascent(activation_model, ix = i)
+  plot(as.raster(squash(im_seq[100,,,])))
+}
+```
+
+7. We can think of these features as analogous to a collection of basis
+functions. At the first layer, the network is representing each image as a
+combination of basis images, related to particular color or edge patterns.
+
+8. We can compare these activation maximizing inputs with those associated with
+later layers. It seems that the basis images at this level are more intricate,
+reflecting textures and common objects across this dataset. For example, the
+polka dot pattern may be strongly activated by cat eyes.
+
+```{r, fig.show = "hold", preview = TRUE, fig.cap = "The results of the corresponding optimization for 40 neurons in layer 8."}
+par(mfrow = c(5, 8), mai = rep(0.00, 4))
+activation_model <- keras_model(inputs = model$input, outputs = model$layers[[8]]$output)
+for (i in seq_len(40)) {
+  im_seq <- gradient_ascent(activation_model, ix = i)
+  plot(as.raster(squash(im_seq[100,,,])))
+}
+```
+

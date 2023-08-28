@@ -1,0 +1,149 @@
+---
+title: "Detecting Outliers"
+description: |
+  Techniques to identify extreme values.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-23-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B3%5D%20Detecting%20Outliers/1_ygzdnlqe), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-3/week5-3.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("MASS")
+library("dplyr")
+library("ggplot2")
+library("purrr")
+library("stringr")
+library("tidyr")
+theme_set(theme_minimal())
+set.seed(123)
+```
+
+
+1. Extreme values are a common data quality issue. They can either be genuine
+extreme values or measurement errors — in either case, it’s important to
+identify them and potentially account for them.
+
+2. Visualization can support detection and characterization of anomalies. We’ll
+review the ideas in the Profiler paper. That work is trying to set the
+foundation for more complex systems for data cleaning. We’ll look at a few of
+the interesting, more self-contained ideas within the paper, and demonstrate
+them in simple examples.
+
+3. How can we detect anomalies in numerical data? A first idea is to use
+$z$-scores. For column $j$, estimate the mean $\hat{\mu}_{j}$ and standard
+deviation $\hat{\sigma}_{j}$. For each observation $i$, it's anomalousness can
+be summarized by $z_{ij} := \frac{x_{ij} - \hat{\mu}_{j}}{\hat{\sigma}_{j}}$.
+This is illustrated below on a normally distributed dataset that has been
+contaminated with a few outliers from a $t$ distribution.
+
+```{r}
+n <- 1000
+p <- 0.95
+x <- c(rnorm(n * p), rt(n * (1 - p), df = 3))
+z <- (x - mean(x)) / sd(x)
+x <- data.frame(x = x, z = z, z_ = abs(z))
+
+ggplot(x, aes(x = x)) +
+  geom_histogram(binwidth = 0.5) +
+  geom_rug(
+    data = x %>% filter(z_ > 2.5), 
+    aes(col = z_),
+    size = 1.5
+  ) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_gradient2(low = "#fffbfc", high = "#c50f2c")
+```
+5. There is a potential issue with only using z-scores. The presence of
+anomalies can distort mean and variance estimates. For example, if the standard
+deviation is distorted, true outliers can be hidden away. To illustrate,
+consider the means and standard deviations estimated in a variant of the
+simulation above. The true means and standard deviations are 4 and 2.
+
+```{r}
+make_dataset <- function(n = 2000, p = 0.95, sigma = 2) {
+  x <- c(rnorm(n * p, 0, sigma), rt(n * (1 - p), df = 2 * sigma ^ 2 / (sigma ^ 2 - 1)))
+  data.frame(mu_hat = mean(x), sigma_hat = sd(x), med_hat = median(x), iqr_hat = IQR(x))
+}
+
+x_sim <- map_dfr(1:1000, ~ make_dataset(100, 0.9), .id = "replicate")
+ggplot(x_sim) + 
+  geom_point(aes(x = mu_hat, y = sigma_hat))
+```
+
+6. The fact that there are outliers can itself invalidate our $z$-scores. A more
+robust alternative is to compare each point to the median and interquartile
+range (IQR, the difference between the 3rd and 1st quartile). Indeed, for the
+dataset above, the comparable median and IQR estimates are given below. Note
+that they are much more stable.
+
+```{r}
+ggplot(x_sim) + 
+  geom_point(aes(x = med_hat, y = iqr_hat))
+```
+
+8. What about multivariate anomalies? They can be tricky to detect because a
+point can appear typical from a few dimensions viewed independently, but become
+outlying when the dimensions are viewed together. Consider the example below,
+where the red point blends into the histograms for either dimension viewed on
+its own. The data are generated from a bivariate normal distribution, but with
+one red outlying point at (1.5, -1.5). The point clearly stands out in two
+dimensions.
+
+```{r}
+Sigma <- matrix(c(1, 0.9, 0.9, 1), ncol = 2)
+x <- mvrnorm(500, mu = c(0, 0), Sigma = Sigma) %>%
+  rbind(c(1.5, -1.5)) %>%
+  data.frame() %>%
+  mutate(type = c(rep("normal", 500), "anomaly"))
+
+ggplot(x, aes(x = X1, y = X2, col = type)) +
+  geom_point() +
+  scale_color_manual(values = c("red", "black")) +
+  coord_fixed()
+```
+
+However, if we had only looked at one-dimensional $z$-scores, we would have
+completely missed the anomaly.
+
+```{r}
+x_long <- x %>%
+  pivot_longer(X1:X2, names_to = "dimension")
+
+ggplot(x_long, aes(x = value)) +
+  geom_histogram(binwidth = 0.4) +
+  geom_rug(
+    data = x_long %>% filter(type == "anomaly"), 
+    col = "red", size = 2 
+  ) +
+  scale_y_continuous(expand = c(0, 0)) +
+  facet_wrap(~ dimension) +
+  theme(panel.border = element_rect(fill = NA, size = 1))
+```
+
+8. To be able to detect these types of multidimensional outliers, the Profiler
+paper uses the Mahalanobis distance. This distance works by estimating a jointly
+normal distribution across dimensions and then looking for points that would
+have low probability under the estimate distribution.
+
+```{r}
+mu_hat <- apply(x[, 1:2], 2, mean)
+sigma_hat <- cov(x[, 1:2])
+x <- x %>%
+  mutate(D2 = mahalanobis(x[, 1:2], mu_hat, sigma_hat))
+
+ggplot(x) +
+  geom_point(
+    aes(x = X1, y = X2, col = sqrt(D2))
+  ) +
+  scale_color_gradient2(low = "#fffbfc", high = "#c50f2c")
+```

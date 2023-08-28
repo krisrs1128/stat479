@@ -1,0 +1,114 @@
+---
+title: "tsibble Objects"
+description: |
+  A data structure for managing time series data.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-01-2021
+output:
+  distill::distill_article:
+    self_contained: false
+    df_print: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://otexts.com/fpp3/graphics.html), [Recording](https://mediaspace.wisc.edu/media/Week%206%20%5B1%5D%20tsibble%20Objects/1_z6o1ddbo), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-02-23-week6-1/week6-1.Rmd)_
+
+```{r}
+library("readr")
+library("dplyr")
+library("tsibble")
+library("tsibbledata")
+library("lubridate")
+```
+
+1. Tsibbles are data structures that are designed specifically for storing time series data. They are useful because they create a unified interface to various time series visualization and modeling tasks. This removes the friction of having to transform back and forth between data.frames, lists, and matrices, depending on the particular task of interest.
+
+2. The key difference between a tsibble and an ordinary data.frame is that it
+requires a temporal key variable, specifying the frequency with which
+observations are collected. For example, the code below generates a tsibble with
+yearly observations.
+
+```{r}
+tsibble(
+  Year = 2015:2019,
+  Observation = c(123, 39, 78, 52, 110),
+  index = Year
+)
+```
+
+3. We can also create a tsibble from an ordinary data.frame by calling the
+`as_tsibble` function. The only subtlety is that we have to specify an index.
+
+```{r}
+x <- data.frame(
+  Year = 2015:2019,
+  Observation = c(123, 39, 78, 52, 110)
+)
+
+as_tsibble(x, index = Year)
+```
+
+
+4. The index is useful because it creates a data consistency check. If a few
+days are missing from a daily dataset, the index makes it easy to detect and
+fill in these gaps. Notice that when we print a tsibble object, it prints the
+index and guessed sampling frequency on the top right corner.
+
+```{r}
+days <- seq(as_date("2021-01-01"), as_date("2021-01-31"), by = "day")
+days <- days[-5] # Skip January 5
+
+x <- tsibble(day = days, value = rnorm(30), index = day)
+fill_gaps(x)
+```
+
+6. Tsibbles can store more than one time series at a time. In this case, we have
+to specify key columns that distinguish between the separate time series. For
+example, in the olympics running times dataset,
+
+```{r}
+olympic_running
+```
+the keys are running distance and sex. If we were creating a tsibble from a
+data.frame containing these multiple time series, we would need to specify the
+keys. This protects against accidentally having duplicate observations at given
+times.
+
+```{r}
+olympic_df <- as.data.frame(olympic_running)
+as_tsibble(olympic_df, index = Year, key = c("Sex", "Length")) # what happens if we remove key?
+```
+
+7. The usual data tidying functions from `dplyr` are implemented for tsibbles.
+Filtering rows, selecting columns, deriving variables using `mutate`, and
+summarizing groups using `group_by` and `summarise` all work as expected. One
+distinction to be careful about is that the results will be grouped by their
+index.
+
+8. For example, this computes the total cost of Australian pharmaceuticals per
+month for a particular type of script. We simply filter to the script type and
+take the sum of costs.
+
+```{r}
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  summarise(TotalC = sum(Cost))
+```
+If we had wanted the total cost by year, we would have to convert to an ordinary
+data.frame with a year variable. We cannot use a tsibble here because we would
+have multiple measurements per year, and this would violate tsibble's policy of
+having no duplicates.
+
+```{r}
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  mutate(Year = year(Month)) %>%
+  as_tibble() %>%
+  group_by(Year) %>%
+  summarise(TotalC = sum(Cost))
+```

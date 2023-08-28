@@ -1,0 +1,159 @@
+---
+title: "Ridge Plots"
+description: |
+  An extended example of faceting with data summaries.
+author:
+  - name: Kris Sankaran
+    url: {}
+date: 02-04-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://rafalab.github.io/dsbook/gapminder.html), [Recording](https://mediaspace.wisc.edu/media/1_9kea0t1o),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-4/week2-4.Rmd)_
+
+Ridge plots are a special case of small multiples that are particularly suited
+to displaying multiple parallel time series or densities.
+
+```{r}
+library("dplyr")
+library("dslabs")
+library("ggplot2")
+library("ggridges")
+theme_set(theme_bw())
+```
+
+An example ridge plot for the gapminder dataset is shown below. The
+effectiveness of this plot comes from the fact that multiple densities can be
+displayed in close proximity to one another, making it possible to facet across
+many variables in a space-efficient way.
+
+```{r}
+data(gapminder)
+gapminder <- gapminder %>%
+  mutate(
+    dollars_per_day = (gdp / population) / 365,
+    group = case_when(
+      region %in% c("Western Europe", "Northern Europe","Southern Europe",  "Northern America",  "Australia and New Zealand") ~ "West",
+      region %in% c("Eastern Asia", "South-Eastern Asia") ~ "East Asia",
+      region %in% c("Caribbean", "Central America",  "South America") ~ "Latin America",
+      continent == "Africa" &  region != "Northern Africa" ~ "Sub-Saharan", 
+      TRUE ~ "Others"
+    ),
+    group = factor(group, levels = c("Others", "Latin America",  "East Asia", "Sub-Saharan", "West")),
+    west = ifelse(group == "West", "West", "Developing")
+  )
+```
+
+
+```{r}
+past_year <- 1970
+gapminder_subset <- gapminder %>%
+  filter(year == past_year, !is.na(dollars_per_day))
+
+ggplot(gapminder_subset, aes(dollars_per_day, group)) +  
+  geom_density_ridges() +
+  scale_x_log10()
+```
+
+You might wonder, why not plot the raw data? We do this using a `geom_point`
+below. The result isn’t as satisfying, because, while the shape of the ridges
+popped out immediately in the original plot, we have to invest a bit more effort
+to understand the regions of higher density in the raw data plot. Also, when
+there are many samples, the entire range might appeared covered in marks when in
+fact there are some intervals with higher density than others.
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, group)) +
+  geom_point(shape = "|", size = 5) +
+  scale_x_log10()
+```
+
+A nice compromise is to include both the raw positions and the smoothed
+densities.
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, group)) +
+  geom_density_ridges(
+    jittered_points = TRUE, 
+    position = position_points_jitter(height = 0),
+    point_shape = '|', point_size = 3
+  ) +
+  scale_x_log10()
+```
+
+To exercise our knowledge of both faceting and ridge plots, let’s study a
+particular question in depth: How did the gap between rich and poor countries
+change between 1970 and 2010?
+
+A first reasonable plot is to facet year and development status. While the rich
+countries have become slightly richer, there is a larger shift in the incomes
+for the poorer countries.
+
+```{r}
+past_year <- 1970
+present_year <- 2010
+years <- c(past_year, present_year)
+
+gapminder_subset <- gapminder %>%
+  filter(year %in% years, !is.na(dollars_per_day))
+
+ggplot(gapminder_subset, aes(dollars_per_day)) +
+  geom_histogram(binwidth = 0.25) +
+  scale_x_log10() +
+  facet_grid(year ~ west)
+```
+
+We can express this message more compactly by overlaying densities, but the
+attempt below is misleading, because it gives the same total area to both groups
+of countries. This doesn’t make sense, considering there are more than 4 times
+as many developing vs. western countries (87 vs. 21).
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, fill = west)) +
+  geom_density(alpha = 0.8, bw = 0.12) +
+  scale_x_log10() +
+  scale_fill_brewer(palette = "Set2") +
+  facet_grid(year ~ .)
+```
+
+We can adjust the areas of the curves by directly referencing the `..count`
+variable, which is implicitly computed by ggplot2 while it’s computing these
+densities.
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, y = ..count.., fill = west)) +
+  geom_density(alpha = 0.8, bw = 0.12) +
+  scale_x_log10() +
+  scale_fill_brewer(palette = "Set2") +
+  facet_grid(year ~ .)
+```
+
+Can we attribute the changes to specific regions? Let’s apply our knowledge of
+ridge plots.
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, y = group, fill = as.factor(year))) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_fill_brewer(palette = "Set1") +
+  scale_x_log10()
+```
+
+Alternatively, we can overlay densities from the different regions. Both plots
+suggest that much of the increase in incomes can be attributed to countries in
+Latin America and East Asia.
+
+```{r}
+ggplot(gapminder_subset, aes(dollars_per_day, fill = group, y = ..count..)) +
+  geom_density(alpha = 0.7, bw = .12, position = "stack") +
+  scale_fill_brewer(palette = "Set2") +
+  scale_x_log10(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0, 0.15, 0)) +
+  facet_grid(year ~ .)
+```
+

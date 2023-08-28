@@ -1,0 +1,124 @@
+---
+title: "Dynamic Queries (Part 1)"
+description: |
+  Using visualization to support query building.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-10-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_gjjsi7da), [Notebook](https://observablehq.com/@krisrs1128/week-3-2),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
+1. Before, we only selected based on observations. How can we select based on attributes? One idea is to introduce widgets outside of the visualization through which the user can define queries. Selections are then _bound_ to widgets, letting us use conditional encodings like before, but with respect to this new class of inputs.
+
+````js
+{
+  const selection = vl.selectSingle('Select') // name the selection 'Select'
+    .fields('Major_Genre')          // limit selection to the Major_Genre field
+    .init({Major_Genre: genres[0]}) // use first genre entry as initial value
+    .bind(vl.menu(genres));         // bind to a menu of unique genre values
+  
+  // scatter plot, modify opacity based on genre selection
+  return vl.markCircle()
+    .data(movies)
+    .select(selection)
+    .encode(
+      vl.x().fieldQ('Rotten_Tomatoes_Rating'),
+      vl.y().fieldQ('IMDB_Rating'),
+      vl.tooltip().fieldN('Title'),
+      vl.opacity().if(selection, vl.value(0.75)).value(0.05)
+    )
+    .render();
+}
+````
+
+```{r}
+robservable("@krisrs1128/week-3-2", include = 6, height = 325)
+```
+
+
+2. Besides `menu` bindings, there are `checkbox`, `radio`, and `slider` inputs. If you revisit the gapminder visualization in [Lecture 1-3](https://krisrs1128.github.io/stat479/posts/2021-01-16-week1-3/), you will see that the interaction was accomplished by binding a selection to a `slider` input.
+3. A selection can combine multiple bindings. For example, in the block below, we filter by both MPAA rating and genre. The only part of the code that is different is the definition of the `selection` object in the first few lines.
+
+````js
+ {  
+  // single-value selection over [Major_Genre, MPAA_Rating] pairs
+  // use specific hard-wired values as the initial selected values
+  const selection = vl.selectSingle('Select')
+    .fields('Major_Genre', 'MPAA_Rating')
+    .init({Major_Genre: 'Drama', MPAA_Rating: 'R'})
+    .bind({Major_Genre: vl.menu(genres), MPAA_Rating: vl.radio(mpaa)});
+  
+  // scatterplot, modify opacity based on selection
+  return vl.markCircle()
+    .data(movies)
+    .select(selection)
+    .encode(
+      vl.x().fieldQ('Rotten_Tomatoes_Rating'),
+      vl.y().fieldQ('IMDB_Rating'),
+      vl.tooltip().fieldN('Title'),
+      vl.opacity().if(selection, vl.value(0.75)).value(0.05)
+    )
+    .render();
+}
+````
+
+```{r}
+robservable("@krisrs1128/week-3-2", include = 7, height = 335)
+```
+
+4. Interpretation 1: Dynamic queries create the visual analog of a database interaction. Rather than using a programming-based interface to `filter` elements or `select` attributes, we can design interactive visual equivalents.
+5. Interpretation 2: Dynamic queries allow rapid evaluation of conditional probabilities. The visualization above was designed to answer: What is the joint distribution of movie ratings, conditional on being a drama?
+6. These visualizations are an instance of the more general idea of using filtering to reduce complexity in data. Filtering is an especially powerful technique in the interactive paradigm, where it is possible to easily reverse (or compare) filtering choices.
+
+## Scented Widgets
+
+1. Queries can be improved by using _scented widgets_. These are widgets that are themselves mini-visualizations, designed to provide guidance (« scent ») about potentially interesting queries.
+2. This is an example of selecting films between two years, using a traditional text-based input. While easy to implement, the user is left to guess about when would be interesting combinations of years, and transitions between queries are clumsy — you have to reclick a new value each time.
+3. A scented widget approach both reveals when most movies were made and makes it easy to transition between queries. (Notice the future movies! Real data always have quality issues...)
+
+````js
+{
+  const brush = vl.selectInterval()
+    .encodings('x'); // limit selection to x-axis (year) values
+  
+  // dynamic query histogram
+  const years = vl.markBar()
+    .data(movies)
+    .select(brush)
+    .encode(
+      vl.x().year('Release_Date').title('Films by Release Year'),
+      vl.y().count().title(null)
+    )
+    .width(500)
+    .height(40);
+  
+  // ratings scatter plot
+  const ratings = vl.markCircle()
+    .data(movies)
+    .encode(
+      vl.x().fieldQ('Rotten_Tomatoes_Rating'),
+      vl.y().fieldQ('IMDB_Rating'),
+      vl.tooltip().fieldN('Title'),
+      vl.opacity().if(brush, vl.value(0.75)).value(0.05)
+    )
+    .width(500)
+    .height(350);
+
+  return vl.vconcat(years, ratings).render();
+}
+````
+
+```{r}
+robservable("@krisrs1128/week-3-2", include = 8, height = 390)
+```

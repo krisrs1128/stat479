@@ -1,0 +1,155 @@
+---
+title: "Partial Dependence Profiles I"
+description: | 
+  An introduction to partial dependence profiles.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-12
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](http://ema.drwhy.ai/partialDependenceProfiles.html), [Recording](https://mediaspace.wisc.edu/media/Week%2012%20%5B1%5D%20Partial%20Dependence%20Profiles%20I/1_51vpyf5q), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-1/week12-1.Rmd)_
+
+```{r}
+library("caret")
+library("dplyr")
+library("ggplot2")
+library("readr")
+library("DALEX")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+theme_set(theme479)
+```
+
+1. As more complex models become more common in practice, visualization has
+emerged as a key way for (a) summarizing their essential structure and (b)
+motivating further modeling refinements.
+
+2. In modern machine learning, it's common to use a function $f$ to approximate
+the relationship between a $D$-dimensional input $\mathbf{x}$ and a univariate
+response $y$. We are given a sample of $n$ pairs $\left(\mathbf{x}_{i},
+y_{i}\right)$ with which to learn this relationship, and we hope that the
+function we learn will generalize to future observations.
+
+3. Some further notation: We will write $x_{j}$ for the $j^{th}$ coordinate of
+$\mathbf{x}$. We will write $\mathbf{x}^{j\vert = z}$ to denote the observation
+$\mathbf{x}$ with the $j^{th}$ coordinate set to $z$.
+
+```{r, fig.cap = "Illustration of the $\\mathbf{x}^{j \\vert = z}$ operation. The $j^{th}$ coordinate (1 in this case) for a selected observation is set equal to $z$.", echo = FALSE, out.width = 700}
+include_graphics("https://uwmadison.box.com/shared/static/l6u0y1l8ww6fikiihjin5ov60pc6qr8b.png")
+```
+
+4.  Linear models are simple enough that they don’t require any follow-up visual
+inspection. Since they assume $f\left(\mathbf{x}\right) =
+\hat{\beta}^{T}\mathbf{x}$, they are completely described by the vector of
+coefficients $\hat{\beta}$. We can exactly describe what happens to $f$ when we
+increase $x_{j}$ by one unit: we just increase the prediction by
+$\hat{\beta}_{j}$.
+
+5. More complex models — think random forests or neural networks — don’t have
+this property. While these models often have superior performance, it’s hard to
+say how changes in particular input features will affect the prediction.
+
+6. Partial dependence plots try to address this problem. They provide a
+description for how changing the $j^{th}$ input feature affects the predictions
+made by complex models.
+
+7. To motivate the definition, consider the toy example below. The surface is
+the fitted function $f\left(\mathbf{x}\right)$, mapping a two dimensional input
+$\mathbf{x}$ to a real-valued response. How would you summarize the relationship
+between $x_{1}$ and $y$? The main problem is that the shape of the relationship
+depends on which value of $x_{2}$ we start at.
+
+```{r, fig.cap = "An example of why it is difficult to summarize the relationship between an input variable and a fitted surface for nonlinear models.", echo = FALSE, out.width = 500}
+include_graphics("https://uwmadison.box.com/shared/static/moztt0q240waytarit786j4ry1xe93g6.png")
+```
+
+8. One idea is to consider the values of $x_{2}$ that were observed in our
+dataset. Then, we can evaluate our model over a range of values $x_{1}$ after
+fixing those values of $x_{2}$. These curves are called Ceteris Paribus
+profiles^[Ceteris Paribus means « All Else Held Equal. »].
+
+9. The same principle holds in higher dimensions. We can fix $D - 1$ coordinates
+of an observation and then evaluate what happens to a sample’s predictions when
+we vary coordinate $j$. Mathematically, this is expressed by $h_{x}^{f,
+j}\left(z\right) := f\left(\mathbf{x}^{j\vert= z}\right)$.
+
+```{r, fig.cap = "Visual intuition behind the CP profile. Varying the $j^{th}$ coordinate for an observation traces out a curve in the prediction surface.", preview = TRUE, echo = FALSE, out.width = 700}
+include_graphics("https://uwmadison.box.com/shared/static/mpe45nor6xm4gt1idhedayw9ik754c2k.png")
+```
+
+10. For example, let's consider how CP can be used to understand a model fitted
+to the Titanic dataset. This is a dataset that was used to understand what
+characteristics survivors of the Titanic disaster had in common. It's not
+obvious in advance which characteristics of passengers made them more likely to
+survive, so a model is fitted to predict survival.
+
+```{r}
+data(titanic)
+titanic <- select(titanic, -country) %>%
+  na.omit()
+
+x <- select(titanic, -survived)
+hyper <- data.frame(n.trees = 100, interaction.depth = 8, shrinkage = 0.1, n.minobsinnode = 10)
+fit <- train(x = x, y = titanic$survived, method = "gbm", tuneGrid = hyper, verbose = F)
+```
+
+11. Next, we can compute the CP profiles. We are showing the relationship
+between age and survival, though any subset of variables could be requested. The
+bold curve is a Partial Dependence (PD) profile, which we will discuss below.
+Each of the other curves corresponds to a passenger, though only a subsample is
+shown. The curves are obtained by fixing all the characteristics of the
+passanger except for age, and then seeing what happens to the prediction when
+the age variable is increased or decreased.
+
+```{r, fig.cap = "CP and PDP profiles for age, for a GBM fitted to the Titanic dataset."}
+explanation <- explain(model = fit, data = x, y = titanic$survived)
+profile <- model_profile(explainer = explanation)
+plot(profile, geom = "profiles", variables = "age") +
+  theme479
+```
+
+12. It seems that children had the highest probability^[Technically, these are
+all predicted probabilities from the model.] of survival. The relationship is
+far from linear, with those between 40 and 60 all having about the same
+probabilities. Notice that the profiles are vertically offset from one passenger
+to another. This is because, aside from age, each passenger had characteristics
+that made them more or less likely to survive.
+
+13. We used the DALEX package to produce these curves. The `explain` function
+takes the fitted model and original dataset as input. It returns an object with
+many kinds of model summaries. To extract the CP profiles from these summaries,
+we use `model_profile`. The output of this function has been designed so that
+calling `plot` with `geom = "profiles"` will show the CP profiles.
+
+14. The PD profile is computed by averaging across all the CP profiles. It is a
+more concise alternative to CP profiles, showing one curve per features, rather
+than one curve per sample.
+
+```{r, fig.width = 10, fig.height = 5}
+plot(profile, geom = "aggregates") +
+  theme479
+```
+
+14. Not only are the PD plots simpler to read than the full collection of CP
+profiles — by performing this aggregation step, subtle patterns may become more
+salient, for the same reason that an average carries more information than any
+subset of observations.
+
+```{r, include = FALSE}
+save(fit, file = "~/Desktop/fit.rda")
+```
+

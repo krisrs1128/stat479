@@ -1,0 +1,154 @@
+---
+title: "Other Tricks from Profiler"
+description: |
+  A crash course on entity resolution, plus some other tips.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-25-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B5%5D%20Other%20Tricks%20from%20Profiler/1_67ag90bm), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-5/week5-5.Rmd)_
+
+```{r}
+library("cluster")
+library("ggplot2")
+library("readr")
+library("stringr")
+library("dplyr")
+theme_set(theme_minimal())
+```
+
+1. Entity resolution^[This is also sometimes called "Deduplication."] is the
+process of resolving field values that refer to the same thing, but which are
+stored using different names. For example, a column might include entries for
+"UW Madison" and "University of Wisconsin - Madison." This often arises when a
+dataset is made by linking a few different sources, combining different time
+periods of the same source, or involved manual text entry.
+
+2. One simple way to detect candidates for unification is to cluster all the
+strings using an appropriate distance. The Profiler paper uses the string edit
+distance to decide whether two strings are similar. For example, two insertions
+to the first string below would give us the second string, so the edit distance
+is 2.
+
+```{r}
+adist(c("abc", "abcde"))
+```
+
+3. Like in the Profiler paper, we're going to illustrate this by looking for
+potentially duplicated movies in the movies dataset.
+
+```{r}
+movies <- read_csv("https://uwmadison.box.com/shared/static/txa56mux3ca2f8w2zmc9dq7yunljd1ak.csv") %>%
+  filter(!is.na(Title))
+```
+4. The block below computes the string distance between all pairs of movie
+titles. We then extract all clusters of movie titles whose maximum 
+within-cluster distance is less than or equal to 3.
+
+```{r}
+D <- adist(movies$Title)
+tree <- hclust(as.dist(D), method = "complete")
+movies$cluster <- cutree(tree, h = 3)
+```
+
+5. The potential duplicates are those clusters that have more than one element.
+Let's derive the size of each cluster and visualize a few of the clusters. We
+can see that we've picked out sequels, movies with short names, and a few exact
+matches.
+
+```{r}
+movies <- movies %>%
+  arrange(cluster) %>%
+  group_by(cluster) %>%
+  mutate(
+    cluster_ix = seq_len(n()), # indexes movies in each cluster from 1 .. cluster_size
+    cluster_size = n()
+  )
+```
+
+```{r, fig.width = 12}
+movies %>%
+  filter(cluster_size > 1, cluster < 100) %>%
+  ggplot() +
+  geom_text(
+    aes(y = reorder(cluster, -cluster_size), x = cluster_ix, label = Title),
+    size = 4
+  ) +
+  scale_x_discrete(expand = c(0.1, 0.1))
+```
+
+6. It seems like many of the potential duplicates are probably not mistakes. For
+example, Alice in Wonderland refers to two movies, the 1951 original and a 2010
+remake^[Though, notice that the IMDB data are exactly the same... this is almost
+certainly a mistake in how the data were merged.].
+
+```{r}
+movies %>%
+  filter(Title == "Alice in Wonderland") %>%
+  select(Title, Release_Date, IMDB_Rating, IMDB_Votes)
+```
+
+7.  To automatically remove these remakes / sequels from our candidate list,
+let's filter out movies that didn't appear in the same year. This is a special
+case of the general idea of "conditional deduplication" -- you can simplify your
+entity resolution candidates if you can first match by a few other fields. In
+the end, it doesn't seem like there are any true duplicates, though it is quite
+a coincidence that "Diary of the Dead" and "Day of the Dead" both came out in
+2008.
+
+```{r}
+movies <- movies %>%
+  mutate(year = str_extract(Release_Date, "[0-9]+$"))
+
+movies %>%
+  filter(!is.na(year)) %>%
+  group_by(cluster, year) %>%
+  mutate(conditional_count = n()) %>%
+  filter(conditional_count > 1) %>%
+  select(Title, year, cluster)
+```
+
+## Minor Tricks
+
+8. There are two other nice tricks in the Profiler paper that are worth knowing.
+The first is the binning trick. If you have a very large dataset, scatterplots
+can be misleading, since the points overlap too much. A better alternative is to
+use 2D binning.
+
+9. For example, here are two Gaussian blobs. Looking at a scatterplot, it looks
+like one blob.
+
+```{r}
+n <- 1e6
+x <- matrix(rnorm(n), ncol = 2)
+z <- matrix(rnorm(0.05 * n, sd = 0.2), ncol = 2)
+df <- data.frame(rbind(x, z))
+```
+
+```{r}
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2))
+```
+10. But if you binned the plot, the second blob appears. It's not possible to
+perceive 100K points on a screen anyways, so this visualization is much more
+meaningful.
+
+```{r}
+ggplot(df) +
+  geom_bin2d(aes(x = X1, y = X2), binwidth = 0.1) +
+  scale_fill_viridis_b()
+```
+11. The final idea is that, when 0 has a qualitatively differnet meaning than a
+very small, but nonzero value, then you should use a color palette that
+highlights that discontinuity. The small, nonzero values in the left hand plot are barely visible, but are easy to distinguish on the right hand side.
+
+![](discontinuity.png)

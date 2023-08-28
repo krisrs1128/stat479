@@ -1,0 +1,163 @@
+---
+title: "Missing Data (Part 2)"
+description: |
+  A deeper look at missing data, imputation, and characterization.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-22-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://naniar.njtierney.com/articles/getting-started-w-naniar.html), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B2%5D%20Missing%20Data%20(Part%202)/1_0fwe9l8o), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-2/week5-2.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+```{r}
+library("MASS")
+library("dplyr")
+library("ggplot2")
+library("naniar")
+library("rpart")
+library("simputation")
+```
+
+1. The previous notes described how visualization can help quantify how much
+missingness if present, and where it occurs. Here, we will explore how
+visualization is also helpful in efforts to impute and characterize
+missing values.
+
+2. For example, visualization is helpful for understanding the results of
+imputation algorithms. Before describing this, it will be helpful to have a
+crash course on missing data imputation.
+
+3. Imputation algorithms try to replace all the missing values with plausible
+values. The reason we might do this is that we don’t want to discard all the
+observations with the missing values, but our usual models might throw errors if
+we provide data with missing values.
+
+4. Median imputation replaces each missing values in any given column by the
+median of the observed values in that field. It works one column at a time.
+
+```{r}
+x <- data.frame(value = c(rnorm(450), rep(NA, 50))) %>%
+  sample_frac(1) %>% # randomly reorder
+  bind_shadow() %>% # create column checking if missing
+  mutate(imputed = naniar::impute_median(value))
+
+x
+```
+
+```{r}
+ggplot(x) +
+  geom_histogram(aes(x = imputed, fill = value_NA)) +
+  scale_fill_brewer(palette = "Set2")
+```
+5. We can be cleverer though, if we imagine that multiple columns are related in
+some way. Consider the scatterplot below. When both observations are present, a
+point is drawn along the middle. When there is a missing value in one of the
+columns, we plot the one dimension that we do have along the appropriate edge.
+How would you impute the second column if you knew its value in the first column
+was low?
+
+```{r}
+Sigma <- matrix(c(1, 0.9, 0.9, 1), 2)
+x <- mvrnorm(500, c(0, 0), Sigma = Sigma) %>%
+  as.data.frame()
+for (j in seq_len(2)) {
+  x[sample(nrow(x), 50), j] <- NA
+}
+
+ggplot(x) +
+  geom_miss_point(aes(x = V1, y = V2), jitter = 0) +
+  scale_color_brewer(palette = "Set2") +
+  coord_fixed()
+```
+
+You would probably project the missing values onto the line that goes through
+the bulk of the fully observed data.
+
+```{r, echo = FALSE}
+x0 <- nabular(x) %>%
+  filter(is.na(V1) | is.na(V2))
+x0[is.na(x0$V1), "V1"] <- x0[is.na(x0$V1), "V2"]
+x0[is.na(x0$V2), "V2"] <- x0[is.na(x0$V2), "V1"]
+
+ggplot(x) +
+  geom_miss_point(aes(x = V1, y = V2), jitter = 0) +
+  geom_abline(slope = 1, color = "#0c0c0c") +
+  geom_point(data = x0, aes(x = V1, y = V2), col = "#66c2a5") +
+  geom_segment(
+    data = x0 %>% filter(V2_NA == "NA"), 
+    aes(x = V1, xend = V1, y = -3.4, yend = V2), 
+    col = "#66c2a5", size = 0.2, alpha = 0.8
+  ) +
+  geom_segment(
+    data = x0 %>% filter(V1_NA == "NA"), 
+    aes(x = -3.2, xend = V1, y = V2, yend = V2), 
+    col = "#66c2a5", size = 0.2, alpha = 0.8
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  coord_fixed()
+```
+
+6. Multiple imputation methods formalize this intuition. They make use of
+multivariate relationships between columns to guess plausible values for missing
+data. This is an example of multiple imputation on the `airquality` dataset --
+the multivariate relationship between ozone, temperature, and wind is used to
+fill in missing values for ozone.
+
+```{r}
+aq_imputed <- airquality %>%
+  bind_shadow() %>%
+  as.data.frame() %>%
+  impute_lm(Ozone ~ Temp + Wind)
+
+ggplot(aq_imputed) + 
+  geom_point(aes(x = Temp, y = Ozone)) +
+  scale_color_brewer(palette = "Set2")
+```
+
+7. But how can we tell if a multiple imputation method is effective? We can plot
+the data, making sure to distinguish between true and imputed observations.
+
+```{r}
+ggplot(aq_imputed) + 
+  geom_point(aes(x = Temp, y = Ozone, col = Ozone_NA)) +
+  scale_color_brewer(palette = "Set2")
+```
+
+8. Finally, let’s ask, why are the data missing in the first place? A natural
+idea is to try to find characteristics of observations that are predictive of
+their having missing values for some particular field. For example, maybe
+respondents within a given age group always leave a question blank. To this end,
+a well chosen plot can be very suggestive.
+
+9. We can illustrate this idea with the `airquality` data. It seems that the
+sensor might have broken down in June. When there are very many possible
+variables to compare against, a model can be especially helpful for guiding the
+search for informative plots. We'll develop this idea further two lectures from
+now, when we look at how mutual information is used to guide the visualization
+search in Profiler.
+
+```{r}
+rpart_model <- airquality %>%
+  add_prop_miss() %>%
+  rpart(prop_miss_all ~ ., data = .)
+rpart_model$variable.importance
+```
+
+```{r}
+ggplot(airquality) +
+  geom_miss_point(aes(x = Ozone, y = Solar.R)) +
+  scale_color_brewer(palette = "Set2") +
+  facet_wrap(~ Month)
+```
+
+10. If we can predict missingness well, then the data are *not* missing at
+random. The bad news is that more specialized imputation strategies may be
+necessary. The good news is that we may be able to actually characterize the
+mechanism behind the missing data.

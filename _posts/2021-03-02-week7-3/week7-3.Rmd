@@ -1,0 +1,113 @@
+---
+title: "Raster Data"
+description: |
+  Storing spatially gridded information in rasters.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-10-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](https://mediaspace.wisc.edu/media/Week%207%20%5B3%5D%20Raster%20Data/1_k5px5f53), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-02-week7-3/week7-3.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("raster")
+library("RStoolbox")
+library("ggplot2")
+library("dplyr")
+theme_set(theme_bw())
+```
+
+1. The raster data format is used to store spatial data that lie along regular
+grids. The values along the grid are stored as entries in the matrix. The raster
+object contains metadata that associates each entry in the matrix with a
+geographic coordinate.
+
+2. Since the data they must lie along a regular grid, rasters are most often
+used for continuously measured data, like elevation, temperature, population
+density, or landcover class.
+
+3. We can create a single layer raster using the `raster` command. The code
+block below loads an elevation map measured by the space shuttle.
+
+```{r}
+f <- system.file("raster/srtm.tif", package = "spDataLarge")
+zion <- raster(f)
+```
+
+4. Typing the name of the object shows the metadata associated with it (but not
+the actual grid values). We can see that the grid has 457 rows and 465 columns.
+We also see its spatial extent: The minimum and maximum longitude are both close
+to -113 and the latitudes are between 37.1 and 37.5. A quick google map [search](https://goo.gl/maps/X4EY2BsGgMZzN5BM9) shows that this is located in Zion
+national park.
+
+```{r}
+zion
+```
+```{r}
+plot(zion)
+```
+
+5. The `raster` command also lets us create raster objects from scratch. For example, the code below makes a raster with increasing values in a 6 x 6 grid. Notice that we had to give a fake spatial extent.
+
+```{r}
+test <- raster(
+  nrows = 6, ncols = 6, res = 0.5, 
+  xmn = -1.5, xmx = 1.5, ymn = -1.5, ymx = 1.5,
+  vals = 1:36
+)
+
+plot(test)
+```
+
+6. Real-world rasters typically have more than one layer of data. For example, you might measure both elevation and slope along the same spatial grid, which would lead to a 2 layer raster. Or, for satellite images, you might measure light at multiple wavelengths (usual RGB, plus infrared or thermal for example).
+
+7. Multi-layer raster data can be read in using `brick`. You can refer to particular layers in a multi-layer raster by using `subset`.
+
+```{r}
+f <- system.file("raster/landsat.tif", package = "spDataLarge")
+satellite <- brick(f)
+satellite
+```
+
+8. Base R’s `plot` function supports plotting one layer of a raster at a time. To plot more than one layer in a multichannel image (like ordinary RGB images) you can use the `plotRGB` function.
+
+```{r}
+plotRGB(satellite)
+```
+
+9. Sometimes, it’s useful to overlay several visual marks on top of a raster
+image. In this case, the `ggRGB` function from the `RStoolbox` package can be
+used.
+
+```{r}
+satellite <- projectRaster(satellite, crs = 4326)
+ggRGB(satellite) +
+  geom_point(
+    data = data.frame(x = -113, y = 37.3), 
+    aes(x = x, y = y), 
+    col = "red", size = 10
+  )
+```
+
+10. If we want to visualize just a single layer using ggplot2, we can use
+`geom_raster`. This assumes that the data are in "tall" format, which can be
+accomplished by (1) subsetting to the relevant layer and (2) converting it to a
+data.frame. We use `xy = TRUE` to remember the original locations of each pixel.
+
+```{r}
+sat_df <- subset(satellite, 1) %>%
+  as.data.frame(xy = TRUE)
+ggplot(sat_df) +
+  geom_raster(aes(x = x, y = y, fill = landsat.1)) +
+  scale_fill_gradient(low = "white", high = "black") +
+  coord_fixed()
+```
+

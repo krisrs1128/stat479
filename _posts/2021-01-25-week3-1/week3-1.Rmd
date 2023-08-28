@@ -1,0 +1,102 @@
+---
+title: "Selections"
+description: |
+  A look at a fundamental building block fo interactive visualization.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-09-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_z1qdziag), [Notebook](https://observablehq.com/@krisrs1128/week-3-1), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
+1. A major difference between doing visualization on paper and on computers is that visualization on computers can make use of interactivity. An interactive visualization is one that changes in response to user cues. This allows a display to update in a way that provides a visual comparison that was not available in a previous view. In this way, interactive visualization allows users to answer a sequence of questions.
+2. Selection, both of observations and of attributes, is fundamental to interactive visualization. This is because it precedes other interactive operations: you can select a subset of observations to filter down to or attributes to coordinate across multiple displays (we consider both types of interactivity in later lectures).
+3. Let’s see how selection is implemented in vega-lite. We begin with an example, and then deconstruct it. The raw data are available [here](https://uwmadison.box.com/shared/static/lpvp0istfawq20ems8ooh1hcrng16kay.csv).
+
+```{r}
+robservable("@krisrs1128/week-3-1", include = 3, height = 180)
+```
+````js
+{
+  const selection = vl.selectSingle();
+  
+  return vl.markCircle()
+  .data(cars)
+  .select(selection)
+  .encode(
+    vl.x().fieldQ('Horsepower'),
+    vl.y().fieldQ('Miles\_per\_Gallon'),
+    vl.color().if(selection, vl.fieldO('Cylinders')).value('grey')
+  )
+  .height(180)
+  .render();
+}
+````
+
+4.  In the first line, we defined a selection object. There are special selection objects, differentiated by the type of interaction they support. 
+
+* `vl.selectSingle()`: Allows selection of one observation at a time.
+* `vl.selectMulti()`: Allows selection of several observations.
+* `vl.selectInterval()`: Allows selection of contiguous intervals of observations.
+
+5. To associate the selection with the points, we bound them to the `vl.markCircle()` block using the call `.select(selection)`. This is how vega-lite knows that the user interaction should be associated with individual points.
+
+6. We then apply the idea of _conditional encoding_ to allow the visualization to respond to user selections. Conditional encoding changes the visual encodings of marks depending on whether they are contained within a user selected set. For example, in the plot above, if the observation is within the selected set, it is colored in by the number of cylinders in the car, otherwise it is grey. This is implemented by the `.if(selection, vl.fieldO('Cylinders')).value('grey')` modification of the original `vl.color()` encoding.
+7. To understand the behavior of the three interaction techniques above, let’s regenerate this plot with the other two types of selections.
+
+````js
+function plot(selection) {
+  return vl.markCircle()
+.data(cars)
+.select(selection)
+.encode(
+  vl.x().fieldQ('Horsepower'),
+  vl.y().fieldQ('Miles\_per\_Gallon'),
+  vl.color().if(selection, vl.fieldO('Cylinders')).value('grey')
+)
+.width(240)
+.height(180);
+}
+````
+
+We can place the plots side-by-side using the horizontal concatenation we learned in the composition reading.
+	
+````js
+vl.hconcat(
+  plot(vl.selectSingle()).title('Single (Click)'), 
+  plot(vl.selectMulti()).title('Multi (Shift-Click)'), 
+  plot(vl.selectInterval()).title('Interval (Drag)'),
+  plot(vl.selectMulti().on("mouseover").nearest(true)).title('Mouseover Painting')
+).render()
+````
+
+```{r}
+robservable("@krisrs1128/week-3-1", include = 5, height = 220)
+```
+
+
+8. Are there ways that we can select multiple observations based on attributes
+other than their position in a plot (that is, without having to click or drag on
+them within the plot)? The answer is yes, using dynamic queries, which are
+discussed in the next recording.
+
+9. Selection — and interaction more generally — are reversing our usual way of
+thinking about encoding in visualization. Usually, we are mapping abstract data
+fields to specific visual marks and their properties. In interaction, we have to
+start with visual marks and refer to the underlying observations. This then
+allows changes in the visual marks, and we can iterate.
+
+10. A corollary of this point is that selections require two specifications: the
+mechanics of interaction and the way marks and their encodings change in
+response to an input. It is possible to experiment with variations in one while
+keeping the other constant.

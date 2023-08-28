@@ -1,0 +1,199 @@
+---
+title: "A History of Data Visualization up to 1900"
+description: | 
+   A look at the origins of the field.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-29
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = FALSE, fig.align = "center")
+```
+
+_[Reading](https://datavis.ca/papers/hbook.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%2014%20%5B4%5D%20A%20History%20of%20Data%20Visualization%20up%20to%201900/1_ki8vpb8b), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-23-week14-4/week14-4.Rmd)_
+
+1. There could probably be an entire class taught on the history of data
+visualization. The reason it is worth covering in an otherwise
+practically-oriented class is that,
+    * Historical study can illuminate the core intellectual foundation on which the
+    entire discipline of data visualization is built.
+    * The limits, biases, and trends of our current era become clear when
+    considering it within its full historical context.
+    * It's often possible to draw inspiration from past masters.
+    * It can be humbling to realize that now-commonplace ideas had to be discovered.
+    If it took until 1833 until the first scatterplot was published, then what ideas
+    have we yet to find?
+    
+2. The reading divides up the history of data visualization into 8 epochs. In
+these notes, we will consider the 5 epochs before 1900.
+
+### Before 1600: Early Maps and Diagrams
+
+3. It might come as a surprise, but visualization has been around since the
+invention of writing. The Egyptians made maps, and there are examples multiple
+time series plots from the 10th century. 
+
+```{r, fig.cap = "Possibly the earliest multiple time series visualization, showing the movement of various planets, from _In Somnium Scripionus_.", out.width = 400}
+include_graphics("https://uwmadison.box.com/shared/static/w05yivo6v9dmj14kvjhcbon0de2gg1zl.webp")
+```
+
+4. However, most visualizations were focused on physical geographical or
+astronomical quantities, and even these quantities were only imprecisely
+measured. Without more formal data gathering instruments, there could not be
+much data visualization.
+
+### 1600 - 1700: Measurement and Theory
+
+5. The situation begins to change around 1600, at the dawn of the scientific
+revolution. All of a sudden, precise measurement of physical space become
+possible. Also, important new mathematical ideas were introduced, like
+probability, calculus, and reasoning about functions. This created the right
+environment for the design of some of the first truly sophisticated data
+visualizations, like 
+
+* Christopher Scheiner's 1630 visualization of sunspots over
+time (a first instance of faceting),
+
+```{r, fig.cap = "Scheiner's visualization of sunspots, which played a role in his dialogues with Galileo.", out.width = "500"}
+include_graphics("https://upload.wikimedia.org/wikipedia/commons/d/dc/Scheiner_plate_observation_%283%29.png")
+```
+
+* Edmond Halley's plot of barometric pressure against altitude (an first
+instance of one feature being plotted against another), and
+
+```{r, fig.cap = "One of the first bivariate plots, relating barometric pressure to altitude. Note that absence of the true observed data.", out.width = "400"}
+include_graphics("https://uwmadison.box.com/shared/static/193d54lhlhe4itlv5rc4zly3gd7r757p.gif")
+```
+
+* Edmond Halley's plot of wind speed over the ocean (a first visualization of a
+vector field).
+
+```{r, fig.cap = "A plot of trade winds, appearing in _An Historical Account of the Trade Winds, and Monsoons, Observable in the Seas between and near the Tropicks, with an Attempt to Assign the Phisical Cause of the Said Wind_."}
+include_graphics("https://upload.wikimedia.org/wikipedia/commons/a/a4/Edmond_Halley%27s_map_of_the_trade_winds%2C_1686.jpg")
+```
+
+6. During this period, the scientific value of visual thinking was more or less
+established. However, there were still only relatively few graphical forms
+available, and the focus continued to remain on visualizing physical quantities,
+rather than more general social, economic, biological, or ecological data.
+
+### 1700 - 1800
+
+7. During this period, many new graphical forms were invented, including
+timelines, cartograms, functional interpolations, line graphs, bar charts, and
+pie charts. Further, forms from earlier, like maps and function plots, became
+more firmly established.
+
+8. This was also when three-color printing was invented. Before this point,
+color could not be used as an encoding channel.
+
+9. In this century, governments also began large-scale data collection of social
+and economic statistics^[The word "statistics" comes from the same root as
+"state", since it originally focused on data collected for governance.]. One of
+the most prolific inventors of data visualizations, William Playfair^[He has
+been described as an "engineer, political economist and scoundrel."], was used
+visualization to study a variety of economic problems. In addition to inventing
+line, bar, and pie charts, he experimented with original ways of composing
+multiple graphs to suggest the relationships between variables.
+
+```{r, fig.cap = "One of William Playfair's data visualizations, juxtaposing the price of wheat with growth in wages."}
+include_graphics("https://uwmadison.box.com/shared/static/64v80q1lc8nsa9480i1etnz7wa54b2mn.jpeg")
+```
+
+### 1800 - 1850
+
+10. This was a period of maturation for the field of data visualization. By this
+point, visualization had become standard in scientific publications. Advances in
+printing technology also made it also became easier to mass produce
+visualizations.
+
+11. It was also around this time that the scope of problems studied through
+visualization expanded far beyond display of purely physical (geographical and
+astronomical) applications. Two areas in particular flourished, applications to
+social science and to engineering.
+
+  * Visualization in the social sciences began to emerged in response to
+  government sponsored collection of social statistics -- data about crime,
+  births, and deaths, among other topics. This wasn't a purely intellectual
+  exercise: understanding demographic trends was important for countries that
+  were often at war with another.
+  
+```{r, fig.cap = "A visualization of property crime statistics, by Andre-Michel Guerry (1829).", out.width = "350"}
+include_graphics("https://upload.wikimedia.org/wikipedia/en/9/94/AMGuerry-carte2-low.jpg")
+```
+
+  * In engineering, the idea that visualization could serve as a computational
+  aid become more and more common. For example, rather the chart below, by Charles
+  Joseph Minard, displays the cost of transporting goods across different
+  stretches of a canal. Vertical breaks correspond to cities along the canal, and
+  the area of the square between cities encodes the cost of transportation between
+  those cities. While the information could be stored in a table, it becomes
+  easier to perform mental computations (and make guesstimates) using the display.
+  
+```{r, fig.cap = "Minard's 1844 visualization of the transport costs across the Canal du Centre in France.", out.width = "500"}
+include_graphics("https://upload.wikimedia.org/wikipedia/commons/f/f8/Tableau_figuratif_du_mouvement_commercial_du_Canal_du_centre_en_1844.jpg")
+```
+
+## 1850 - 1900: The Golden Age
+
+14. It might be counterintuitive that there was a golden age of visualization a
+century before the first computers were invented. However, a look at the
+visualizations from this period demonstrate that this was a period where
+visualizations inspired scientific discoveries, informed commercial decisions,
+and guided social reform.
+
+15. For example, in public health, Florence Nightingale invented new
+visualizations to demonstrate the impact of sanitary practices in
+hospital-induced infections and death. Similarly, it was a
+[visualization](https://en.wikipedia.org/wiki/The_Ghost_Map) that guided John
+Snow to the source of the 1855 cholera epidemic.
+
+```{r, fig.cap = "Florence Nightingale's visualization of hospital mortality statistics from the Crimean War, used to support a campaign for sanitary reforms.", out.width = "500", preview = TRUE}
+include_graphics("https://uwmadison.box.com/shared/static/c79fbmfc3mff9ota1tzxtvv4gp7e3pul.jpeg")
+```
+
+16. Some of the graphical innovations include,
+
+* 3D function plots. The plot below, by Luigi Perozzo, shows population size
+broken down into age groups and traced over time.
+
+```{r, fig.cap = "Luigi Perrozo's 1879 3D visualizations of population over time.", out.width = "400"}
+include_graphics("https://uwmadison.box.com/shared/static/mm07qcwzwz5692rcluokmrx2o97jlr03.jpeg")
+```
+
+* Flow diagrams. Charles-Joseph Minard, who we met before with the canal
+visualization, was a master of these displays. One in particular is widely
+considered a masterpiece, it shows the size of Napoleon's army during it's
+Russian Campaign.
+
+```{r, fig.cap = "Minard's flow display of the size of Napoleon's army during the Russia Campaign."}
+include_graphics("https://upload.wikimedia.org/wikipedia/commons/2/29/Minard.png")
+```
+
+
+* Multivariate visualization. Francis Galton made some of the first efforts to
+visualize more than 3 variables at a time. His _Meteorographica_, published in
+1863, contained over 600 visualizations of weather data that had been collected
+for decades, but never visualized. One plot, shown below, led to the discovery
+of anticyclones.
+
+```{r, fig.cap = "Galton's display of weather patterns. Low pressure (black) areas tend to have clockwise wind patterns, while high pressure (red) tends to have anticlockwise wind patterns.", out.width = "550"}
+include_graphics("https://uwmadison.box.com/shared/static/ar82ax7hcatpy99iz2w6opkzl4cdvv2y.jpeg")
+```
+
+17. This was also an age of state-sponsored atlases. More than sponsoring the
+collection of data, governments assembled teams to visualize the results for
+official publication. From 1879 to 1897, the French Ministry of Public Works
+published the _Albums de Statistique Graphique_, which under the guidance of
+Émile Cheysson, developed some of the most imaginative and ambitious
+visualizations of the era.
+
+```{r, fig.cap = "A visualization of the flow of passengers and goods through railways from Paris. Each square shows the breakdown to cities further away, and color encodes the railines.", out.width = "450"}
+include_graphics("https://upload.wikimedia.org/wikipedia/commons/f/f1/Exp%C3%A9ditions_de_voyageurs_et_de_marchandises.png?1619305371810")
+```

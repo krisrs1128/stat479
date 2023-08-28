@@ -1,0 +1,139 @@
+---
+title: "Pointwise Diagnostics"
+description: | 
+  Evaluating the fit at particular observations in Bayesian models.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-04-16
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("knitr")
+opts_chunk$set(cache = TRUE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://arxiv.org/abs/1709.01449), [Recording](https://mediaspace.wisc.edu/media/Week%2012%20%5B5%5D%20Pointwise%20Diagnostics/1_hpoqug2d), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-04-05-week12-5/week12-5.Rmd)_
+
+```{r}
+library("dplyr")
+library("ggplot2")
+library("ggrepel")
+library("loo")
+library("purrr")
+library("rstan")
+library("tidyr")
+theme479 <- theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "#f7f7f7"),
+    panel.border = element_rect(fill = NA, color = "#0c0c0c", size = 0.6),
+    legend.position = "bottom"
+  )
+```
+
+1. All the model visualization strategies we’ve looked at in the last few
+lectures have been dataset-wide. That is, we looked at properties of the
+dataset as a whole, and whether the model made sense globally, across the whole
+dataset. Individual observations might warrant special attention, though.
+
+2. The block below loads in the fitted models from the previous set of notes.
+		
+```{r}
+downloader <- function(link) {
+  f <- tempfile()
+  download.file(link, f)
+  get(load(f))
+}
+
+models <- downloader("https://uwmadison.box.com/shared/static/x7dotair443mhx34yzie3m3lrsvhk19a.rda")
+GM <- downloader("https://uwmadison.box.com/shared/static/2pzgdu7gyobhl5tezo63tns7by1aiy6d.rda")
+```
+
+3. A first diagnostic to consider is the leave-one-out predictive distribution.
+This is the probability $p\left(y_{i} \vert y_{-i}\right)$ of sample $i$ after
+having fitted a model to all samples except $i$. Ideally, most observations in
+the dataset to have high predictive probability.
+    * Note that this can be used for model comparison. Some models might have
+    better per-sample leave-one-out predictive probabilities for almost all
+    observations.
+	* This is similar to a leave-one-out residual.
+		
+4. If we use rstan to fit a Bayesian model, then these leave-one-out
+probabilities can be estimated using the `loo` function in the `loo` package.
+The code below computes these probabilities for each model, storing the
+difference in predictive probabilities for models two and three in the `diff23`
+variable.
+
+```{r}
+elpd <- map(models, ~ loo(., save_psis = TRUE)$pointwise[, "elpd_loo"])
+elpd_diffs <- GM@data %>%
+  mutate(
+    ID = row_number(),
+    diff23 = elpd[[3]] - elpd[[2]]
+  )
+
+outliers <- elpd_diffs %>%
+  filter(abs(diff23) > 6)
+```
+
+4. We plot the difference between these predictive probabilities below. The
+interpretation is that Ulaanbataar has much higher leave-one-out probability
+under the cluster-based model, perhaps because that model is able to group the
+countries with large deserts together with one another. On the other hand, Santo
+Domingo is better modeled by model 2, since it has higher leave-one-out
+probability in that model.
+
+```{r, fig.cap = "The difference in leave one out predictive probabilities for each sample, according to the WHO-region and cluster based hierarchical models."}
+ggplot(elpd_diffs, aes(ID, diff23)) +
+  geom_point(
+    aes(col = super_region_name),
+    size = 0.9, alpha = 0.8
+    ) +
+  geom_text_repel(
+    data = outliers,
+    aes(label = City_locality),
+    size = 3 
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  labs(
+    y = "Influence (Model 2 vs. 3)",
+    col = "WHO Region"
+  )
+```
+
+5. Another diagnostic is to consider the influence of an observation. Formally,
+the influence is a measure of how much the posterior predictive distribution
+changes when we leave one sample out. The idea is to measure the difference
+between the posterior predictives using a form of KL divergence, and note down
+the observations that lead to a very large difference in divergence.
+
+```{r, fig.cap = "Visual intuition about the influence of observations. If the posterior predictive distributions shift substantially when an observation is included or removed, then it is an influential observation.", echo = FALSE}
+include_graphics("https://uwmadison.box.com/shared/static/woojwyyqruo3wrkrhe5y28bz53rwjwng.png")
+```
+
+6. When using rstan, the influence measure can be computed by the `psis`
+function. The `pareto_k` diagnostic summarizes how much the posterior predictive
+shifts when an observation is or isn't included. For example, in the figure
+below, observation 2674 (Ulaanbaatar again) is highly influential.
+
+```{r, fig.cap = "The influence of each sample on the final posterior distribution."}
+loglik <- map(models, ~ as.matrix(., pars = "log_lik"))
+kdata <- GM@data %>%
+  mutate(
+    k_hat = psis(loglik[[2]])$diagnostics$pareto_k,
+    Index = row_number()
+  )
+outliers <- kdata %>%
+  filter(k_hat > 0.25)
+
+ggplot(kdata, aes(x = Index, y = k_hat)) + 
+  geom_point(aes(col = super_region_name), size = 0.5, alpha = 0.9) + 
+  scale_color_brewer(palette = "Set2") +
+  geom_text_repel(data = outliers, aes(label = Index)) +
+  labs(y = "k-hat")
+```
+

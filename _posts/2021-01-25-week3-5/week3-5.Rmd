@@ -1,0 +1,53 @@
+---
+title: "Dynamic Linking in the Wild"
+description: |
+  A look at real-world examples of dynamic linking.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-13-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+library("robservable")
+```
+
+_[Reading](https://observablehq.com/@uwdata/interaction?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_i9qfxljb),  [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-12-week1-2/week1-2.Rmd)_
+
+1. These notes consider real-world systems that use dynamic linking. They are less practical most of the notes in this course, but there are approaches that are good to know about, and which you might want to learn about from a hands-on point of view in your future projects.
+2. **Overview + Detail**: Google Maps. We can see details of a location without losing context of the surrounding area.
+
+![](week3-5_files/google.png)
+
+3. **Multi-form Display**: Microarray Explorer
+
+![](week3-5_files/microarray.png)
+
+  a. One encoding through a central scatterplot.
+  b. A complementary encoding through time series.
+  c. Detail names of the selected genes. This is more convenient than having to tooltip over all the individual genes.
+  d. Selections in one display update all the others.
+	
+4. **Multiple techniques**: [Cerebral](https://www.youtube.com/watch?v=76HhG1FQngI).
+
+![](week3-5_files/cerebral.png)
+a. There are many pieces in this visualization. Let’s deconstruct the components, 
+    
+  i. A gene network (known interactions)
+  ii. Small multiples showing the same network colored in at different time points
+  iii. Time series showing the individual genes over time. (value of multiform: time series make changes over time obvious, but network shows relationships between genes)
+      
+b. Let’s examine the visualization strategies being used,
+
+    i. Multi-form visualization: Time series and networks refer to the same
+    underlying genes, but support different comparisons.
+    ii. Small-multiples: One of the panels shows the same genes shaded in across
+    many time points.
+    iii. Overview + detail: The central display summaries the gene networks over
+    time, and the small multiples can be used to understand the network at a
+    particular timepoint.
+    

@@ -1,0 +1,95 @@
+---
+title: "Tidy Data Example"
+description: |
+  An extended example of tidying a real-world dataset.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-18-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://r4ds.had.co.nz/tidy-data.html), [Recording](https://mediaspace.wisc.edu/media/Week%204%20%5B4%5D%20Tidy%20Data%20Example/1_5qy0fl9h), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-27-week4-4/week4-4.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("stringr")
+library("skimr")
+```
+
+1. Let’s work through the example of tidying a WHO dataset. This was discussed
+in the reading and is good practice in pivoting and deriving new variables.
+
+2. The raw data, along with a summary from the `skimr` package, is shown below
+(notice the small multiples!).
+
+```{r}
+who
+```
+```{r}
+skim(who)
+```
+3. According to the data dictionary, the columns have the following meanings,
+
+* The first three letters -> are we counting new or old cases of TB?
+* Next two letters -> Type of tab.
+* Sixth letter -> Sex of patients
+* Remaining numbers -> Age group. E.g., `3544` should be interpreted as 35 - 44
+years old.
+
+4. Our first step is to `pivot_longer`. There is quite a bit of information
+implicitly stored in the column names, and we want to make those variables
+explicitly available for visual encoding.
+
+```{r}
+who_longer <- who %>% 
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65,  # notice we can refer to groups of columns without naming each one
+    names_to = "key", 
+    values_to = "cases", 
+    values_drop_na = TRUE # if a cell is empty, we do not keep it in the tidy version
+  )
+
+who_longer
+```
+
+5. The new column `key` contains several variables at once. We can `separate` it
+into gender and age group.
+
+```{r}
+who_separate <- who_longer %>% 
+  mutate(key = str_replace(key, "newrel", "new_rel")) %>%
+  separate(key, c("new", "type", "sexage"), sep = "_") %>%
+  separate(sexage, c("sex", "age"), sep = 1)
+
+who_separate
+```
+
+
+6. While we have performed each step one at a time, it’s possible to chain them
+into a single block of code. This is good practice, because it avoids having to
+define intermediate variables that are only ever used once. This is also
+typically more concise.
+
+```{r}
+who %>%
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65, 
+    names_to = "key", 
+    values_to = "cases", 
+    values_drop_na = TRUE # if a cell is empty, we do not keep it in the tidy version
+  ) %>%
+  mutate(key = str_replace(key, "newrel", "new_rel")) %>%
+  separate(key, c("new", "type", "sexage"), sep = "_") %>%
+  separate(sexage, c("sex", "age"), sep = 1)
+```
+
+7. A recommendation for visualization in javascript. We have only discussed tidying in R. While there is work to implement tidy-style transformations in javascript, the R tidyverse provides a more mature suite of tools. If you are making an interactive visualization in javascript, I recommend first tidying data in R so that each row corresponds to a visual mark and each column to a visual property. You can always save the result as either a json or csv, which can serve as the source data for your javascript visualization.

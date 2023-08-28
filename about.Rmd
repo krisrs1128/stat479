@@ -1,0 +1,9 @@
+---
+title: "About this blog"
+description: |
+  Course notes will go here.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```

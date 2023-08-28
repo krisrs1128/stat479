@@ -1,0 +1,194 @@
+---
+title: "Vector Data"
+description: |
+  Manipulating and visualizing spatial vector data.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-09-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](https://mediaspace.wisc.edu/media/Week%207%20%5B2%5D%20Vector%20Data/1_l2altv6y), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-02-week7-2/week7-2.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("dplyr")
+library("ggmap")
+library("ggplot2")
+library("knitr")
+library("sf")
+library("spData")
+theme_set(theme_minimal())
+```
+
+1. As mentioned previously, vector data are used to store geometric spatial
+data. Specifically, there are 7 types of geometric information that are commonly
+used, as given in the figure below.
+
+```{r}
+include_graphics("sf-classes.png")
+```
+
+3. We can construct these geometric objects from scratch. For example, starting
+from the defining coordinates, we can use `st_point` to create a point object,
+
+```{r}
+# make a point
+p <- st_point(c(5, 2))
+plot(p)
+```
+
+`st_linestring` to create a linestring, 
+
+```{r}
+# make a line
+linestring_matrix <- rbind(c(1, 5), c(4, 4), c(4, 1), c(2, 2), c(3, 2))
+p <- st_linestring(linestring_matrix)
+plot(p)
+```
+
+and `st_polygon` to create a polygon.
+
+```{r}
+# make a polygon
+polygon_list <- list(rbind(c(1, 5), c(2, 2), c(4, 1), c(4, 4), c(1, 5)))
+p <- st_polygon(polygon_list)
+plot(p)
+```
+
+4. Different geometries can be combined into a geometry collection, using `sfc`.
+
+```{r}
+point1 <- st_point(c(5, 2))
+point2 <- st_point(c(1, 3))
+points_sfc <- st_sfc(point1, point2)
+plot(points_sfc)
+```
+
+5. Real-world vector datasets are more than just these geometries — they also
+associate each geometry with some additional information about each feature. We
+can add this information to the geometries above by associating each element
+with a row of a data.frame. This merging is accomplished by `st_sf`, using
+`geometry` to associate a raw `st_geom` each row of a data.frame.
+
+```{r}
+lnd_point <- st_point(c(0.1, 51.5))                
+lnd_geom <- st_sfc(lnd_point, crs = 4326)         
+lnd_attrib = data.frame(                        
+  name = "London",
+  temperature = 25,
+  date = as.Date("2017-06-21")
+  )
+
+lnd_sf = st_sf(lnd_attrib, geometry = lnd_geom)
+```
+
+### Visualization
+
+5. Vector data can be directly plotted using base R. For example, suppose we
+want to plot the boundaries of India, within it's local context. We can use the
+`world` dataset, provided by the `spData` package. Each row of the `world`
+object contains both the boundary of a country (in the `geom` column) and
+information about its location and population characteristics.
+
+```{r}
+data(world)
+head(world)
+```
+
+This makes the plot, using `dplyr` to filter down to just the row containing the
+India geometry.
+
+```{r}
+india_geom <- world %>%
+  filter(name_long == "India") %>%
+  st_geometry()
+
+plot(india_geom)
+```
+
+6. Using base R, we can also layer on several vector objects, using `add = TRUE`.
+
+```{r}
+world_asia <- world %>%
+  filter(continent == "Asia")
+
+plot(india_geom, expandBB = c(0, 0.2, 0.1, 1), col = "gray", lwd = 3)
+plot(st_union(world_asia), add = TRUE)
+```
+
+7. We can also use `geom_sf` in ggplot2. To change the coordinates of the viewing box, we can use `coord_sf`.
+
+```{r}
+ggplot() +
+  geom_sf(data = world_asia, fill = "white") +
+  geom_sf(data = india_geom) +
+  coord_sf(xlim = c(60, 110), ylim = c(5, 40))
+```
+
+8. We can also encode data that's contained in the vector dataset, using the
+`aes`.
+
+```{r}
+ggplot() +
+  geom_sf(data = world_asia, aes(fill = lifeExp)) +
+  coord_sf(xlim = c(60, 110), ylim = c(5, 40)) +
+  scale_fill_viridis_b()
+```
+
+8. If you want to overlay spatial features onto a publicly available map, you
+can find one using the `ggmap` library.
+
+```{r}
+source("https://uwmadison.box.com/shared/static/c1mnfdl292fcot0jo58g5wnshquaa7zx.r")
+register_google(key = "AIzaSyBW7PU2Ne1CM33WMaPreTbAImzGB22Pc6s")
+watercolor <- get_map(c(79.5937, 22.92501), maptype = "watercolor", zoom = 3)
+watercolor <- ggmap_bbox(watercolor)
+ggmap(watercolor) +
+  geom_sf(data = world_asia, aes(fill = lifeExp), inherit.aes = FALSE) +
+  coord_sf(xlim = c(5.5e6, 11e6), ylim = c(5e5, 5e6), crs = st_crs(3857)) +
+  scale_fill_viridis_b()
+```
+
+9. The code from the previous lecture gives more examples of how to use ggplot2
+and ggmap to visualize vector data over public map backgrounds
+
+10. Even in this more complex setup, where we work with background images and
+vector data rather than standard data.frames, most of the usual ggplot2
+functions still apply. For example, we can still color code or facet by fields
+in the vector dataset. To illustrate, we revisit the bus route data from the
+last lecture and distinguish between buses operated by the cities of Madison vs.
+Monona. Before plotting, we fetch the underlying data.
+
+```{r}
+bus <- read_sf("https://uwmadison.box.com/shared/static/5neu1mpuh8esmb1q3j9celu73jy1rj2i.geojson")
+satellite <- get_map(c(-89.37974, 43.07140), maptype = "satellite", zoom = 12)
+satellite <- ggmap_bbox(satellite)
+
+head(bus)
+```
+
+Note that `operator` is the field containing information about which city is
+operating the buses. We can color code the routes by this attribute.
+
+```{r}
+ggmap(satellite) +
+  geom_sf(data = bus, aes(color = operator), size = .5, inherit.aes = FALSE) +
+  coord_sf(crs = st_crs(3857))
+```
+
+Alternatively, we can facet.
+
+```{r}
+ggmap(satellite) +
+  geom_sf(data = bus, col = "#bc7ab3", size = .5, inherit.aes = FALSE) +
+  coord_sf(crs = st_crs(3857)) +
+  facet_wrap(~ operator)
+```
+

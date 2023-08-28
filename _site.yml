@@ -1,0 +1,18 @@
+name: "website"
+title: "Statistical Data Visualization"
+description: |
+  Statistical Data Visualization
+output_dir: "docs"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "Notes"
+      href: notes.html
+output:
+  distill::distill_article:
+    toc: true
+    css: style.css
+collections:
+  posts:
+    canonical: false

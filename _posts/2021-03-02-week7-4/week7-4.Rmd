@@ -1,0 +1,60 @@
+---
+title: "Coordinate Reference Systems"
+description: |
+  The projection problem, and how to check your CRS.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 03-11-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+_[Reading](https://geocompr.robinlovelace.net/spatial-class.html), [Recording](https://mediaspace.wisc.edu/media/Week%207%20%5B4%5D%20Coordinate%20Reference%20Systems/1_f6tizaj7), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-02-week7-4/week7-4.Rmd)_
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+```{r}
+library("ggplot2")
+library("sf")
+theme_set(theme_minimal())
+```
+
+1. An important subtlety of geographic data visualization is that all our maps
+are in 2D, but earth is 3D. The process of associated points on the earth with
+2D coordinates is called « projection. » All projections introduce some level of
+distortion, and there is no universal, ideal projection.
+
+2. Here are a few examples of famous global projections. There are also many
+projections designed to give optimal representations locally within a particular
+geographic area.
+
+3. This means that there is no universal standard for how to represent
+coordinates on the earth, and it’s common to find different projections in
+practice. For example, the block below shows how North America gets projected
+according to two different CRSs.
+
+```{r}
+# some test projections, don't worry about this syntax
+miller <- "+proj=mill +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+lambert <- "+proj=lcc +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+
+north_america <- world %>%
+  filter(continent == "North America")
+
+ggplot(st_transform(north_america, miller)) + geom_sf() 
+ggplot(st_transform(north_america, lambert)) + geom_sf()
+```
+
+
+5. Both vector and raster spatial data will be associated with CRS’s. In either
+`sf` or `raster` objects, they can be accessed using the `crs` function.
+
+6. A common source of bugs is to use two different projections for the same
+analysis. In this class, we will always use the EPSG:4326 projection, which is
+what is used in most online maps. But in your own projects, you should always
+check that the projections are consistent across data sources. If you find an
+inconsistency, it will be important to « reproject » the data into the same CRS.

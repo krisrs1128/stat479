@@ -1,0 +1,169 @@
+---
+title: "Characterizing Outliers"
+description: |
+  Which columns might help us understand extreme values?
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 02-24-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+
+_[Reading](https://idl.cs.washington.edu/files/2012-Profiler-AVI.pdf), [Recording](https://mediaspace.wisc.edu/media/Week%205%20%5B4%5D%20Characterizing%20Outliers/1_uj49qt29), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-30-week5-4/week5-4.Rmd)_
+
+```{r}
+library("caret")
+library("gbm")
+library("ggplot2")
+library("ggridges")
+library("lubridate")
+library("readr")
+library("skimr")
+library("dplyr")
+theme_set(theme_minimal())
+```
+
+1. If we uncover extreme values, it's natural to ask why they arise. The most
+reliable way to find out is to study how the data were collected. Often, though,
+through a little detective work based on the rest of the available data, we can
+form reasonable hypotheses for the source of extreme values.
+
+2. The profiler paper approaches this by coordinating views. On the left, a
+binned scatterplot shows the relationship between Global ($x$-axis) and US
+($y$-axis) gross product for movies in the IMDB dataset. There seem to be a few
+outliers along the bottom of the scatterplot. These are movies with high Global
+gross but which had low revenue in the US. At first, we might suspect that these
+are errors. However, linking the scatterplot with the map on the right gives a
+explanation -- these outlier movies were released outside of the US. In
+the full system, selecting bins in the left hand plot highlights the countries
+that contribute to that bin in orange color.
+
+![](movies.png)
+
+3. How can we know which views to coordinate? Ideally, there would be a
+systematic way to search through promising views, without relying solely on
+intuition. The Profiler paper suggests a criterion based on mutual information.
+We will not discuss this specific proposal, since I do not want us to get
+side-tracked learning about information theory. Instead, we will use a simpler
+(and I think more practical) alternative based on predictability.
+
+4. We will illustrate the idea with a dataset of rail tickets in Spain^[I
+sampled 1 million rows from 2019, the complete dataset is quite a bit larger.].
+Each row shows a train trip, along with its date, the available seats, and an
+associated fare. A histogram of trip duration reveals some outliers -- some
+trips take more than 10 hours.
+
+```{r}
+trips <- read_csv("https://uwmadison.box.com/shared/static/fmag4vyhqad1sdb76aphukkumq2z2yp2.csv") # give it a minute, it's a large file
+ggplot(trips, aes(x = duration)) +
+  geom_histogram(bins = 100)
+```
+
+5. What might be behind these long trips? A few hypotheses come to mind,
+
+* These are regularly scheduled, but infrequent, journeys between distant
+cities.
+* These are trains that make every stop along a route.
+* These trips were made during peak travel season, which resulted in them
+getting delayed.
+* The trains broke down mid-journey.
+
+6. Let's see what additional measurements are available to us, to see whether
+they might help us come up with a satisfactory explanation. It seems like we
+have origin / destination and date variables, but not much else. Note the one
+variable (`seats`) that is entirely missing.
+
+```{r}
+skim(trips)
+```
+
+7. At this point, we could try relating trip duration to each of the available
+columns, evaluating a few of our initial hypothesis. While this strategy would
+work in this particular case, it would become untenable for datasets with many
+more columns. Instead, we'll consider a more generally useful strategy, based on
+predictability.
+
+8. Intuitively, we should try finding features that help predict whether an
+observation will be an outlier. The features that are most predictive determine
+conditions within which the outliers are expected to arise, suggesting potential
+explanations. For example, in the movie revenue example, you might have found
+that country label is strongly predictive of whether an observation had high
+global, but low US, revenue.
+
+9. Applying this idea to the train trips example, let's extract some features
+that might be predictive of whether a trip took more than 6 hours. We put this
+in the `x` data.frame. We put an indicator of whether the trip is 6 or more
+hours in the `y` vector.
+
+```{r}
+x <- trips %>%
+  mutate_at(
+    vars(destination, origin, fare, vehicle_type, vehicle_class), 
+    as.factor
+  ) %>%
+  mutate(
+    month = month(departure),
+    hour = hour(departure),
+  ) %>%
+  select(destination, origin, month, hour, fare, vehicle_type, vehicle_class) %>%
+  as.data.frame()
+
+y <- as.factor(trips$duration > 6)
+```
+
+10. Now, we fit a model that predicts `y` based on `x`. We'll subsample rows so
+that it doesn't take too long -- our goal is visualization, not prediction
+performance. We are using the `caret` package to run the model, because it
+provides an interface to many potential prediction models. Finally, the `varImp`
+command summarizes how important each variable was for the eventual prediction.
+
+```{r}
+ix <- sample(seq_len(nrow(x)), 1000)
+fit <- train(x = x[ix, ], y = y[ix], method = "gbm", verbose = FALSE)
+varImp(fit)
+```
+
+11. It seems that `vehicle_type` is by far the most predictive variable. To see
+its relationship with trip duration, let's use ridge lines. We create separate
+histograms split according `vehicle_type`. We'll also split histograms within
+each vehicle type according to origin city, since this was the second most
+important variable.
+
+```{r}
+# reorder for the vehicle types
+vehicle_order <- trips %>%
+  group_by(vehicle_type) %>%
+  summarise(mduration = mean(duration)) %>%
+  arrange(mduration) %>%
+  pull(vehicle_type)
+
+trips <- trips %>%
+  mutate(vehicle_type = factor(vehicle_type, levels = vehicle_order))
+
+# make the ridge line plot
+ggplot(trips, aes(x = duration, y = vehicle_type, fill = origin)) +
+  geom_density_ridges(alpha = 0.8) +
+  labs(y = "Vehicle Type", x = "Duration", fill = "Origin City") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+12. This is a nice explanation. A few of the `vehicle_types`, like AVE and
+ALVIA, correspond to high speed express trains. The regional lines, like MD and
+R Express, tend to take longer to reach their destination. Within a particular
+type of train, the duration is related to the origin city, likely because that
+determines the distance between origin and destination.
+
+13. While you likely would have discovered this pattern after exploring the
+dataset on your own, in higher-dimensional settings, it can be useful to have
+mechanisms that can partially automate the process. Our strategy of using a
+predictive model in R to sort through variables is a practically useful one, but
+be aware that there is modern research (in the spirit of Profiler) that
+streamlines the process even further, putting all computation in the background
+and making use of interactivity to quickly compare views.

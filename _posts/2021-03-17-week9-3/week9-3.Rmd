@@ -1,0 +1,136 @@
+---
+title: "Heatmaps"
+description: |
+  Visualizing table values, ordered by clustering results.
+author:
+  - name: Kris Sankaran
+    affiliation: UW Madison
+date: 2021-03-23
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://rlbarter.github.io/superheat/basic-usage.html), [Recording](https://mediaspace.wisc.edu/media/Week%209%20%5B3%5D%20Heatmaps/1_j0w5upqf), [Rmarkdown](https://github.com/krisrs1128/stat479/blob/master/_posts/2021-03-17-week9-3/week9-3.Rmd)_
+
+```{r}
+library("dplyr")
+library("ggplot2")
+library("readr")
+library("superheat")
+library("tibble")
+theme_set(theme_minimal())
+```
+
+1. The direct outputs of a standard clustering algorithim are (a) cluster
+assignments for each sample, (b) the centroids associated with each cluster. A
+hierarchical clustering algorithm enriches this output with a tree, which
+provide (a) and (b) at multiple levels of resolution.
+
+2. These outputs can be used to improve visualizations. For example, they can be
+used to define small multiples, faceting across clusters. One especially common
+idea is to reorder the rows of a heatmap using the results of a clustering, and
+this is the subject of these notes.
+
+3. In a heatmap, each mark (usually a small tile) corresponds to an entry of a
+matrix. The $x$-coordinate of the mark encodes the index of the observation,
+while the $y$-coordinate encodes the index of the feature. The color of each
+tile represents the value of that entry. For example, here are the first few
+rows of the movies data, along with the corresponding heatmap, made using the
+superheat package.
+
+```{r}
+movies_mat <- read_csv("https://uwmadison.box.com/shared/static/wj1ln9xtigaoubbxow86y2gqmqcsu2jk.csv") %>%
+  column_to_rownames(var = "title")
+```
+
+```{r, fig.height = 9, fig.width = 12}
+cols <- c('#f6eff7','#bdc9e1','#67a9cf','#1c9099','#016c59')
+superheat(movies_mat, left.label.text.size = 4, heat.pal = cols, heat.lim = c(0, 5))
+```
+
+4. Just like in adjacency matrix visualizations, the effectiveness of a heatmap
+can depend dramatically on the way in which rows and columns are ordered. To
+provide a more coherent view, we cluster both rows and columns, placing rows /
+columns belonging to the same cluster next to one another.
+
+```{r, fig.height = 9, fig.width = 12}
+movies_clust <- movies_mat %>%
+  kmeans(centers = 10)
+
+users_clust <- movies_mat %>%
+  t() %>%
+  kmeans(centers = 10)
+
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  order.rows = order(movies_clust$cluster),
+  order.cols = order(users_clust$cluster),
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```
+
+5. superheat also makes it easy to visualize plot statistics adjacent ot the
+adjacent to the main heatmap. These statistics can be plotted as points, lines,
+or bars. Points are useful when we want to highlight the raw value, lines are
+effective for showing change, and bars give a sense of the area below a set of
+observations. In this example, we use an added panel on the right hand side
+(`yr`) to encode the total number of ratings given to that movie. The
+`yr.obs.cols` allows us to change the color of each point in the adjacent plot.
+In this example, we change color depending on which cluster the movie was found
+to belong to.
+
+```{r, fig.height = 9, fig.width = 12}
+cluster_cols <- c('#8dd3c7','#ccebc5','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd')
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  order.rows = order(movies_clust$cluster),
+  order.cols = order(users_clust$cluster),
+  heat.pal = cols,
+  heat.lim = c(0, 5),
+  yr = rowSums(movies_mat > 0),
+  yr.axis.name = "Number of Ratings",
+  yr.obs.col = cluster_cols[movies_clust$cluster],
+  yr.plot.type = "bar"
+)
+```
+
+6. It also makes sense to order the rows / columns using hierarchical
+clustering. This approach is especially useful when the samples fall along a
+continuous gradient, rather than belonging to clearly delineated groups. The
+`pretty.order.rows` and `pretty.order.cols` arguments use hierarchical
+clustering to reorder the heatmap.
+
+```{r, fig.height = 9, fig.width = 12}
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  pretty.order.cols = TRUE,  
+  pretty.order.rows = TRUE,
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```
+
+7. The hierarchical clustering trees estimated by `pretty.order.rows` and
+`pretty.order.cols` can be also visualized.
+
+```{r, fig.height = 9, fig.width = 15}
+superheat(
+  movies_mat, 
+  left.label.text.size = 4, 
+  pretty.order.cols = TRUE,  
+  pretty.order.rows = TRUE, 
+  row.dendrogram = TRUE,
+  col.dendrogram = TRUE,
+  heat.pal = cols,
+  heat.lim = c(0, 5)
+)
+```

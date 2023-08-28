@@ -1,0 +1,168 @@
+---
+title: "Concatenation and Repetition"
+description: |
+  Adapting the small multiples principle to fields that are not exactly
+  parallel.
+author:
+  - name: Kris Sankaran
+    url: {}
+date: 02-03-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library("robservable")
+knitr::opts_chunk$set(cache = FALSE, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+_[Reading](https://observablehq.com/@uwdata/multi-view-composition?collection=@uwdata/visualization-curriculum), [Recording](https://mediaspace.wisc.edu/media/1_zadih83r), [Notebook](https://observablehq.com/@krisrs1128/examples-of-repetition), [Rmarkdown](https://raw.githubusercontent.com/krisrs1128/stat479/master/_posts/2021-01-20-week2-3/week2-3.Rmd)_
+
+Faceting is useful whenever you want different rows of your dataset to appear in
+different panels. What if you want to compare different columns, or work with
+several datasets? A more general alternative is to use concatenation or
+repetition.
+
+We’re going to illustrate this using vega-lite, but the principles also apply to
+ggplot2^[The analogous function is called `grid.arrange` from the `gridExtra`
+package]. Suppose we want to plot several weather variables next to one another
+-- we can use `hconcat`. The idea here is to construct each plot separately and
+then combine them only at the very end.
+
+````js
+{
+
+  const width = 180,
+        height = 130;
+  
+  // maximum temperature plot
+  const temp_max = vl.markLine()
+    .data(weather)
+    .encode(
+      vl.x().month("date"),
+      vl.y().average("temp_max"),
+      vl.color().fieldN("location")
+    )    
+    .width(width)
+    .height(height);
+
+  // precipitation plot
+  const precip = vl.markLine()
+    .data(weather)
+    .encode(
+      vl.x().month("date"),
+      vl.y().average("precipitation"),
+      vl.color().fieldN("location")
+    )    
+    .width(width)
+    .height(height);
+
+  // precipitation plot
+  const wind = vl.markLine()
+    .data(weather)
+    .encode(
+      vl.x().month("date"),
+      vl.y().average("wind"),
+      vl.color().fieldN("location")
+    )
+    .width(width)
+    .height(height);
+  
+  return vl.hconcat(temp_max, precip, wind)
+    .data(weather)
+    .render()
+}
+````
+
+```{r layout="l-page"}
+robservable("@krisrs1128/examples-of-repetition", include = 4, height = 220)
+```
+
+This implementation is straightforward, but very clumsy. Whenever you find
+yourself copying and pasting code you should ask yourself whether there is a
+more elegant way to implement the same idea. In this case, there is, by reusing
+the same template for everything except the $y$-axis encoding.
+
+````js
+{
+  const width = 180,
+        height = 130;
+  
+  const base = vl.markLine()
+    .data(weather)
+    .encode(
+      vl.x().month("date"),
+      vl.color().fieldN("location")
+    )
+    .width(width)
+    .height(height);
+  
+  const temp_max = base.encode(vl.y().average("temp_max")),
+        precip = base.encode(vl.y().average("precipitation")),
+        wind = base.encode(vl.y().average("wind"));
+  
+  return vl.hconcat(temp_max, precip, wind).render()
+}
+````
+
+```{r layout="l-page"}
+robservable("@krisrs1128/examples-of-repetition", include = 5, height = 220)
+```
+
+That's better, but we can be even more concise, by using repetition. This lets
+us reuse the same template by referring to an abstract `vl.repeat()` object in
+the encoding.
+
+````js
+{
+  const width = 180,
+        height = 130;
+  
+  return vl.markLine()
+    .data(weather)
+    .encode(
+      vl.x().month("date"),
+      vl.color().fieldN("location"),
+      vl.y().average(vl.repeat("column"))
+    )
+    .width(width)
+    .height(height)
+    .repeat({"column": ["temp_max", "precipitation", "wind"]})
+    .render()
+}
+````
+
+```{r layout="l-page"}
+robservable("@krisrs1128/examples-of-repetition", include = 6, height = 220)
+```
+
+Let’s use this idea to generate a scatterplot matrix, a type of plot that shows
+all pairs of scatterplots between columns in a dataset. This type of plot is
+often useful in revealing correlations between fields.
+
+````js
+{
+  const width = 140,
+        height = 140;
+  
+  return vl.markPoint({filled: true, size: 3, opacity: 0.8})
+    .data(weather)
+    .encode(
+      vl.x().fieldQ(vl.repeat("column")),
+      vl.y().fieldQ(vl.repeat("row")),
+      vl.color().fieldN("location")
+    )
+    .width(width)
+    .height(height)
+    .repeat({
+      column: ["temp_max", "precipitation", "wind"],
+      row: ["temp_max", "precipitation", "wind"],
+    })    
+    .render()
+}
+````
+
+```{r}
+robservable("@krisrs1128/examples-of-repetition", include = 7)
+```
