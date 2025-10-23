@@ -1,0 +1,113 @@
+### 3. Linear Models
+
+* motivating case study
+
+* linear models
+
+* sparse linear models
+
+* bias variance trade-off
+
+---
+
+### Drug response prediction
+
+(problem description)
+
+---
+
+### Design and data
+
+---
+
+### Desired model output
+
+---
+
+## Simple Linear Regression
+
+---
+
+### Single continuous predictor
+
+---
+
+### Visualization
+
+---
+
+### Single categorical predictor
+
+---
+
+### Visualization
+
+---
+
+## Multiple Linear Regression
+
+---
+
+### Two continuous predictors
+
+---
+
+### One continuous + one categorical predictor
+
+---
+
+### Interaction terms
+
+---
+
+### Ceteris paribus
+
+---
+
+### Code
+
+---
+
+### Irrelevant predictors?
+
+explain the design of this experiment
+
+---
+
+### Irrelevant predictors?
+
+show the results when you try this
+
+---
+
+## Regularization
+
+---
+
+### Sparse linear models
+
+---
+
+### Visualization
+
+---
+
+### Lasso Paths
+
+---
+
+### Choosing $\lambda$
+
+---
+
+### Cross-validation
+
+---
+
+### Code
+
+---
+
+### Bias-variance trade-off
+
+---

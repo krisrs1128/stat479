@@ -1,0 +1,9 @@
+[
+  {
+    "objectID": "definitions.html#introduction",
+    "href": "definitions.html#introduction",
+    "title": "Definitions",
+    "section": "1. Introduction",
+    "text": "1. Introduction\nOptimization problem\n\\[\n\\begin{aligned}\n\\min_x \\quad & f_0(x) \\\\\n\\text{s.t.} \\quad & f_i(x) \\le 0, \\; i = 1, \\ldots, m \\\\\n& g_i(x) = 0, \\; i = 1, \\ldots, p\n\\end{aligned}\n\\]\n\n( x ^n ): decision variable\n( f_0 ): objective function\n( f_i, g_i ): constraint functions\n\n\n\n[2, 3, 4]"
+  }
+]

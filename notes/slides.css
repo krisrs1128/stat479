@@ -1,0 +1,63 @@
+/* -------- Base typography -------- */
+.reveal {
+  font-family: "Albert Sans", Helvetica, Arial, sans-serif;
+  font-size: 26px;
+  color: #111;
+  background-color: white;
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-weight: 600;
+  color: #002b45;       /* deep blue tone, like the Stanford slides */
+  margin-bottom: 0.4em;
+}
+
+.reveal h1 {
+  font-size: 1.8em;
+  border-bottom: 2px solid #002b45;
+  padding-bottom: 0.2em;
+}
+
+.reveal h2 {
+  font-size: 1.4em;
+}
+
+.reveal p, .reveal li {
+  font-size: 0.9em;
+  line-height: 1.25;
+}
+
+/* -------- Lists -------- */
+.reveal ul {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+/* -------- Code blocks -------- */
+.reveal pre code {
+  font-size: 0.75em;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  padding: 4px 6px;
+}
+
+/* -------- Math -------- */
+.reveal .katex-display {
+  font-size: 0.95em;
+  color: #000;
+}
+
+/* -------- Slide numbers -------- */
+.reveal .slide-number {
+  color: #444;
+  font-size: 0.6em;
+}
+
+/* -------- Remove reveal.js gradients/shadows -------- */
+.reveal section {
+  box-shadow: none !important;
+}
+
+.reveal .slides {
+padding: 0.5em 1.5em;
+}

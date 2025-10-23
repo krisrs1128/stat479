@@ -1,0 +1,13 @@
+.reveal section h2 {
+    color: #003366;
+    font-weight: 700;
+    border-bottom: 2px solid #003366;
+  }
+  .reveal li {
+    font-size: 0.9em;
+  }
+  .reveal code {
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    padding: 2px 5px;
+  }

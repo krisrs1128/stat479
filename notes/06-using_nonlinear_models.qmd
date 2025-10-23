@@ -1,0 +1,90 @@
+### 5. Using Nonlinear Models
+
+* hyperparameter tuning
+
+* application to case study
+
+* posterior predictives
+
+* interpretability
+
+---
+
+### Marginal likelihood
+
+---
+
+### Likelihood surface
+
+interactive visualization here
+https://infallible-thompson-49de36.netlify.app/
+
+---
+
+### Initializing hyperparameters
+
+---
+
+## Case study setup
+
+---
+
+### Periodogram
+
+---
+
+### Kernel specification
+
+---
+
+### Posterior mean
+
+---
+
+### Posterior predictive
+
+---
+
+## Checks
+
+---
+
+### Condition numbers
+
+---
+
+### Relationship with sample size
+
+---
+
+### Relationship with correlation
+
+---
+
+### Jitter heuristic
+
+---
+
+### Normalization
+
+---
+
+### Impact on Kepler study
+
+---
+
+### Case study takeaways
+
+---
+
+## Interpretability
+
+---
+
+### Comparison w/ linear regression
+
+---
+
+### Comparison w/ deep learning
+
+---

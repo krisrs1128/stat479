@@ -1,0 +1,21 @@
+
+---
+
+### Two Columns
+
+example two column layout
+
+:::{.columns}
+::: {.column width="50%"}
+### Convex sets
+A set \(C\) is convex if
+$$
+x_1, x_2 \in C, \lambda \in [0,1]
+\Rightarrow \lambda x_1 + (1 - \lambda)x_2 \in C
+$$
+:::
+
+::: {.column width="50%"}
+![](images/convex_set_example.png){width=90%}
+:::
+:::

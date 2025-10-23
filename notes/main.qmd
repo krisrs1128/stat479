@@ -1,0 +1,10 @@
+---
+title: "Interpretable Machine Learning (STAT 479)"
+subtitle: "Lecture Slides"
+format: revealjs
+---
+
+{{< include 01-motivation.qmd >}}
+{{< include 02-definitions.qmd >}}
+{{< include 03-linear_models.qmd >}}
+{{< include 04-interpreting_linear_models.qmd >}}

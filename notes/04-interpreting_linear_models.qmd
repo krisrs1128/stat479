@@ -1,0 +1,99 @@
+### 4. Linear Models
+
+* interpreting sparse linear models
+
+* application to case study
+
+* interpretation challenges
+
+---
+
+### Parsimony
+
+---
+
+### Simulatability
+
+---
+
+### Modularity
+
+---
+
+### Global & local interpretations
+
+---
+
+### Case study formulation
+
+---
+
+### Data preparation
+
+---
+
+### Evaluation criteria
+
+---
+
+### Model fitting
+
+---
+
+### Evaluation results
+
+---
+
+### Coefficient paths
+
+---
+
+### Interpretation
+
+---
+
+### Model checks
+
+---
+
+### Final conclusions
+
+---
+
+### Possible Improvements
+
+---
+
+### Instability
+
+---
+
+### Simulation setup
+
+---
+
+### Simulation results
+
+---
+
+### Takeaway
+
+---
+
+### Interpretability vs. accuracy trade-offs
+
+(common story -> connection to linear models)
+
+---
+
+### Interpretability vs. accuracy trade-offs
+
+(perhaps linear models are competitive)
+
+---
+
+### Interpretability vs. accuracy trade-offs
+
+(example story with CZ benchmarking)
+
+---

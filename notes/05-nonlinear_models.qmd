@@ -1,0 +1,111 @@
+### 5. Nonlinear models
+
+* motivating case study
+
+* kernels
+
+* GP regression
+
+* tuning
+
+---
+
+### Exoplanet discovery
+
+(problem description: https://docs.exoplanet.codes/en/v0.1.3/tutorials/stellar-variability/)
+(context: https://arxiv.org/abs/1706.05459)
+
+---
+
+### Rotation periods
+
+
+---
+
+### Kepler-755
+
+https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-755
+
+---
+
+## Kernels
+
+---
+
+### Linear regression and similarity
+
+---
+
+### Linear kernels
+
+---
+
+### Nonlinear kernels
+
+---
+
+### Periodic kernels
+
+(connection to Kepler-755)
+
+---
+
+### Matern kernels
+
+---
+
+### Combining kernels
+
+---
+
+## Gaussian process regression
+
+---
+
+### Gaussian process prior
+
+---
+
+### Example draws
+
+---
+
+### Covariance visualization
+
+https://distill.pub/2019/visual-exploration-gaussian-processes/
+
+---
+
+### Draws from different kernels
+
+https://distill.pub/2019/visual-exploration-gaussian-processes/
+
+---
+
+### Gaussian process posterior
+
+---
+
+### Adding samples
+
+---
+
+### Conditioning on all data
+
+---
+
+## Posterior predictive
+
+---
+
+### Example draws
+
+---
+
+### Scalability
+
+---
+
+### Code
+
+---
