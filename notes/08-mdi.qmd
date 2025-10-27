@@ -1,0 +1,50 @@
+### 8. Interpreting CART
+
+* application to case study
+
+* data-driven basis interpretation
+
+* MDI+
+
+* comparing importance measures
+
+---
+
+### Voter Turnout Data
+
+---
+
+### Tuning Model
+
+---
+
+### Trained Model
+
+---
+
+### MDI
+
+---
+
+## Trees $\iff$ Linear Models
+
+---
+
+### Data-driven basis
+
+---
+### Example basis matrix
+
+---
+
+### Geometric interpretation
+
+---
+
+### Regression formulation
+
+---
+
+### MDI+
+
+---

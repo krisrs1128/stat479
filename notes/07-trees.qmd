@@ -1,0 +1,114 @@
+### 7. Classification and Regression Trees
+
+* motivating case study
+
+* trees and partitions
+
+* growing and pruning
+
+* tuning and stability
+
+---
+
+### Voter turnout
+
+---
+
+### Study design
+
+---
+
+### Data dictionary
+
+---
+
+### ML formulation
+
+---
+
+### Understanding & actions
+
+---
+
+## CART setup
+
+---
+
+### Trees and partitions
+
+---
+
+### Trees and partitions
+
+---
+
+### Mixed data types
+
+---
+
+### Missing values
+
+---
+
+## CART algorithm
+
+---
+
+### Growing a tree
+
+
+The formal name for this process is "Recursive Partitioning".
+
+---
+
+### Split quality (MDI)
+
+---
+
+## Tuning
+
+---
+
+### Hyperparameters
+
+---
+
+### Pruning
+
+---
+
+### Cross-validation
+
+---
+
+## Interpretability
+
+---
+
+### Original motivation
+
+(clinical use of tree diagrams)
+
+---
+
+### Tree size
+
+---
+
+### Smooth response functions
+
+---
+
+### Axis-alignment
+
+---
+
+### Correlated features
+
+---
+
+### Equally informative features
+
+---
+
+### Instability
