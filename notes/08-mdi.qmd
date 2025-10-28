@@ -10,19 +10,23 @@
 
 ---
 
-### Voter Turnout Data
+### Voter turnout data
 
 ---
 
-### Tuning Model
+### Tuning model
 
 ---
 
-### Trained Model
+### Trained model
 
 ---
 
 ### MDI
+
+---
+
+## MDI+
 
 ---
 
@@ -45,6 +49,50 @@
 
 ---
 
+### Regularization
+
+---
+
 ### MDI+
+
+---
+
+### Generalizations
+
+---
+
+### Pros: Stability
+
+---
+
+### Cons: Hyperparameters
+
+---
+
+## Comparing importances
+
+---
+
+### Prediction accuracy
+
+---
+
+### Computation time
+
+---
+
+### Alternative rankings
+
+---
+
+### Visual checks
+
+---
+
+### Stability metrics
+
+---
+
+### Prediction surfaces
 
 ---

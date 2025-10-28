@@ -1,0 +1,61 @@
+### 10. Applying Tree Ensembles
+
+* application to case study
+
+* extending MDI+
+
+* comparing importance measures
+
+---
+
+### Tabular muris data
+
+---
+
+### Training on raw data
+
+---
+
+### Tuning and performance
+
+---
+
+### Naive VI
+
+---
+
+### Visual check
+
+---
+
+### Effect of transformation
+
+(new tuning and performance)
+
+---
+
+### New VI
+
+---
+
+### Visual check
+
+---
+
+### Effect of filtering
+
+---
+
+### New VI
+
+---
+
+### Visual check
+
+---
+
+## MDI+
+
+---
+
+## Comparing interpretations

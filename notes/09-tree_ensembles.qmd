@@ -1,0 +1,99 @@
+### 9. Tree Ensembles
+
+* motivating case study
+
+* random forest algorithm
+
+* random forest variable importance
+
+* critiques
+
+---
+
+### Cell atlases
+
+---
+
+### Tabula muris
+
+---
+
+### Classifying cells
+
+---
+
+### Example marker genes
+
+---
+
+## Random forest algorithm
+
+---
+
+### High variance $\to$ averaging
+
+---
+
+### Smooth responses $\to$ averaging
+
+---
+
+### Averaging mechanism
+
+---
+
+### Subsampling features
+
+Purpose: Decorrelate the underlying trees
+
+---
+
+### Subsampling observations
+
+---
+
+### Hyperparameters and tuning
+
+subsampling parameters
+number of trees to average
+can tune using CV
+
+---
+
+## Variable importance
+
+---
+
+### Permutation intuition
+
+---
+
+### Variable importance definition
+
+---
+
+### Computation
+
+---
+
+### Proximity map
+
+---
+
+### Parwise distances
+
+---
+
+## Critiques
+
+---
+
+### Instability: Efron's Experiment
+
+---
+
+### Realism: Hooker's Experiment
+
+---
+
+### Geometric interpretation
