@@ -10,6 +10,18 @@
 
 ---
 
+### Learning Outcome
+
+1. Describe the theoretical foundation of intrinsically interpretable models
+like sparse regression, gaussian processes, and classification and regression
+trees, and apply them to realistic case studies with appropriate validation
+checks.
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+
+---
+
 ### Cell atlases
 
 ---
@@ -23,6 +35,10 @@
 ---
 
 ### Example marker genes
+
+---
+
+### Exercise: Critiquing claims
 
 ---
 
@@ -73,6 +89,10 @@ can tune using CV
 ---
 
 ### Computation
+
+---
+
+### Exercise: Variable importance pseudocode
 
 ---
 

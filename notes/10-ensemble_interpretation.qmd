@@ -8,6 +8,17 @@
 
 ---
 
+### Learning Outcomes
+
+1. Within a specific application context, evaluate the trade-offs associated
+with competing interpretable machine learning techniques.
+1. Describe the theoretical foundation of intrinsically interpretable models
+like sparse regression, gaussian processes, and classification and regression
+trees, and apply them to realistic case studies with appropriate validation
+checks.
+
+---
+
 ### Tabular muris data
 
 ---
@@ -54,8 +65,60 @@
 
 ---
 
+### Exercise: Data flow
+
+---
+
 ## MDI+
 
 ---
 
+### Package implementation
+
+---
+
+### Parameter choices
+
+---
+
+### Top global features
+
+---
+
+### Visual checks
+
+---
+
+### Local features
+
+---
+
+### Visual checks
+
+---
+
+### Application limitations
+
+What would we wish we could describe but haven't yet.
+
+---
+
 ## Comparing interpretations
+
+---
+
+### RF vs. RF+ accuracy
+
+---
+
+### VI stability
+
+---
+
+### Hyperparameter sensitivity
+
+---
+
+### Exercise: Communicating results
+
+---
