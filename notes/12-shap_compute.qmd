@@ -1,0 +1,108 @@
+
+### 12. SHAP computation
+
+* KernelSHAP
+
+* amortization
+
+* application to case study
+
+---
+
+### Learning outcomes
+
+---
+
+## KernelSHAP
+
+---
+
+### Statistical approximation
+
+---
+
+### Special cases
+
+---
+
+### Algorithm cartoon
+
+---
+
+### Scalability comparison
+
+---
+
+### Exercise: Fill in the code
+
+---
+
+## Amortization
+
+---
+
+### Fitting many models
+
+---
+
+### Amortized model
+
+---
+
+### Approximate labeling
+
+---
+
+### When to apply -- Theory
+
+---
+
+### When to apply -- Experiment
+
+---
+
+## Fruit fly development
+
+---
+
+### Problem setup
+
+---
+
+### ML formulation
+
+---
+
+### Model accuracy
+
+---
+
+### KernelSHAP
+
+---
+
+### Top genes (Globally)
+
+---
+
+### Top genes (Locally)
+
+---
+
+### Exercise: Marginal vs. conditional plots
+
+---
+
+### Amortization
+
+---
+
+### Explanation comparison
+
+---
+
+### Limitation
+
+* difficulty in finding interactions
+
+---

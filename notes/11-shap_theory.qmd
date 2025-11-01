@@ -1,0 +1,111 @@
+### 11. SHAP importance
+
+* motivating case study
+
+* game theoretic motivation
+
+* translation to ML
+
+* visualization
+
+---
+
+### Learning outcomes
+
+---
+
+### Fruit fly development
+
+how does one cell become an organism?
+
+(two tail fly example)
+
+---
+
+### Experiments
+
+---
+
+### Available data
+
+---
+
+### Interpretation goals
+
+---
+
+## Game Theory
+
+---
+
+### Credit assignment
+
+(game theory definition)
+
+---
+
+### Notation
+
+---
+
+### Shapley values
+
+---
+
+### Axioms
+
+---
+
+### Efficiency
+
+---
+
+## Game Theory $\to$ Machine Learning
+
+---
+
+### Analogy
+
+---
+
+### Exercise: Package interface
+
+give examples of input
+
+ask to explain: format of output, relationship with previous analogy
+
+---
+
+### Defining $S$
+
+---
+
+### Defining $v$
+
+---
+
+### Alternatives
+
+---
+
+### Sampling
+
+---
+
+### Geometric interpretation
+
+---
+
+### Exercise: Visualizing special cases
+
+---
+
+### Waterfall plots (one sample)
+
+---
+
+### Waterfall plots (many samples)
+
+---
+
+### Computational challenges

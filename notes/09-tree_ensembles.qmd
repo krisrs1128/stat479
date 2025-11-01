@@ -10,7 +10,7 @@
 
 ---
 
-### Learning Outcome
+### Learning outcome
 
 1. Describe the theoretical foundation of intrinsically interpretable models
 like sparse regression, gaussian processes, and classification and regression

@@ -8,7 +8,7 @@
 
 ---
 
-### Learning Outcomes
+### Learning outcomes
 
 1. Within a specific application context, evaluate the trade-offs associated
 with competing interpretable machine learning techniques.
