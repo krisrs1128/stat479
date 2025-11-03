@@ -1,0 +1,89 @@
+
+### 12. Statistical Perspectives of SHAP
+
+* motivating case study
+
+* path averaging
+
+* confidence intervals (SPVIM)
+
+---
+
+### Learning outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+
+---
+
+## Path Averaging
+
+---
+
+### Game theory $\to$ probability
+
+---
+
+### Conditional independence
+
+---
+
+### Graphical models
+
+---
+
+### Alternative definition
+
+---
+
+### Simulation
+
+---
+
+
+### Pseudocode
+
+---
+
+### More special cases
+
+---
+
+### Exercise: Misinterpreting SHAP
+
+---
+
+### SHAP Variable Importance
+
+---
+
+### Motivation
+
+---
+
+### Variable importance
+
+---
+
+### SPVIM definition
+
+---
+
+### Special cases
+
+---
+
+### SPVIM estimation
+
+---
+
+### Central limit theorem
+
+---
+
+### Simulation
+
+---
+
+### Exercise: Pseudocode
+
+---
