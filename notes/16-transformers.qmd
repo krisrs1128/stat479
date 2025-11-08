@@ -1,4 +1,4 @@
-### 15. Transformers
+### 16. Transformers
 
 * application to case study
 
@@ -14,3 +14,101 @@
 * Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
 
 ---
+
+## Attention
+
+---
+
+### Sentence translation task
+
+---
+
+### Encoder-decoder architecture
+
+---
+
+### Sequential decoding: Start
+
+---
+
+### Sequential decoding: Continuing
+
+---
+
+### Motivation for attention
+
+---
+
+### Architectural intuition
+
+---
+
+### Architectural implementation
+
+---
+
+### Visualizing attention weights
+
+---
+
+## Transformers
+
+---
+
+### Generalizing
+
+Has the essence of an idea that is much more broadly relevant.
+
+How to generalize the core attention idea beyond translation?
+
+---
+
+### Query-Key-Value intuition
+
+---
+
+### Translation as a special case
+
+---
+
+### QKV implementation
+
+---
+
+### Code snippet
+
+---
+
+### Multihead attention
+
+---
+
+### Visualizing attention
+
+---
+
+## Case Study
+
+---
+
+### Extracting activations
+
+---
+
+### Interpolating between examples
+
+---
+
+### Nearest neighbors in embedding space
+
+---
+
+### PCA on activations
+
+---
+
+### Outlying examples
+
+---
+
+### Overlying accuracy
