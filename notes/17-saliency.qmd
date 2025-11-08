@@ -1,0 +1,105 @@
+
+### 17. Local Explanations for Image Models
+
+* motivating application
+
+* saliency maps
+
+* SHAP on images
+
+---
+
+### Learning outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Land cover classification
+
+When it says an area is built up, is it looking at buildings? roads?
+
+---
+
+### Climate applications
+
+---
+
+### Remote sensing imagery
+
+---
+
+### Improving resolution/coverage
+
+---
+
+### Spurious associations
+
+Dog background example
+
+---
+
+### Spurious associations
+
+Hospital x-ray image example
+
+---
+
+## Saliency Maps
+
+---
+
+### Perturbation heuristic
+
+---
+
+### Gradients
+
+---
+
+### Computation
+
+---
+
+### captum package
+
+---
+
+### Gradients in captum
+
+---
+
+### Exercise: Pseudocode
+
+---
+
+## Shap
+
+---
+
+### Features $\to$ pixels
+
+---
+
+### SHAP in captum
+
+---
+
+### Local SHAP
+
+---
+
+### Heuristic
+
+---
+
+### Implementation
+
+---
+
+### SHAP vs. gradients
+
+---
+
+### When to use which?

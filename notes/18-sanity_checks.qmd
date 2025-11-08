@@ -1,0 +1,111 @@
+
+### 18. Sanity Checks and Benchmarking
+
+* application to case study
+
+* sanity checks
+
+* remove and retrain
+
+---
+
+### Learning Outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Landcover dataloader
+
+---
+
+### Training and tuning
+
+---
+
+### Getting predictions
+
+---
+
+### Gradient-based expalantions
+
+---
+
+### SHAP explanations
+
+---
+
+### Exercise: Model critique
+
+---
+
+## Sanity Checks
+
+---
+
+### Troubling observation
+
+---
+
+### Explanations $\iff$ edge detectors??
+
+---
+
+### Random weights check
+
+---
+
+### Random labels check
+
+---
+
+### Statistical testing
+
+---
+
+## ROAR
+
+---
+
+### Removing features
+
+---
+
+### Need for retraining
+
+---
+
+### Remove-and-retrain (ROAR)
+
+---
+
+### ROAR curves
+
+---
+
+### Pseudocode
+
+---
+
+### Mini-benchmarking study
+
+---
+
+### Considered methods
+
+---
+
+### Training setup
+
+---
+
+### Evaluation results
+
+---
+
+### Exercise: Purpose and comparison
+
+why benchmark, and how do evaluation methods differ?
+
+---
