@@ -1,0 +1,142 @@
+### 21. Sparse Autoencoders
+
+* motivating application
+
+* optimization objective
+
+* learning algorithm
+
+* interpreting outputs
+
+---
+
+### Learning Outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Protein Language Models
+
+---
+
+### Why are proteins important?
+
+
+---
+
+### Protein sequence data
+
+---
+
+### Sequencing foundation models
+
+---
+
+### Training
+
+---
+
+### What did they learn?
+
+---
+
+### Applications
+
+---
+
+## Optimization Objective
+
+---
+
+### Sparse Autoencoders
+
+1. We need to have specific concepts in mind before we can use concept methods.
+How can we find out what the model "knows" from scratch?
+
+1. We might try to analyze individual neurons, but individual neurons often play
+multiple roles. This "distributed representation" property makes the neurons
+more difficult to study (they are also the reason the model is powerful).
+
+1. One idea is to apply dictionary learning to the space of model embeddings.
+This method can disentangle the many roles for each neuron into a discrete set
+of interpretable features.
+
+---
+
+### Formulation
+
+Following `r Citep(bib, "Yun2021-jc")`, suppose $\*x_{n}$ are the concatenated
+activations across all layers in the network. Then solve:
+
+.pull-left[
+\begin{align*}
+\arg\min_{\Phi, \left(\alpha_{n}\right)} \sum_{n = 1}^{N} \|\*x_n - \*\Phi\*\alpha_{n}\|_{2} + \lambda\|\alpha_n\|_{1} \\
+\text{subject to } \alpha_{n} \succeq 0 \text{ for } n = 1, \dots, N
+\end{align*}
+]
+
+.pull-right[
+<span style="font-size: 18px;">
+<img width="500" src="figures/dictionary_rectangles.png"/>
+</span>
+]
+
+---
+
+### Atoms
+
+The columns $\varphi_{k}$ of $\Phi$ are called atoms. Since the basis is
+overcomplete, it can reconstruct relatively complex patterns.
+
+.center[
+<span style="font-size: 18px;">
+<img width="600" src="figures/atoms_interpretation.png"/>
+</span>
+]
+
+---
+
+### Sparsity
+
+---
+
+### SAE vs. PCA
+
+---
+
+## Learning Algorithm
+
+---
+
+### Gradient Descent
+
+---
+
+### Cartoon
+
+---
+
+### Iterative Sparse THresholding
+
+---
+
+### Cartoon
+
+---
+
+### Derivation
+
+---
+
+## Outputs
+
+---
+
+### Atoms
+
+---
+
+### Sample weights

@@ -1,0 +1,154 @@
+### 19. Linear Probes and Concepts
+
+* motivating application
+
+* linear probes
+
+* training concept vectors
+
+* probes vs. concepts
+
+---
+
+### Learning Outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Motivating Problem
+
+---
+
+### Disentangled Representations
+
+hypothesis that model is learning
+
+---
+
+### Superposition Hypothesis
+
+competing hypothesis that maybe the same neuron learns several overlapping things
+
+---
+
+### "Shared" Language
+
+need some shared point of reference
+
+---
+
+### Broden Dataset
+
+"Broad and Densley Labeled"
+
+---
+
+## Linear Probes
+
+---
+
+### Notation
+
+---
+
+### Estimation
+
+---
+
+### Cartoon
+
+---
+
+### Outputs
+
+---
+
+### Example: Skip Connections
+
+This flags bugs in complex architectures.
+
+.center[
+<span style="font-size: 18px;">
+<img width="500" src="figures/pathological_training.gif"/> <br/>
+In this example from `r Citep(bib, "alain2017understanding")`, a skip connection across layers 1 - 64  has prevented learning across those layers.
+</span>
+]
+
+---
+
+## Concept Activation Vectors
+
+---
+
+### Notation
+
+---
+
+**Step 1**. Define a collection of images $\*x_{n}$ that represents the concept. Also construct a control pool of random images $\*x_{n}^\prime$.
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/concepts_step1.png" width=600/><br/>
+Here, we are interested in the concept "stripes." Figure from `r Citep(bib, "tcav")`.
+</span>
+]
+
+---
+
+**Step 2**. Use an intermediate layer's activations $h\left(\*x\right)$ as
+predictors for a linear classifier to distinguish the groups. This is like
+probes, except the task is derived from Step 1.
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/concepts_step2.png" width=530/><br/>
+Let $\*v$ denote the normal to the decision boundary.
+</span>
+]
+
+---
+
+**Step 3**. Compare the direction $v$ to the directions in the embedding spac
+that increase each sample's class $k$ probability.
+
+\begin{align*}
+S_{k}\left(\*x\right) = \nabla y_{k}\left(h\left(\*x\right)\right)^\top \*v
+\end{align*}
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/concepts_step3.png" width=700/><br/>
+$\nabla y_{k}\left(h\left(\*x\right)\right)$ is the direction in the activation
+space with the steepest increase in class $k$'s logit.
+</span>
+]
+
+---
+
+### Testing
+
+- We should check that we're not seeing patterns in noise. It's possible the
+model has learned nothing about a concept.
+
+- Next time, define a hypothesis test using "negative control" CAVs.
+
+---
+
+## Probes vs. Concepts
+
+---
+
+### Similarities
+
+---
+
+### Probes-specific
+
+---
+
+### Concepts-specific
+
+---

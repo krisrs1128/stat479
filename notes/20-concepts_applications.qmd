@@ -1,0 +1,120 @@
+### 20. Applying Probes and Concepts
+
+* application to case study
+
+* testing concept vectors
+
+* relationship with sufficiency
+
+---
+
+### Learning Outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### `captum` package
+
+---
+
+### Extracting activations
+
+---
+
+### Concepts data structure
+
+---
+
+### Estimating concept directions
+
+---
+
+### Outputs
+
+---
+
+## Testing CAVs
+
+---
+
+### Spurious Concepts
+
+---
+
+**Step 4**. Let $N_{k}$ be the number of images in class $k$, and define the test
+statistic:
+
+\begin{align*}
+T_{k} = \frac{1}{N_{k}}\absarg{\{\*x \in \text{Class } k : S_{k}\left(\*x\right) > 0\}}.
+\end{align*}
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/concepts_step4.png" width=580/><br/>
+We count the number of class $k$'s gradients that are in the same halfspace as $\*v$.<br/>
+</span>
+]
+
+---
+
+**Step 5** Test the significance of $T_{k}$ by learning reference $\*v$ trained
+to distinguish randomly chosen example images.
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/concepts_step5.png" width=700/><br/>
+Random classification directions serve as a negative control.
+</span>
+]
+
+---
+
+### Real-World Example
+
+Concepts have been applied to medical imaging tasks. In this example, concepts
+give additional context about why a model might classify the lesion as a
+melanoma.
+
+.center[
+<span style="font-size: 18px;">
+<img src="figures/lucieri_fig5.png" width=800/> <br/>
+Figure from `r Citep(bib, "Lucieri2022")`. In this case, the model is incorrect despite concepts suggesting the correct diagnosis.
+</span>
+]
+
+---
+
+## Statistical Sufficiency
+
+---
+
+### Missing Concepts?
+
+---
+
+### Regression Perspective
+
+---
+
+### Formalization
+
+---
+
+### Sample-level scores
+
+---
+
+### Cartoon
+
+---
+
+### Sufficiency measure
+
+---
+
+### Open questions
+
+---
