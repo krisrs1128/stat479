@@ -1,0 +1,75 @@
+
+### 1. Introduction
+
+---
+
+## Course Logistics
+
+---
+
+### Weekly rhythm
+
+---
+
+### Learning outcommes
+
+---
+
+### Materials
+
+---
+
+### Expectations
+
+---
+
+### Evaluation
+
+---
+
+## What is interpretability?
+
+---
+
+### AI Is Changing the World
+
+* Fairness
+* Safety
+* Misinformation
+
+---
+
+### Formulation gaps
+
+---
+
+### Formulation gaps: Ethics
+
+---
+
+### Formulation gaps: Reliability
+
+
+---
+
+### Formulation gaps: Usefulness
+
+---
+
+### PDR accuracy decomposition
+
+---
+
+### Spectrum of evaluation
+
+---
+
+### Phases of method development
+
+---
+
+### Benchmarking?
+
+We will revisit this question throughout the course.
+
+---

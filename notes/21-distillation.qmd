@@ -1,4 +1,4 @@
-### 19B. Distillation
+### 21. Distillation
 
 * motivating application
 

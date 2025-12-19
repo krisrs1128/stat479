@@ -1,4 +1,4 @@
-### 20B. Distillation
+### 22. Distillation
 
 * application to case study
 
@@ -85,6 +85,16 @@
 ---
 
 ### AlphaGenome
+
+(inference)
+
+---
+
+(any examples about compression)
+
+---
+
+(any example about safety)
 
 ---
 

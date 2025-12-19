@@ -1,0 +1,108 @@
+
+### 2. Definitions
+
+* global vs. local interpretability
+
+* intrinsic vs. post-hoc
+
+* workflow
+
+---
+
+### Global interpretability
+
+---
+
+### Future examples
+
+---
+
+### Local interpretability
+
+---
+
+### Future examples
+
+---
+
+## Intrinsic Interpretability vs. Post-hoc Explanations
+
+---
+
+### Intrinsic interpretability
+
+---
+
+### Sparsity
+
+---
+
+### Simulatability
+
+---
+
+### Modularity
+
+---
+
+### Exercise: Linear models
+
+---
+
+### Post-hoc interpretability
+
+---
+
+### Feature importance
+
+---
+
+### Additional context
+
+---
+
+### Interpretability-accuracy trade-offs
+
+---
+
+### Does it exist?
+
+---
+
+### Exercise: Local feature importance
+
+---
+
+### Recommended workflow
+
+(why we should care)
+
+---
+
+### Design
+
+---
+
+### Internal accuracy
+
+---
+
+### Stability
+
+---
+
+### Internal interpretability
+
+---
+
+### Compare interpretations
+
+---
+
+### External checks
+
+---
+
+### Working with non-statisticians
+
+---
