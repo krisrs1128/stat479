@@ -1,0 +1,97 @@
+### 20B. Distillation
+
+* application to case study
+
+* distillation checks
+
+* computational efficiency
+
+---
+
+### Learning Outcomes
+
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+
+---
+
+### Problem reminder
+
+---
+
+### Distillation formulation
+
+---
+
+### Workflow setup
+
+---
+
+### Training
+
+---
+
+### Direct training
+
+---
+
+### Accessing predictions
+
+---
+
+### Exercise: Mapping data flow
+
+---
+
+## Checks
+
+---
+
+### Overall accuracies
+
+---
+
+### Calibration
+
+---
+
+### Important features
+
+---
+
+## Analysis
+
+---
+
+### Features in context
+
+---
+
+### Benefits
+
+---
+
+### Limitations
+
+---
+
+## Computational Efficiency
+
+---
+
+### Beyond interpretability
+
+---
+
+### AlphaGenome
+
+---
+
+### DeepSeek
+
+---
+
+### Exercise: Distilled model interpretation T/F
+
+---

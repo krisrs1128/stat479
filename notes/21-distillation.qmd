@@ -1,0 +1,118 @@
+### 19B. Distillation
+
+* motivating application
+
+* student/teacher setup
+
+* interpretability applications
+
+* misuses
+
+---
+
+### Learning Outcomes
+
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+
+---
+
+### Cervical spinal injury
+
+https://github.com/csinva/imodels-data?tab=readme-ov-file
+https://www.pnas.org/doi/10.1073/pnas.2310151122#sec-3
+
+---
+
+### Study design
+
+---
+
+### Available data
+
+---
+
+### Problem formulation
+
+---
+
+### Distillation setup
+
+---
+
+### Warm-up (classification)
+
+---
+
+### Logit Matching
+
+---
+
+### Factorization
+
+---
+
+### Empirical observations
+
+---
+
+### Intrinsically interpretable students
+
+---
+
+### GAMs
+
+---
+
+### Smoothness
+
+---
+
+### Interactions
+
+---
+
+### Alternate datasets
+
+(can detect whether features are correlated with problematic features)
+
+---
+
+### Model auditing
+
+---
+
+### Exercise: COMPAS Interpretation
+
+---
+
+### Tree-based
+
+intrinsic interpretability
+
+---
+
+### Tailoring the student (Clinical prediction)
+
+---
+
+### Code walkthrough
+
+---
+
+### Calibration
+
+---
+
+### Comparing errors
+
+---
+
+### Comparing features
+
+---
+
+### Exercise: Implicit regularization
+
+---
