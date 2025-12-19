@@ -6,6 +6,8 @@
 
 * relationship with sufficiency
 
+* user study evaluation
+
 ---
 
 ### Learning Outcomes
@@ -115,6 +117,30 @@ Figure from `r Citep(bib, "Lucieri2022")`. In this case, the model is incorrect 
 
 ---
 
-### Open questions
+## User Studies
+
+---
+
+### Goals
+
+---
+
+### Example Study
+
+---
+
+### Experimental Design
+
+---
+
+### Results
+
+---
+
+### Interpretation
+
+---
+
+### Exercise: Complementarity
 
 ---

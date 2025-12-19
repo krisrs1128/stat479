@@ -102,4 +102,6 @@ Hospital x-ray image example
 
 ---
 
-### When to use which?
+### Exercise: Interpretability Goals vs. Method
+
+---

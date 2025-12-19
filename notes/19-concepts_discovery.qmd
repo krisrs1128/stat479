@@ -79,6 +79,10 @@ In this example from `r Citep(bib, "alain2017understanding")`, a skip connection
 
 ---
 
+### Exercise: Pseudocode
+
+---
+
 ## Concept Activation Vectors
 
 ---
@@ -134,6 +138,10 @@ space with the steepest increase in class $k$'s logit.
 model has learned nothing about a concept.
 
 - Next time, define a hypothesis test using "negative control" CAVs.
+
+---
+
+### Exercise: CAV for a 2-layer network
 
 ---
 
