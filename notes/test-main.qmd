@@ -1,7 +1,0 @@
----
-title: "Test"
-format:
-  revealjs: default
----
-
-{{< include test-include.qmd >}}
