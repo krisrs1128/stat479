@@ -1,10 +1,16 @@
 ---
-title: "Interpretable Machine Learning (STAT 479)"
+title: "Interpretable Machine Learning <br/> STAT 479 - Spring 2025"
 subtitle: "Lecture Slides"
-format: revealjs
+format:
+  revealjs: default
 ---
 
+```{r}
+library(RefManageR)
+bib <- ReadBib("references.bib")
+```
+
 {{< include 01-motivation.qmd >}}
-{{< include 02-definitions.qmd >}}
+<!-- {{< include 02-definitions.qmd >}}
 {{< include 03-linear_models.qmd >}}
-{{< include 04-interpreting_linear_models.qmd >}}
+{{< include 04-interpreting_linear_models.qmd >}} -->

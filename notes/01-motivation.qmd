@@ -1,8 +1,10 @@
----
-title: "01-motivation"
----
-
 ### 1. Introduction
+
+* course logistics
+
+* overall motivation
+
+* decomposing interpretability
 
 ---
 
@@ -13,10 +15,12 @@ title: "01-motivation"
 ### Weekly rhythm
 
 Tuesday
+
 * New methods
 * Exercises [Conceptual]
 
 Thursday
+
 * Case study using method
 * Exercises [Technical]
 
@@ -31,12 +35,19 @@ Friday (every ~ 3 weeks)
 - **Compare** the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.
 - Within a specific application context, **evaluate** the trade-offs associated with competing interpretable machine learning techniques.
 - **Describe** the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and **apply** them to realistic case studies with appropriate validation checks.
+
+---
+
+### Learning outcommes
+
 - **Describe** the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and **apply** them to realistic case studies with appropriate validation checks
 - **Analyze** large-scale foundation models using methods like sparse autoencoders and **describe** their relevance to problems of model control and AI-driven design.
 
 ---
 
-### Materials
+## Materials
+
+materials
 
 ---
 
@@ -84,30 +95,36 @@ encode in performance metrics is called a formulation gap.
 
 ### Formulation gaps: Trust
 
-.pull-left[
+:::: {.columns}
+::: {.column width="50%"}
 - Would you be willing to relinquish control to the model?
 
 - The answer depends on how it manages individual cases, not just than overall accuracy.
-]
+:::
 
-.pull-right[
+::: {.column width="50%"}
 <img src="figures/aircanada.png"/>
-]
+:::
+::::
 
 ---
 
 ### Formulation gaps: Transferability
 
+:::: {.columns}
+::: {.column width="50%"}
 - Typical benchmarks randomly split data into training vs. test sets.
 
 - Models are often used in settings that don't match those original training/test splits.
 
 - The use of models might themselves change the distribution of the data (pneumonia example from before).
+:::
 
-.pull-right[
+::: {.column width="50%"}
 <img src="figures/zillow.png"/><br/>
 See `r Citep(bib, "mitPredictiveModels")`.
-]
+:::
+::::
 
 ---
 
@@ -115,89 +132,34 @@ See `r Citep(bib, "mitPredictiveModels")`.
 
 - Models are often used to support discovery.  This is a different task than automation.
 
-- While this is often an argument for using "white box" models, black models can
-still support discovery, e.g., by identifying similar cases in a medical
-diagnosis system.
+- While this is often an argument for using "white box" models, black boxes can still support discovery, e.g., by identifying similar cases in a medical diagnosis system.
 
 ---
 
 ### Formulation gaps: Ethics
 
+
+:::: {.columns}
+::: {.column width="50%"}
 - Models might amplify existing biases if only test accuracy is considered.
 
-- Fairness metrics have been defined to help guard against this risk, but there
-is no universal metric for fairness. Interpretability can help address broader
-demands for transparency.
+- Fairness metrics have been defined to help guard against this risk, but there is no universal metric for fairness. Interpretability can help address broader demands for transparency.
+:::
 
-.pull-right[
-<img src="figures/propublica_compas.png"/>
-]
-
----
-
-### PDR accuracy decomposition
-
-An alternative perspective on interpretability comes from `r Citep(bib, "Murdoch2019")`.
-
-Predictive Accuracy:
-
----
- Based on the attached paper can you prepare 3 quarto/markdown slides describing predictive accuracy/descriptive accuracy, and relevancy? Can you also prepare 2 - 3 other slides summarizing main points from this paper?
-
-
-It should have a direct, new-yorker-inspired style. Here are some rough examples from other topics.
-
-```
-
-
-### Formulation gaps: Informativeness
-
-
-- Models are often used to support discovery.  This is a different task than automation.
-
-
-- While this is often an argument for using "white box" models, black models can
-
-still support discovery, e.g., by identifying similar cases in a medical
-
-diagnosis system.
-
-
----
-
-
-### Formulation gaps: Ethics
-
-
-- Models might amplify existing biases if only test accuracy is considered.
-
-
-- Fairness metrics have been defined to help guard against this risk, but there
-
-is no universal metric for fairness. Interpretability can help address broader
-
-demands for transparency.
-
-.pull-right[
-
-<img src="figures/propublica_compas.png"/>
-
-]
+::: {.column width="50%"}
+<img src="figures/propublica_compas.png" width=500/>
+:::
+::::
 
 ---
 
 ### PDR Framework
 
-- Reference `r Citep(bib, "Murdoch2019")` also breaks the vague concept of
-"interpretability" down into precise elements which can be more formally
-evaluated.
+- Reference `r Citep(bib, "Murdoch2019")` also breaks the vague concept of "interpretability" down into precise elements which can be more formally evaluated.
 
-- Together, this helps establish trust in the reliability of the results, which
-is important in interdisciplinary work.
+- Together, this helps establish trust in the reliability of the results, which is important in interdisciplinary work.
 
-- It also helps protect against unintended consequences that can arise after
-model deployment.
-
+- It also helps protect against unintended consequences that can arise after model deployment.
 ---
 
 ### PDR Framework: Accuracy
@@ -208,7 +170,7 @@ model deployment.
 
 ---
 
-The PDR Desiderata: Relevancy
+### The PDR Desiderata: Relevancy
 
 - Interpretations don't exist in a vacuum. Like data visualizations, their complexity needs to be suitable to their audience.
 
