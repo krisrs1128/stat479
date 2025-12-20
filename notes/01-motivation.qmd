@@ -1,3 +1,6 @@
+---
+title: "01-motivation"
+---
 
 ### 1. Introduction
 
@@ -9,9 +12,27 @@
 
 ### Weekly rhythm
 
+Tuesday
+* New methods
+* Exercises [Conceptual]
+
+Thursday
+* Case study using method
+* Exercises [Technical]
+
+
+Friday (every ~ 3 weeks)
+* Homework due
+
 ---
 
 ### Learning outcommes
+
+- **Compare** the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.
+- Within a specific application context, **evaluate** the trade-offs associated with competing interpretable machine learning techniques.
+- **Describe** the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and **apply** them to realistic case studies with appropriate validation checks.
+- **Describe** the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and **apply** them to realistic case studies with appropriate validation checks
+- **Analyze** large-scale foundation models using methods like sparse autoencoders and **describe** their relevance to problems of model control and AI-driven design.
 
 ---
 
@@ -31,7 +52,15 @@
 
 ---
 
-### AI Is Changing the World
+## Reading
+
+- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340
+
+- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. https://doi.org/10.1073/pnas.1900654116
+
+---
+
+### Problems
 
 * Fairness
 * Safety
@@ -41,22 +70,151 @@
 
 ### Formulation gaps
 
+- In machine learning, most effort is directed towards ensuring models have good
+performance performance metrics on external benchmark data sets.
+
+- Models learning this way can be very accurate according to easily measured
+criteria like accuracy or computational efficiency but inappropriate with
+respect to properties that are harder to measure.
+
+- The gap between what we want our models to achieve and what we can easily
+encode in performance metrics is called a formulation gap.
+
+---
+
+### Formulation gaps: Trust
+
+.pull-left[
+- Would you be willing to relinquish control to the model?
+
+- The answer depends on how it manages individual cases, not just than overall accuracy.
+]
+
+.pull-right[
+<img src="figures/aircanada.png"/>
+]
+
+---
+
+### Formulation gaps: Transferability
+
+- Typical benchmarks randomly split data into training vs. test sets.
+
+- Models are often used in settings that don't match those original training/test splits.
+
+- The use of models might themselves change the distribution of the data (pneumonia example from before).
+
+.pull-right[
+<img src="figures/zillow.png"/><br/>
+See `r Citep(bib, "mitPredictiveModels")`.
+]
+
+---
+
+### Formulation gaps: Informativeness
+
+- Models are often used to support discovery.  This is a different task than automation.
+
+- While this is often an argument for using "white box" models, black models can
+still support discovery, e.g., by identifying similar cases in a medical
+diagnosis system.
+
 ---
 
 ### Formulation gaps: Ethics
 
----
+- Models might amplify existing biases if only test accuracy is considered.
 
-### Formulation gaps: Reliability
+- Fairness metrics have been defined to help guard against this risk, but there
+is no universal metric for fairness. Interpretability can help address broader
+demands for transparency.
 
-
----
-
-### Formulation gaps: Usefulness
+.pull-right[
+<img src="figures/propublica_compas.png"/>
+]
 
 ---
 
 ### PDR accuracy decomposition
+
+An alternative perspective on interpretability comes from `r Citep(bib, "Murdoch2019")`.
+
+Predictive Accuracy:
+
+---
+ Based on the attached paper can you prepare 3 quarto/markdown slides describing predictive accuracy/descriptive accuracy, and relevancy? Can you also prepare 2 - 3 other slides summarizing main points from this paper?
+
+
+It should have a direct, new-yorker-inspired style. Here are some rough examples from other topics.
+
+```
+
+
+### Formulation gaps: Informativeness
+
+
+- Models are often used to support discovery.  This is a different task than automation.
+
+
+- While this is often an argument for using "white box" models, black models can
+
+still support discovery, e.g., by identifying similar cases in a medical
+
+diagnosis system.
+
+
+---
+
+
+### Formulation gaps: Ethics
+
+
+- Models might amplify existing biases if only test accuracy is considered.
+
+
+- Fairness metrics have been defined to help guard against this risk, but there
+
+is no universal metric for fairness. Interpretability can help address broader
+
+demands for transparency.
+
+.pull-right[
+
+<img src="figures/propublica_compas.png"/>
+
+]
+
+---
+
+### PDR Framework
+
+- Reference `r Citep(bib, "Murdoch2019")` also breaks the vague concept of
+"interpretability" down into precise elements which can be more formally
+evaluated.
+
+- Together, this helps establish trust in the reliability of the results, which
+is important in interdisciplinary work.
+
+- It also helps protect against unintended consequences that can arise after
+model deployment.
+
+---
+
+### PDR Framework: Accuracy
+
+- **Predictive Accuracy**: The model-to-explain has to be accurate. There is not point "interpreting" a model that gives a poor approximation of reality.
+
+- **Descriptive Accuracy**: The interpretation should be faithful to the model. This is the extent to which the explanation reflects what the black box actually learned, which is not necessarily the same as what it was designed to learn.
+
+---
+
+The PDR Desiderata: Relevancy
+
+- Interpretations don't exist in a vacuum. Like data visualizations, their complexity needs to be suitable to their audience.
+
+- For example, we might give three different explanations of the same model depending on whether we are communicating with biologists, clinicians, or statisticians.
+
+- Whether the outputs from interpretability outputs are relevant to their audience can be gauged by their adoption in specific scientific settings or how they are actually used by participants in user studies.
 
 ---
 

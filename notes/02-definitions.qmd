@@ -27,6 +27,10 @@
 
 ## Intrinsic Interpretability vs. Post-hoc Explanations
 
+- Intrinsically interpretable: Build a "glass box" from the start. Sparsity and simulatability ensure the model is inherently readable.
+
+- Post Hoc: Inspect an already trained "black box" model, which can be chosen simply to maximize accuracy without regard to interpretability.
+
 ---
 
 ### Intrinsic interpretability
@@ -62,6 +66,12 @@
 ---
 
 ### Interpretability-accuracy trade-offs
+
+- For many datasets, simple models (like decision trees) offer high descriptive
+accuracy but are not as accurate as more complex models.
+
+- Similarly, deep neural networks might predict the future well but not be
+amenable to accurate descriptions.
 
 ---
 
