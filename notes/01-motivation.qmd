@@ -153,6 +153,14 @@ See `r Citep(bib, "mitPredictiveModels")`.
 
 ---
 
+### Exercise 1 - 1
+
+- Introduce yourself to your neighbors. What is your name and degree program? What are your areas of interest? How might interpretability or explainability be helpful in the work that you do?
+
+- Have you encountered a situation in the past where you think interpretability or explainability would be useful? Describe the situation and your overall goals. How did you address them and are there any ways the approach could have been improved?
+
+---
+
 ### PDR Framework
 
 - Reference `r Citep(bib, "Murdoch2019")` also breaks the vague concept of "interpretability" down into precise elements which can be more formally evaluated.
