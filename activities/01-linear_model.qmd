@@ -1,0 +1,100 @@
+---
+title: Drug-perturbation screens for blood cancer
+---
+
+```{r}
+library(fs)
+library(ggforce)
+library(scico)
+library(tidyverse)
+theme_set(theme_classic())
+set.seed(20251223)
+```
+
+```{r}
+data_dir <- path("data")
+source("activities/01-helpers.R")
+cll_data <- readRDS(data_dir / "01-cll.rds")
+```
+
+## Exploration
+
+```{r}
+X <- cll_data$X
+y <- cll_data$y
+annotation <- tibble(
+    variable = colnames(X),
+    label = cll_data$annotation
+)
+```
+
+```{r}
+xy <- bind_cols(viability = y, X)
+plot_viability("drug", 1, 6, 5)
+plot_viability("drug", 2, 6, 5)
+```
+
+```{r}
+plot_viability("RNA", 1, 6, 5)
+plot_viability("methylation", 1, 6, 5)
+```
+
+## Sparse Regression
+
+```{r}
+library(glmnet)
+fit <- cv.glmnet(X, y, standardize = FALSE, alpha = 1)
+plot(fit)
+```
+
+```{r}
+plot_predictions(fit, X, y)
+```
+
+```{r}
+head(coef(fit))
+```
+
+```{r}
+plot_coef(fit)
+```
+
+### Standardization
+
+```{r}
+fit <- cv.glmnet(X, y, standardize = TRUE)
+plot(fit)
+```
+
+```{r}
+plot_predictions(fit, X, y)
+plot_coef(fit)
+```
+
+### Coefficient Trajectories
+
+```{r}
+plot(fit$glmnet.fit)
+```
+
+```{r}
+coef(fit$glmnet.fit)
+```
+
+```{r}
+beta_hat_lambda <- annotated_beta(coef(fit$glmnet.fit), annotation)
+tile_plot(beta_hat_lambda)
+```
+
+### Raw Data Check
+
+```{r}
+plot_viability("drug", 1, 5, 4, beta_hat_lambda$variable)
+plot_viability("RNA", 1, 3, 3, beta_hat_lambda$variable)
+plot_viability("methylation", 1, 3, 3, beta_hat_lambda$variable)
+```
+
+### External Evidence
+
+https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000019102;r=11:124747472-124752255
+https://www.proteinatlas.org/ENSG00000019102-VSIG2/cancer
