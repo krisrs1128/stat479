@@ -1,4 +1,3 @@
-
 ### 2. Definitions
 
 * intrinsic vs. post-hoc
@@ -34,6 +33,8 @@ Some properties that make a model intrinsically interpretable are:
 - Sparsity
 - Simulatability
 - Modularity
+
+We define these on the next few slides.
 
 ---
 
@@ -81,23 +82,35 @@ inference complexity factor in.
 
 ### Post-hoc interpretability
 
+Some common strategies for explaining black box models include,
+
+- Feature importances
+
+- Feature attributions
+
+- Model distillations
+
+A few examples are given on the next few slides, but first we should distinguish
+between global and local explanations.
+
 ---
 
-### Feature importance
-
----
-
-### Additional context
-
----
-
-### Global Explanation
+### Global explanation
 
 - A global explanation characterizes how a model behaves across all possible inputs.
 
 - These explanations are valuable in scientific studies, where we usually look for universal rules relating sets of variables.
 
 <img src="figures/explanation_types.png" width=500 class="center"/>
+
+---
+
+### Example: Variable importance
+
+According to this plot, the variables X4, X2, and X1 seem most important across
+three separate tree-based models (weeks 4 - 5).
+
+<img src="figures/vip_plots.png" width=800 class="center"/>
 
 ---
 
@@ -111,38 +124,58 @@ inference complexity factor in.
 
 ---
 
-### Future examples
+### Example: saliency map
 
-:::: {.columns}
-::: {.column width="50%"}
-Global
+In vision models, one use case of local explanations is to identify the parts of
+an image that are "most important" for particular predicted classes.
 
-- Variable importance (Lectures 7 - 10)
-- Distilled model (Lectures 21 - 22)
-- Sparse Autoencoder factors (Lectures 23 - 24)
-:::
+<img src="figures/saliency_example.png" width=850 class="center"/>
 
-::: {.column width="50%"}
-Local
+---
 
-- SHAP scores (Lectures 10 - 14)
-- Saliency maps (Lectures 17 - 18)
-:::
-:::
+### Example: SHAP attributions
+
+For this sample, the most "important" feature is `Capital Gain`. It is
+responsible for much of the negative prediction $f\left(x\right)$, in a sense
+that will be made precise when we discuss SHAP.
+
+<img src="figures/shap_waterfall.png" class="center"/>
 
 ---
 
 ### Interpretability-accuracy trade-offs
 
-- For many datasets, simple models (like decision trees) offer high descriptive
-accuracy but are not as accurate as more complex models.
+- For many datasets, simple models (like decision trees) offer high descriptive accuracy but have lower predictive accuracy compared to more complex models (like random forests).
 
-- Similarly, deep neural networks might predict the future well but not be
-amenable to accurate descriptions.
+- Similarly, deep neural networks might predict the future well but not be amenable to accurate descriptions in PDR sense.
+
+---
+
+### Bias and Variance
+
+One intuition for this tradeoff comes from the bias variance tradeoff. More
+complex models have lower bias, and if we have lots of data, variance is less of
+a concern.
+
+<img src="figures/bias_variance.png" class="center"/>
 
 ---
 
 ### Does it exist?
+
+:::: {.columns}
+::: {.column width="50%"}
+Unlike the bias-variance tradeoff, which has a precise mathematical foundation,
+the interpretability-accuracy tradeoff is more of a heuristic, and some have
+argued that it can be misleading `r Citep(bib, "Rudin2019")`.
+:::
+
+::: {.column width="50%"}
+<a href="https://research-vp.tau.ac.il/sites/resauth.tau.ac.il/files/DARPA-BAA-16-53_Explainable_Artificial_Intelligence.pdf">
+<img src="figures/tradeoff_darpa.png" width=400/>
+</a>
+:::
+::::
 
 ---
 
@@ -152,34 +185,90 @@ amenable to accurate descriptions.
 
 ### Recommended workflow
 
-(why we should care)
+If applied systematically, techniques from interpretability can be used to check
+assumptions, identify data and model quality issues, and uncover surprising
+relationships. The steps below expand on ideas in `r Citep(bib, "Murdoch2019")`.
+
+```{mermaid}
+%%{init: {'theme':'forest', 'themeVariables': {'fontSize':'36px', 'fontFamily':'arial'}, 'flowchart': {'padding': 80}}}%%
+graph LR
+    A[Design] --> B[Predictive <br/> Accuracy]
+    B --> C[Stability]
+    C --> D[Explanation <br/> Comparisons]
+    D --> E[External <br/> Checks]
+```
 
 ---
 
-### Design
+### Data collection
+
+1. First consider the underlying data collection mechanism. This is essential context for any downstream interpretation.
+
+1. Were the data purely observational, and if so, what led to a sample being observed (or missed)?
+
+1. If it is from an experiment, which aspects were controlled? In what ways is the experimental system representative of the end-use?
 
 ---
 
-### Internal accuracy
+### Predictive accuracy
+
+ 1. Measure the model's fit to the data using some measure of performance accuracy on a test set.
+
+ 1. The test set should mimic what would be encountered during deployment as closely as possible, even though this is impossible in situations where the environment is always changing.
+
+---
+
+### Interpretation/Explanation
+
+Next we can apply our interpretability technique. We should pay attention to
+**descriptive accuracy**. For example,
+
+- How many features do we need before the SHAP approximation matches the full model prediction (Week 6 - 7)?
+
+- How closely does the distilled model match the original model's predictions (Week 10)?
+
+- If using permutation importance, are the permuted data plausible, or do they lie outside the training data (Week 4)?
 
 ---
 
 ### Stability
 
----
+1. Are the interpretations robust to perturbations?
 
-### Internal interpretability
+1. Data perturbations: Do the same interpretations appear when using different subsamples?
+
+1. Hyperparameter perturbations: Do the same interpretations across similar hyperparameters?
+
+1. Model perturbations: If using a post-hoc explanation, we can see whether the same features arise across multiple models?
 
 ---
 
 ### Compare interpretations
 
+1. Apply multiple interpretation methods to the same model.
+
+1. If methods give contradictory results, then at least one has low descriptive accuracy.
+
 ---
 
 ### External checks
 
+Test interpretations against domain knowledge or experimental results. If the
+interpretation claims feature $j$ is important, then can be checked by
+
+- comparing with existing scientific results
+- measuring performance when feature $j$ is removed or held constant
+- running new experiments that manipulate feature $j$.
+
 ---
 
-### Working with non-statisticians
+### Explanations for Communication
+
+The talk `r Citep(bib, "kim_iclr")` describes how interpretability bridges human and machine "concepts."
+
+<img src='figures/kim_iclr.png' class="center" width=700/>
+
+This bridge is especially important in collaborative work! Data science never
+exists in a vacuum.
 
 ---
