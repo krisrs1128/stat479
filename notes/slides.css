@@ -59,5 +59,15 @@
 }
 
 .reveal .slides {
-padding: 0.5em 1.5em;
+  padding: 0.5em 1.5em;
+}
+
+.center {
+  display:block; margin: 0 auto;
+}
+
+.reveal section img.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
