@@ -182,14 +182,28 @@ See `r Citep(bib, "mitPredictiveModels")`.
 
 ### Spectrum of evaluation
 
+Reference `r Citep(bib, "rigorous_interpretability")` notes that new interpretability techniques can be evaluated at several levels.
+
+- Functionally-grounded: Define computational proxy tasks that can be measured without studying real users.
+
+- Human-grounded: Consider simplified tasks that can be solved by general audience members. This can involve crowdsourcing.
+
+- Application grounded: Evaluate in the field with representative experts in a concrete end-use case.
+
 ---
 
 ### Phases of method development
 
+- These different types of evaluation can inform one another. For example, we can define new proxy tasks based on the most challenging steps for experts.
+
+- New methods that do well in computational proxies are worth investigating through user studies.
+
 ---
 
-### Benchmarking?
+### Benchmarking
 
-We will revisit this question throughout the course.
+- Each of these types fo evaluation will come with their own performance metrics.
+
+- We will revisit this question periodically as we introduce new methods and study the contexts in which they are worth applying.
 
 ---

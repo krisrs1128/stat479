@@ -1,51 +1,77 @@
 
 ### 2. Definitions
 
-* global vs. local interpretability
-
 * intrinsic vs. post-hoc
+
+* global vs. local explanation
 
 * workflow
 
 ---
 
-### Global interpretability
+## Reading
 
----
+- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340
 
-### Future examples
-
----
-
-### Local interpretability
-
----
-
-### Future examples
+- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. https://doi.org/10.1073/pnas.1900654116
 
 ---
 
 ## Intrinsic Interpretability vs. Post-hoc Explanations
 
-- Intrinsically interpretable: Build a "glass box" from the start. Sparsity and simulatability ensure the model is inherently readable.
+- Intrinsically interpretable: Build a "glass box" from the start. The model is interpretable by design—its structure allows us to understand how it works.
 
-- Post Hoc: Inspect an already trained "black box" model, which can be chosen simply to maximize accuracy without regard to interpretability.
+- Post Hoc: Inspect an already trained "black box" model, which can be chosen simply to maximize accuracy without regard to interpretability. Post-hoc methods extract explanations from models that weren't designed to be understood
+
+<img src="figures/black_box_flashlight.png" width=900 class="center"/>
 
 ---
 
 ### Intrinsic interpretability
 
+Some properties that make a model intrinsically interpretable are:
+
+- Sparsity
+- Simulatability
+- Modularity
+
 ---
 
 ### Sparsity
+
+- A model is sparse if the number of non-zero parameters is small relative to the total number of available parameters
+
+- For example, a sparse linear model restricts attention to the subset of features with non-zero coefficients.
+
+- Sparsity enhances interpretability only when it correctly captures the structure of the true data-generating process. If the true relationship depends on many features, imposing sparsity introduces bias.
 
 ---
 
 ### Simulatability
 
+A model is simulatable if it's possible to manually compute its output for any
+input within a reasonable time. Both the number of model parameters and the
+inference complexity factor in.
+
+<a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/">
+<img src="figures/simulatability.gif" class="center" width=650/>
+</a>
+
 ---
 
 ### Modularity
+
+- A model is modular if its prediction function $f(x)$ can be decomposed into interpretable components, each of which can be analyzed independently.
+
+- One example is an additive decomposition, where the function can be written as,
+
+    \begin{align*}
+    f\left(x\right) = b_{0} + \sum_{j = 1}^{J}f_{j}\left(x_{j}\right)
+    \end{align*}
+
+  and each $f_{i}$ operates on only a single coordinate of the input $x$.
+
+- More generally, a model is modular if subsets of its parameters or computations can be viewed as separate, interpretable units.
 
 ---
 
@@ -62,6 +88,47 @@
 ---
 
 ### Additional context
+
+---
+
+### Global Explanation
+
+- A global explanation characterizes how a model behaves across all possible inputs.
+
+- These explanations are valuable in scientific studies, where we usually look for universal rules relating sets of variables.
+
+<img src="figures/explanation_types.png" width=500 class="center"/>
+
+---
+
+### Local explanation
+
+- A local explanation describes why a model made a specific prediction for a particular input. The relationships it finds may be unique to that example.
+
+- These are especially helpful in auditing high-stakes decisions made in specific cases, e.g. loan approvals, medical diagnoses, parole decisions.
+
+<img src="figures/explanation_types.png" width=500 class="center"/>
+
+---
+
+### Future examples
+
+:::: {.columns}
+::: {.column width="50%"}
+Global
+
+- Variable importance (Lectures 7 - 10)
+- Distilled model (Lectures 21 - 22)
+- Sparse Autoencoder factors (Lectures 23 - 24)
+:::
+
+::: {.column width="50%"}
+Local
+
+- SHAP scores (Lectures 10 - 14)
+- Saliency maps (Lectures 17 - 18)
+:::
+:::
 
 ---
 
