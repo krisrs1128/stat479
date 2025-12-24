@@ -17,8 +17,6 @@ source("activities/01-helpers.R")
 cll_data <- readRDS(data_dir / "01-cll.rds")
 ```
 
-## Exploration
-
 ```{r}
 X <- cll_data$X
 y <- cll_data$y
@@ -27,6 +25,20 @@ annotation <- tibble(
     label = cll_data$annotation
 )
 ```
+
+```{r}
+dim(X)
+```
+
+```{r}
+annotation
+```
+
+```{r}
+count(annotation, label)
+```
+
+## Exploration
 
 ```{r}
 xy <- bind_cols(viability = y, X)
