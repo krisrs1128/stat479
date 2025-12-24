@@ -1,0 +1,138 @@
+---
+title: "Gaussian Process Models for Stellar Variability"
+subtitle: "Modeling rotating star light curves with Stan and R"
+format: html
+---
+
+# Gaussian process models for stellar variability
+
+When fitting exoplanets, we also need to fit for the stellar variability and Gaussian Processes (GPs) are often a good descriptive model for this variation. In R, we can use `brms` (Bayesian Regression Models using Stan) which has excellent support for flexible Gaussian process models. In this tutorial, we model the light curve of a rotating star observed by Kepler using the R ecosystem.
+
+First, let's download and plot the data:
+
+```{r}
+#| label: load-packages
+#| message: false
+#| warning: false
+library(greta.gp)
+library(tidyverse)
+theme_set(theme_classic())
+```
+
+```{r}
+#| label: load-data
+# Create a data frame
+data <- read_csv("data/kplr005809890-2012179063303_llc.csv")
+ggplot(data, aes(x = time, y = flux)) +
+  geom_line(color = "black", linewidth = 0.3) +
+  labs(
+    x = "Time [days]",
+    y = "Relative flux",
+    title = "KIC 5809890"
+  )
+```
+
+```{r}
+#| label: periodogram
+# Compute the median time spacing (sampling rate) in days
+delta_t <- median(diff(data$time))
+spec <- spectrum(data$flux, pad = 6, plot = FALSE)
+
+# Convert frequencies to actual periods in days.
+periodogram_data <- tibble(
+  frequency = spec$freq / delta_t,
+  period = 1 / (spec$freq / delta_t),
+  power = spec$spec
+) |>
+    filter(period > 2, period < 100)
+
+period_max <- periodogram_data |>
+  slice_max(power) |>
+  pull(period)
+```
+
+```{r}
+ggplot(periodogram_data, aes(x = period, y = power)) +
+  geom_line() +
+  scale_x_log10() +
+  labs(
+    x = "Period [days] (log scale)",
+    y = "Spectral Power"
+  )
+```
+
+## Fitting a Gaussian Process model with brms
+
+We're fitting a GP with an exponential quadratic (squared exponential) kernel
+together with a periodic component to capture the stellar rotation.
+
+```{r}
+data_model <- data |>
+  arrange(time) |>
+  filter(time < 1210 | time > 1220) |>
+  slice(seq(1, n(), by = 10))
+ggplot(data_model) +
+  geom_point(aes(time, flux))
+
+# 1. Define Parameters (Priors)
+mean_flux <- normal(0, 1)
+logs2 <- normal(-1, 2)
+
+logamp <- normal(log(var(data_model$flux)), 2)
+logperiod <- normal(log(25), 2)         # Wide prior for period
+logdecay <- normal(log(25 * 3), 2)      # How long spots last (days)
+
+# 3. Simple Composite Kernel
+# Concept: (Periodic) * (Decay)
+# '1' is the smoothness of the periodic peaks
+k_periodic <- periodic(exp(logperiod), 1, exp(logamp))
+k_decay <- mat52(exp(logdecay), 1)
+
+# Multiplication creates the quasi-periodic behavior
+full_kernel <- k_periodic * k_decay + white(exp(logs2))
+
+# 4. Model and MAP
+gp_model <- gp(data_model$time, full_kernel)
+distribution(data_model$flux) <- normal(gp_model + mean_flux, data_model$flux_err)
+m <- model(logperiod, logdecay, logamp, logs2, mean_flux)
+
+start_vals <- initials(logperiod = log(25)) 
+map_soln <- opt(m, initial_values = start_vals)
+```
+
+```{r}
+init_values <- do.call(initials, map_soln$par)
+draws <- mcmc(m, warmup = 500, n_samples = 500, chains = 1, initial_values = init_values)
+```
+
+```{r}
+df <- data.frame(period = exp(as.matrix(draws)[, "logperiod"]))
+ggplot(df, aes(period)) +
+  geom_histogram() +
+  labs(
+    title = "Posterior Rotation Period",
+    x = "Rotation Period [days]",
+    y = "Posterior Density"
+  )
+```
+
+```{r}
+# Pick 50 random rows for the sampled lines
+time_grid <- seq(min(data_model$time), max(data_model$time), length.out = 1000)
+gp_array <- project(gp_model, time_grid)
+gp_samples <- calculate(gp_array, values = draws)[[1]]
+
+# Add mean_flux offset back to the samples
+m_draws <- as.matrix(draws)
+gp_samples <- sweep(gp_samples, 1, m_draws[, "mean_flux"], "+")
+
+posterior_df <- as.data.frame(t(gp_samples)) %>%
+  mutate(time = time_grid) %>%
+  pivot_longer(-time, names_to = "sample", values_to = "flux")
+
+ggplot() +
+  geom_line(data = posterior_df, aes(time, flux, group = sample), 
+            color = "steelblue", alpha = 0.2) +
+  geom_point(data = data_model, aes(time, flux), size = 0.8, alpha = 0.6) +
+  labs(title = "GP Posterior Mean", x = "Days", y = "Flux")
+```
