@@ -4,3 +4,4 @@ _posts/*week*/*assets/*
 _posts/*week*/*files*/
 hw/hw*/*soln*
 hw/hw*/*.pdf
+notes/*.html

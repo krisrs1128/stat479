@@ -40,9 +40,9 @@ We define these on the next few slides.
 
 ### Sparsity
 
-- A model is sparse if the number of non-zero parameters is small relative to the total number of available parameters
+- A model is sparse if the number of non-zero parameters is small relative to the total number of available parameters.
 
-- For example, a sparse linear model restricts attention to the subset of features with non-zero coefficients.
+- This is interpretability property is motivated by Occam's razor: The simplest explanation is likely closest to the truth.
 
 - Sparsity enhances interpretability only when it correctly captures the structure of the true data-generating process. If the true relationship depends on many features, imposing sparsity introduces bias.
 

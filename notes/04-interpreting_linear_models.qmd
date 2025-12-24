@@ -8,98 +8,182 @@
 
 ---
 
+### Reminder
+
+These were the properties of intrinsically interpretable models we introduced
+earlier.
+
+- **Sparsity**: The model uses only a few of the many candidate features.
+- **Simulatability**: The ability to manually calculate the outcome from the inputs.
+- **Modularity**: Each component can be understood independently from the others.
+
+---
+
 ### Parsimony
+
+- The $\ell^{1}$-penalized linear model focuses our attention on a small subset of selected features where $\hat{\beta}_{j} = 0$.
+
+- The larger the $\lambda$, the more interpretable the model becomes, since the support set $S = \{j : \hat{\beta}_{j} \neq 0\}$ shrinks.
 
 ---
 
 ### Simulatability
 
+- A linear model $\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}$ is reasonably simulatable when $|S|$ is small.
+
+- But for even moderate to large $|S|$, simulatability becomes a challenge even for linear regression `r Citep(bib, "slack2019")`!
+
 ---
 
 ### Modularity
+
+- The model is additive: $f(x) = \sum_{j = 1}^{J}f_j(x_j)$.
+
+- We can inspect the influence of gene $j$ using a single coefficient $\beta_{j}$.
+
+- But even in linear regression, ceteris paribus means each coefficient has to be understood relative to all other features in the model.
 
 ---
 
 ### Global & local interpretations
 
+- **Global**: $\hat{\beta}$ helps us identify the most influential genes across the study.
+
+- **Local**: For cell $i$, the $x_{ij}\hat{\beta}_{j}$ terms help us understand its particular viability prediction.
+
 ---
 
 ### Case study formulation
 
----
+- **Response** ($y$): Cell viability after drug treatment.
 
-### Data preparation
+- **Predictors** ($X$): High-dimensional molecular profiles $N = 121, J = 9553$.
 
----
-
-### Evaluation criteria
+- **Goal**: Identify a sparse set of features that distinguish drug sensitive vs. resistant cells.
 
 ---
 
 ### Model fitting
 
+We use the `glmnet` package in R:
+
+```r
+# Fit the lasso path and perform 10-fold CV
+cv_fit <- cv.glmnet(X, y, alpha = 1, standardize = TRUE)
+```
+
+This solves the optimization problem for a sequence of $\lambda$ values using cyclical coordinate descent.
+
 ---
 
-### Evaluation results
+### Evaluation criteria
+
+These boxplots show the performance on the holdout folds across a range of
+$\lambda$ complexity parameters. For each $k = 1, \dots, 10$, we compute
+
+\begin{align*}
+CV_{k}\left(\lambda\right) = \frac{1}{N} \sum_{i \in I_{k}} \left(y_{i} - \hat{y}_{i}^{-k}\left(\lambda\right)\right)^2
+\end{align*}
+where
+\begin{align*}
+y_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right)
+\end{align*}
+and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hyperparameter $\lambda$ using data from all folds except $I_{k}$.
+
+---
+
+
+### Evaluation criteria
+
+- The initial decrease is the phase where adding predictors rapidly improves performance. Usually the boxplots increase again for small values of $\lambda$, at which point the model is overfitting.
+
+- We use $\lambda_{1\text{se}}$ to choose the simplest model whose error is within one standard error of the minimum MSE. This is the point where adding new genes doesn't significantly add to the holdout prediction accuracy.
+
+---
+
+### Data preparation
+
+- It's important to transform $x_{ij} \to \frac{x_{ij} - \bar{x}_j}{\hat{\sigma}_j}$.
+
+- The penalty $\lambda \sum |\beta_j|$ treats all $\beta_j$ equally. If $x_j$ has a large scale, its $\beta_j$ will be small, making it "cheaper" for the penalty to keep it in the model.
 
 ---
 
 ### Coefficient paths
 
----
+- We can visualize how $\hat{\beta}_j$ evolves as $\lambda$ decreases.
 
-### Interpretation
-
----
-
-### Model checks
+- Each line represents a gene (RNA or methylation feature). The order in which they "emerge" from zero indicates their relative importance in predicting drug response.
 
 ---
 
-### Final conclusions
+### Coefficient paths
+
+- To make it easier to see the feature names, we can use a heatmap instead.
+
+- In this problem, all the coefficients were positive, so we log-transformed to more clearly see differences in coefficient value.
+
+- This helps us focus on a much more reasonable set of important genomic features. We can also find extenral evidence that these genes are involved in important oncogenic pathways.
+
+---
+
+### Takeaways
+
+- Sparse linear models narrowed us down from 9K+ features to 37 that are enough to predict drug sensitivity with relatively high accuracy.
+
+- In this problem, standardization was essential. We are lucky that it is the default in `glmnet`, but this isn't always the case.
 
 ---
 
 ### Possible Improvements
 
----
+- The original scale of the features might be informative. By standardizing features, we might be giving undue weight to noise features with low variability.
 
-- Are there distinct gene pathway signatures for different drugs?
-
-- In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.
-
+- Are there distinct gene pathway signatures for different drugs? In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.
 ---
 
 ### Instability
 
+- **The Problem**: When predictors are highly correlated, the $\hat{\beta}$ estimated by lasso becomes unstable.
+
+- Small changes in the training data can cause the lasso to switch between two highly correlated genes, leading to conflicting interpretations of the same underlying signal.
+
 ---
+
+(todo)
 
 ### Simulation setup
 
+- **Design**: Take two highly correlated genes ($r > 0.9$) and use them to predict viability.
+
+- **Experiment**: Generate 100 bootstrap resamples of the CLL data and fit a lasso model to each.
+
 ---
 
+(todo)
+
 ### Simulation results
+
+- Observe how often each gene is selected.
+
+- In many cases, the lasso will pick Gene A in 50% of the trials and Gene B in the other 50%, even if both are equally important.
 
 ---
 
 ### Takeaway
 
----
+- Selection $\neq$ Importance
 
-### Interpretability vs. accuracy trade-offs
+    - Just because a gene was not selected by the lasso does not mean it is not biologically relevant -- it could be correlated with a gene that's part of the true biological mechanism.
 
-(common story -> connection to linear models)
-
----
-
-### Interpretability vs. accuracy trade-offs
-
-(perhaps linear models are competitive)
+- More generally, we careful applying sparse models on correlated data. There may be many plausible, equally predictive explanations based on different subsets of features.
 
 ---
 
 ### Interpretability vs. accuracy trade-offs
 
-(example story with CZ benchmarking)
+- Often, people assume that to get higher accuracy, we need "black-box" models (like deep learning or Random Forests) and sacrifice interpretability.
+
+- But in many scientific problems (like today's case study, see also `r Citep(bib, "openproblemsBenchmarksOpen")`), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.
 
 ---
