@@ -12,23 +12,74 @@
 
 ### Drug response prediction
 
-(problem description)
+- Patients with the same diagnosed cancer often respond very differently to the same drug. How can we figure out which drugs any particular patient will respond to?
+
+- If we imagine `drug effectiveness = f(gene activity)`, then one approach is to measure activity of genetic pathways in biopsies of that patient's cancer tissue.
+
+- The most important features in that model can be used to stratify patients into different responder/non-responder subtypes.
 
 ---
 
-### Design and data
+### Study design
+
+- To learn this relationship, previous studies used "immortalized" cancer cell lines. These doesn't fully represent the complexity of cancer in real populations.
+
+- The study `r Citep(bib, "Dietrich2017")` measured drug responses in samples from primary patients who were being treated for blood cancer (CLL). They simultaneously measured gene expression and DNA methylation activity (we will skip over some the biology, but happy to discuss this with anyone who's interested).
 
 ---
 
-### Desired model output
+### Drug response data
+
+_Features_
+- 121 samples from CLL patients
+- 61 drugs, 5 dosages per drug
+- 9553 features total
+
+_Outcome_
+- Cell viability: Percentage of surviving cells after drug exposure
 
 ---
 
-## Simple Linear Regression
+### Main Question
+
+<br/>
+<br/>
+
+**For a given drug treatment profile, which RNA or methylation features differentiate between drug sensitivity vs. resistance?**
+
+---
+
+### Review Code Example
+
+* `01-linear_model.qmd`: "Exploration"
+
+---
+
+## Sparse Linear Regression
+
+- Viability can be viewed as a **response variable** $y \in \mathbb{R}^{N}$, and the molecular variables can be treated as **features** $X \in \mathbb{R}^{N  \times J}$. Here
+
+- The setting is **high-dimensional** with few samples compared to features. Without some sort of regularization (like a sparsity assumption), the problem is underdetermined, since $N = 121, J = 9553$.
+
+- **Sparsity** will help us focus on the most important pathways out of thousands of candidates.
+
+This was a real study! Linear models are not just for class work...they are a practical tool in science.
 
 ---
 
 ### Single continuous predictor
+
+Imagine modeling viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbb{R}$:
+
+\begin{align*}
+y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
+\end{align*}
+
+The least-squares estimate $\hat{\beta} := \left(\hat{\beta}_{0}, \hat{\beta}_{1}\right)$​ is found by minimizing
+
+\begin{align*}
+\min_{\beta_0, \beta_1} \sum_{i = 1}^{N}\left(y_i-\beta_0-x_{i} \beta_1\right)^2
+\end{align*}
 
 ---
 
@@ -38,6 +89,14 @@
 
 ### Single categorical predictor
 
+That visualization considered $x_{i}$ to be continuous, but the same idea
+applies to categorical predictors. For example, $x_{i} \in \{0, 1\}$ could
+record whether the patient has a mutation in a particular gene.
+
+- $\beta_0$​: The expected viability for the reference group ($x_{i} = 0$).
+
+- $\beta_1$: The difference in expected viability between the mutated $x_{i} = 1$ and reference groups
+
 ---
 
 ### Visualization
@@ -46,45 +105,99 @@
 
 ## Multiple Linear Regression
 
+Assumed model form:
+
+\begin{align*}
+y_{i} &= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
+&:= \mathbf{x}_{i}^\top \beta_{j} + \epsilon_{i}
+\end{align*}
+
+- $\epsilon_{i}$ represents random variation due to unmeasured factors.
+
+- This model assumes the effect of feature $j$ on $y$ is constant regardless of the value of $x_{k}$ for any other feature $k$.
+
 ---
 
-### Two continuous predictors
+### Fitting Multiple Linear Regression
+
+- We can estimate $\hat{\beta} \in \mathbf{R}^{J}$ by minimizing the residual sum of squares (RSS) loss,
+
+\begin{align*}
+\min_{\beta} \sum_{i=1}^N \left( y_i - \mathbf{x}_i^\top \beta \right)^2
+\end{align*}
 
 ---
 
-### One continuous + one categorical predictor
+### Visualization: Two continuous predictors
+
+We can imagine how viability changes when changing the expression levels for two genes simultaneously.
 
 ---
 
-### Interaction terms
+### Visualization: One continuous + one categorical predictor
+
+If we include a continuous pathway measurement and a binary mutation, the model
+generates one line per category, and the lines are parallel.
 
 ---
 
 ### Ceteris paribus
 
+- "All other things being equal".
+
+- $\beta_j$​ gives the impact of changing $x_j$ while every other feature $k$ in the model is fixed.
+
+- Warning: In our application, genes are often highly correlated. Holding other genes "fixed" is not realistic. This should be kept in mind whenever working with correlated features.
+
 ---
 
-### Code
+### Interaction terms
+
+- If we had $J = 2$, we can consider two-way interactions,
+
+    \begin{align*}
+    y_{i} = \beta_{0} + x_{1}\beta_{1} + x_{2}\beta_{2} + x_{1}x_{2}\beta_{3} + \epsilon_{i}
+    \end{align*}
+
+    the coefficient $\beta_{3}$ represents the interaction.
+
+- The slope of for one gene now depends on the value of another (what does this mean algebraically?)
+
+- In our example, a gene might be important only for a particular drug.
 
 ---
 
 ### Irrelevant predictors?
 
-explain the design of this experiment
+- If we had many noise features (unrelated to response), least squares will still try finding coefficients for each of them. This causes overfitting: our predictions would depend on variables that don't actually matter.
+
+- We don't expect all genes to be relevant to cell viability in this experiment. It's more likely that a few key pathways are driving resistance.
+
+- **Variable selection**: If the noise variables do not reduce the SSE, then the Lasso sets their coefficients $\beta_{j}$ to exactly zero. The $\ell^{1}$ penalty "induces sparsity."
 
 ---
 
-### Irrelevant predictors?
+## $\ell^{1}$ Regularization
 
-show the results when you try this
+The Lasso objective is
+\begin{align*}
+\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\end{align*}
+This is the same loss as linear regression, but with a new $\ell^{1}$ penalty
+
+\begin{align*}
+\|\beta\|_{1} := \sum_{j = 1}^{J} \left|\beta_{j}\right|
+\end{align*}
 
 ---
 
-## Regularization
+## $\ell^{1}$ Regularization
 
----
+It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exactly_ zero. The "selected" features are those where $\beta_{j} \neq 0$.
 
-### Sparse linear models
+\begin{align*}
+\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\end{align*}
 
 ---
 
@@ -94,20 +207,38 @@ show the results when you try this
 
 ### Lasso Paths
 
+- $\lambda$ is a hyperparameter that controls model complexity.
+
+- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
+
+- We can study the "order" that variables enter the model as we gradually decrease $\lambda$. We expect the most important predictors (e.g., drug response-related genes) to enter first.
+
 ---
 
 ### Choosing $\lambda$
+
+- What is an appropriate "budget" for model complexity?
+
+- Bias-Variance Trade-off: Decreasing $\lambda$ reduces bias but increases the variance of the predictions.
+
+- We need to tune $\lambda$ to balance these competing issues and achieve good performance on holdout samples.
 
 ---
 
 ### Cross-validation
 
+Split the data into $K$ folds (e.g., $K = 5$). Fit the model on $K−1$ folds and
+tested on the remaining fold. This mimics the setting of gathering new data and
+testing the model on that data.
+
 ---
 
-### Code
+### Hyperparameter Selection
 
----
+(show the glmnet curve)
 
-### Bias-variance trade-off
+- $\lambda_{\text{min}}$: Minimizes the cross-validation error.
+
+- $\lambda_{\text{1se}}$: The simplest model, i.e., largest $\lambda$, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.
 
 ---

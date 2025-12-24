@@ -64,6 +64,12 @@
 
 ---
 
+- Are there distinct gene pathway signatures for different drugs?
+
+- In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.
+
+---
+
 ### Instability
 
 ---
