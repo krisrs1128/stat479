@@ -1,30 +1,89 @@
-### 5. Nonlinear models
+---
+title: "Nonlinear Models"
+subtitle: "Gaussian Processes for Regression"
+format: revealjs
+---
 
-* motivating case study
+## Overview
 
-* kernels
+### 5. Nonlinear Models
 
+* Motivating case study
+* Kernels
 * GP regression
-
-* tuning
-
----
-
-### Exoplanet discovery
-
-(problem description: https://docs.exoplanet.codes/en/v0.1.3/tutorials/stellar-variability/)
-(context: https://arxiv.org/abs/1706.05459)
+* Tuning
 
 ---
 
-### Rotation periods
+## Reading
+
+- Görtler, J., Kehlbeck, R., & Deussen, O. (2019). A visual exploration of Gaussian processes. Distill, 4(4). doi:10.23915/distill.00017
+
+- Deisenroth, M., Luo, Y., & van der Wilk, M. (2020). A practical guide to Gaussian processes. https://infallible-thompson-49de36.netlify.app/.
+
+---
+
+## Motivating Case Study
+
+**Question:** How quickly does a star rotate around its axis? This has to be answered accurately before we can search for exoplanets around the star.
+
+**Data:** Telescopes make it possible to measure the brightness of a star over time. We can look for periodic patterns in the brightness.
+
+<img src="figures/kepler_telescope.jpg"/>
+
+---
+
+### Intuition
+
+Ideally the brighness would be a perfect sine wave. But brightness changes in
+more complex ways both on the surface of the star and in the space from the star
+to the telescope.
+
+:::: {.columns}
+::: {.column width="50%"}
+<img src="figures/lighthouse.gif">
+:::
+
+:::: {.columns}
+::: {.column width="50%"}
+```{r, echo = FALSE}
+library(tidyverse)
+theme_set(theme_classic())
+x <- seq(0, 4 * pi, length.out = 100)
+data.frame(x = x, y = sin(x)) |>
+    ggplot() +
+    geom_line(aes(x, y))
+```
+:::
+::::
+
+---
+
+### Data
+
+How does flux vary as the star rotates?
+
+<img src="figures/stellar-variability_3_0.png"/>
 
 
 ---
 
-### Kepler-755
+### Rotation Periods
 
-https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-755
+**Formulation**
+- Period $P$ ≈ rotation period of star
+- Amplitude related to spot coverage
+
+**Goal:** Infer $P$ to understand stellar activity and improve exoplanet detection
+
+---
+
+### Statistical Motivation
+
+We need a statistical model of functions that:
+
+- Allows for nonlinearity.
+- Allows interpretation of quantities like $P$.
 
 ---
 
@@ -32,80 +91,325 @@ https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-755
 
 ---
 
-### Linear regression and similarity
+### Linear Regression and Similarity
+
+**Linear regression** makes predictions using
+
+\begin{align*}
+\mathbb{E}[y | \mathbf{x}] = \mathbf{x}^\top \boldsymbol{\beta}.
+\end{align*}
+
+Geometrically, predictions at nearby points should be similar.
+
+What does "nearby" mean? In linear regression,
+\begin{align*}
+\mathbf{x}^\top \mathbf{x}'
+\end{align*}
+measures closeness (show the covariance calculation).
 
 ---
 
-### Linear kernels
+### Linear Regression and Similarity
+
+**Kernel answer:** Define closeness explicitly.
+
+\begin{align*}
+k(\mathbf{x}, \mathbf{x}') = \text{how much } f\left(\mathbf{x}\right) \text{ and } f\left(\mathbf{x'}\right) \text{should covary}
+\end{align*}
+
+The function $k$ is called a "kernel".
 
 ---
 
-### Nonlinear kernels
+### Radial Basis Function (RBF) Kernel
+
+$$k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{\|x - x'\|^2}{2\ell^2}\right)$$
+
+:::: {.columns}
+::: {.column width="50%"}
+- At distance $|x - x'| = 0$: perfect correlation
+- At distance $|x - x'| = \ell$: decays to $\sigma_{f}e^{-\frac{1}{2}} \approx 0.6 \sigma_{f}$
+- At distance $|x - x'| = 3\ell$: nearly zero
+:::
+
+::: {.column width="50%"}
+<img src="figures/rbf_kernel_matrix.gif"/>
+:::
+::::
 
 ---
 
-### Periodic kernels
+### Lengthscale Interpretation
 
-(connection to Kepler-755)
+$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|$$
 
----
+**Small $\ell$ (relative to data range)**
+- Allows rapid oscillation
+- Can fit data with high-frequency variation
 
-### Matern kernels
+**Long lengthscale:**
+- Enforces slower variation
+- Smooths over local fluctuations
 
----
-
-### Combining kernels
-
----
-
-## Gaussian process regression
+<img src="figures/gp_length_scale_interpretation.gif"/>
 
 ---
 
-### Gaussian process prior
+### Periodic Kernel
+
+$$k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2\sin^2(\pi|x-x'|/p)}{\ell^2}\right)$$
+
+:::: {.columns}
+::: {.column width="50%"}
+**Parameters:**
+- $p$: period
+- $\ell$: lengthscale (similar to RBF)
+- $\sigma_f^2$: signal variance
+:::
+::: {.column width="50%"}
+<img src="figures/periodic_kernel_matrix.gif"/>
+:::
+::::
+
+This will help us model stellar rotation.
 
 ---
 
-### Example draws
+### Matérn Kernels
+
+$$k_{\text{Matérn-3/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{3}\tau}{\ell}\right)\exp\left(-\frac{\sqrt{3}\tau}{\ell}\right)$$
+
+$$k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} + \frac{5\tau^2}{3\ell^2}\right)\exp\left(-\frac{\sqrt{5}\tau}{\ell}\right)$$
+
+**Key difference from RBF:** Finite differentiability
+- Matérn-3/2: once differentiable
+- Matérn-5/2: twice differentiable
+
+(You don't need to memorize these formulas!)
 
 ---
 
-### Covariance visualization
+### Matérn Kernels
 
-https://distill.pub/2019/visual-exploration-gaussian-processes/
+We haven't yet explained how these samples are generated, but samples that use a Matérn kernel are often "rougher" are more realistic for real data.
 
----
-
-### Draws from different kernels
-
-https://distill.pub/2019/visual-exploration-gaussian-processes/
-
----
-
-### Gaussian process posterior
-
----
-
-### Adding samples
+:::: {.columns}
+::: {.column width="50%"}
+<img src="figures/gp-samples.gif"/>
+:::
+::: {.column width="50%"}
+<img src="figures/matern_samples.gif"/>
+:::
+::::
 
 ---
 
-### Conditioning on all data
+### Combining Kernels
+
+If $k_1$ and $k_2$ are valid kernels, so are
+
+\begin{align*}
+k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{ superposition})\\
+k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{ modulation})
+\end{align*}
+
+:::: {.columns}
+::: {.column width="50%"}
+Addition is like two independent phenomena occuring at once.
+- $k_{RBF} + k_{\text{periodic}}$: smooth trend + rotation
+- Like hearing a melody + rhythm
+:::
+::: {.column width="50%"}
+Multiplication is like where one pattern modulates another.
+- $k_{RBF} \times k_{\text{periodic}}$: periodic signal with evolving magnitude
+- Like a volume knob controlling a repetitive signal
+:::
+::::
 
 ---
 
-## Posterior predictive
+### Combining Kernels
+
+Since kernels are closed using these algebraic operations, they can be tailored
+to the specific problem of interest.
+
+<img src="figures/combining_kernels.png" class="center/>
 
 ---
 
-### Example draws
+## Gaussian Process Regression
 
 ---
 
-### Scalability
+### Gaussian Process Prior
+
+**Definition.** A Gaussian Process (GP) is a collection of random variables, any finite subset of which is jointly Gaussian
+
+$$f \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))$$
+
+This can be used to define a prior distribution over functions.
+$$\mathbf{f} = [f(x_1), \ldots, f(x_N)]^\top \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{K})$$
+
+where $\mu_i = m(x_i)$ and $K_{ij} = k(x_i, x_j)$ WE often set $m(\mathbf{x}) = 0$.
 
 ---
 
-### Code
+### Function space perspective
+
+Classical statistics: Estimate fixed-dimensional parameters $\theta$ of a function.
+
+GP: Estimate the entire function $f$.
+
+Observation: This seems impossible, since functions are infinite-dimensional. But in any data, we only observe $f$ at finitely many points,
+\begin{align*}
+\mathbf{f}_{N} = \left(f\left(x_1\right), \dots, f(x_N))
+\end{align*}
+and a GP can give us a prior for _any_ choice of $x_{1}, \dots, x_{N}$.
+
+This is what it means to define a "distribution over functions."
+
+---
+
+### Prior Covariance Structure
+
+**Covariance matrix $\mathbf{K}$:**
+- Diagonal: $K_{ii} = \sigma_f^2$ is the prior variance at each point.
+- Off-diagonal: $K_{ij}$ is the covariance between $f(x_i)$ and $f(x_j)$
+
+Kernel encodes our assumptions about function smoothness, periodicity, trends, etc.
+
+---
+
+### Sampling from the Prior
+
+<img src="figures/gp_prior_trimmed.gif" class="center"/>
+
+---
+
+### Sampling from the Prior
+
+1. Choose test locations $\mathbf{x}_* = [x_1, \ldots, x_N]^\top$
+2. Compute $\mathbf{K}_* = k(\mathbf{x}_*, \mathbf{x}_*)$
+3. Sample $\mathbf{f}_* \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_*)$
+
+Each sample is one plausible function from our prior
+
+Different kernels → different classes of functions
+
+---
+
+### Adding Observations
+
+So far we have only described a prior over functions. How does that prior relate to the observed data $y_{i}$?
+
+We imagine
+\begin{align*}
+$$y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2)$$
+\end{align*}
+conditional on a draw $f$ from the GP prior.
+
+This results in the joint distribution,
+$$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_{*\text{train}} \\ \mathbf{K}_{\text{train}*} & \mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
+
+
+---
+
+### Gaussian Process Posterior
+
+Now we condition on observed $\mathbf{y}$ to get a posterior for the actual $f$
+that generated the data. The Gaussian conditioning formula gives
+
+$$p(\mathbf{f}_* | \mathbf{y}, \mathbf{X}, \mathbf{x}_*) = \mathcal{N}(\boldsymbol{\mu}_*, \boldsymbol{\Sigma}_*)$$
+where
+
+\begin{align*}
+\boldsymbol{\mu}_* = \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}$$
+\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
+\end{align*}
+
+The next few slides interpret this formula.
+
+---
+
+### Posterior Mean
+
+\begin{align*}
+\boldsymbol{\mu}_*=\mathbf{K}_{* \text { train }}\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}
+\end{align*}
+
+- $\mathbf{K}_{\text{train}}$ -> how much the test point $x_{\ast}$ correlates with the training data
+- $\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}$ -> reweight the training data according to measurement precision
+
+---
+
+### Posterior Mean
+
+<img src="figures/gp_posterior_mean.gif" class="center"/>
+
+---
+
+### Posterior Variance
+
+\begin{align*}
+\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
+\end{align*}
+
+- We reduce uncertainty when we observe data
+- If $x_{\ast}$ is far from the data, then $K_{\ast \text{train}}$ is small and we revert to the prior $\Sigma_{\ast} \to \mathbf{K}_{\ast\ast}$.
+
+---
+
+### Posterior Variance
+
+<img src="figures/posterior_covariance.gif" class="center"/>
+
+---
+
+## Posterior Predictive Distribution
+
+### Formula
+$$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
+
+**Two sources of uncertainty:**
+1. $\sigma_*^2$: epistemic (model uncertainty about $f$)
+2. $\sigma_n^2$: aleatoric (irreducible measurement noise)
+
+**Use case:** Forecast stellar flux at future times
+
+---
+
+### Implementation Preview
+
+```{r}
+#| eval: false
+# Periodic × Decay kernel
+k_periodic <- periodic(period = exp(logperiod),
+                       lengthscale = 1,
+                       variance = exp(logamp))
+k_decay <- mat52(lengthscale = exp(logdecay),
+                 variance = 1)
+full_kernel <- k_periodic * k_decay + white(exp(logs2))
+
+# Define GP
+gp_model <- gp(data$time, full_kernel)
+distribution(data$flux) <- normal(gp_model + mean_flux, data$flux_err)
+```
+
+---
+
+### Exercise
+
+[Posterior and prior predictive distributions].
+
+1. Fix a point $x_{\ast}$ of interest. Before we observe any data $y_{1}, \dots,
+y_{n}$, what would your best guess of $y_{\ast}$ be? How much uncertainty would
+you have? How does this differ from your best guess for $f_{\ast}$?
+
+1. Suppose you have now observed data $y_{1}, \dots, y_{n}$ at $x_{1}, \dots,
+x_{n}$. We again ask you for a guess of $y_{\ast}$ at $x_{\ast}$. How has it
+changed?
+
+1. [Optional]. Relate the previous parts to the expressions $p\left(y_{\ast} \vert x_{\ast}\right)$ and $p\left(y_{\ast} \vert x_{\ast}, \mathbf{y}, \mathbf{X}\right)$.
+
 
 ---
