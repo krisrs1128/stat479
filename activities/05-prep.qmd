@@ -1,0 +1,64 @@
+---
+title: "Data Prep for GOTV Study"
+---
+
+This is mostly taken from
+
+https://github.com/forestry-labs/RidgePaperReplication/blob/main/code/4-gotv_interpret_allTM.R
+
+
+```{r}
+library(tidyverse)
+library(rpart)
+```
+
+```{r}
+# Load + clean the GerberGreenLarimer data -------------------------------------
+social <- read.csv(file = "data/GerberGreenLarimer_APSR.csv")
+social <- as_tibble(social)[,-1] %>%
+  dplyr::mutate(
+    WC = ifelse(treatment == " Civic Duty", 1, 0),
+    WH = ifelse(treatment == " Hawthorne", 1, 0),
+    WS = ifelse(treatment == " Self", 1, 0),
+    WN = ifelse(treatment == " Neighbors", 1, 0),
+    age = 2008-yob,
+    y = as.factor(voted)
+  ) %>%
+  dplyr::select(y, WC, WH, WS, WN, g2000, g2002, p2000, p2002, p2004, age)
+
+social$p2004 <- gsub("N","n", gsub("Y","y",social$p2004))
+social$CVH <- apply(social[, c("g2000", "g2002", "p2000", "p2002", "p2004")] == "yes", 1, sum)
+social$CGVH <- apply(social[, c("g2000", "g2002")] == "yes", 1, sum)
+social$CPVH <- apply(social[, c("p2000", "p2002", "p2004")] == "yes", 1, sum)
+
+social <- social %>%
+  mutate_if(sapply(social, is.character), as.factor)
+
+social <- social %>%
+  dplyr::rename("Voted 2000 \n Primary" = p2000,
+         "Voted 2002 \n Primary" = p2002,
+         "Voted 2004 \n Primary" = p2004,
+         "Voted 2000 \n General" = g2000,
+         "Voted 2002 \n General" = g2002,
+         "Civic Duty" = WC,
+         "Hawthorne " = WH,
+         "Household " = WS,
+         "Neighbor  " = WN,
+         "Total Elections" = CVH,
+         "Total General \n Elections" = CGVH,
+         "Total Primary \n  Elections" = CPVH,
+         "\n        Age        \n" = age)
+```
+
+```{r}
+# Normalize column names: trim whitespace, lower-case, replace non-alphanumerics with underscores
+names(social) <- names(social) %>%
+  trimws() %>%
+  tolower() %>%
+  { gsub("[^a-z0-9]+", "_", .) } %>%
+  { gsub("^_|_$", "", .) }
+
+#ix <- sample(nrow(social), 10000)
+#social <- social[ix, ]
+saveRDS(social, "data/gotv_processed.rds")
+```

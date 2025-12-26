@@ -1,0 +1,85 @@
+---
+title: "Analyzing a Get-out-the-Vote Study with Trees"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(mlr3)
+library(mlr3tuning)
+library(rpart.plot)
+source("activities/05-helpers.R")
+set.seed(20251226)
+```
+
+```{r}
+social <- readRDS("data/gotv_processed.rds")
+treatment_vars <- c("civic_duty", "hawthorne", "household", "neighbor")
+social_ <- social |>
+    select(-any_of(treatment_vars))
+```
+
+## Default CART fit
+
+```{r}
+fit <- rpart(y ~ ., data = social_)
+fit
+```
+
+### With Hyperparameter Tuning
+
+```{r}
+task <- as_task_classif(social_, target = "y", id = "social")
+learner <- lrn("classif.rpart",  cp  = to_tune(0.0001, 0.1))
+
+instance <- ti(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.ce"),
+  terminator = trm("none")
+)
+```
+
+```{r}
+tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
+tuner$optimize(instance)
+```
+
+```{r}
+fit <- rpart(y ~ ., data = social_, cp=instance$result$cp)
+fit
+```
+
+### Interpretation
+
+```{r}
+rpart.plot(fit, cex=0.5, type = 0, extra=0)
+```
+
+### Subgroup Analysis
+
+```{r}
+nodes_df <- fit$frame |>
+    mutate(id = as.character(row_number()))
+```
+
+treatment effects in each leaf node
+
+```{r}
+# 1. Map data to their leaf indices and test associations with treatment
+leaf_groups <- split(social, fit$where)
+p_values <- map_dbl(leaf_groups, leaf_pvalue) |> sort()
+p_values
+```
+
+# 3. Extract specific leaf details (e.g., node "14")
+```{r}
+target_node <- "14"
+leaf_props(leaf_groups[[target_node]])
+```
+
+```{r}
+fit$frame[as.integer(target_node), ] # identify relevant row
+path.rpart(fit, nodes = "102")
+```
