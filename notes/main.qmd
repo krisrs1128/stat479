@@ -14,3 +14,5 @@ bib <- ReadBib("references.bib")
 {{< include 02-definitions.qmd >}}
 {{< include 03-linear_models.qmd >}}
 {{< include 04-interpreting_linear_models.qmd >}}
+{{< include 05-nonlinear_models.qmd >}}
+{{< include 06-using_nonlinear_models.qmd >}}
