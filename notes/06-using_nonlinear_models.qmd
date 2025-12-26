@@ -1,12 +1,4 @@
----
-title: "Using Nonlinear Models"
-subtitle: "Hyperparameter Tuning and Case Study"
-format: revealjs
----
-
-## Overview
-
-### 6. Using Nonlinear Models
+# 6. Using Nonlinear Models
 
 -   Hyperparameter tuning
 -   Application to case study
@@ -14,6 +6,7 @@ format: revealjs
 -   Interpretability evaluation
 
 ---
+
 ## Hyperparameter Optimization
 
 ---
@@ -38,19 +31,22 @@ For the GP model, this has a closed form:
 
 $$\log p(\mathbf{y} | \mathbf{X}, \theta) = -\frac{1}{2}\mathbf{y}^\top(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y} - \frac{1}{2}\log|\mathbf{K} + \sigma_n^2\mathbf{I}| + \text{const}$$
 
-This has two competing terms -- data fit (first) vs. model complexity (second).
+This has two competing terms -- data fit vs. model complexity.
 
 ---
+
 ### Automatic Occam's Razor
 
 Consider fitting a sine wave with noise. How would you choose the RBF $\ell$?
 
 Very small $\ell$ (underfitting)
+
 - Will interpolate the noise, not just the cuve
 - Spreads probability over too many datasets
 - Low marginal likelihood
 
 Very large $\ell$ (overfitting)
+
 - Will oversmooth the sine component
 - Low marginal likelihood
 
@@ -59,6 +55,7 @@ the noise. The marginal likelihood finds this automatically without any
 cross-validation.
 
 ---
+
 ### Marginal Likelihood Surface
 
 <img src="figures/marginal_likelihood_surface.gif"/>
@@ -68,6 +65,7 @@ cross-validation.
 - Gradient-based optimization sensitive to initialization
 
 ---
+
 ### Initializing Signal Variance
 
 Observation = Signal + Noise
@@ -98,6 +96,7 @@ y = f(x) + \epsilon
 \end{align*}
 
 ---
+
 ### Initializing Lengthscale
 
 Lengthscale controls how far we travel before $f(x)$ and $f(x')$ decorrelate
@@ -107,6 +106,7 @@ Lengthscale controls how far we travel before $f(x)$ and $f(x')$ decorrelate
 **Alternative:** Use median distance from mean $$\ell \approx \text{median}\{|x_i - \bar{x}|\}$$
 
 ---
+
 ## Case Study: Steller Variability
 
 ---
@@ -126,35 +126,36 @@ Lengthscale controls how far we travel before $f(x)$ and $f(x')$ decorrelate
 ::::
 
 ---
+
 ### Periodogram
 
+:::: {.columns}
+::: {.column width="50%"}
 ``` r
-delta_t <- median(diff(data$time))
 spec <- spectrum(data$flux, pad = 6, plot = FALSE)
-
-periodogram_data <- tibble(
-  period = 1 / (spec$freq / delta_t),
-  power = spec$spec
-) %>% filter(period > 2, period < 100)
-
-period_max <- periodogram_data %>%
-  slice_max(power) %>%
-  pull(period)
 ```
+:::
+::: {.column width="50%"}
+<img src="figures/stellar_periodogram.png"/>
+:::
+::::
+
 
 There seem to be two periodicities that dominate.
 
 ---
+
 ### Rotation Kernel for Stellar Variability
 
 $$k_{\text{rot}} = k_{\text{periodic}} \times k_{\text{decay}}$$
 
 **Physical interpretation:**
+
 - Periodic component: rotation
 - Decay component: timescale for spot changes
 - Product: spots appear/disappear as star rotates
 
-The original source `r Citep(bib, c("exoplanetGaussianProcess", "angus2017))` used a slightly more involved periodoc kernel.
+The original source `r Citep(bib, c("exoplanetGaussianProcess", "angus2017"))` used a slightly more involved periodoc kernel.
 It used a similar domain-informed kernel construction though.
 
 ---
@@ -172,16 +173,21 @@ k_decay <- mat52(lengthscale = exp(logdecay),
 full_kernel <- k_periodic * k_decay + white(exp(logs2))
 ```
 
-**Hyperparameters:**
+Hyperparameters
+
 - `logperiod`: $\log p$ (rotation period)
 - `logdecay`: $\log \ell_{\text{decay}}$ (spot lifetime)
 - `logamp`: $\log \sigma_f^2$ (signal variance)
 - `logs2`: $\log \sigma_n^2$ (noise variance)
 
 ---
+
 ### Prior Specification
 
-``` r
+```{r}
+#| label: prior
+#| echo : true
+#| eval: false
 mean_flux <- normal(0, 1)
 logs2 <- normal(-1, 2)
 logamp <- normal(log(var(data$flux)), 2)
@@ -189,16 +195,21 @@ logperiod <- normal(log(25), 2)
 logdecay <- normal(log(25 * 3), 2)
 ```
 
-**Rationale:**
+Rationale
+
 - `logperiod ~ N(log(25), 2)`: Centered at periodogram guess, but wide
 - `logdecay ~ N(log(75), 2)`: Lasts \~3 rotation periods
 - `logamp ~ N(log(Var[y]), 2)`: Signal variance \~ data variance
 - `logs2 ~ N(-1, 2)`: Relatively small noise
 
 ---
+
 ### Maximum A Posteriori (MAP) Estimate
 
-``` r
+```{r}
+#| label: model
+#| echo : true
+#| eval: false
 gp_model <- gp(data$time, full_kernel)
 distribution(data$flux) <- normal(gp_model + mean_flux,
                                    data$flux_err)
@@ -210,19 +221,27 @@ map_soln <- opt(m, initial_values = start_vals)
 This helps us find a mode of the posterior as starting point for MCMC.
 
 ---
+
 ### Posterior Distribution: Rotation Period
 
-``` r
+```{r}
+#| label: samples
+#| echo : true
+#| eval: false
 period_samples <- exp(draws[, "logperiod"])
 ```
 
+<img src="figures/stellar_posterior_rotation.png" class="center"/>
 
 ---
+
 ### Posterior Predictive Samples
 
 Each draw here is a plausible function $f(t)$ consistent with data and kernel
 
 ```{r}
+#| label: project
+#| echo : true
 #| eval: false
 time_grid <- seq(min(data$time), max(data$time), length.out = 1000)
 gp_array <- project(gp_model, time_grid)
@@ -232,22 +251,27 @@ gp_samples <- calculate(gp_array, values = draws)[[1]]
 `project` evaluates the GP posterior distribution at the specified `time_grid`.
 
 ---
+
 ### Posterior Predictive Visualization
 
-(figure)
+**Observations**
 
-**Key observations:**
 - Periodic structure well-captured
 - Uncertainty narrow near data (compare with later excercise)
 
+<img src="figures/stellar_gp_posterior.png" class="center"/>
+
 ---
+
 ### Case Study Takeaways
 
 The kernel is a hypothesis about the data generating process.
+
 - Quasiperiodicity -> rotating star with evolving spots
 - Not an arbitrary computational choice
 
 What we learned
+
 - Rotation period
 - Spot evolution
 - Subtract fitted stellar variability -> potential exoplanet detection
@@ -255,6 +279,7 @@ What we learned
 The GP is not just fitting curves, it's extracting astrophysics.
 
 ---
+
 ## Numerical Stability
 
 ---
@@ -279,6 +304,7 @@ For GPs, we can bound $\kappa \leq N\alpha^2 + 1$ where $\alpha = \frac{\sigma_f
  Paradoxically, high-quality data and larger sample sizes create numerical problems!
 
 ---
+
 ### Sources of Ill-Conditioning
 
 When does $\left(K + \sigma_n^2\right)$ become nearly singular?
@@ -300,6 +326,7 @@ Scenarios 2: Noise-free limit
 <img src="figures/gp_condition_number.gif" class="center"/>
 
 ---
+
 ### Jitter Heuristic
 
 **Heuristic.** Add small "jitter" to the diagonal
@@ -315,19 +342,20 @@ Scenarios 2: Noise-free limit
 Typically $\epsilon ~ 10^{-6} - 10^{-4}$.
 
 ---
+
 ### Data Normalization
 
-**Input standardization:** $$\tilde{x} = \frac{x - \bar{x}}{\text{SD}[x]}$$
+**Input standardization** $$\tilde{x} = \frac{x - \bar{x}}{\text{SD}[x]}$$
 
-    - Must rescale $\ell \to \ell / \text{SD}[x]$
+Also have to rescale $\ell \to \ell / \text{SD}[x]$
 
-**Output centering:** $$\tilde{y} = y - \bar{y}$$
+**Output centering** $$\tilde{y} = y - \bar{y}$$
 
-**Benefits:**
 - Moves data away from "meaningful zeros"
-- Makes default priors (e.g., $m = 0$) more sensible
+- Makes default priors (e.g., $m = 0$) more appropriate
 
 ---
+
 ### Kepler Analysis
 
 We used this in the stellar variability study.
@@ -339,6 +367,7 @@ We used this in the stellar variability study.
 See `03-prep.ipynb`.
 
 ---
+
 ## Interpretability
 
 ---
@@ -358,19 +387,21 @@ GPs do well on all five... deep learning fails 2 - 5.
 ### Comparison with Linear Regression
 
 **Linear regression**
+
 - Parametric: $y = \beta_0 + x^\top \beta$.
-- Interpretable: "\beta_{1}$ is the effect of $x_{1}$ all else held equazl"
+- Interpretable: "$\beta_{1}$ is the effect of $x_{1}$ all else held equal"
 - Global: same $\beta$ everywhere
 - Limited: cannot capture nonlinearity without feature engineering
 
 **Gaussian processes**
 
 - Nonparametric: no fixed functional form
-- Interpretable Hyperparameters: $\ell$ (scale), $\sigma_f$ (amplitude), $p$ (period), ...
+- Interpretable Hyperparameters: $\ell$ (scale), $p$ (period), ...
 - Local: predictions weighted by kernel
 - Flexible: captures complex patterns
 
 ---
+
 ### Nonparametric but Interpretable
 
 - Nonparametric -> complexity grows as the number of samples increases
@@ -380,9 +411,11 @@ GPs do well on all five... deep learning fails 2 - 5.
 Both GPs and linear regression are interpertable, but in different senses.
 
 ---
+
 ### Limitations and Extensions
 
 **Limitations:**
+
 - 1D time series only
 - Observed data are Gaussian
 - Stationary/periodic assumptions
@@ -393,6 +426,7 @@ Both GPs and linear regression are interpertable, but in different senses.
 - Multidimensional inputs or outputs: We might have other relvant measurements for each star, and may want to model several stars at once.
 
 ---
+
 ### Exercise
 
 [GP Missing Data] Rerun the case study notebook with a window of observations missing. How does it
@@ -400,7 +434,9 @@ affect the posterior on the period? What do the posterior predictive samples
 look like?
 
 ```{r}
-#| eval: FALSE
+#| label: exercise
+#| echo : true
+#| eval: false
 data_model <- data |>
   arrange(time) |>
   filter(time < 1210 | time > 1220) |>

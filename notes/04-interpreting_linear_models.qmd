@@ -1,4 +1,4 @@
-### 4. Linear Models
+# 4. Linear Models
 
 * interpreting sparse linear models
 

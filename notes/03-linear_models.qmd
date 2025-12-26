@@ -1,4 +1,4 @@
-### 3. Linear Models
+# 3. Linear Models
 
 * motivating case study
 

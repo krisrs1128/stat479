@@ -1,12 +1,4 @@
----
-title: "Nonlinear Models"
-subtitle: "Gaussian Processes for Regression"
-format: revealjs
----
-
-## Overview
-
-### 5. Nonlinear Models
+# 5. Nonlinear Models
 
 * Motivating case study
 * Kernels
@@ -39,13 +31,12 @@ Ideally the brighness would be a perfect sine wave. But brightness changes in
 more complex ways both on the surface of the star and in the space from the star
 to the telescope.
 
-:::: {.columns}
-::: {.column width="50%"}
+::::{.columns}
+:::{.column width="50%"}
 <img src="figures/lighthouse.gif">
 :::
 
-:::: {.columns}
-::: {.column width="50%"}
+:::{.column width="50%"}
 ```{r, echo = FALSE}
 library(tidyverse)
 theme_set(theme_classic())
@@ -63,24 +54,21 @@ data.frame(x = x, y = sin(x)) |>
 
 How does flux vary as the star rotates?
 
-<img src="figures/stellar-variability_3_0.png"/>
+<img src="figures/stellar-variability_3_0.png" class="center" width=700/>
 
-
----
-
-### Rotation Periods
-
-**Formulation**
-- Period $P$ ≈ rotation period of star
-- Amplitude related to spot coverage
-
-**Goal:** Infer $P$ to understand stellar activity and improve exoplanet detection
 
 ---
 
 ### Statistical Motivation
 
-We need a statistical model of functions that:
+**Formulation.**
+
+- Period $P$ ≈ rotation period of star
+- Variations related to evolving spots
+
+**Goal.** Infer $P$ to understand stellar activity and improve exoplanet detection
+
+**Modeling**. We need a statistical model of functions that:
 
 - Allows for nonlinearity.
 - Allows interpretation of quantities like $P$.
@@ -144,14 +132,22 @@ $$k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{\|x - x'\|^2}{2\ell^2}\rig
 $$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|$$
 
 **Small $\ell$ (relative to data range)**
+
 - Allows rapid oscillation
 - Can fit data with high-frequency variation
 
 **Long lengthscale:**
+
 - Enforces slower variation
 - Smooths over local fluctuations
 
-<img src="figures/gp_length_scale_interpretation.gif"/>
+---
+
+### Lengthscale Interpretation
+
+$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|$$
+
+<img src="figures/gp_length_scale_interpretation.gif" class="center" width=1000/>
 
 ---
 
@@ -162,12 +158,13 @@ $$k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2\sin^2(\pi|x-x'|/p)}{\ell
 :::: {.columns}
 ::: {.column width="50%"}
 **Parameters:**
+
 - $p$: period
 - $\ell$: lengthscale (similar to RBF)
 - $\sigma_f^2$: signal variance
 :::
 ::: {.column width="50%"}
-<img src="figures/periodic_kernel_matrix.gif"/>
+<img src="figures/periodic_kernel_matrix.gif" width=200/>
 :::
 ::::
 
@@ -181,7 +178,8 @@ $$k_{\text{Matérn-3/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{3}\tau}{\ell}\
 
 $$k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} + \frac{5\tau^2}{3\ell^2}\right)\exp\left(-\frac{\sqrt{5}\tau}{\ell}\right)$$
 
-**Key difference from RBF:** Finite differentiability
+**Unlike RBF:** Finite differentiability
+
 - Matérn-3/2: once differentiable
 - Matérn-5/2: twice differentiable
 
@@ -191,14 +189,14 @@ $$k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} 
 
 ### Matérn Kernels
 
-We haven't yet explained how these samples are generated, but samples that use a Matérn kernel are often "rougher" are more realistic for real data.
+We haven't yet explained how these samples are generated, but samples that use a Matérn kernel are often "rougher" are more realistic.
 
 :::: {.columns}
 ::: {.column width="50%"}
-<img src="figures/gp-samples.gif"/>
+<img src="figures/gp_samples.png"/>
 :::
 ::: {.column width="50%"}
-<img src="figures/matern_samples.gif"/>
+<img src="figures/matern_samples.png"/>
 :::
 ::::
 
@@ -209,22 +207,30 @@ We haven't yet explained how these samples are generated, but samples that use a
 If $k_1$ and $k_2$ are valid kernels, so are
 
 \begin{align*}
-k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{ superposition})\\
-k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{ modulation})
+k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
+k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
 \end{align*}
 
-:::: {.columns}
-::: {.column width="50%"}
 Addition is like two independent phenomena occuring at once.
+
 - $k_{RBF} + k_{\text{periodic}}$: smooth trend + rotation
 - Like hearing a melody + rhythm
-:::
-::: {.column width="50%"}
+
+---
+
+### Combining Kernels
+
+If $k_1$ and $k_2$ are valid kernels, so are
+
+\begin{align*}
+k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
+k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
+\end{align*}
+
 Multiplication is like where one pattern modulates another.
+
 - $k_{RBF} \times k_{\text{periodic}}$: periodic signal with evolving magnitude
 - Like a volume knob controlling a repetitive signal
-:::
-::::
 
 ---
 
@@ -233,7 +239,7 @@ Multiplication is like where one pattern modulates another.
 Since kernels are closed using these algebraic operations, they can be tailored
 to the specific problem of interest.
 
-<img src="figures/combining_kernels.png" class="center/>
+<img src="figures/combining_kernels.png" class="center"/>
 
 ---
 
@@ -256,13 +262,13 @@ where $\mu_i = m(x_i)$ and $K_{ij} = k(x_i, x_j)$ WE often set $m(\mathbf{x}) = 
 
 ### Function space perspective
 
-Classical statistics: Estimate fixed-dimensional parameters $\theta$ of a function.
+**Classical statistics** Estimate fixed-dimensional parameters $\theta$ of a function.
 
-GP: Estimate the entire function $f$.
+**GPs** Estimate the entire function $f$.
 
-Observation: This seems impossible, since functions are infinite-dimensional. But in any data, we only observe $f$ at finitely many points,
+**Observation** This seems impossible, since functions are infinite-dimensional. But we only observe $f$ at finitely many points,
 \begin{align*}
-\mathbf{f}_{N} = \left(f\left(x_1\right), \dots, f(x_N))
+\mathbf{f}_{N} = \left(f\left(x_1\right), \dots, f(x_N)\right)
 \end{align*}
 and a GP can give us a prior for _any_ choice of $x_{1}, \dots, x_{N}$.
 
@@ -273,6 +279,7 @@ This is what it means to define a "distribution over functions."
 ### Prior Covariance Structure
 
 **Covariance matrix $\mathbf{K}$:**
+
 - Diagonal: $K_{ii} = \sigma_f^2$ is the prior variance at each point.
 - Off-diagonal: $K_{ij}$ is the covariance between $f(x_i)$ and $f(x_j)$
 
@@ -304,13 +311,12 @@ So far we have only described a prior over functions. How does that prior relate
 
 We imagine
 \begin{align*}
-$$y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2)$$
+y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2)
 \end{align*}
 conditional on a draw $f$ from the GP prior.
 
 This results in the joint distribution,
 $$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_{*\text{train}} \\ \mathbf{K}_{\text{train}*} & \mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
-
 
 ---
 
@@ -323,8 +329,8 @@ $$p(\mathbf{f}_* | \mathbf{y}, \mathbf{X}, \mathbf{x}_*) = \mathcal{N}(\boldsymb
 where
 
 \begin{align*}
-\boldsymbol{\mu}_* = \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}$$
-\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
+\boldsymbol{\mu}_* &= \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}\\
+\boldsymbol{\Sigma}_* &= \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
 \end{align*}
 
 The next few slides interpret this formula.
@@ -365,23 +371,11 @@ The next few slides interpret this formula.
 
 ---
 
-## Posterior Predictive Distribution
-
-### Formula
-$$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
-
-**Two sources of uncertainty:**
-1. $\sigma_*^2$: epistemic (model uncertainty about $f$)
-2. $\sigma_n^2$: aleatoric (irreducible measurement noise)
-
-**Use case:** Forecast stellar flux at future times
-
----
-
 ### Implementation Preview
 
 ```{r}
 #| eval: false
+#| echo: true
 # Periodic × Decay kernel
 k_periodic <- periodic(period = exp(logperiod),
                        lengthscale = 1,
@@ -409,7 +403,8 @@ you have? How does this differ from your best guess for $f_{\ast}$?
 x_{n}$. We again ask you for a guess of $y_{\ast}$ at $x_{\ast}$. How has it
 changed?
 
-1. [Optional]. Relate the previous parts to the expressions $p\left(y_{\ast} \vert x_{\ast}\right)$ and $p\left(y_{\ast} \vert x_{\ast}, \mathbf{y}, \mathbf{X}\right)$.
+1. [Optional]. The quantity in the previous part has a Gaussian distribution. Can you derive formulas for $\mu_{*}$ and $\sigma_{*}^2$?
 
+$$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
 
 ---
