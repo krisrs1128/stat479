@@ -1,0 +1,238 @@
+---
+title: Data Prep from Stockey et al. (2024)
+---
+
+
+https://github.com/richardstockey/sgp.trace.metals/tree/main
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+SGP.data <- read.csv("data/SGP.csv")
+
+library(dplyr)
+library(randomForest)
+
+# Filter to age range (300-1000 Ma)
+trace.toc.full <- filter(SGP.data, !is.na(interpreted.age))
+trace.toc.full <- filter(trace.toc.full, (interpreted.age <= 1000 & interpreted.age >= 300))
+
+# Filter to marine fine-grained lithologies
+trace.toc.full <- filter(trace.toc.full, (lithology.name == "argillite"
+                                          | lithology.name =="clay"
+                                          | lithology.name == "claystone"
+                                          | lithology.name == "dolomudstone"
+                                          | lithology.name == "lime mudstone"
+                                          | lithology.name == "meta-argillite"
+                                          | lithology.name == "metapelite"
+                                          | lithology.name == "metasiltstone"
+                                          | lithology.name == "mud"
+                                          | lithology.name == "mudstone"
+                                          | lithology.name == "oil shale"
+                                          | lithology.name == "pelite"
+                                          | lithology.name == "phosphorite"
+                                          | lithology.name == "shale"
+                                          | lithology.name == "silt"
+                                          | lithology.name == "siltite"
+                                          | lithology.name == "siltstone"
+                                          | lithology.name == "slate"
+                                          | lithology.name == ""))
+
+# Filter to marine environments
+trace.toc.full <- filter(trace.toc.full, (environmental.bin == "basinal"
+                                          | environmental.bin == "inner shelf"
+                                          | environmental.bin == "outer shelf"
+                                          | environmental.bin == ""))
+
+# Remove ore-grade metalliferous rocks
+trace.toc.full <- filter(trace.toc.full, (Mo..ppm. < 1000 | is.na(Mo..ppm.)))
+trace.toc.full <- filter(trace.toc.full, (U..ppm. < 1000 | is.na(U..ppm.)))
+
+# Convert categorical variables to factors
+trace.toc.full$site.type <- factor(trace.toc.full$site.type)
+trace.toc.full$metamorphic.bin <- factor(trace.toc.full$metamorphic.bin)
+trace.toc.full$basin.type <- factor(trace.toc.full$basin.type)
+trace.toc.full$environmental.bin <- factor(trace.toc.full$environmental.bin)
+trace.toc.full$lithology.name <- factor(trace.toc.full$lithology.name)
+
+# Filter to anoxic samples with Fepy/FeHR and Mo data
+Mo.anox.py.rf <- trace.toc.full %>%
+  filter(FeHR.FeT >= 0.38) %>%
+  filter(!(is.na(Fe.py.FeHR))) %>%
+  filter(!(is.na(Mo..ppm.))) %>%
+  filter(!(is.na(TOC..wt..)))
+
+cat("Number of samples for RF analysis:", nrow(Mo.anox.py.rf), "\n")
+
+# Assign age uncertainties (±5 Myr Phanerozoic, ±12.5 Myr Neoproterozoic)
+age.unc <- function(data, Phanerozoic = 5, Proterozoic = 12.5){
+  data$max.age[is.na(data$max.age) & data$interpreted.age <= 541] <- data$interpreted.age[is.na(data$max.age) & data$interpreted.age <= 541] + Phanerozoic
+  data$min.age[is.na(data$min.age) & data$interpreted.age <= 541] <- data$interpreted.age[is.na(data$min.age) & data$interpreted.age <= 541] - Phanerozoic
+  data$max.age[is.na(data$max.age) & data$interpreted.age > 541] <- data$interpreted.age[is.na(data$max.age) & data$interpreted.age > 541] + Proterozoic
+  data$min.age[is.na(data$min.age) & data$interpreted.age > 541] <- data$interpreted.age[is.na(data$min.age) & data$interpreted.age > 541] - Proterozoic
+  return(data)
+}
+
+Mo.anox.py.rf <- age.unc(Mo.anox.py.rf)
+
+# Create Al imputation lookup tables
+Al.lookup <- trace.toc.full %>%
+  filter(!(is.na(Al..wt..))) %>%
+  group_by(lithology.name) %>%
+  summarise(perc.25 = quantile(Al..wt.., 0.25), perc.75 = quantile(Al..wt.., 0.75))
+
+Al.lookup.all <- trace.toc.full %>%
+  filter(!(is.na(Al..wt..))) %>%
+  summarise(perc.25 = quantile(Al..wt.., 0.25), perc.75 = quantile(Al..wt.., 0.75))
+
+# Impute Al values from uniform distribution within IQR bounds
+Al.impute <- function(data){
+  for(row in 1:nrow(data)){
+    if(is.na(data$Al..wt..[row]) == TRUE){
+      lith <- data$lithology.name[row]
+      if((lith != "") & (lith %in% Al.lookup$lithology.name)){
+        bounds <- filter(Al.lookup, lithology.name == lith)
+        data$Al..wt..[row] <- runif(1, min = bounds$perc.25, max = bounds$perc.75)
+      } else {
+        data$Al..wt..[row] <- runif(1, min = Al.lookup.all$perc.25, max = Al.lookup.all$perc.75)
+      }
+    }
+  }
+  return(data)
+}
+
+Mo.anox.py.rf <- Al.impute(Mo.anox.py.rf)
+
+# Assign random ages within uncertainty bounds
+age.model.basic <- function(data){
+  data <- transform(data, max.age = ifelse(max.age >= min.age, max.age, min.age),
+                          min.age = ifelse(max.age >= min.age, min.age, max.age))
+  data$age.model <- runif(nrow(data), min = data$min.age, max = data$max.age)
+  return(data)
+}
+
+Mo.anox.py.rf <- age.model.basic(Mo.anox.py.rf)
+
+# Randomly assign context variables where missing (simplified version)
+partial.context <- function(data,
+                            site.type,
+                            metamorphic.bin,
+                            basin.type,
+                            site.latitude,
+                            site.longitude,
+                            environmental.bin,
+                            lithology.name){
+
+  # Note that this function currently only randomly generates data from factor levels within the dataset "data" when generating data for categorical variables. Could hard code although all levels seem to be present in most if not all datasets.
+
+  # Each context variable must be set to "TRUE" (e.g. site.type = TRUE) inside function in order to be randomly assigned in the function partial.context().
+
+  # levels check - make sure that numerical identification of empty factor name (i.e. missing data) is correct (just in case of changes in SGP data download structure)
+  levels.check.total <- 0 # total number of context variables levels are checked for
+  levels.check.true <- 0 # number of levels that missing name is correctly identified
+
+  if(site.type == TRUE){
+    # levels check (see above)
+    levels.check.total <- levels.check.total +1
+    if(levels(data$site.type)[1] == ""){
+      levels.check.true <- levels.check.true + 1
+    }
+    # random assignment
+    data$site.type[data$site.type == "cuttings"] <- "core" ## Combine core and cuttings
+    data$site.type <- factor(data$site.type) ## omit unused factor levels
+    data$site.type[data$site.type == ""] <- sample(x = levels(data$site.type)[2:nlevels(data$site.type)], size = nrow(filter(data, site.type == "")), replace=TRUE) ## assign all empty cells one of "core" or "outcrop". Starting at level 2 omits cells with no data from vector to sample.
+    data$site.type <- factor(data$site.type) ## omit unused factor levels
+  }
+
+  if(metamorphic.bin == TRUE){
+    # levels check (see above)
+    levels.check.total <- levels.check.total +1
+    if(levels(data$metamorphic.bin)[1] == ""){
+      levels.check.true <- levels.check.true + 1
+    }
+    # random assignment
+    data$metamorphic.bin[data$metamorphic.bin == ""] <- sample(x = levels(data$metamorphic.bin)[2:nlevels(data$metamorphic.bin)], size = nrow(filter(data, metamorphic.bin == "")), replace=TRUE) ## assign all empty cells one of "Anchizone", "Diagenetic zone" or "Epizone". Starting at level 2 omits cells with no data from vector to sample.
+    data$metamorphic.bin <- factor(data$metamorphic.bin) ## omit unused factor levels
+  }
+
+   if(basin.type == TRUE){
+    # levels check (see above)
+    levels.check.total <- levels.check.total +1
+    if(levels(data$basin.type)[1] == ""){
+      levels.check.true <- levels.check.true + 1
+    }
+    # random assignment
+    data$basin.type[data$basin.type == ""] <- sample(x = levels(data$basin.type)[2:nlevels(data$basin.type)], size = nrow(filter(data, basin.type == "")), replace=TRUE) ## assign all empty cells one of the other basin types in the dataset. Starting at level 2 omits cells with no data from vector to sample.
+    data$basin.type <- factor(data$basin.type) ## omit unused factor levels
+  }
+
+   if(site.latitude == TRUE){
+    data$site.latitude[is.na(data$site.latitude)] <- runif(nrow(filter(data, is.na(site.latitude))), -90, 90) ## assign all empty cells a random latitude from a uniform distribution between -90 and 90 degrees.
+   }
+
+   if(site.longitude == TRUE){
+    data$site.longitude[is.na(data$site.longitude)] <- runif(nrow(filter(data, is.na(site.longitude))), -180, 180) ## assign all empty cells a random longitude from a uniform distribution between -180 and 180 degrees.
+   }
+
+   if(environmental.bin == TRUE){
+    # levels check (see above)
+    levels.check.total <- levels.check.total +1
+    if(levels(data$environmental.bin)[1] == ""){
+      levels.check.true <- levels.check.true + 1
+    }
+    # random assignment
+    data$environmental.bin[data$environmental.bin == ""] <- sample(x = levels(data$environmental.bin)[2:nlevels(data$environmental.bin)], size = nrow(filter(data, environmental.bin == "")), replace=TRUE) ## assign all empty cells one of the other environmental bins in the dataset. Starting at level 2 omits cells with no data from vector to sample.
+    data$environmental.bin <- factor(data$environmental.bin) ## omit unused factor levels
+   }
+
+     if(lithology.name == TRUE){
+    # levels check (see above)
+    levels.check.total <- levels.check.total +1
+    if(levels(data$lithology.name)[1] == ""){
+      levels.check.true <- levels.check.true + 1
+    }
+    # random assignment
+    data$lithology.name[data$lithology.name == ""] <- sample(x = levels(data$lithology.name)[2:nlevels(data$lithology.name)], size = nrow(filter(data, lithology.name == "")), replace=TRUE) ## assign all empty cells one of the other lithologies in the dataset. Starting at level 2 omits cells with no data from vector to sample.
+    data$lithology.name <- factor(data$lithology.name) ## omit unused factor levels
+     }
+  # Check that the level with no factor name has been correctly identified (this should always be true but is worth checking, especially if applied to different data). Round is used to accommodate numbers very close to 1 due to possible floating point errors (rounded to 3 decimal places).
+  if(round((levels.check.true/levels.check.total), digits = 3) == 1){
+    print("Partial context randomly assigned correctly - missing data identified correctly")
+  }else{
+    print("ERROR - missing data NOT identified correctly")
+  }
+  return(data)
+}
+
+Mo.anox.py.rf <- partial.context(Mo.anox.py.rf, T, T, T, T, T, T, T)
+
+# Select variables for RF model and remove NAs
+Mo.anox.py.rf.num <- Mo.anox.py.rf %>%
+  select(site.latitude, site.longitude, age.model, Al..wt.., TOC..wt.., Fe.py.FeHR, Mo..ppm.,
+         site.type, metamorphic.bin, basin.type, environmental.bin, lithology.name) %>%
+  na.omit()
+
+head(Mo.anox.py.rf.num)
+
+# Clean column names to snake_case, convert character columns to factors, and save RDS
+clean_names <- function(n){
+  n <- tolower(n)
+  n <- gsub("\\.+", "_", n)
+  n <- gsub("[^a-z0-9_]", "_", n)
+  n <- gsub("_+", "_", n)
+  n <- gsub("^_|_$", "", n)
+  n
+}
+names(Mo.anox.py.rf.num) <- clean_names(names(Mo.anox.py.rf.num))
+
+# Convert any character columns to factors
+char_cols <- sapply(Mo.anox.py.rf.num, is.character)
+Mo.anox.py.rf.num[char_cols] <- lapply(Mo.anox.py.rf.num[char_cols], factor)
+
+# Save cleaned dataset
+Mo.anox.py.rf.num
+saveRDS(as_tibble(Mo.anox.py.rf.num), file = "data/sediment_geochemistry.rds", compress = "xz")
+
+```

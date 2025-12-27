@@ -1,0 +1,114 @@
+---
+title: "Understanding the Neoproterozic Oxygenation Event through Random Forests"
+---
+
+```{r}
+library(tidyverse)
+library(DALEX)
+library(mlr3)
+library(mlr3extralearners) # to install, run pak::pak("mlr-org/mlr3extralearners@*release")
+library(mlr3tuning)
+library(randomForest)
+theme_set(theme_classic())
+```
+
+```{r}
+sediment <- readRDS("data/sediment_geochemistry.rds")[1:100, ]
+sediment
+```
+
+# Train RF
+
+```{r}
+task <- as_task_regr(sediment, target = "mo_ppm", id = "sediment")
+learner <- lrn("regr.randomForest",  ntree  = to_tune(1, 2 ^ 8), mtry = to_tune(2, 10))
+
+instance <- ti(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("regr.mse"),
+  terminator = trm("none")
+)
+```
+
+```{r}
+tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
+tuner$optimize(instance)
+```
+
+```{r}
+fit <- randomForest(mo_ppm ~ ., data = sediment, ntree=instance$result$ntree, mtry=instance$result$mtry)
+fit
+```
+
+# Interpretation
+
+```{r}
+vi <- fit$importance |>
+    as.data.frame() |>
+    rownames_to_column("variable")
+ggplot(vi) +
+    geom_col(aes(IncNodePurity, reorder(variable, IncNodePurity)))
+```
+
+```{r}
+explainer <- explain(
+  model = fit,
+  data = sediment %>% select(-mo_ppm),
+  y = sediment$mo_ppm,
+  label = "rf_sediment"
+)
+
+mp_age <- model_profile(explainer, variables = "age_model")
+plot(mp_age) +
+    scale_x_reverse() +
+    labs(
+        x = "Million years Ago",
+        y = "Mo [ppm]",
+        subtitle = "",
+    )
+```
+
+```{r}
+#| label: grouped-cp
+model_profile(explainer, variables = "age_model", groups = "site_type") |>
+    plot() +
+    scale_x_reverse() +
+    labs(
+        x = "Million years Ago",
+        y = "Mo [ppm]",
+        subtitle = "",
+    )
+```
+
+```{r}
+library(arrow)
+# sediment |>
+#     select(-mo_ppm) |>
+#     write_feather("data/07-X.feather")
+# sediment |>
+#     select(-mo_ppm) |>
+#     write_feather("data/07-y.feather")
+X <- sediment |>
+    select(-mo_ppm)
+y <- sediment |>
+    pull(mo_ppm)
+```
+
+### MDI+
+
+```{python}
+from sklearn.ensemble import RandomForestRegressor
+from imodels.importance import RandomForestPlusRegressor
+
+# fit RF+
+rf_regressor = RandomForestRegressor(n_estimators=256, max_features=0.25)
+rf_plus_model = RandomForestPlusRegressor(rf_model=rf_regressor)
+rf_plus_model.fit(r.X, r.y)
+```
+
+```{python}
+mdi_plus_scores = rf_plus_model.get_mdi_plus_scores(r.X, r.y)
+mdi_plus_scores.sort_values("importance", ascending=False)
+```
