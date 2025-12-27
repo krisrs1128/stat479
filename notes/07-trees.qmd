@@ -10,6 +10,16 @@
 
 ---
 
+## Reading
+
+- **Section 8.1**. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An introduction to statistical learning (2nd edn). doi:10.1007/978-1-0716-1418-1
+    - PDF available through library: https://search.library.wisc.edu/catalog/9913885290202121
+
+- **Sections 3 and 4.1**. Agarwal, A., Kenney, A. M., Tan, Y. S., Tang, T. M., & Yu, B. (2023). Integrating random forests and generalized linear models for improved accuracy and interpretability. doi:10.48550/ARXIV.2307.01932
+    - Will not appear on exam
+
+---
+
 ### Voter turnout
 
 ::::{.columns}

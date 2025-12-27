@@ -7,6 +7,14 @@
 
 ---
 
+## Reading
+
+- Görtler, J., Kehlbeck, R., & Deussen, O. (2019). A visual exploration of Gaussian processes. Distill, 4(4). doi:10.23915/distill.00017
+
+- Deisenroth, M., Luo, Y., & van der Wilk, M. (2020). A practical guide to Gaussian processes. https://infallible-thompson-49de36.netlify.app/.
+
+---
+
 ## Hyperparameter Optimization
 
 ---
