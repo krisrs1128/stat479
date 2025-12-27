@@ -1,6 +1,5 @@
 ---
-title: "Gaussian Process Models for Stellar Variability"
-subtitle: "Modeling rotating star light curves with Stan and R"
+title: "Modeling Stellar Variability with GPs"
 format: html
 ---
 
@@ -96,7 +95,7 @@ gp_model <- gp(data_model$time, full_kernel)
 distribution(data_model$flux) <- normal(gp_model + mean_flux, data_model$flux_err)
 m <- model(logperiod, logdecay, logamp, logs2, mean_flux)
 
-start_vals <- initials(logperiod = log(25)) 
+start_vals <- initials(logperiod = log(25))
 map_soln <- opt(m, initial_values = start_vals)
 ```
 
@@ -131,7 +130,7 @@ posterior_df <- as.data.frame(t(gp_samples)) %>%
   pivot_longer(-time, names_to = "sample", values_to = "flux")
 
 ggplot() +
-  geom_line(data = posterior_df, aes(time, flux, group = sample), 
+  geom_line(data = posterior_df, aes(time, flux, group = sample),
             color = "steelblue", alpha = 0.2) +
   geom_point(data = data_model, aes(time, flux), size = 0.8, alpha = 0.6) +
   labs(title = "GP Posterior Mean", x = "Days", y = "Flux")

@@ -3,6 +3,10 @@ title: "Analyzing a Get-out-the-Vote Study with Trees"
 format: html
 ---
 
+This case study is based off, but uses basic CART instead of linear aggregation CART.
+
+Künzel, S. R., Saarinen, T. F., Liu, E. W., & Sekhon, J. S. (2022). Linear aggregation in tree-based estimators. Journal of Computational and Graphical Statistics: A Joint Publication of American Statistical Association, Institute of Mathematical Statistics, Interface Foundation of North America, 31(3), 917–934. doi:10.1080/10618600.2022.2026780
+
 ```{r}
 library(tidyverse)
 library(mlr3)
