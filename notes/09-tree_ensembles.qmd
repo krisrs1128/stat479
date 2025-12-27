@@ -1,4 +1,4 @@
-### 9. Tree Ensembles
+# 9. Tree Ensembles
 
 * motivating case study
 
@@ -22,85 +22,189 @@ have been met.
 
 ---
 
-### Cell atlases
+### Reading
+
+- **Section 8.1**. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An introduction to statistical learning (2nd edn). doi:10.1007/978-1-0716-1418-1
+    - PDF available through library: https://search.library.wisc.edu/catalog/9913885290202121
+
+- `imodels` documentation.
 
 ---
 
-### Tabula muris
+## Motivating Case Study
+
+Two major oxygenation events occurred in Earth's history:
+- Great Oxygenation Event: first atmospheric oxygen
+- Neoproterozoic Oxygenation Event (NOE): increase to current levels (~540 million years ago, coinciding with Cambrian Explosion)
 
 ---
 
-### Classifying cells
+### Scientific Goal
+
+**Question**. How rapidly did the NOE occur?
+
+**Data**. Measurements from ancient rocks:
+- Age (millions of years)
+- Environment (deep ocean, lakes, etc.)
+- Trace elements and total organic carbon (TOC)
 
 ---
 
-### Example marker genes
+### Statistical Formulation
+
+**Observed**. Mo-ppm level $y \in \mathbb{R}$
+
+**Predictors**. $x = (x_1, x_{2:D}) = (\text{age}, \text{context})$ where context includes environment, lithology, trace elements
+
+**Model**. $y_i = f(x_i) + \epsilon_i$
+
+**Goal**. Determine how $f$ depends on age at fixed context.
+
+**Requirements**.
+- Capture sharp transitions in $y$
+- Isolate contribution of age from confounding context
 
 ---
 
-### Exercise: Critiquing claims
+## Random Forests
 
 ---
 
-## Random forest algorithm
+### Variance Reduction via Averaging
+
+Single decision trees have high variance: small changes in training data produce different splits.
+
+**Bootstrap Aggregating (Bagging)** reduces variance by averaging:
+
+$$\hat{f}_{\text{bag}}(x) = \frac{1}{B} \sum_{b=1}^{B} \hat{f}^{*b}(x)$$
+
+where $\hat{f}^{*b}(x)$ is the prediction from a tree grown on the $b$-th bootstrap sample.
+
+For regression: arithmetic mean. For classification: majority vote.
 
 ---
 
-### High variance $\to$ averaging
+### Feature Subsampling
+
+**Problem**. If one predictor dominates, bagged trees correlate highly. Averaging correlated quantities provides less variance reduction than averaging independent quantities.
+
+**Solution**. At each split, consider only $m$ random predictors from the full set of $p$ predictors.
+
+Typical choices:
+- Classification: $m \approx \sqrt{p}$
+- Regression: $m \approx p/3$
+
+This decorrelates trees by ensuring $(p-m)/p$ of splits exclude the dominant predictor.
 
 ---
 
-### Smooth responses $\to$ averaging
+### Algorithm
+
+1. Draw bootstrap sample of size $n$ with replacement
+2. Grow tree on bootstrap sample:
+   - At each node, select $m$ predictors randomly
+   - Choose best split from these $m$ predictors
+   - Grow deep (no pruning)
+3. Repeat for $B$ trees
+4. Aggregate: average (regression) or vote (classification)
 
 ---
 
-### Averaging mechanism
+### Hyperparameters
+
+- **$B$** (number of trees): Large $B$ does not overfit. Use $B \geq 500$ for stable error.
+- **$m$** (mtry): Number of features per tree.
+- **nodesize**. Minimum observations in terminal nodes. Controls tree depth.
 
 ---
 
-### Subsampling features
-
-Purpose: Decorrelate the underlying trees
+## Boosting
 
 ---
 
-### Subsampling observations
+### Sequential Learning
+
+Unlike bagging (parallel trees), boosting grows trees sequentially. Each tree fits the residuals from previous trees.
+
+**Algorithm**.
+
+1. Initialize $\hat{f}(x) = 0$ and $r_i = y_i$ for all $i$
+2. For $b = 1, 2, \ldots, B$:
+   - Fit tree $\hat{f}^b$ with $d$ splits to data $(X, r)$
+   - Update: $\hat{f}(x) \leftarrow \hat{f}(x) + \lambda \hat{f}^b(x)$
+   - Update residuals: $r_i \leftarrow r_i - \lambda \hat{f}^b(x_i)$
+3. Output: $\hat{f}(x) = \sum_{b=1}^B \lambda \hat{f}^b(x)$
+
+The shrinkage parameter $\lambda$ (learning rate) controls update step size.
 
 ---
 
-### Hyperparameters and tuning
+### Hyperparameters
 
-subsampling parameters
-number of trees to average
-can tune using CV
-
----
-
-## Variable importance
+- **$B$**. Unlike random forests, boosting can overfit if $B$ is too large. Use cross-validation.
+- **$\lambda$**. Typically 0.01 or 0.001. Smaller $\lambda$ requires larger $B$ but often improves performance.
+- **$d$** (interaction depth): Number of splits per tree. $d=1$ (stumps) yields additive model. $d>1$ captures interactions.
 
 ---
 
-### Permutation intuition
+## Variable Importance
 
 ---
 
-### Variable importance definition
+### Mean Decrease in Impurity (MDI)
+
+For each predictor $X_j$ and component tree, compute the MDI. Then average over
+all $B$ trees.
+
+$$\text{MDI}(X_j) = \frac{1}{B} \sum_{b=1}^B \sum_{t \in T_b: v(t)=X_j} p(t) \Delta_i(t)$$
+
+where $p(t)$ is the proportion of samples at node $t$ and $\Delta_i(t)$ is the weighted impurity decrease.
 
 ---
 
-### Computation
+### Permutation Importance
+
+Measure accuracy drop when feature values are randomly shuffled.
+
+**Algorithm**.
+
+1. Train forest on data $D$
+2. Calculate OOB error $E_{\text{orig}}$
+3. For each tree $b$:
+   - Take OOB observations
+   - Shuffle values of $X_j$ in those observations
+   - Calculate OOB error $E_{\text{perm},b}$
+4. Importance = Average$(E_{\text{perm},b} - E_{\text{orig},b})$
+
+If $X_j$ is important, shuffling breaks its relationship with $y$, increasing error. If $X_j$ is noise, shuffling has minimal effect.
 
 ---
 
-### Exercise: Variable importance pseudocode
+## Partial Dependence
 
 ---
 
-### Proximity map
+### Definition
+
+The partial dependence of $f(X)$ on subset $X_S$ is:
+
+$$f_S(x_S) = \mathbb{E}_{X_C}[f(x_S, X_C)]$$
+
+where $C$ is the complement of $S$ in the full predictor set.
+
+We estimate this by averaging predictions over all $N$ training observations:
+
+$$\bar{f}_S(x_S) = \frac{1}{N} \sum_{i=1}^{N} f(x_S, x_{i,C})$$
+
+This shows the marginal effect of $X_S$ on the response after accounting for average effects of other variables.
 
 ---
 
-### Parwise distances
+### Interpretation
+
+$f_S(x_S)$ represents the effect of $X_S$ **after accounting for** the average effects of $X_C$. This differs from the conditional expectation $\tilde{f}_S(x_S) = \mathbb{E}[f(X_S, X_C) | X_S]$, which ignores $X_C$.
+
+The two coincide only if $X_S \perp X_C$. If $f(X) = h_1(X_S) + h_2(X_C)$ (additive), then $f_S(x_S) = h_1(x_S)$ up to an additive constant. If $f(X) = h_1(X_S) \cdot h_2(X_C)$ (multiplicative), then $f_S(x_S) = h_1(x_S)$ up to a multiplicative constant.
 
 ---
 
@@ -108,12 +212,34 @@ can tune using CV
 
 ---
 
-### Instability: Efron's Experiment
+### Instability (Efron's Experiment)
+
+**Experiment**. Remove the "most important" feature. The model often identifies a proxy feature with high correlation, achieving similar performance.
+
+**Implication**. Importance measures are unstable under perturbation when predictors correlate.
 
 ---
 
-### Realism: Hooker's Experiment
+### Extrapolation (Hooker's Experiment)
+
+**Problem**. PDPs evaluate $f(x_S, x_{i,C})$ at points that may not exist in the joint distribution $P(X_S, X_C)$.
+
+**Example**. If age and carbon are highly correlated, a PDP might evaluate "1 billion years old" with "modern carbon levels", even though this never occurs in training data.
+
+**Check**.
+- Check correlation matrix of predictors
 
 ---
 
-### Geometric interpretation
+## Takeaways
+
+- **Random forests**. Reduce variance via bagging and feature subsampling.
+- **Boosting**. Reduce bias and variance via sequential residual fitting.
+- **Variable importance**. Provides global feature contribution but is sensitive to correlation structure.
+- **Partial dependence**. Shows average marginal effects but risks extrapolation when features correlate strongly.
+
+---
+
+## Exercise
+
+**Depth-1 Boosting**. Prove that boosting with stumps ($d=1$) produces an additive model $f(X) = \sum_{j=1}^p f_j(X_j)$.

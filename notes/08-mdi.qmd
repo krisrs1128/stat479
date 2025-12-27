@@ -10,6 +10,18 @@
 
 ---
 
+### Learning outcomes
+
+1. Describe the theoretical foundation of intrinsically interpretable models
+like sparse regression, gaussian processes, and classification and regression
+trees, and apply them to realistic case studies with appropriate validation
+checks.
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+
+---
+
 ### Reading
 
 - **Section 8.1**. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An introduction to statistical learning (2nd edn). doi:10.1007/978-1-0716-1418-1

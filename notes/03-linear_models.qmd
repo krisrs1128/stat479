@@ -10,6 +10,18 @@
 
 ---
 
+### Learning outcomes
+
+1. Describe the theoretical foundation of intrinsically interpretable models
+like sparse regression, gaussian processes, and classification and regression
+trees, and apply them to realistic case studies with appropriate validation
+checks.
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+
+---
+
 ### Drug response prediction
 
 - Patients with the same diagnosed cancer often respond very differently to the same drug. How can we figure out which drugs any particular patient will respond to?

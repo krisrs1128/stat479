@@ -7,6 +7,15 @@
 
 ---
 
+### Learning outcomes
+
+1. Describe the theoretical foundation of intrinsically interpretable models
+like sparse regression, gaussian processes, and classification and regression
+trees, and apply them to realistic case studies with appropriate validation
+checks.
+
+---
+
 ## Reading
 
 - Görtler, J., Kehlbeck, R., & Deussen, O. (2019). A visual exploration of Gaussian processes. Distill, 4(4). doi:10.23915/distill.00017

@@ -1,71 +1,130 @@
-### 10. Applying Tree Ensembles
+# 10. Applying Tree Ensembles
 
 * application to case study
-
-* extending MDI+
-
+* PDP and MDI+
 * comparing importance measures
 
----
+---⠀
 
 ### Learning outcomes
 
-1. Within a specific application context, evaluate the trade-offs associated
-with competing interpretable machine learning techniques.
-1. Describe the theoretical foundation of intrinsically interpretable models
-like sparse regression, gaussian processes, and classification and regression
-trees, and apply them to realistic case studies with appropriate validation
-checks.
+1. Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+2. Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.
 
 ---
 
-### Tabular muris data
+### Reading
+
+- **Section 8.1**. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An introduction to statistical learning (2nd edn).
+- **Section 10.13.2**. Hastie, T., Tibshirani, R., & Friedman, J. (2009). The elements of statistical learning (2nd edn).
 
 ---
 
-### Training on raw data
+### Data summary
+
+- **Target ($y$)**. `mo_ppm` (Molybdenum concentration), proxy for ocean oxygenation
+- **Key predictor**. `age_model` (geological age in millions of years)
+- **Context**. `site_type` (restricted vs. open marine), lithology, trace elements
 
 ---
 
-### Tuning and performance
+$X$:
+
+```
+site_latitude	site_longitude	age_model	al_wt	toc_wt	fe_py_fehr	site_type	metamorphic_bin	basin_type	environmental_bin	lithology_name
+44.571389	-84.581667	364.918264075741	5.99	4.55	0.81	core	Diagenetic zone	intracratonic sag	basinal	shale
+44.571389	-84.581667	363.510259361286	6.76	2.04	0.82	core	Diagenetic zone	intracratonic sag	basinal	shale
+....
+```
+
+$y$:
+
+```
+91.4, 50.1, ...
+```
 
 ---
 
-### Naive VI
+### Model: Random Forest Regression
+
+Fit $B$ trees to approximate $\mathbb{E}[Y|X]$ where $Y$ = `mo_ppm` and $X$ includes age, site type, and geochemical context.
+
+This should capture the temporal shift (due to the oxygenation event) while
+controlling for heterogeneity in sample collection.
 
 ---
 
-### Visual check
+## Hyperparameter Tuning
+
+Grid search over:
+- **ntree**. Number of trees $\in [1, 256]$
+- **mtry**. Features per split $\in [2, 10]$
+
+**Validation**. 3-fold cross-validation minimizing Mean Squared Error (MSE).
+
+Select $B$ and $m$ that minimize cross-validated MSE.
 
 ---
 
-### Effect of transformation
+## Variable Importance
 
-(new tuning and performance)
+:::: {.columns}
+::: {.column width="50%"}
+This is the average of MDI across all component trees.
 
----
+$$\text{MDI}(j) = \frac{1}{B} \sum_{b=1}^{B} \sum_{t \in \mathcal{T}_b, v(t)=j} \Delta_i(t)$$
 
-### New VI
-
----
-
-### Visual check
-
----
-
-### Effect of filtering
+$\Delta_i(t)$ is the weighted RSS reduction at node $t$ in tree $\mathcal{T}_{b}$
+:::
+::: {.column width="50%"}
+<!-- <img src="figures/mdi_figure.png"/> -->
+:::
 
 ---
 
-### New VI
+## Model Validation
+
+Before interpretation, validate the fit:
+
+**Observed vs. Predicted**. How accurate are predictions? Any systematic bias?
+
+**Residual Analysis**. Any potentially missing covariates?
 
 ---
 
-### Visual check
+## Partial Dependence
 
 ---
 
-### Exercise: Data flow
+### Implementation (DALEX)
+
+1. Create explainer: `explain(model, data, y)`
+2. Generate model profile: `model_profile(explainer, variables = "age_model")`
+
+We're computing
+
+$$\bar{f}_S(x_S) = \frac{1}{n} \sum_{i=1}^n \hat{f}(x_S, x_{i,C})$$
+
+where $S$ = `age_model` and $C$ = all other features.
+
+---
+
+### Interpretation
+
+The PDP isolates the oxygenation signal from site-specific confounders. The
+transition appears to occur in several phase. This was the main point of `r Citep(bib, "Stockey2024")`.
+
+<!-- <img src="figures/07_pdp_overall.png"/> -->
+
+---
+
+### Site-Stratified PDPs
+
+Compute separate PDPs for each `site_type`:
+
+$$\bar{f}_{\text{age}}(\text{age} \mid \text{site}) = \frac{1}{n_{\text{site}}} \sum_{i: \text{site}_i = \text{site}} \hat{f}(\text{age}, x_{i,C})$$
+
+<!-- <img src="figures/07_pdp_overall.png"/> -->
 
 ---
 
@@ -73,52 +132,80 @@ checks.
 
 ---
 
-### Package implementation
+### Implementation (`imodels` package)
+
+MDI+ maps tree structure to a linear model of "stumps" and uses regularized regression for importance scores.
+
+**Steps**.
+1. Extract all splits from random forest
+2. Represent predictions as weighted sum of indicator functions
+3. Apply Ridge or Lasso to assign coefficients
+4. Rank features by absolute coefficient values
 
 ---
 
-### Parameter choices
+### MDI+ Result
+
+<!-- <img src="figures/mdi_plus_result.png"/> -->
 
 ---
 
-### Top global features
+## Sanity Checks
 
 ---
 
-### Visual checks
+### Predictive Accuracy: RF vs. RF+
+
+- **Random Forest (RF)**. Optimized for MSE, produces complex trees
+- **RF+ (via MDI+)**. Seeks sparse influential feature set
+
+**Validation**. Check whether RF+ maintains similar $R^2$ to RF. If yes, trust MDI+ rankings.
 
 ---
 
-### Local features
+### Pairwise Correlations
+
+(show pairwise correlations between pairs of predictors)
 
 ---
 
-### Visual checks
+### Stability Analysis
+
+**Efron's Bootstrap Experiment** on SGP data:
+
+1. Train forest on full data
+2. Identify top $k$ features by importance
+3. Remove top feature, retrain
+4. Measure accuracy drop
 
 ---
 
-### Application limitations
+### Hyperparameter Sensitivity
 
-What would we wish we could describe but haven't yet.
+**Effect of $m$ (mtry)**.
 
----
-
-## Comparing interpretations
+**Effect of $B$ (ntree)**.
 
 ---
 
-### RF vs. RF+ accuracy
+## Takeaways
+
+1. **Nonlinear modeling**. Tree ensembles let us capture nonlinear transition in Mo as a function of sample age.
+
+2. **Partial dependence**. Isolates temporal oxygenation signal from environmental confounders.
+
+3. **Limitations**.
+   - PDPs risk extrapolation when features correlate strongly
+   - Importance measures can be unstable, even with improvements like MDI+
+
+4. **Checks**.
+   - Stability across bootstraps
+   - Feature perturbation (removing top features)
+   - Hyperparameter sensitivity
+
 
 ---
 
-### VI stability
-
----
-
-### Hyperparameter sensitivity
-
----
-
-### Exercise: Communicating results
+## Exercise
 
 ---

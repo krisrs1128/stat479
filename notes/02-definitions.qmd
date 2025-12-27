@@ -8,6 +8,14 @@
 
 ---
 
+### Learning outcomes
+
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+
+---
+
 ## Reading
 
 - Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340
