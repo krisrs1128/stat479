@@ -56,7 +56,6 @@ How does flux vary as the star rotates?
 
 <img src="figures/stellar-variability_3_0.png" class="center" width=700/>
 
-
 ---
 
 ### Statistical Motivation

@@ -1,4 +1,4 @@
-### 7. Classification and Regression Trees
+# 7. Classification and Regression Trees
 
 * motivating case study
 
@@ -12,56 +12,140 @@
 
 ### Voter turnout
 
+::::{.columns}
+:::{.column width="50%"}
+- Campaigns spend significant effort trying to get their voter base to turn out during elections
+- Researchers run randomized trials to see which interventions work
+:::
+
+:::{.column width="50%"}
+<img src="figures/Vote_button-1024x1005.png"/>
+:::
+::::
+
 ---
 
 ### Study design
 
----
+::::{.columns}
+:::{.column width="50%"}
+The study `r Citep(bib, "GERBER2008")` were interested in how social pressure
+influences voter turnout. They defined four types of mailers and sent them
+randomly to potential voters in the Michigan 2006 general election.
+:::
 
-### Data dictionary
-
----
-
-### ML formulation
-
----
-
-### Understanding & actions
-
----
-
-## CART setup
+:::{.column width="50%"}
+<img src="figures/mailer-1.png" center="true"/>
+:::
+::::
 
 ---
 
-### Trees and partitions
+::::{.columns}
+:::{.column width="50%"}
+<img src="figures/mailer-2.png" center="true"/>
+:::
+:::{.column width="50%"}
+<img src="figures/mailer-3.png" center="true"/>
+:::
+::::
 
 ---
 
-### Trees and partitions
+<img src="figures/mailer-4.png" center="true"/>
 
 ---
 
-### Mixed data types
+### Treatment Effect Heterogeneity
+
+- On average, those who received the neighbor intervention were more likely to
+vote.
+
+- But are some groups more strongly influenced than others? The statistical term for this is "treatment effect heterogeneity."
 
 ---
 
-### Missing values
+### Treatment Effect Heterogeneity
+
+Intuitively, there are some people who are already so jaded (or motivated) that
+the intervention is unlikely to change their behavior.
 
 ---
 
-## CART algorithm
+### Statistical Motivation
+
+**Formulation.**
+
+- Background variables $x \in \mathcal{X}$ (age, previous voting record, ...)
+- Treatment assignment $w \in \{0, 1\}$ (mailer vs. control)
+- Voting probability $\mu\left(x, w\right)$
+
+**Goal.** Find subsets of $\mathcal{X}$ where $\tau\left(x\right)$ is large:
+\begin{align*}
+\tau\left(x\right) := \mu\left(x, 1\right) - \mu\left(x, 0\right)
+\end{align*}
+
+**Modeling**. We need a statistical model that partitions $\mathcal{X}$ into
+interpretable subgroups where $\tau\left(x\right)$ is large.
 
 ---
 
-### Growing a tree
-
-
-The formal name for this process is "Recursive Partitioning".
+## CART
 
 ---
 
-### Split quality (MDI)
+### The Partition Structure
+
+A tree is a partition $\mathcal{X} = \cup_{j=1}^J R_j$ where each region $R_j$ carries constant prediction $\hat{y}_j$.
+
+**Geometry**: Axis-aligned recursive bisection. Each split: $\{x: X_j < s\} \cup \{x: X_j \geq s\}$.
+
+**Prediction in $R_j$**:
+
+- Regression: $\hat{y}_j = \frac{1}{n_j}\sum_{i \in R_j} y_i$
+- Classification: $\hat{y}_j = \arg\max_k \hat{p}_{jk}$ where $\hat{p}_{jk} = \frac{1}{n_j}\sum_{i \in R_j} \mathbb{1}(y_i = k)$
+
+---
+
+### Loss Functions
+
+**Regression**: Residual sum of squares
+$$\text{RSS}(T) = \sum_{j=1}^{J} \sum_{i \in R_j} (y_i - \hat{y}_j)^2$$
+
+**Classification**: Impurity measures (entropy-based)
+
+- Gini: $G = \sum_{k=1}^K \hat{p}_{mk}(1 - \hat{p}_{mk})$
+- Cross-entropy: $D = -\sum_{k=1}^K \hat{p}_{mk} \log \hat{p}_{mk}$
+
+These measure class mixing. Small values indicate node purity—observations from predominantly a single class.
+
+---
+
+### Growing Algorithm
+
+Greedy algorithm: At each step, select predictor $X_j$ and cutpoint $s$ to minimize RSS (regression) or impurity (classification).
+
+Define half-planes: $$R_1(j,s) = \{X|X_j < s\}, \quad R_2(j,s) = \{X|X_j \geq s\}$$
+
+Choose $j$ and $s$ minimizing: $$\sum_{i: x_i \in R_1(j,s)} (y_i - \hat{y}_{R_1})^2 + \sum_{i: x_i \in R_2(j,s)} (y_i - \hat{y}_{R_2})^2$$
+
+---
+
+### Growing Algorithm
+
+Repeat: split one of the existing regions until stopping criterion (minimum node size) reached.
+
+Split gain: $$\Delta I = I_{\text{parent}} - \left(\frac{n_L}{n} I_L + \frac{n_R}{n} I_R\right)$$
+
+---
+
+### Data Types
+
+**Numerical**: Split at $X_j < s$. Search over observed values.
+
+**Categorical**: For $K$ levels, partition into two subsets. There are $2^{K-1}-1$ possible binary splits.
+
+**Missing values**: Use surrogate splits—alternate predictors producing similar partitions.
 
 ---
 
@@ -71,44 +155,80 @@ The formal name for this process is "Recursive Partitioning".
 
 ### Hyperparameters
 
+- **Complexity parameter** $\alpha$ (or $cp$): Penalty per leaf
+- **Minimum split size**: Observations required to attempt split
+- **Maximum depth**: Limit on tree height
+
+Use $K$-fold cross-validation to select optimal $\alpha$.
+
 ---
 
 ### Pruning
 
----
+Large trees overfit. For a given $\alpha \geq 0$, find a subtree $T \subset T_0$
+minimizing:
+$$\sum_{m=1}^{|T|} \sum_{i: x_i \in R_m} (y_i - \hat{y}_{R_m})^2 + \alpha |T|$$
+where $|T|$ counts terminal nodes.
 
-### Cross-validation
-
----
-
-## Interpretability
-
----
-
-### Original motivation
-
-(clinical use of tree diagrams)
+$\alpha$ penalizes complexity. When $\alpha = 0$, optimal subtree is $T_0$. As $\alpha$ increases, optimal subtree shrinks.
 
 ---
 
-### Tree size
+### Pruning
+
+- **Weakest link pruning.** As $\alpha$ increases from zero, branches are removed in nested fashion. Computing the entire sequence of optimal subtrees is efficient.
+
+- Select $\alpha$ by cross-validation. Standard lasso-type tradeoff.
 
 ---
 
-### Smooth response functions
+### Algorithm Summary
+
+- Grow large tree $T_0$ via recursive binary splitting (stop at minimum node size)
+- Apply cost complexity pruning to obtain sequence of subtrees as function of $\alpha$
+- Use $K$-fold cross-validation: for each fold, repeat steps 1-2, evaluate MSE as function of $\alpha$
+- Return subtree from step 2 corresponding to the $\alpha$ that minimizes CV error
 
 ---
 
-### Axis-alignment
+### Geometric Limitations
+
+**Axis-alignment**: Splits perpendicular to coordinate axes. Capturing diagonal boundaries requires many nodes -- have to approximat a smooth functions with a "staircase."
+
+**Instability**: Small data perturbations can change the root split, hence the entire tree structure. High variance estimator.
+
+**Correlated predictors**: Among $X_i \approx X_j$, choice is arbitrary. Importance measures become meaningless.
 
 ---
 
-### Correlated features
+### Comparison
+
+Piecewise constant on axis-aligned rectangles vs. global plane.
+
+**Tree model**: $$f(X) = \sum_{m=1}^M c_m \cdot \mathbb{1}_{(X \in R_m)}$$
+
+**Linear model**: $$f(X) = \beta_0 + \sum_{j=1}^p X_j \beta_j$$
 
 ---
 
-### Equally informative features
+### What Trees Represent
+
+<img src="figures/cart_v_lr.png" class="center"/>
 
 ---
 
-### Instability
+### Takeaways
+
+
+- Handle heterogeneous data and missing values naturally (+)
+- If/then logic is easily communicated to non-statisticians (+)
+- Geometric restrictions create fundamental approximation limits. Ensembles (boosting, random forest, etc.) address this. We'll discuss them a bit next week. (-)
+
+::::{.columns}
+:::{.column width="55%"}
+The original motivation were trees that doctor's had created informally `r Citep(bib, "Breiman2017")`.
+:::
+:::{.column width="45%"}
+<img src="figures/brieman_medical.png" class="center"/>
+:::
+::::
