@@ -20,13 +20,24 @@ with competing interpretable machine learning techniques.
 
 ---
 
-## Motivating Case Study
+### Motivating Case Study
 
 Enhancers are stretches of the genome that coordinate the expression of many
 downstream genes.
+
 - Their status is determined by combinations of binding transcription factors and chromatin marks
 
 Understanding these interactions explains genotype → phenotype.
+
+---
+
+### Motivating Case Study
+
+This can be studied using developing fruit flies.
+
+<img src="figures/nikon-1.gif"/>
+
+([source](https://www.thisiscolossal.com/2024/09/nikon-small-world-in-motion-2024/))
 
 ---
 
@@ -37,6 +48,7 @@ Which features drive enhancer activity in each sequence?
 **Data**
 
 Genome-wide measurements from blastoderm (stage 5) *Drosophila* embryos:
+
 - DNA occupancy for 23 transcription factors
 - Activity for 13 chromatin markers
 - Binary labels indicating enhancer activity for genomic regions
@@ -65,12 +77,10 @@ Each observation: a genomic sequence with associated regulatory features.
 
 How to distribute profit across employees $i$ in a company if any team $S$ has profit $v(S)$?
 
-.center[
 <span style="font-size: 18px;">
-<img width="600" src="figures/shapley_team_1.png"/><br/>
+<img width="600" src="figures/shapley_team_1.png" class="center"/><br/>
 Game theoretic analogy.
 </span>
-]
 
 ---
 
@@ -84,11 +94,7 @@ Employee $i$'s credit: average marginal contribution $v(S) - v(S \setminus \{i\}
 
 where $S_{d}(i)$ collects subsets of size $d$ containing $i$.
 
-.center[
-<span style="font-size: 18px;">
-<img width="400" src="figures/shapley_team_2.png"/>
-</span>
-]
+<img width="400" src="figures/shapley_team_2.png" class="center"/>
 
 ---
 
@@ -202,11 +208,9 @@ This is the topic of next lecture.
 
 Attributions sum to $f(x)$: visualize as stacked bar centered at prediction.
 
-.center[
 <span style="font-size: 18px;">
-<img width="900" src="figures/shapley_sample_level.png"/>
+<img width="900" src="figures/shapley_sample_level.png" class="center"/>
 </span>
-]
 
 ---
 
@@ -214,10 +218,8 @@ Attributions sum to $f(x)$: visualize as stacked bar centered at prediction.
 
 Compact visualization identifies samples with similar explanations.
 
-.center[
 <span style="font-size: 18px;">
-<img width="900" src="figures/shapley_dataset_level.png"/>
+<img width="900" src="figures/shapley_dataset_level.png" class="center"/>
 </span>
-]
 
 ---

@@ -1,10 +1,11 @@
+
 # 10. Applying Tree Ensembles
 
 * application to case study
 * PDP and MDI+
 * comparing importance measures
 
----⠀
+---
 
 ### Learning outcomes
 
@@ -25,23 +26,6 @@
 - **Target ($y$)**. `mo_ppm` (Molybdenum concentration), proxy for ocean oxygenation
 - **Key predictor**. `age_model` (geological age in millions of years)
 - **Context**. `site_type` (restricted vs. open marine), lithology, trace elements
-
----
-
-$X$:
-
-```
-site_latitude	site_longitude	age_model	al_wt	toc_wt	fe_py_fehr	site_type	metamorphic_bin	basin_type	environmental_bin	lithology_name
-44.571389	-84.581667	364.918264075741	5.99	4.55	0.81	core	Diagenetic zone	intracratonic sag	basinal	shale
-44.571389	-84.581667	363.510259361286	6.76	2.04	0.82	core	Diagenetic zone	intracratonic sag	basinal	shale
-....
-```
-
-$y$:
-
-```
-91.4, 50.1, ...
-```
 
 ---
 

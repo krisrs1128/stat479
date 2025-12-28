@@ -1,4 +1,4 @@
-### 12. SHAP computation
+# 12. SHAP computation
 
 * KernelSHAP
 
@@ -13,6 +13,8 @@
 1. Describe the theoretical foundation of post-hoc explanation methods like SHAP
 and linear probes values and apply them to realistic case studies with
 appropriate validation checks
+1. Within a specific application context, evaluate the trade-offs associated
+with competing interpretable machine learning techniques.
 
 ---
 
@@ -59,19 +61,20 @@ Sample or subsample from marginal.
 
 Can be shown that Shapley values solve a weighted regression:
 
-.pull-left[
+:::: {.columns}
+::: {.column width="50%"}
 <span style="font-size: 20px;">
 $$v_{x}(S) \approx \varphi_{x}(f, \emptyset) + \sum_{d=1}^{D} \mathbb{1}_{d \in S}\varphi_{x}(f, d)$$
 </span>
-]
-
-.pull-right[
+:::
+::: {.column width="50%"}
 <span style="font-size: 18px;">
 <img width="400" src="figures/shapley_kernel_regression.png"/>
 $\mathbb{1}_{d \in S}$ is known. Linear regression with unknown $\varphi_{x}(f, d)$.
 Compute $v_{x}(S)$ on sampled subsets.
 </span>
-]
+:::
+::::
 
 ---
 
