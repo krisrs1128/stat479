@@ -1,0 +1,105 @@
+---
+title: SHAP analysis of Drosophila Development
+---
+
+```{r}
+library(fastshap)
+library(mboost)
+library(mlr3)
+library(mlr3extralearners)
+library(mlr3tuning)
+library(patchwork)
+library(shapviz)
+library(tidyverse)
+theme_set(theme_classic())
+set.seed(20251227)
+```
+
+```{r}
+load("data/enhancer.Rdata")
+enhancer <- bind_cols(X, y = as.factor(Y))
+```
+
+```{r}
+task <- as_task_classif(enhancer, target = "y", id = "enhancer")
+learner <- lrn("classif.glmboost", nu = to_tune(0.001, 0.5), mstop=to_tune(50, 200), predict_type = "prob")
+
+instance <- ti(
+  task = task,
+  learner = learner,
+  resampling = rsmp("cv", folds = 3),
+  measures = msr("classif.auc"),
+  terminator = trm("none")
+)
+```
+
+```{r}
+tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
+tuner$optimize(instance)
+```
+
+```{r}
+fit <- glmboost(y ~ ., data = enhancer, control = boost_control(nu = instance$result$nu, mstop = instance$result$mstop), family = Binomial())
+
+tibble(y_hat = predict(fit), y = factor(Y)) |>
+    ggplot() +
+        geom_histogram(aes(y_hat, fill = y)) +
+        facet_grid(y ~ ., scales = "free_y")
+```
+
+```{r}
+enhancer <- enhancer[1:1000, ] # for faster computation
+
+explainer <- fastshap::explain(
+  object = fit,
+  X = enhancer,
+  pred_wrapper = \(fit, newdata) predict(fit, newdata, type = "response")[, 1]
+)
+```
+
+### Global Plots
+
+```{r}
+viz_setup <- shapviz(explainer, X = enhancer)
+sv_importance(viz_setup, kind = "bee")
+```
+
+```{r}
+sv_dependence(viz_setup, "bcd2")
+sv_dependence(viz_setup, "twi2")
+```
+
+```{r}
+enhancer |>
+    ggplot() +
+    geom_jitter(aes(log1p(twi2), y, col = y), size = .5, alpha = 0.5)
+
+enhancer |>
+    ggplot() +
+    geom_jitter(aes(log1p(bcd2), y, col = y), size = .5, alpha = 0.5)
+```
+
+### Local Plots
+
+```{r}
+plots <- list()
+for (i in seq_len(10)) {
+    plots[[i]] <- sv_force(viz_setup, max_display = 5, row = i)
+}
+reduce(plots, `+`)
+```
+
+```{r}
+important_vars <- c("twi2", "H4K5ac_c14c", "H3_c14c", "med2", "bcd2", "gt2", "H3K18ac_c14c", "sna1")
+cluster_order <- hclust(dist(explainer[, important_vars]))$order
+
+explainer |>
+    as_tibble() |>
+    select(any_of(important_vars)) |>
+    mutate(id = factor(row_number(), levels = cluster_order)) |>
+    sample_n(150) |>
+    pivot_longer(-id) |>
+    ggplot() +
+        geom_col(aes(value, id, fill = name)) +
+        scale_fill_brewer(palette = "Set2")
+```
