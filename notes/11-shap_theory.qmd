@@ -12,25 +12,48 @@
 
 ### Learning outcomes
 
----
-
-### Fruit fly development
-
-how does one cell become an organism?
-
-(two tail fly example)
+1. Describe the theoretical foundation of post-hoc explanation methods like SHAP
+and linear probes values and apply them to realistic case studies with
+appropriate validation checks
+1. Within a specific application context, evaluate the trade-offs associated
+with competing interpretable machine learning techniques.
 
 ---
 
-### Experiments
+## Motivating Case Study
+
+Enhancers are stretches of the genome that coordinate the expression of many
+downstream genes.
+- Their status is determined by combinations of binding transcription factors and chromatin marks
+
+Understanding these interactions explains genotype → phenotype.
 
 ---
 
-### Available data
+### Question
+
+Which features drive enhancer activity in each sequence?
+
+**Data**
+
+Genome-wide measurements from blastoderm (stage 5) *Drosophila* embryos:
+- DNA occupancy for 23 transcription factors
+- Activity for 13 chromatin markers
+- Binary labels indicating enhancer activity for genomic regions
+
+Each observation: a genomic sequence with associated regulatory features.
 
 ---
 
-### Interpretation goals
+### Statistical Formulation
+
+**Enhancer status**: $y \in \{0,1\}$
+
+**Predictors**: $x = (x_1, \ldots, x_D)$ (TF binding intensities, chromatin signals)
+
+**Model**: $f(x_i) = \mathbb{P}(y_i = 1 \mid x_i)$
+
+**Goal.** Quantify each feature's contribution to $f(x_i)$.
 
 ---
 
@@ -38,74 +61,163 @@ how does one cell become an organism?
 
 ---
 
-### Credit assignment
+### Credit Assignment
 
-(game theory definition)
+How to distribute profit across employees $i$ in a company if any team $S$ has profit $v(S)$?
+
+.center[
+<span style="font-size: 18px;">
+<img width="600" src="figures/shapley_team_1.png"/><br/>
+Game theoretic analogy.
+</span>
+]
 
 ---
 
-### Notation
+### Shapley Credit Assignment
 
----
+Employee $i$'s credit: average marginal contribution $v(S) - v(S \setminus \{i\})$ over all teams $S \ni i$.
 
-### Shapley values
+\begin{align}
+\varphi(i) = \frac{1}{D} \sum_{d = 1}^{D} \frac{1}{\binom{D-1}{d-1}}\sum_{S \in S_{d}(i)} [v(S) - v(S \setminus \{i\})]
+\end{align}
+
+where $S_{d}(i)$ collects subsets of size $d$ containing $i$.
+
+.center[
+<span style="font-size: 18px;">
+<img width="400" src="figures/shapley_team_2.png"/>
+</span>
+]
 
 ---
 
 ### Axioms
 
+Shapley values are the unique credit assignment satisfying:
+
+**Symmetry.** Equal marginal contributions $\to$ equal credit.
+\begin{align*}
+\varphi(i) = \varphi(j) \;\text{ if }\; v(S \cup \{i\}) - v(S) = v(S \cup \{j\}) - v(S) \;\; \forall S
+\end{align*}
+
+**Dummy.** Zero marginal contribution $\to$ zero credit.
+\begin{align*}
+\varphi(i) = 0 \;\text{ if }\; v(S \cup \{i\}) = v(S) \;\; \forall S
+\end{align*}
+
+**Additivity.** For two games $v_1, v_2$, attributions add.
+\begin{align*}
+\varphi_i(v_1 + v_2) = \varphi_i(v_1) + \varphi_i(v_2)
+\end{align*}
+
 ---
 
 ### Efficiency
 
----
+**Efficiency.** All credit is distributed, and no double counting.
 
-## Game Theory $\to$ Machine Learning
-
----
-
-### Analogy
+$$\sum_{i=1}^D \varphi(i) = v(D) - v(\emptyset)$$
 
 ---
 
-### Exercise: Package interface
-
-give examples of input
-
-ask to explain: format of output, relationship with previous analogy
+## Feature Attribution
 
 ---
 
-### Defining $S$
+### Game Theory $\to$ Machine Learning
+
+For each prediction $f(x)$, define a game:
+
+\begin{align}
+v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
+\end{align}
+
+where $x_S$ denotes coordinates in $S$ fixed at their observed values, and $x'_{S^C}$ are the remaining coordinates drawn from their conditional distribution.
+
+How to define $v(S)$? This determines what "importance" means.
 
 ---
 
-### Defining $v$
+### Shapley Feature Attribution
+
+Feature $i$'s contribution to $f(x)$:
+
+\begin{align}
+\varphi_{x}(f, i) = \frac{1}{D} \sum_{d = 1}^{D} \frac{1}{\binom{D-1}{d-1}}\sum_{S \in S_{d}(i)}[v_{x}(S) - v_{x}(S \setminus \{i\})]
+\end{align}
+
+These satisfy:
+$$\sum_{i=1}^D \varphi_{x}(f, i) = f(x) - \mathbb{E}[f(X)]$$
+
+Each $\varphi_x(f,i)$ explains deviation from baseline prediction.
 
 ---
 
-### Alternatives
+### Geometric Interpretation
+
+\begin{align}
+v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
+\end{align}
+
+.center[
+<img width="800" src="figures/shapley_v2.png"/>
+]
+
+Conditional expectation when features $S$ are fixed at $x_S$.
 
 ---
 
-### Sampling
+### Exercise: Geometric Interpretation
+
+How to compute $\varphi_{\mathbf{x}}(f, 2)$ in this example? We need:
+
+* $v(\{1, 2\})$
+* $v(\{2\})$
+* $v(\emptyset)$
+
+What is the geometric meaning of each term?
 
 ---
 
-### Geometric interpretation
+### The Central Difficulty
+
+The conditional expectation $\mathbb{E}[f(x_S, X_{S^C}) \mid x_S]$ is generally **not computable**.
+
+This forces a choice:
+
+1. **Marginal Shapley.** Replace with $\mathbb{E}[f(x_S, X_{S^C})]$
+   - Ignores feature correlations
+   - Reveals model's functional form
+
+2. **Conditional Shapley.** Model $p(x_{S^C} \mid x_S)$
+   - Respects correlations
+   - Hard to estimate, often biased
+
+This is the topic of next lecture.
 
 ---
 
-### Exercise: Visualizing special cases
+### Visualization - One Sample
+
+Attributions sum to $f(x)$: visualize as stacked bar centered at prediction.
+
+.center[
+<span style="font-size: 18px;">
+<img width="900" src="figures/shapley_sample_level.png"/>
+</span>
+]
 
 ---
 
-### Waterfall plots (one sample)
+### Visualization - Many Samples
+
+Compact visualization identifies samples with similar explanations.
+
+.center[
+<span style="font-size: 18px;">
+<img width="900" src="figures/shapley_dataset_level.png"/>
+</span>
+]
 
 ---
-
-### Waterfall plots (many samples)
-
----
-
-### Computational challenges

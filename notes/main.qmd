@@ -18,3 +18,7 @@ bib <- ReadBib("references.bib")
 {{< include 06-using_nonlinear_models.qmd >}}
 {{< include 07-trees.qmd >}}
 {{< include 08-mdi.qmd >}}
+{{< include 09-tree_ensembles.qmd >}}
+{{< include 10-ensemble_interpretation.qmd >}}
+{{< include 11-shap_theory.qmd >}}
+{{< include 12-shap_compute.qmd >}}

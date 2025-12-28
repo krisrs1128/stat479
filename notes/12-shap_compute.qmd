@@ -1,4 +1,3 @@
-
 ### 12. SHAP computation
 
 * KernelSHAP
@@ -7,35 +6,111 @@
 
 * application to case study
 
-* misinterpretation
-
 ---
 
 ### Learning outcomes
 
----
-
-## KernelSHAP
-
----
-
-### Statistical approximation
+1. Describe the theoretical foundation of post-hoc explanation methods like SHAP
+and linear probes values and apply them to realistic case studies with
+appropriate validation checks
 
 ---
 
-### Special cases
+### Computational Challenges
+
+Computing Shapley values exactly is intractable except in trivial cases.
+
+1. $v_{x}(S)$ requires evaluating conditional expectations.
+2. The sum runs over $2^D$ subsets.
 
 ---
 
-### Algorithm cartoon
+### Approximating $v_{x}(S)$
+
+How to compute:
+
+$$v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]$$
+
+?
 
 ---
 
-### Scalability comparison
+### Reference Values
+
+Replace $x'_{S^C}$ with fixed reference (zeros, mean $\bar{x}_{S^C}$):
+
+$$v_{x}(S) \approx f(x_{S}, \bar{x}_{S^C})$$
+
+One evaluation per $S$. Very rough approximation -- ignores correlations.
 
 ---
 
-### Exercise: Fill in the code
+### Independence Assumption
+
+Assume $x_{S} \perp x_{S^C}$:
+
+$$v_{x}(S) = \mathbb{E}_{p(x'_{S^C})}[f(x_{S}, x'_{S^C})] \approx \frac{1}{N}\sum_{n=1}^{N} f(x_{S}, x'_{n,S^C})$$
+
+Sample or subsample from marginal.
+
+---
+
+### Regression Perspective
+
+Can be shown that Shapley values solve a weighted regression:
+
+.pull-left[
+<span style="font-size: 20px;">
+$$v_{x}(S) \approx \varphi_{x}(f, \emptyset) + \sum_{d=1}^{D} \mathbb{1}_{d \in S}\varphi_{x}(f, d)$$
+</span>
+]
+
+.pull-right[
+<span style="font-size: 18px;">
+<img width="400" src="figures/shapley_kernel_regression.png"/>
+$\mathbb{1}_{d \in S}$ is known. Linear regression with unknown $\varphi_{x}(f, d)$.
+Compute $v_{x}(S)$ on sampled subsets.
+</span>
+]
+
+---
+
+### Kernel Reweighting
+
+Each row: subset $S$ of features.
+
+$$v_{x}(S) \approx \varphi_{x}(f, \emptyset) + \sum_{d=1}^{D} \mathbb{1}_{d \in S}\varphi_{x}(f, d)$$
+
+Weight for subset $S$:
+$$\frac{D - 1}{\binom{D}{|S|} |S|(D - |S|)}$$
+
+Weighted regression recovers exact Shapley values $\varphi_{x}(f, d)$.
+
+---
+
+### Exercise: Annotate Code Sketch
+```{python, eval = FALSE}
+# initialize data structures
+mask_matrix = np.zeros((nsamples, M))
+kernel_weights = np.zeros(nsamples)
+synth_data = np.tile(self.data, (nsamples, 1))
+
+# keep values at random subsets of features
+for i in range(nsamples):
+    mask = np.random.choice([0, 1], size=M)
+    mask_matrix[i] = mask
+    synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
+    kernel_weights[i] = (M - np.sum(mask)) * np.sum(mask)
+
+# model predictions on masked data
+model_out = self.model(synth_data)
+f = np.mean(model_out.reshape(nsamples, self.N, -1), axis=1) - self.f_bar
+
+# weighted regression on adjusted f
+X = mask_matrix - mask_matrix[:, -1][:, None]
+y = f.flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
+lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
+```
 
 ---
 
@@ -43,80 +118,102 @@
 
 ---
 
-### Fitting many models
+### The Problem
+
+KernelSHAP runs per-instance: thousands of model evaluations per data point.
+
+For millions of samples, this cost dominates.
 
 ---
 
-### Amortized model
+### Amortized Explainer
+
+Train explainer model $g_\theta(x)$ to predict $\phi(x)$ directly.
+
+**Speed**. One forward pass after training.
+
+**Generalization**. Exploits similarities between data points.
 
 ---
 
-### Approximate labeling
+### Training with Noisy Labels
+
+Training requires labels $\phi(x)$, which we want to avoid computing.
+
+**Stochastic amortization**. Use cheap, noisy estimates $\tilde{a}(b)$:
+
+$$\tilde{\mathcal{L}}_{reg}(\theta) = \mathbb{E}[\|a(b;\theta) - \tilde{a}(b)\|^{2}]$$
+
+Use high-variance estimates (KernelSHAP with 1-5 samples) as targets.
 
 ---
 
-### When to apply -- Theory
+### Why Noisy Labels Work
+
+- If $\mathbb{E}[\tilde{a}(b) \mid b] = a(b)$, the model converges to correct attributions.
+
+- Slows convergence (high variance) but is unbiased.
 
 ---
 
-### When to apply -- Experiment
+### When to Apply
+
+Amortization beats per-example computation for $n > 1000$.
+
+(add a figure)
 
 ---
 
-## Fruit fly development
+## Drosophila Development
 
 ---
 
-### Problem setup
+### Setup
+
+Analyze **enhancers**. DNA sequences regulating gene expression in *Drosophila* embryos.
+
+**Target**. Enhancer status (1 vs. 0)?
+
+**Features**. Transcription factor and chromatin mark levels.
 
 ---
 
-### ML formulation
+### Model
+
+**Gradient Boosting** using the `mboost` package. Tuned as in previous case studies.
+
+**Tuning**. 3-fold CV optimizes learning rate (`nu`) and iterations (`mstop`) by AUC.
 
 ---
 
-### Model accuracy
+### Model Performance
+
+Before interpreting, verify model quality.
+
+**AUC**. High values indicate learned biological signals.
+
+**Calibration**. Histogram of predicted probabilities per class.
 
 ---
 
-### KernelSHAP
+### Global Importance
+
+`sv_importance` identifies influential transcription factors.
+
+**Bicoid (`bcd2`)**. High values increase SHAP → major activator.
+
+**Twist (`twi2`)**. Strong positive impact, consistent with known role.
 
 ---
 
-### Top genes (Globally)
+### Local Explanations
+
+`sv_force` explains individual sequences.
+
+Each prediction: balance of "pushes" from different genes.
+
+Sequence may be enhancer primarily due to high `bcd2`, even if `twi2` low.
 
 ---
 
-### Top genes (Locally)
-
----
-
-### Exercise: Marginal vs. conditional plots
-
----
-
-### Amortization
-
----
-
-### Explanation comparison
-
----
-
-## Misinterpretation
-
----
-
-### Extrapolation
-
----
-
-### Unjustified causal interpretation
-
----
-
-### Limitation
-
-* difficulty in finding interactions
-
----
+### Exercise: Marginal vs. Conditional
