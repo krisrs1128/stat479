@@ -1,0 +1,132 @@
+# 12. Alternative Views of SHAP
+
+* motivating example
+
+* probabilistic
+
+* algebraic view
+
+---
+
+### Learning outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+
+---
+
+### Gaussian Simulation
+
+---
+
+### Visualization
+
+$\alpha_1 = 0$ means that $X_{1}$ has no causal effect on the response.
+
+---
+
+### Linear Model
+
+---
+
+### `shapr` result
+
+`shapr` computes the true SHAP value for this model.
+
+---
+
+### `fastshap` result
+
+`fastshap` computes the approximation advocated by Lundberg and Lee.
+
+---
+
+### Issues
+
+- These results are not the same! This is not a bug.
+- This is an example of a more general phenomena: $\phi_j \neq 0$ does not mean $f$ "depends on" $x_j$
+
+---
+
+## Probabilistic view
+
+---
+
+### Set-based Definition
+
+\begin{align}
+\varphi(i) = \frac{1}{D} \sum_{d = 1}^{D} \frac{1}{\binom{D-1}{d-1}}\sum_{S \in S_{d}(i)} [v(S) - v(S \setminus \{i\})]
+\end{align}
+
+---
+
+### Probabilistic Definition
+
+$\phi_j(x)$ explains $f(x) - \mathbf{E}[f(X)]$
+
+---
+
+### Exercise
+
+If we keep the same function $f$, but change the distribution $X$, should the explanation change?
+
+---
+
+### Conditional approach
+
+g_{\text{c}}(T) := \mathbf{E}[f(x_T, X_{\bar T}) \mid X_T = x_T] - \mathbf{E}[f(X)].
+
+---
+
+### Marginal approach
+
+g_{\text{m}}(T) := \mathbf{E}[f(x_T, X_{\bar T})] - \mathbf{E}[f(X)].
+
+---
+
+### Weighted least squares
+
+
+
+---
+
+### Sampling
+
+what we theoretically vs. actually sample in f_{kernelshap}
+
+---
+
+## Algebraic view
+
+---
+
+### Correlated binary data
+
+---
+
+### Manual calculation: conditional
+
+---
+
+### Manual calculation: marginal
+
+---
+
+### Failure of sensitivity
+
+---
+
+### Linear Model
+
+---
+
+### Manual calculation: conditional
+
+---
+
+### Manual calculation: marginal
+
+---
+
+### Exercise
+
+---

@@ -1,0 +1,91 @@
+# 13. SHAP and Interventions
+
+* binary data code example
+
+* interventional view
+
+* gaussian code example
+
+---
+
+### Learning outcomes
+
+* Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.
+
+---
+
+## Binary Data Example
+
+---
+
+### Data simulation
+
+---
+
+### Visualization
+
+---
+
+### Explanations
+
+---
+
+### Exercise (warmup for do-calculus)
+
+---
+
+## Interventional View
+
+---
+
+### Conditional expectation vs. do-operator
+
+---
+
+### Algorithmic interpretation
+
+(sampling descriptions for a 2D (x1, x2))
+
+---
+
+### Geometric interpretation
+
+---
+
+### Application to SHAP
+
+---
+
+### DAG visualization - Conditional
+
+---
+
+### DAG visualization - Marginal
+
+---
+
+### What is the estimand?
+
+Observational vs. interventional choices
+
+---
+
+## Gaussian Example
+
+---
+
+### Data simulation
+
+---
+
+### Visualization
+
+---
+
+### Explanations
+
+---
+
+### Exercise
+
+---
