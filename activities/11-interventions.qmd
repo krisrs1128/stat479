@@ -1,0 +1,156 @@
+---
+title: "SHAP and Causality: Conditional vs. Marginal"
+format: html
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(tidyverse)
+library(fastshap)
+library(MASS)
+library(scico)
+library(shapr)
+
+set.seed(20251228)
+theme_set(theme_classic())
+```
+
+## 1. Binary Correlation Case
+
+In this scenario,  and  are nearly identical. We compare how different SHAP implementations handle highly correlated features.
+
+```{r}
+#| label: binary-data-generation
+n_obs <- 100
+
+# DGP: x2 is a noisy version of x1; y is driven only by x1
+df_binary <- tibble(
+  x1 = sample(0:1, n_obs, replace = TRUE),
+  x2 = x1 + rnorm(n_obs, 0, 0.1),
+  y = x1
+)
+
+# Separate features for explanation
+X_binary <- df_binary |> dplyr::select(x1, x2)
+fit_binary <- lm(y ~ x1 + x2, data = df_binary)
+```
+
+### Compare Explanations
+
+Conditional SHAP (via shapr) accounts for feature dependence
+
+```{r}
+#| label: binary-explanation-conditional
+shap_cond_bin <- shapr::explain(
+  fit_binary,
+  x_explain = X_binary,
+  x_train = X_binary,
+  approach = "gaussian",
+  phi0 = mean(df_binary$y)
+)$shapley_values_est
+```
+
+ Marginal SHAP (via fastshap) assumes independence
+
+```{r}
+shap_marg_bin <- fastshap::explain(
+  fit_binary,
+  X = X_binary,
+  pred_wrapper = predict
+)
+```
+
+We can compare the results.
+
+```{r}
+comparison_binary <- tibble(
+  y = df_binary$y,
+  cond_x1 = shap_cond_bin$x1,
+  cond_x2 = shap_cond_bin$x2,
+  marg_x1 = shap_marg_bin[, "x1"],
+  marg_x2 = shap_marg_bin[, "x2"]
+)
+
+head(comparison_binary)
+```
+
+## 2. Gaussian Data Case (Multivariate)
+
+Here we explore a scenario where  has a true coefficient of 0 but is correlated with predictive features.
+
+### Data Synthesis
+
+```{r}
+#| label: gaussian-data-generation
+n_features <- 3
+n_obs_g    <- 1000
+
+# Create a random positive-definite covariance matrix
+random_mat <- matrix(rnorm(n_features^2), nrow = n_features)
+sigma_mat  <- random_mat %*% t(random_mat)
+```
+
+Define true coefficients alpha. alpha[1] is 0, so X1 is irrelevant.
+
+```{r}
+true_alphas <- rnorm(n_features)
+true_alphas[1] <- 0
+names(true_alphas) <- paste0("X", 1:n_features)
+```
+
+generate features and target
+
+```{r}
+X_gauss <- mvrnorm(n_obs_g, mu = rep(0, n_features), Sigma = sigma_mat) |>
+  as_tibble(.name_repair = ~paste0("X", 1:n_features))
+
+y_gauss <- as.matrix(X_gauss) %*% true_alphas
+df_gauss <- bind_cols(X_gauss, y = as.numeric(y_gauss))
+
+print("True Generative Coefficients:")
+print(true_alphas)
+```
+
+### Visualization
+
+```{r}
+#| label: visualize-gauss
+ggplot(df_gauss, aes(X1, X2, color = y)) +
+  geom_point(alpha = 0.5) +
+  scale_color_scico(palette = "glasgow") +
+  labs(title = "Feature Correlation in Gaussian Data")
+```
+
+### Explainability Benchmark
+
+```{r}
+#| label: gaussian-explanation
+
+fit_gauss <- lm(y ~ ., data = df_gauss)
+# Conditional approach
+shap_cond_gauss <- shapr::explain(
+  fit_gauss,
+  x_explain = X_gauss,
+  x_train = X_gauss,
+  approach = "gaussian",
+  phi0 = mean(df_gauss$y)
+)$shapley_values_est |>
+  rename_with(~paste0(.x, "_cond"))
+
+# Marginal approach
+shap_marg_gauss <- fastshap::explain(
+  fit_gauss,
+  X = X_gauss,
+  pred_wrapper = predict
+) |>
+  as_tibble() |>
+  rename_with(~paste0(.x, "_marg"))
+```
+
+compare results.
+
+```{r}
+results_gauss <- bind_cols(y = df_gauss$y, shap_cond_gauss, shap_marg_gauss)
+head(round(results_gauss, 2))
+```
