@@ -38,7 +38,7 @@ tuner$optimize(instance)
 ```
 
 ```{r}
-fit <- randomForest(mo_ppm ~ ., data = sediment, ntree=instance$result$ntree, mtry=instance$result$mtry)
+fit <- randomForest(mo_ppm ~ ., data = sediment, ntree = instance$result$ntree, mtry = instance$result$mtry)
 fit
 ```
 
@@ -83,13 +83,6 @@ model_profile(explainer, variables = "age_model", groups = "site_type") |>
 ```
 
 ```{r}
-library(arrow)
-# sediment |>
-#     select(-mo_ppm) |>
-#     write_feather("data/07-X.feather")
-# sediment |>
-#     select(-mo_ppm) |>
-#     write_feather("data/07-y.feather")
 X <- sediment |>
     select(-mo_ppm)
 y <- sediment |>
@@ -99,16 +92,22 @@ y <- sediment |>
 ### MDI+
 
 ```{python}
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from imodels.importance import RandomForestPlusRegressor
+
+code_cols = r.X.select_dtypes(include=["object", "category", "bool"]).columns
+X = 1 * pd.get_dummies(r.X, columns=code_cols)
+y = np.array(r.y)
 
 # fit RF+
 rf_regressor = RandomForestRegressor(n_estimators=256, max_features=0.25)
 rf_plus_model = RandomForestPlusRegressor(rf_model=rf_regressor)
-rf_plus_model.fit(r.X, r.y)
+rf_plus_model.fit(X, y)
 ```
 
 ```{python}
-mdi_plus_scores = rf_plus_model.get_mdi_plus_scores(r.X, r.y)
+mdi_plus_scores = rf_plus_model.get_mdi_plus_scores(X, y)
 mdi_plus_scores.sort_values("importance", ascending=False)
 ```
