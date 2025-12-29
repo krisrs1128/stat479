@@ -1,0 +1,118 @@
+---
+title: Landcover Classification
+---
+
+```{python}
+import numpy as np
+import torch
+from torch.utils.data import Subset, DataLoader
+from torchvision import datasets, transforms, models
+import pytorch_lightning as pl
+import matplotlib.pyplot as plt
+import os
+
+pl.seed_everything(479)
+```
+
+```{python}
+input_size = 224
+imagenet_mean = [0.485, 0.456, 0.406]
+imagenet_std  = [0.229, 0.224, 0.225]
+
+train_transform = transforms.Compose([
+    transforms.RandomResizedCrop(input_size),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize(imagenet_mean, imagenet_std)
+])
+
+test_transform = transforms.Compose([
+    transforms.Resize(input_size),
+    transforms.CenterCrop(input_size),
+    transforms.ToTensor(),
+    transforms.Normalize(imagenet_mean, imagenet_std)
+])
+```
+
+```{python}
+data_dir = 'data/landcover/EuroSAT_RGB/'
+dataset_train = datasets.ImageFolder(data_dir, transform=train_transform)
+dataset_val   = datasets.ImageFolder(data_dir, transform=test_transform)
+class_names = dataset_train.classes
+num_classes = len(class_names)
+print(f'Total classes: {num_classes}; Sample classes: {class_names[:5]}')
+
+# 80/20 split over the same index set for both transformed views
+indices = np.random.permutation(len(dataset_train))
+split = int(0.8 * len(indices))
+train_subset = Subset(dataset_train, indices[:split])
+val_subset   = Subset(dataset_val, indices[split:])
+print(f'Train/Test sizes: {len(train_subset)}/{len(val_subset)}')
+```
+
+```{python}
+batch_size = 16
+train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=True)
+val_loader   = DataLoader(val_subset, batch_size=batch_size, shuffle=False)
+```
+
+```{python}
+class EuroSATClassifier(pl.LightningModule):
+    def __init__(self, num_classes: int, lr: float = 1e-3):
+        super().__init__()
+        self.save_hyperparameters()
+        self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+        self.model.fc = torch.nn.Linear(self.model.fc.in_features, num_classes)
+        self.criterion = torch.nn.CrossEntropyLoss()
+
+    def forward(self, x):
+        return self.model(x)
+
+    def training_step(self, batch):
+        x, y = batch
+        y_hat = self(x)
+        loss = self.criterion(y_hat, y)
+        acc = (y_hat.argmax(dim=1) == y).float().mean()
+        self.log('train_loss', loss, prog_bar=True)
+        self.log('train_acc', acc, prog_bar=True)
+        return loss
+
+    def validation_step(self, batch):
+        x, y = batch
+        y_hat = self(x)
+        loss = self.criterion(y_hat, y)
+        acc = (y_hat.argmax(dim=1) == y).float().mean()
+        self.log('val_loss', loss, prog_bar=True)
+        self.log('val_acc', acc, prog_bar=True)
+        return {'val_loss': loss, 'val_acc': acc}
+
+    def configure_optimizers(self):
+        return torch.optim.SGD(self.parameters(), lr=self.hparams.lr)
+```
+
+```{python}
+model = EuroSATClassifier(num_classes=num_classes, lr=1e-3)
+accelerator = 'mps' if torch.backends.mps.is_available() else 'cpu'
+```
+
+```{python}
+#| eval: false
+trainer = pl.Trainer(max_epochs=10, accelerator=accelerator)
+trainer.fit(model, train_loader, val_loader)
+torch.save(model.state_dict(), 'data/eurosat_resnet50.pth')
+```
+
+```{python}
+#| eval: false
+map_loc = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
+state = torch.load('eurosat_resnet50.pth', map_location=map_loc)
+model.load_state_dict(state)
+model.eval()
+```
+
+plot at a few layers
+
+```{r}
+
+```
