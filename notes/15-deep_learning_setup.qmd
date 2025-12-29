@@ -23,65 +23,108 @@
 
 ---
 
-## Motivating Case Study
+### Problem
 
-landcover mapping
--
--
+Identify regions of rapid land use conversion (important in climate change-related work).
 
----
-
-### Scientific Goal
-
-**Question**.
-
-**Data**.
+Data: 27K Sentinel-2 images (10m/pixel)
+- 34 European countries, 2015-2017
+- Low cloud cover only
+- 10 land use classes
 
 ---
 
 ### Statistical Formulation
 
-**Observed**.
+**Label**. $y \in \{0,1\}^{10}$ (one-hot encoding of 10 classes)
 
-**Predictors**.
+**Input**. $x \in \mathbb{R}^{3 \times 64 \times 64}$ (RGB patch)
 
-**Model**.
+**Model**. $f(x; \theta) \to \Delta^9$ (probability simplex)
 
-**Goal**.
-
-**Requirements**.
+**Objective**. $\min_\theta \mathbb{E}[\mathcal{L}(f(x; \theta), y)]$
 
 ---
 
-## Perceptron
+## Perceptrons
 
 ---
 
-### Single neuron
+### Single Neuron
+
+Perceptron = Linear map + Nonlinearity
+
+$$z = w^\mathsf{T} x + b \quad \text{(affine transformation)}$$
+$$y = g(z) \quad \text{(activation)}$$
+
+Common $g$: step function, ReLU, sigmoid
 
 ---
 
-### Linear separation
+### Linear Separation
+
+Decision boundary: $\{x : w^\mathsf{T} x + b = 0\}$
+
+Classification: $\text{sign}(w^\mathsf{T} x + b)$
+
+Limitation: Can only separate linearly separable classes
 
 ---
 
-### Objective function
+### Objective Function
+
+Learning = Optimization
+
+$$\theta^* = \mathop{\mathrm{arg\,min}}_\theta \frac{1}{N} \sum_{i=1}^N \mathcal{L}(f(x_i; \theta), y_i)$$
+
+Update rule: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$
+
+where $\eta$ is step size (learning rate)
 
 ---
 
-### Multilayer perceptron
+### Multilayer Perceptron
+
+Composition of affine maps and nonlinearities:
+
+$$\begin{aligned}
+h_1 &= g(W_1 x + b_1) \\
+h_2 &= g(W_2 h_1 + b_2) \\
+&\vdots \\
+y &= \text{softmax}(W_L h_{L-1} + b_L)
+\end{aligned}$$
+
+Key: $g$ enables non-convex decision boundaries
 
 ---
 
-### Sequence of transformations
+### Sequence of Transformations
+
+Deep net as composition: $f = f_L \circ \cdots \circ f_2 \circ f_1$
+
+Each $f_i$ transforms the geometry of data space
+- Early layers: Summarize local features (edges, textures)
+- Deep layers: Global structure (object categories)
+
+Universal approximation: Sufficient depth + width $\to$ approximate any continuous function
 
 ---
 
-### Activation vs. Parameters
+### Activation vs Parameters
+
+**Parameters** $\theta = (W, b)$: Learned during training
+
+**Activations** $h_i(x)$: Computed during inference
+
+Parameters: Slow (updated over many samples)
+
+Activations: Fast (computed per sample)
+
+Both are functions of data, at different udpating scales
 
 ---
 
-### Exercise: Mixing linear classifiers
+### Exercise
 
 ---
 
@@ -91,31 +134,77 @@ landcover mapping
 
 ### Tensors
 
+Tensor: Multidimensional array with structure
+
+- rank 0: scalar
+- rank 1: vector
+- rank 2: matrix
+- rank $n$: $n$-array
+
 ---
 
 ### Tensors in MLP Example
 
----
+Layer dimensions:
 
-### Tensors in satellite example
+- Input: $[N, d_{\text{in}}]$ (batch $\times$ input features)
+- Weight: $[d_{\text{out}}, d_{\text{in}}]$
+- Bias: $[d_{\text{out}}]$
+- Output: $[N, d_{\text{out}}]$ (batch $\times$ output features)
 
----
-
-### Tensors in pytorch
-
----
-
-### Datasets
+Matrix multiplication: $z = xW^\mathsf{T} + b$
 
 ---
 
-### Data loaders
+### Tensors in Satellite Example
+
+EuroSAT tensor dimensions:
+
+- Single image: $[3, 64, 64]$ (channels $\times$ height $\times$ width)
+- Batch: $[16, 3, 64, 64]$ (batch $\times$ C $\times$ H $\times$ W)
+
+---
+
+### Tensors in PyTorch
+
+```python
+import torch
+
+# Create and move to hardware accelerator
+x = torch.randn(16, 3, 64, 64)
+device = "mps" if torch.backends.mps.is_available() else "cpu"
+x = x.to(device)
+```
+
+---
+
+### Datasets and Loaders
+
+**Dataset**. $(x_i, y_i)$ pairs with `__getitem__` method
+
+**DataLoader**. Iterator over batches
+
+Key parameters:
+- `batch_size`: Number of samples per gradient update
+- `shuffle`: Randomize order each epoch
+- `num_workers`: Parallel data loading
 
 ---
 
 ### Transforms
 
+We will use these data augmentation steps:
+
+**Training**: `RandomCrop`, `HorizontalFlip` $\to$ variation
+
+**Validation**: `CenterCrop` $\to$ consistency
+
+**Both**: `ToTensor`, `Normalize` $\to$ standardization
+
+Purpose: Increase effective dataset size, regularize
+
 ---
 
+### Exercise
 
-### Exercise: Two moons classification
+---

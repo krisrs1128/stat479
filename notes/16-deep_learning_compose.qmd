@@ -15,42 +15,62 @@
 
 ---
 
-## Reading
+### Reading
 
 - **Chapter 12**.
 - **Getting Started with PyTorch**
 
 ---
 
-### Linear layers
+### Linear Layers
+
+`nn.Linear(d_in, d_out)`
+
+**Implements**. $y = xW^\mathsf{T} + b$
+
+where $W \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$, $b \in \mathbb{R}^{d_{\text{out}}}$
+
+**Parameters**. $d_{\text{out}}(d_{\text{in}} + 1)$
+
+**Example**. Replace ResNet50 head with `Linear(2048, 10)`
 
 ---
 
-### `nn.Linear`
+### Activation Layers
+
+$\text{ReLU}(z) = \max(0, z)$
+
+- Piecewise linear (cheap to compute)
+- Gradient always equal one for $z > 0$
+- Sparse activations (exactly zero for $z < 0$)
+
+Without nonlinearity: $f = W_L \cdots W_1$ reduces to single linear map
 
 ---
 
-### Activation layers
+### Normalization Layers
+
+**BatchNorm**: Normalize over batch dimension
+$$\hat{z} = \frac{z - \mathbb{E}_{\text{batch}}[z]}{\sqrt{\text{Var}_{\text{batch}}[z]}}$$
+
+**LayerNorm**: Normalize over feature dimension
+$$\hat{z} = \frac{z - \mathbb{E}_{\text{features}}[z]}{\sqrt{\text{Var}_{\text{features}}[z]}}$$
+
+Effect: Stabilizes gradient flow, permits larger learning rates
 
 ---
 
-### `nn.ReLu`
+### Output Layers
 
----
+**Softmax**: $\mathbb{R}^k \to \Delta^{k-1}$
 
-### Batch normalization
+$$\sigma(z)_i = \frac{\exp(z_i)}{\sum_j \exp(z_j)}$$
 
----
+Maps logits to probability simplex
 
-### Layer normalization
-
----
-
-### Output layers
-
----
-
-### `nn.Softmax`
+Temperature $\tau$: $\sigma_\tau(z)_i = \frac{\exp(z_i/\tau)}{\sum_j \exp(z_j/\tau)}$
+- $\tau \to 0$: argmax
+- $\tau \to \infty$: uniform
 
 ---
 
@@ -58,27 +78,64 @@
 
 ---
 
-### `nn.Module` class
+### `nn.Module` and Autograd
+
+**`nn.Module`**: Base class for neural net components; manages parameters
+
+**Autograd**: PyTorch's automatic differentiation engine
+
+Tracks operations to compute gradients via chain rule (backpropagation)
 
 ---
 
-### Automatic differentiation
+### Loss Function & Optimization
+
+**CrossEntropyLoss**: $H(y, \hat{y}) = -\sum_k y_k \log \hat{y}_k$
+
+For one-hot $y$: Reduces to $-\log \hat{y}_{\text{true class}}$
+
+SGD update: $\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta_t)$
+- $\eta$: Learning rate (step size)
+- $\nabla_\theta \mathcal{L}$: Computed via backpropagation (chain rule)
 
 ---
 
-### Loss function
+### Training Loop Steps
+
+One iteration:
+
+1. **Forward**: $\hat{y} = f(x; \theta)$
+2. **Loss**: $\mathcal{L} = H(y, \hat{y})$
+3. **Backward**: $\nabla_\theta \mathcal{L}$ via autograd
+4. **Update**: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$
+5. **Zero**: Clear gradient accumulation
+
+Repeat over batches, then epochs
 
 ---
 
-### Optimization
+### PyTorch Lightning
+
+PyTorch training contains significant boilerplate (device management, loops, logging)
+
+**Lightning Module**: Contains model logic (forward, step, optimizer)
+
+**Trainer**: Handles the engineering (hardware, loops, checkpoints)
+
+Helps us focus on modeling research logic.
 
 ---
 
-### Training loop
+### The Lightning Trainer
 
----
+The `pl.Trainer` automates the execution:
 
-### Evaluation
+```python
+trainer = pl.Trainer(max_epochs=10, accelerator='auto')
+trainer.fit(model, train_loader, val_loader)
+```
+
+Used in the EuroSAT case study to manage a 10-epoch training run
 
 ---
 
@@ -86,32 +143,85 @@
 
 ---
 
-### Data preparation
+### Data Preparation
+
+**Dataset**: EuroSAT RGB (10 classes)
+
+**Split**: 80% Train / 20% Validation
+
+**Augmentation**: Random crops and flips on training set to prevent overfitting
 
 ---
 
-### Model class
+### Model Class
+
+```python
+class EuroSATClassifier(pl.LightningModule):
+    def __init__(self, num_classes: int):
+        super().__init__()
+        # Pre-trained ResNet50 backbone
+        self.model = models.resnet50(weights='DEFAULT')
+        # Modify the head for 10 classes
+        self.model.fc = nn.Linear(
+            self.model.fc.in_features,
+            num_classes
+        )
+        self.criterion = nn.CrossEntropyLoss()
+```
 
 ---
 
-### Training loop
+### Training & Evaluation
+
+The module defines `training_step` and `validation_step`:
+
+- Logs `train_loss` and `val_acc` per epoch
+- Uses SGD optimizer with learning rate $10^{-3}$
+- `model.eval()` and `torch.no_grad()` used automatically by Lightning during validation
 
 ---
 
-## Representations
+### Representation Learning
 
----
+Representation learning: Each layer transforms input space
 
-"Layer by layer, neural nets build up increasingly abstracted representations of the input data, and these abstractions tend to be increasingly useful."
+- Early layers: Local statistical regularities
+- Middle layers: Part-based features
+- Late layers: Semantic abstractions
+
+Question: What geometric transformations occur layer-by-layer?
 
 ---
 
 ### Case Study: Layer 1 Nearest Neighbors
 
+Layer 1 features: Edge orientations, color blobs
+
+Nearest neighbors grouped by:
+- Dominant color (green vs. gray)
+- Simple textures (smooth vs. rough)
+
+Not yet semantic: Forests and crops both green
+
 ---
 
 ### Case Study: Layer 10 Nearest Neighbors
 
+Layer 10 features: Mid-level patterns
+
+- Repeating grids (urban structures)
+- Complex textures (foliage patterns)
+
+Groupings begin to reflect geometric structures specific to land-use types
+
 ---
 
 ### Case Study: Layer 50 Nearest Neighbors
+
+Layer 50 features: Class-discriminative
+
+Nearest neighbors grouped by semantic category
+- Invariant to illumination, pose, scale
+- Different "Residential" images closer than "Residential" vs "Forest"
+
+Network has learned a metric on land-use types
