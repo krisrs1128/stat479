@@ -1,0 +1,121 @@
+
+### 15. Deep Learning Setup
+
+* motivating case study
+
+* perceptron
+
+* data structures
+
+---
+
+### Learning outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+## Reading
+
+- **Chapter 12 (excluding 12.5)**.
+- **Getting Started with PyTorch**
+
+---
+
+## Motivating Case Study
+
+landcover mapping
+-
+-
+
+---
+
+### Scientific Goal
+
+**Question**.
+
+**Data**.
+
+---
+
+### Statistical Formulation
+
+**Observed**.
+
+**Predictors**.
+
+**Model**.
+
+**Goal**.
+
+**Requirements**.
+
+---
+
+## Perceptron
+
+---
+
+### Single neuron
+
+---
+
+### Linear separation
+
+---
+
+### Objective function
+
+---
+
+### Multilayer perceptron
+
+---
+
+### Sequence of transformations
+
+---
+
+### Activation vs. Parameters
+
+---
+
+### Exercise: Mixing linear classifiers
+
+---
+
+## Data Structures
+
+---
+
+### Tensors
+
+---
+
+### Tensors in MLP Example
+
+---
+
+### Tensors in satellite example
+
+---
+
+### Tensors in pytorch
+
+---
+
+### Datasets
+
+---
+
+### Data loaders
+
+---
+
+### Transforms
+
+---
+
+
+### Exercise: Two moons classification

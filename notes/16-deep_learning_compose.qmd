@@ -1,0 +1,117 @@
+### 16. Composing Deep Models
+
+* common layers
+
+* training
+
+* application to case study
+
+---
+
+### Learning outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+## Reading
+
+- **Chapter 12**.
+- **Getting Started with PyTorch**
+
+---
+
+### Linear layers
+
+---
+
+### `nn.Linear`
+
+---
+
+### Activation layers
+
+---
+
+### `nn.ReLu`
+
+---
+
+### Batch normalization
+
+---
+
+### Layer normalization
+
+---
+
+### Output layers
+
+---
+
+### `nn.Softmax`
+
+---
+
+## Training
+
+---
+
+### `nn.Module` class
+
+---
+
+### Automatic differentiation
+
+---
+
+### Loss function
+
+---
+
+### Optimization
+
+---
+
+### Training loop
+
+---
+
+### Evaluation
+
+---
+
+## Case Study
+
+---
+
+### Data preparation
+
+---
+
+### Model class
+
+---
+
+### Training loop
+
+---
+
+## Representations
+
+---
+
+"Layer by layer, neural nets build up increasingly abstracted representations of the input data, and these abstractions tend to be increasingly useful."
+
+---
+
+### Case Study: Layer 1 Nearest Neighbors
+
+---
+
+### Case Study: Layer 10 Nearest Neighbors
+
+---
+
+### Case Study: Layer 50 Nearest Neighbors
