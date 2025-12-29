@@ -154,3 +154,15 @@ compare results.
 results_gauss <- bind_cols(y = df_gauss$y, shap_cond_gauss, shap_marg_gauss)
 head(round(results_gauss, 2))
 ```
+
+```{r}
+results_gauss |>
+  dplyr::select(X1_cond, X1_marg) |>
+  mutate(X1_marg = as.numeric(X1_marg)) |>
+  pivot_longer(everything(), names_to = "method", values_to = "attribution") |>
+  ggplot(aes(attribution, fill = method)) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(title = "Attribution to X1 (α₁ = 0)",
+       x = "SHAP value for X1")
+```
