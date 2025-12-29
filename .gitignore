@@ -6,3 +6,4 @@ hw/hw*/*soln*
 hw/hw*/*.pdf
 notes/*.html
 notes/*files
+data/
