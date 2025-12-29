@@ -1,132 +1,268 @@
 # 12. Alternative Views of SHAP
 
-* motivating example
-
-* probabilistic
-
-* algebraic view
+* the sensitivity paradox
+* computing $v_x(S)$ two ways
+* software implementations
 
 ---
 
 ### Learning outcomes
 
-* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+1. Describe the theoretical foundation of post-hoc explanation methods like SHAP
+and linear probes values and apply them to realistic case studies with
+appropriate validation checks
 
 ---
 
-### Gaussian Simulation
+### Recall: SHAP Formula
+
+Previously we defined:
+
+$$v_x(S) = \mathbf{E}_{p(x'_{S^C} \mid x_S)}[f(x_S, x'_{S^C})]$$
+
+$$\varphi_x(f, i) = \frac{1}{D} \sum_{d=1}^D \frac{1}{\binom{D-1}{d-1}} \sum_{S \in S_d(i)} [v_x(S) - v_x(S \setminus \{i\})]$$
+
+**Today.** What is hidden behind $p(x'_{S^C} \mid x_S)$?
 
 ---
 
-### Visualization
+### Motivation
 
-$\alpha_1 = 0$ means that $X_{1}$ has no causal effect on the response.
+**Setup.** $f(x_1, x_2) = x_1$ where $X_1 \equiv X_2$ (perfectly correlated).
 
----
+**Question.** What is $\varphi_x(f, 2)$?
 
-### Linear Model
+**Intuition.** $\varphi_x(f, 2) = 0$ since $f$ ignores $x_2$.
 
----
+**Reality.** Two software packages disagree.
 
-### `shapr` result
+```r
+shap_cond <- shapr::explain(model, x, approach = "gaussian")
+# phi_2 ≈ 0.25 ≠ 0
 
-`shapr` computes the true SHAP value for this model.
+shap_marg <- fastshap::explain(model, X = X_train, newdata = x)
+# phi_2 ≈ 0
+```
 
----
-
-### `fastshap` result
-
-`fastshap` computes the approximation advocated by Lundberg and Lee.
-
----
-
-### Issues
-
-- These results are not the same! This is not a bug.
-- This is an example of a more general phenomena: $\phi_j \neq 0$ does not mean $f$ "depends on" $x_j$
+This is not a bug. They compute different quantities.
 
 ---
 
-## Probabilistic view
+### Two Definitions
+
+**Conditional.**
+$$v_x^{\text{cond}}(S) = \mathbf{E}[f(x_S, X_{S^C}) \mid X_S = x_S]$$
+
+Sample $X_{S^C}$ from training data where $X_S \approx x_S$.
+
+**Marginal.**
+$$v_x^{\text{marg}}(S) = \mathbf{E}[f(x_S, X_{S^C})]$$
+
+Sample $X_{S^C}$ from all training data, ignoring $x_S$.
 
 ---
 
-### Set-based Definition
+### Manual Calculation: Binary Case
 
-\begin{align}
-\varphi(i) = \frac{1}{D} \sum_{d = 1}^{D} \frac{1}{\binom{D-1}{d-1}}\sum_{S \in S_{d}(i)} [v(S) - v(S \setminus \{i\})]
-\end{align}
-
----
-
-### Probabilistic Definition
-
-$\phi_j(x)$ explains $f(x) - \mathbf{E}[f(X)]$
+**Setup.**
+- $f(x_1, x_2) = x_1$
+- $P(X_1=1, X_2=1) = 0.5$, $P(X_1=0, X_2=0) = 0.5$
+- Explain $(x_1, x_2) = (1, 1)$
 
 ---
 
-### Exercise
+### Conditional Approach
 
-If we keep the same function $f$, but change the distribution $X$, should the explanation change?
+$$v^{\text{cond}}(\emptyset) = \mathbf{E}[X_1] = 0.5$$
+$$v^{\text{cond}}(\{2\}) = \mathbf{E}[X_1 \mid X_2 = 1] = 1$$
+$$v^{\text{cond}}(\{1\}) = 1$$
+$$v^{\text{cond}}(\{1,2\}) = 1$$
 
----
+Contributions:
+$$C(2 \mid \emptyset) = 1 - 0.5 = 0.5$$
+$$C(2 \mid \{1\}) = 1 - 1 = 0$$
 
-### Conditional approach
-
-g_{\text{c}}(T) := \mathbf{E}[f(x_T, X_{\bar T}) \mid X_T = x_T] - \mathbf{E}[f(X)].
-
----
-
-### Marginal approach
-
-g_{\text{m}}(T) := \mathbf{E}[f(x_T, X_{\bar T})] - \mathbf{E}[f(X)].
+Result: $\varphi_2^{\text{cond}} = 0.25 \neq 0$
 
 ---
 
-### Weighted least squares
+### Marginal Approach
 
+$$v^{\text{marg}}(\emptyset) = 0.5$$
+$$v^{\text{marg}}(\{2\}) = \mathbf{E}[X_1] = 0.5$$
+$$v^{\text{marg}}(\{1\}) = 1$$
+$$v^{\text{marg}}(\{1,2\}) = 1$$
 
+Contributions:
+$$C(2 \mid \emptyset) = 0$$
+$$C(2 \mid \{1\}) = 0$$
 
----
-
-### Sampling
-
-what we theoretically vs. actually sample in f_{kernelshap}
-
----
-
-## Algebraic view
-
----
-
-### Correlated binary data
+Result: $\varphi_2^{\text{marg}} = 0$
 
 ---
 
-### Manual calculation: conditional
+### Sensitivity Failure
+
+**Lemma.** Using conditional expectations, $\varphi_i \neq 0$ does not imply $f$ depends on $x_i$.
+
+**Reason.** Observing $X_2 = x_2$ provides information about $X_1$.
 
 ---
 
-### Manual calculation: marginal
+### Exercise: Geometric Interpretation
+
+Recall Lecture 11's visualization of $v_x(S)$ as moving through feature space.
+
+When computing $v_x(\{1\})$:
+
+1. **Conditional.** Where do we sample $(x_1, X_2)$ from?
+2. **Marginal.** Where do we sample $(x_1, X_2)$ from?
+3. Which produces "impossible" combinations like $(x_1=1, x_2=0)$?
+
+Sketch the sampling regions in 2D feature space.
 
 ---
 
-### Failure of sensitivity
+### Linear Models
+
+For $f(x) = \alpha_0 + \sum_i \alpha_i x_i$:
+
+$$\varphi_i = \alpha_i(x_i - \mathbf{E}[X_i])$$
+
+This is the true attribution.
 
 ---
 
-### Linear Model
+### Gaussian Features
+
+$X_1, X_2 \sim N(0, \Sigma)$ with $\Sigma_{12} = \rho$
+
+$$f(x_1, x_2) = \alpha_1 x_1 + \alpha_2 x_2$$
+
+Set $\alpha_1 = 0$, so $X_1$ is irrelevant. Since
+$$\mathbf{E}[X_1 \mid X_2 = x_2] = \rho x_2$$
+
+we have
+$$v^{\text{cond}}(\{1\}) = \alpha_1 x_1 + \alpha_2 \mathbf{E}[X_2 \mid x_1] = 0 + \alpha_2 \rho x_1$$
+
+which is not zero even though $\alpha_1 = 0$. Attribution leaks from $X_2$ to $X_1$ through $\rho$.
 
 ---
 
-### Manual calculation: conditional
+### Empirical Study: Human Activity Data
+
+Dataset: UCI Human Activity Recognition (10,299 observations, 561 features)
+
+1. Randomly select 4 features
+2. Train linear model: 3 features to predict 4th
+3. Compare SHAP to true coefficients $\alpha_j(x_j - \mathbf{E}[X_j])$
+4. Repeat 1000 times
+
+<img src="figures/janzing_figure5.png" width="700"/>
 
 ---
 
-### Manual calculation: marginal
+### R fastshap
+
+```{r}
+#| eval: false
+library(fastshap)
+
+shap_vals <- explain(model, X = X_train, newdata = X_test, nsim = 1000)
+```
+
+1. For each feature $j$, sample $M$ random coalitions $S \not\ni j$
+2. For each coalition, compute:
+   - $v_x(S)$: sample from $X_{\bar{S}}$ background
+   - $v_x(S \cup \{j\})$: sample from $X_{\bar{S} \setminus \{j\}}$ background
+3. Average: $\phi_j \approx \frac{1}{M} \sum_{m=1}^M [v_x(S_m \cup \{j\}) - v_x(S_m)]$
+
+Direct Monte Carlo approximation of the Shapley formula. Uses marginal expectation.
 
 ---
 
-### Exercise
+### python KernelExplainer
+
+```{python}
+#| eval: false
+import shap
+
+explainer = shap.KernelExplainer(model.predict, X_background)
+shap_values = explainer.shap_values(X_test)
+```
+
+1. Sample subset $S \subseteq \{1, \ldots, D\}$
+2. Create synthetic data: $(x_S, X_{\bar{S}}^{(k)})$ for background samples
+3. Compute $v_x(S) \approx \frac{1}{B} \sum_{b=1}^B f(x_S, X_{\bar{S}}^{(b)})$
+4. Solve weighted regression
+
+Also uses marginal expectation.
 
 ---
+
+### R shapr
+
+```{r}
+#| eval: false
+library(shapr)
+
+explanation <- explain(model, x_explain, approach = "gaussian", x_train = X_train)
+```
+
+1. Estimate covariance $\hat{\Sigma}$ from training data
+2. For subset $S$, compute conditional distribution parameters:
+
+$$\mu_{\bar{S} \mid S} = \mu_{\bar{S}} + \Sigma_{\bar{S}S} \Sigma_{SS}^{-1} (x_S - \mu_S)$$
+$$\Sigma_{\bar{S} \mid S} = \Sigma_{\bar{S}\bar{S}} - \Sigma_{\bar{S}S} \Sigma_{SS}^{-1} \Sigma_{S\bar{S}}$$
+
+3. Sample $X_{\bar{S}}^{(k)} \sim N(\mu_{\bar{S} \mid S}, \Sigma_{\bar{S} \mid S})$
+4. Compute $v_x(S) \approx \frac{1}{K} \sum_k f(x_S, X_{\bar{S}}^{(k)})$
+
+This uses conditional expectation.
+
+---
+
+### Exercise: Implement from Scratch
+
+Complete this implementation:
+
+```{r}
+#| eval: false
+compute_v <- function(model, x, S, X_train, approach = "marginal") {
+  n_samples <- 100
+  predictions <- numeric(n_samples)
+
+  for (k in 1:n_samples) {
+    x_synthetic <- x
+    if (approach == "marginal") {
+      # Sample X_{\bar{S}} from all training data
+      idx <- sample(nrow(X_train), 1)
+      x_synthetic[-S] <- X_train[idx, -S]
+    } else if (approach == "conditional") {
+      # Sample from conditional distribution
+      # TODO: Compute μ_{\bar{S}|S} and Σ_{\bar{S}|S}
+      #mu_cond <- ?
+      #Sigma_cond <-
+      x_synthetic[-S] <- mvrnorm(1, mu_cond, Sigma_cond)
+    }
+
+    predictions[k] <- predict(model, as.data.frame(t(x_synthetic)))
+  }
+
+  mean(predictions)
+}
+
+# Test on binary example
+f <- function(x) x[1]  # Ignores x[2]
+X_train <- rbind(c(0,0), c(1,1))  # Perfect correlation
+x <- c(1, 1)
+
+v_marg_2 <- compute_v(f, x, S = c(2), X_train, "marginal")
+v_cond_2 <- compute_v(f, x, S = c(2), X_train, "conditional")
+
+# v_marg_2 should equal E[X_1] = 0.5
+# v_cond_2 should equal E[X_1 | X_2=1] = 1
+```

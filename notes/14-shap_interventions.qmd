@@ -1,91 +1,369 @@
 # 13. SHAP and Interventions
 
-* binary data code example
-
-* interventional view
-
-* gaussian code example
+* causal graphs and the do-operator
+* marginal SHAP as intervention
+* code examples
 
 ---
 
 ### Learning outcomes
 
-* Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.
+1. Compare the competing definitions of interpretable machine learning, the
+motivations behind them, and metrics that can be used to quantify whether they
+have been met.
+1. Describe the theoretical foundation of post-hoc explanation methods like SHAP
+and linear probes values and apply them to realistic case studies with
+appropriate validation checks
 
 ---
 
-## Binary Data Example
+## Causal View
 
 ---
 
-### Data simulation
+### Recall
+
+**Setup.** Algorithm $f(x_1, x_2) = x_1$ trained on data where $X_1 \equiv X_2$.
+
+**Conditional SHAP** attributes non-zero importance to $X_2$.
+
+**Marginal SHAP** correctly gives $\varphi_2 = 0$.
+
+**Question.** Should we have preferred Marginal SHAP all along?
 
 ---
 
-### Visualization
+### Causal View of Post-hoc Explanation
+
+The function-to-explain can be viewed as a causal graph.
+
+(draw causal graph with X and $\tilde{X}$)
+
+This distinguishes between observed data $\tilde{X}$ and function inputs $X$.
+
+When we set $X_1 = x_1$ and let other inputs vary, how does $Y$ change? It
+depends on how we vary the other inputs.
 
 ---
 
-### Explanations
+### Observation vs. Intervention
+
+**Observational (seeing).** $\mathbf{E}[Y \mid X_1 = x_1]$
+
+"Among data with $X_1 = x_1$, what is average $Y$?"
+
+**Interventional (doing).** $\mathbf{E}[Y \mid \text{do}(X_1 = x_1)]$
+
+"If we force $X_1 = x_1$ for each of this function's inputs, what is $Y$?"
+
+These differ when features are correlated in training data.
 
 ---
 
-### Exercise (warmup for do-calculus)
+### Backdoor Criterion
+
+Consider:
+
+```
+       Z
+      / \
+     ↓   ↓
+   X₁ → Y ← X₂
+```
+
+**Backdoor formula.**
+$$\mathbf{E}[Y \mid \text{do}(X_1 = x_1)] = \int \mathbf{E}[Y \mid x_1, x_2] p(x_2) \, dx_2$$
+
+The do-operator deletes incoming edges to $X_1$. Edge $Z \to X_1$ is severed.
 
 ---
 
-## Interventional View
+### Backdoor Criterion
+
+Contrast this with the formula for usual conditional expectation.
+
+$$\mathbf{E}[Y \mid \text{do}(X_1 = x_1)] = \int \mathbf{E}[Y \mid x_1, x_2] p(x_2) \, dx_2$$
+
+$$\mathbf{E}[Y \mid X_1 = x_1] = \int \mathbf{E}[Y \mid x_1, x_2] p(x_2 \vert x_{1}) \, dx_2$$
 
 ---
 
-### Conditional expectation vs. do-operator
+### Application to Post-hoc Explanation
+
+Algorithm $f$ has no confounders:
+
+(draw causal graph with X and $\tilde{X}$)
+
+$$\mathbf{E}[Y \mid \text{do}(X_S = x_S)] = \int f(x_S, x_{\bar{S}}) p(x_{\bar{S}}) \, dx_{\bar{S}}$$
+
+No backdoor paths exist, so no conditioning is needed and this is the marginal
+expectation.
 
 ---
 
-### Algorithmic interpretation
+### Interventional View
 
-(sampling descriptions for a 2D (x1, x2))
+**Algebraic.**
+$$\mathbf{E}[f(x_S, X_{\bar{S}})] = \int f(x_S, x_{\bar{S}}) p(x_{\bar{S}}) \, dx_{\bar{S}}$$
 
----
+**Causal.**
 
-### Geometric interpretation
+Intervention $\text{do}(X_S = x_S)$ deletes any edges into $X_S$. Distribution $p(x_{\bar{S}})$ unchanged.
 
----
+**Computational.**
 
-### Application to SHAP
-
----
-
-### DAG visualization - Conditional
-
----
-
-### DAG visualization - Marginal
-
----
-
-### What is the estimand?
-
-Observational vs. interventional choices
+```python
+predictions = []
+for _ in range(n_samples):
+    x_complement = sample_from_training_data()  # Independent of x_S
+    predictions.append(f(x_S, x_complement))
+return mean(predictions)
+```
 
 ---
 
-## Gaussian Example
+### Conditional View
+
+**Algebraic.**
+$$\mathbf{E}[f(x_S, X_{\bar{S}}) \mid X_S = x_S] = \int f(x_S, x_{\bar{S}}) p(x_{\bar{S}} \mid x_S) \, dx_{\bar{S}}$$
+
+**Causal.** Asks "what do we see when $X_S = x_S$?" not "what happens when we set $X_S = x_S$?"
+
+**Computational.**
+
+```python
+predictions = []
+for _ in range(n_samples):
+    x_complement = sample_conditional_on(x_S)  # Depends on x_S
+    predictions.append(f(x_S, x_complement))
+return mean(predictions)
+```
 
 ---
 
-### Data simulation
+### Two Causal Graphs
+
+Janzig et al. (2020) argue that we should focus on the "Algorithm" causal structure.
+
+:::: {.columns}
+::: {.column width="50%"}
+**Data generation (real world).**
+
+```
+    Z̃ (confounders)
+   / \
+  ↓   ↓
+ X̃₁  X̃₂
+```
+How do real-world features relate?
+:::
+
+::: {.column width="50%"}
+**Algorithm (computation).**
+```
+X₁ → Y = f(X)
+X₂ →
+```
+:::
+How does the prediction function process inputs?
+::::
 
 ---
 
-### Visualization
+### Formal Separation
+
+Janzing et al. (2020):
+- $\tilde{X}_j$: real-world feature
+- $X_j$: algorithm input
+
+Usually $X_j = \tilde{X}_j$, but they are distinct objects with distinct causal graphs.
+
+**Reality.** Cannot change $\tilde{X}_1$ without affecting $\tilde{X}_2$ (shared causes).
+
+**Algorithm.** Can evaluate `f(x_1, x_2)` for any values.
+
+SHAP explains $f$, so arguably should use the algorithm's causal structure.
 
 ---
 
-### Explanations
+### Binary Data Example
+
+**Setup.** $f(x_1, x_2) = x_1$ where $X_1 \equiv X_2$ in data.
+
+**Marginal.**
+$$v^{\text{marg}}(\{2\}) = \int x_1 p(x_1) dx_1 = \mathbf{E}[X_1]$$
+
+**Conditional.**
+$$v^{\text{cond}}(\{2\}) = \int x_1 p(x_1 \mid x_2) dx_1 = x_2$$
+
+Conditional approach "sees" correlation. Marginal approach intervenes in the algorithm.
+
+---
+
+## Code Examples
+
+---
+
+### Binary Example
+
+```{r}
+#| eval: false
+df_binary <- tibble(
+  x1 = sample(0:1, n_obs, replace = TRUE),
+  x2 = x1 + rnorm(n_obs, 0, 0.1),
+  y = x1
+)
+
+X_binary <- df_binary |> dplyr::select(x1, x2)
+fit_binary <- lm(y ~ x1 + x2, data = df_binary)
+```
+
+Algorithm: $\hat{y} = \hat{\alpha}_0 + \hat{\alpha}_1 x_1 + \hat{\alpha}_2 x_2$
+
+True causal effect of $X_2$ on $Y$: zero.
+
+---
+
+### Marginal SHAP
+
+```{r}
+shap_marg <- fastshap::explain(
+  fit,
+  X = X,
+  pred_wrapper = predict
+)
+
+mean(abs(shap_marg[, "x2"]))  # ≈ 0.01
+```
+
+Changing `x2` (while sampling `x1` independently) does not affect predictions.
+
+Correctly identifies $X_2$ as irrelevant.
+
+---
+
+### Conditional SHAP
+
+```{r}
+shap_cond <- shapr::explain(
+  fit,
+  x_explain = X,
+  x_train = X,
+  approach = "gaussian",
+  phi0 = mean(df_binary$y)
+)$shapley_values_est
+
+mean(abs(shap_cond$x2))  # ≈ 0.12
+```
+
+Observing `x2 = 1` implies `x1 ≈ 1`, so `x2` appears predictive.
+
+Correlation $\neq$ causal relevance in the algorithm.
+
+---
+
+### Gaussian Example
+
+```{r}
+#| eval: false
+# covariates
+X_gauss <- mvrnorm(n_obs_g, mu = rep(0, n_features), Sigma = sigma_mat) |>
+  as_tibble(.name_repair = ~paste0("X", 1:n_features))
+
+# generate response
+true_alphas <- rnorm(n_features)
+true_alphas[1] <- 0
+y_gauss <- as.matrix(X_gauss) %*% true_alphas
+```
+
+---
+
+### True Attribution
+
+Linear models: $\varphi_j = \alpha_j (x_j - \mathbf{E}[X_j])$
+
+Since $\alpha_1 = 0$, we have $\varphi_1 = 0$ for all observations.
+
+```{r}
+#| eval: false
+fit_gauss <- lm(y ~ ., data = df_gauss)
+coef(fit_gauss)[-1]  # X1 coefficient ≈ 0
+```
+
+Algorithm does not use $X_1$.
+
+---
+
+### Marginal SHAP (Gaussian)
+
+```{r}
+#| eval: false
+shap_marg_gauss <- fastshap::explain(
+  fit_gauss,
+  X = X_gauss,
+  pred_wrapper = predict
+)
+
+mean(abs(shap_marg_gauss[, "X1"]))
+```
+
+Small error due to finite sampling. Correctly near zero.
+
+---
+
+### Conditional SHAP (Gaussian)
+
+```{r}
+#| eval: false
+shap_cond_gauss <- shapr::explain(
+  fit_gauss,
+  x_explain = X_gauss,
+  x_train = X_gauss,
+  approach = "gaussian",
+  phi0 = mean(df_gauss$y)
+)$shapley_values_est
+
+mean(abs(shap_cond_gauss$X1))
+```
+
+Larger error. Attributes importance to $X_1$ due to correlation with other features.
+
+---
+
+### Sampling
+
+```{r}
+#| echo: false
+
+# Correlated data
+Sigma <- matrix(c(1, 0.9, 0.9, 1), 2, 2)
+X_corr <- mvrnorm(1000, mu = c(0, 0), Sigma = Sigma)
+
+# Point to explain
+x_explain <- c(1.5, 1.2)
+x_marg <- cbind(X1 = 1.5, X2 = rnorm(100, 0, 1))
+x_cond <- cbind(X1 = 1.5, X2 = rnorm(100, 0.9 * 1.5, sqrt(1 - 0.9^2)))
+rbind(
+  data.frame(X1 = X_corr[,1], X2 = X_corr[,2], type = "Training"),
+  data.frame(X1 = x_marg[,1], X2 = x_marg[,2], type = "Marginal"),
+  data.frame(X1 = x_cond[,1], X2 = x_cond[,2], type = "Conditional")
+) |>
+  ggplot(aes(X1, X2, color = type)) +
+  geom_point(alpha = 0.4) +
+  geom_point(data = data.frame(X1 = 1.5, X2 = 1.2, type = "Explain"),
+             size = 5, shape = 4, color = "black") +
+  labs(title = "Sampling for v({1})")
+```
+
+Marginal sampling will extrapolate -- we test the algorithm on all possible
+inputs.
+
+---
+
+### Attributions Histogram
+
+<img src="figures/intervention_histogram_attrs.svg"/>
 
 ---
 
 ### Exercise
-
----
