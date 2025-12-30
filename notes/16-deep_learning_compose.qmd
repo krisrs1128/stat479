@@ -1,4 +1,4 @@
-### 16. Composing Deep Models
+# 16. Composing Deep Models
 
 * common layers
 

@@ -28,3 +28,7 @@ bib <- ReadBib("references.bib")
 {{< include 16-deep_learning_compose.qmd >}}
 {{< include 17-attention.qmd >}}
 {{< include 18-transformers.qmd >}}
+{{< include 19-saliency.qmd >}}
+{{< include 20-sanity_checks.qmd >}}
+{{< include 21-concepts_discovery.qmd >}}
+{{< include 22-concepts_applications.qmd >}}

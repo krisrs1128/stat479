@@ -1,5 +1,5 @@
 
-### 20. Sanity Checks and Benchmarking
+# 20. Sanity Checks and Benchmarking
 
 * application to case study
 

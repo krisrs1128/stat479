@@ -1,5 +1,5 @@
 
-### 19. Saliency Maps
+# 19. Saliency Maps
 
 * motivating application
 
@@ -211,7 +211,7 @@ Captum provides KernelShap and ShapleyValueSampling.
 
 - This is most natural when there is a notion of distance between features. For example, for a word at the start of a sentence, don't bother with sets of words near the end.
 
-<img width="400" src="figures/l_shap_text.png" class="center"/>
+<img width="400" src="figures/l_shaptext.png" class="center"/>
 
 ---
 

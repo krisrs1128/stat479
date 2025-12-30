@@ -1,5 +1,5 @@
 
-### 15. Deep Learning Setup
+# 15. Deep Learning Setup
 
 * motivating case study
 
