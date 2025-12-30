@@ -25,12 +25,13 @@
 
 ### Motivating Case Study
 
-There is no centralized database of renwable energy sources in India.
+India lacks centralized renewable energy databases.
 
-- How many solar plants are being created over time?
-- How do these patterns vary across states?
+Questions:
+- Solar plant counts over time?
+- Geographic distribution?
 
-This information is useful for planning the energy transition `r Citep(bib, c("Ortiz2022", "solar_data"))`.
+Needed for energy transition planning `r Citep(bib, c("Ortiz2022", "solar_data"))`.
 
 ---
 
@@ -40,14 +41,11 @@ This information is useful for planning the energy transition `r Citep(bib, c("O
 
 ### Scientific Goal
 
-**Question**. Within a fixed time window, where are wind farms located across India?
+**Question**. Can we locate solar farms in satellite imagery?
 
-**Data**. Satellite imagery from 1363 solar farms.
+**Data**. Sentinel 2 (10-60m/px, 12 bands) + OpenStreetMap labels. 1363 labeled sites.
 
-- Sentinel 2 (10-60m/px, 12 spectral bands)
-- Crowdsourced labels from Open Street Map + Nature Conservancy
-
-**Requirement.** Must be able to isolate parts of the image responsible for the prediction.
+**Constraint**. Must isolate pixels responsible for predictions.
 
 ---
 
@@ -61,13 +59,13 @@ Models can pick up on spurious correlations (like whether there is snow in the b
 
 ### Statistical Formulation
 
-**Labels**. $y \in \{0, 1\}^{256 \times 256}$ (per-pixel annotations).
+**Labels**. $y \in \{0, 1\}^{256 \times 256}$ (pixel labels)
 
-**Predictors**. $x \in \mathbf{R}^{10 \times 256 \times 256}$ (spectral patch).
+**Predictors**. $x \in \mathbb{R}^{10 \times 256 \times 256}$ (spectral patch)
 
-**Model**. $f(x; \theta) \to \left[0, 1\right]^{256 \times 256}$ (probability mask).
+**Model**. $f(x; \theta) \to [0, 1]^{256 \times 256}$ (probability mask)
 
-**Goal**. Determine per-pixel attributions $\varphi \in \reals^{256 \times 256}$ responsible for final prediction.
+**Goal**. Find attributions $\varphi \in \mathbb{R}^{256 \times 256}$ explaining $f(x)$.
 
 ---
 
@@ -75,108 +73,158 @@ Models can pick up on spurious correlations (like whether there is snow in the b
 
 ---
 
-### Perturbation
+### Perturbation Methods
 
-To explain a generic model’s decision on an instance, we can perturb it and see
-how the prediction changes.
+Perturb input $x$ to measure prediction changes.
+
+**Occlusion**. Mask patches, observe $\Delta f(x)$
+
+**Feature Ablation**. Replace features with baseline, measure marginal effects
 
 <img src="figures/perturbation_types.png"/>
 
 ---
 
-### Gradients
+### Gradient Saliency
+
+$$E_{\text{grad}}(x) = \frac{\partial S_c(x)}{\partial x}$$
+
+Identifies pixels where small changes maximally affect class $c$ score.
+
+Refinement: $x \odot \frac{\partial S_c}{\partial x}$ accounts for feature scale.
 
 ---
 
 ### Computation
 
+* **Mechanism**. Efficiently computed via a single backpropagation pass using `torch.autograd`.
+* **Aggregation**. For multi-channel inputs (e.g., RGB or 12-band spectral), gradients are typically reduced to a single map using:
+  $$M(x) = \max_j | \nabla_{x_j} f(x) |$$
+  where $j$ is the channel index.
+
 ---
 
-### Limitations
+### Gradient Limitations
+
+**Saturation**. Flat regions (ReLU) yield zero gradients despite importance.
+
+**Noise**. High-frequency artifacts from shattered gradients.
+
+**Instability**. Prediction-stable regions show large gradient changes.
 
 ---
 
 ### Integrated Gradients
 
-For example, we can compute the gradient of each class as we perturb a reference
-towards a sample of interest.
+Satisfies completeness: $\sum \text{IG}_i(x) = f(x) - f(x')$
 
-\begin{align*}
-\left(x_{i} - x_{i}'\right) \int_{\alpha \in \left[0, 1\right]} \frac{\partial f\left(x_{i}' + \alpha\left(x_{i} - x_{i}'\right)\right)}{\partial x_{i}} d\alpha
-\end{align*}
+$$\text{IG}_{i}(x) = \left(x_{i} - x_{i}'\right) \int_{\alpha=0}^{1} \frac{\partial f\left(x' + \alpha\left(x - x'\right)\right)}{\partial x_{i}} d\alpha$$
 
-.center[
-  <img src="figures/integrated_gradients_animation.gif" width=1200/>
-]
+$x'$: baseline (e.g., black image)
+
+Aggregates gradients along path $x' \to x$.
 
 ---
 
-### Computation
+### Integrated Gradients
+
+<img src="figures/integrated_gradients_animation.gif" class="center" width=600/>
+
+---
+
+### Approximation
+
+Riemann sum with $m \in [50, 200]$ steps:
+
+$$\text{IG}_i(x) \approx (x_i - x'_i) \sum_{k=1}^m \frac{\partial f(x' + \frac{k}{m}(x - x'))}{\partial x_i} \cdot \frac{1}{m}$$
+
+Cost: $\mathcal{O}(m)$ backpropagations.
 
 ---
 
 ### captum package
 
+PyTorch interpretability library:
+
+- `captum.attr`: Saliency, IG, DeepLift, SHAP
+- `captum.metrics`: Robustness
+- `captum.concept`: TCAV (next week)
+
 ---
 
 ### Gradients in captum
+
+```python
+from captum.attr import Saliency
+
+slc = Saliency(model)
+attr = slc.attribute(input_tensor, target=class_idx)
+```
 
 ---
 
 ### Exercise: Pseudocode
 
+Goal: Write the loop for Integrated Gradients.
+
+```
+    Initialize total_gradients = 0.
+    Define baseline and steps = 50.
+    For k in range 1 to steps:
+        ### ???
+
+    attribution = (input - baseline) * (total_gradients / steps)
+```
+
 ---
 
-## Shap
+## SHAP
 
 ---
 
-### Features $\to$ pixels
+### SHAP for Images
 
----
+SHAP treats pixels as the players in a cooperative game.
 
-### Applying SHAP to Images
+$$\varphi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N|-|S|-1)!}{|N|!} [v(S \cup \{i\}) - v(S)]$$
+
+Problem: $256 \times 256$ image has $2^{65536}$ coalitions.
+
+Approximations:
+- KernelSHAP: weighted regression
+- Superpixels: group pixels to reduce $|N|$
 
 ---
 
 ### SHAP in captum
 
+Captum provides KernelShap and ShapleyValueSampling.
+
+- Feature Masking: Users can define a feature_mask to group pixels into semantic regions (e.g., all pixels in a solar panel).
+- Efficiency: Instead of 2N samples, it uses a limited budget of permutations to estimate the values.
+
 ---
 
 ### Feature Neighborhoods
 
-1. Another idea is to restrict the collection of sets in the summation.
+- Another idea is to restrict the collection of sets in the summation.
 
-1. This is most natural when there is a notion of distance between features. For
-example, for a word at the start of a sentence, don't bother with sets of words
-near the end.
+- This is most natural when there is a notion of distance between features. For example, for a word at the start of a sentence, don't bother with sets of words near the end.
 
----
-
-### $L$-Shapley
-
-Let $N_{k}\left(i\right)$ be all the features within distance $k$ of feature
-$i$. A fast approximation is to consider:
-
-\begin{align*}
-\varphi_{\*x}^{L}\left(f, i\right) &= \frac{1}{\absarg{N_{k}\left(i\right)}} \sum_{S \in N_{k\left(i\right)}}
-\frac{1}{\absarg{N_{k}\left(i\right) - 1 \choose \absarg{S} - 1}} \left[v_{\*x}\left(S\right) - v_{\*x}\left(S - \{i\}\right)\right]
-\end{align*}
-
-1. When $k$ is small, this will be an efficient approximation.
-
-1. This is sometimes called $L$-Shapley. $L$ is short for local.
-
-.center[
-<img width="400" src="figures/l-c-shapley.png"/>
-]
+<img width="400" src="figures/l_shap_text.png" class="center"/>
 
 ---
 
-### SHAP vs. gradients
+### $L$-Shapley (Local Approximation)
+
+Let $N_k(i)$ = features within distance $k$ of $i$.
+
+$$\varphi^{L}(f, i) = \frac{1}{|N_k(i)|} \sum_{S \in N_k(i)} \frac{1}{\binom{|N_k(i)|-1}{|S|-1}} [v(S) - v(S \setminus \{i\})]$$
+
+Efficient when $k \ll |N|$.
+
+<img width="400" src="figures/l-c-shapley.png" class="center"/>
 
 ---
 
 ### Exercise: Interpretability Goals vs. Method
-
----

@@ -21,10 +21,10 @@
 * Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., & Kim, B. (2018). Sanity Checks for Saliency Maps. doi:10.48550/ARXIV.1810.03292
 * Captum - Model Interpretability for Pytorch.  Getting started with Captum - Titanic Data Analysis. (n.d.).  https://captum.ai/tutorials/Titanic_Basic_Interpret
 
-
 ---
 
 ### Dataloader
+
 
 ---
 
@@ -32,7 +32,7 @@
 
 ---
 
-### Gradient-based expalantions
+### Gradient-based explanations
 
 ---
 
@@ -52,27 +52,54 @@
 
 ---
 
-### Troubling observation
+### Independence from Model
+
+Observation `r Citep(bib, "sanity_checks")`: Many saliency methods are invariant to model parameters and data labels.
+
+Visual appeal $\neq$ faithfulness.
+
+<img src="figures/sanity_check_edges.png" class="center"/>
 
 ---
 
-### Explanations $\iff$ edge detectors??
+### Edge Detection Analogy
+
+Guided Backprop ≈ edge detector (no model/data dependence).
+
+Highlights boundaries via non-linear image processing, not learned features.
+
+<img src="figures/sanity_check_edges.png" class="center"/>
 
 ---
 
 ### Model randomization check
 
+1. Randomize weights layer-by-layer
+2. Compute saliency maps for original vs. randomized model
+3. Faithful method: maps differ significantly
+
+Results: Gradients/IG pass. Guided Backprop fails.
+
 ---
 
 ### Cascading randomization
+
+* **Algorithm**. Randomize weights starting from the top (Logits) down to the bottom (Input).
+* **Evaluation**. A faithful method should show a visual degradation that "cascades" as more weights are destroyed.
+
+<img src='figures/cascading_randomization.png" class="center"/>
 
 ---
 
 ### Data randomization check
 
----
+Train on $\{(x_i, \tilde{y}_i)\}$ where $\tilde{y}_i$ are random permutations.
 
-### Statistical testing
+Model trained on random labels should produce noisy saliency maps.
+
+Many methods still highlight "objects" (spurious structure).
+
+<img src="figures/sanity_data_randomization.png" class="center"/>
 
 ---
 
@@ -82,34 +109,107 @@
 
 ### Removing features
 
----
+Can we evaluate feature importance without relying on human visual bias?
 
-### Need for retraining
-
----
-
-### Remove-and-retrain (ROAR)
+* **KAR (Keep and Retrain)**. Keep the top $t\%$ features, mask everything else.
+* **ROAR (Remove and Retrain)**. Mask the top $t\%$ features, keep everything else.
 
 ---
 
-### Random ranking
+### Why Retrain?
+
+Masking creates distribution shift. Model sees OOD inputs (black squares).
+
+Performance drop reflects:
+- Information loss (what we want), OR
+- Mask artifact (confound)
+
+Solution: Retrain on masked data to isolate information loss.
 
 ---
 
-### Simulation Validation
+### ROAR Benchmark
+
+Remove top $t\%$ important pixels, retrain from scratch.
+
+Measure accuracy drop as function of $t$.
+
+Better method $\implies$ steeper drop (removed truly informative pixels).
 
 ---
 
-### ROAR curves
+### Synthetic Validation
+
+Generate $x \in \mathbb{R}^{16}$ with 4 informative features:
+
+$$x = \frac{az}{10} + d\eta + \frac{\epsilon}{10}, \quad y = \mathbb{1}(z > 0)$$
+
+where $z, \eta, \epsilon \sim \mathcal{N}(0,1)$ and $a \in \mathbb{R}^{16}$ is nonzero only in 4 positions.
+
+---
+
+### Synthetic Validation
+
+Fit least-squares model.
+
+- Ground truth ranking (known informative features)
+- Random ranking
+- Inverted ground truth (worst case)
+
+Results
+
+1. Without retraining: All methods appear to work (distribution shift confound)
+2. With ROAR: Correctly identifies worst-case estimator at 75% threshold
+3. SmoothGrad-Squared, VarGrad outperform base methods
+
+---
+
+### ROAR Results
+
+Lower curve $\implies$ more informative feature selection.
+
+<img src="figures/roar_synthetic_results.png" class="center"/>
+
+---
+
+### ROAR Benchmark
+
+<img src="figures/roar_overview.png" class="center"/>
+
+---
+
+### Baseline: Random Removal
+
+Key finding: Guided Backprop, IG, Gradient ≈ random removal on ImageNet.
+
+These methods failed to identify informative features.
+
+Ensemble variants of IG do better.
+
+---
+
+### ROAR Benchmark
+
+<img src="figures/roar_example-1.png" class="center"/>
+
+---
+
+### ROAR Benchmark
+
+<img src="figures/roar_example-2.png" class="center"/>
 
 ---
 
 ### Pseudocode
 
+For $t \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$:
+1. Generate saliency $\varphi$ for dataset $\mathcal{D}$
+2. Mask top $t$ pixels with mean: $\tilde{x}_i = x_i \mathbb{1}(\varphi_i < q_t) + \mu \mathbb{1}(\varphi_i \geq q_t)$
+3. Initialize $f_{\text{new}}$, train on $\{(\tilde{x}_i, y_i)\}$
+4. Record $\text{Acc}(f_{\text{new}}, \tilde{\mathcal{D}}_{\text{test}})$
+
+Plot accuracy vs. $t$.
+
 ---
 
 ### Exercise: Purpose and comparison
-
-why benchmark, and how do evaluation methods differ?
-
----
