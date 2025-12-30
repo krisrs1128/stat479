@@ -38,11 +38,11 @@ Data: 27K Sentinel-2 images (10m/pixel)
 
 **Label**. $y \in \{0,1\}^{10}$ (one-hot encoding of 10 classes)
 
-**Input**. $x \in \mathbb{R}^{3 \times 64 \times 64}$ (RGB patch)
+**Input**. $x \in \mathbf{R}^{3 \times 64 \times 64}$ (RGB patch)
 
 **Model**. $f(x; \theta) \to \Delta^9$ (probability simplex)
 
-**Objective**. $\min_\theta \mathbb{E}[\mathcal{L}(f(x; \theta), y)]$
+**Objective**. $\min_\theta \mathbf{E}[\mathcal{L}(f(x; \theta), y)]$
 
 ---
 

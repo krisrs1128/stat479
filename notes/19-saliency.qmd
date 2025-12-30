@@ -1,11 +1,11 @@
 
-### 17. Local Explanations for Image Models
+### 19. Saliency Maps
 
 * motivating application
 
 * saliency maps
 
-* SHAP on images
+* captum package
 
 ---
 
@@ -16,33 +16,58 @@
 
 ---
 
-### Land cover classification
+### Readings
 
-When it says an area is built up, is it looking at buildings? roads?
-
----
-
-### Climate applications
+* Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., & Kim, B. (2018). Sanity Checks for Saliency Maps. doi:10.48550/ARXIV.1810.03292
+* Captum - Model Interpretability for Pytorch.  Getting started with Captum - Titanic Data Analysis. (n.d.).  https://captum.ai/tutorials/Titanic_Basic_Interpret
 
 ---
 
-### Remote sensing imagery
+### Motivating Case Study
+
+There is no centralized database of renwable energy sources in India.
+
+- How many solar plants are being created over time?
+- How do these patterns vary across states?
+
+This information is useful for planning the energy transition `r Citep(bib, c("Ortiz2022", "solar_data"))`.
 
 ---
 
-### Improving resolution/coverage
+<img src="figures/solar_farm_predictions.png"/>
 
 ---
 
-### Spurious associations
+### Scientific Goal
 
-Dog background example
+**Question**. Within a fixed time window, where are wind farms located across India?
+
+**Data**. Satellite imagery from 1363 solar farms.
+
+- Sentinel 2 (10-60m/px, 12 spectral bands)
+- Crowdsourced labels from Open Street Map + Nature Conservancy
+
+**Requirement.** Must be able to isolate parts of the image responsible for the prediction.
 
 ---
 
-### Spurious associations
+### Cautionary Example
 
-Hospital x-ray image example
+Models can pick up on spurious correlations (like whether there is snow in the background). Leads to generalization failure.
+
+<img src="figures/husky_saliency.png" class="center"/>
+
+---
+
+### Statistical Formulation
+
+**Labels**. $y \in \{0, 1\}^{256 \times 256}$ (per-pixel annotations).
+
+**Predictors**. $x \in \mathbf{R}^{10 \times 256 \times 256}$ (spectral patch).
+
+**Model**. $f(x; \theta) \to \left[0, 1\right]^{256 \times 256}$ (probability mask).
+
+**Goal**. Determine per-pixel attributions $\varphi \in \reals^{256 \times 256}$ responsible for final prediction.
 
 ---
 
@@ -50,11 +75,39 @@ Hospital x-ray image example
 
 ---
 
-### Perturbation heuristic
+### Perturbation
+
+To explain a generic model’s decision on an instance, we can perturb it and see
+how the prediction changes.
+
+<img src="figures/perturbation_types.png"/>
 
 ---
 
 ### Gradients
+
+---
+
+### Computation
+
+---
+
+### Limitations
+
+---
+
+### Integrated Gradients
+
+For example, we can compute the gradient of each class as we perturb a reference
+towards a sample of interest.
+
+\begin{align*}
+\left(x_{i} - x_{i}'\right) \int_{\alpha \in \left[0, 1\right]} \frac{\partial f\left(x_{i}' + \alpha\left(x_{i} - x_{i}'\right)\right)}{\partial x_{i}} d\alpha
+\end{align*}
+
+.center[
+  <img src="figures/integrated_gradients_animation.gif" width=1200/>
+]
 
 ---
 
@@ -82,19 +135,41 @@ Hospital x-ray image example
 
 ---
 
+### Applying SHAP to Images
+
+---
+
 ### SHAP in captum
 
 ---
 
-### Local SHAP
+### Feature Neighborhoods
+
+1. Another idea is to restrict the collection of sets in the summation.
+
+1. This is most natural when there is a notion of distance between features. For
+example, for a word at the start of a sentence, don't bother with sets of words
+near the end.
 
 ---
 
-### Heuristic
+### $L$-Shapley
 
----
+Let $N_{k}\left(i\right)$ be all the features within distance $k$ of feature
+$i$. A fast approximation is to consider:
 
-### Implementation
+\begin{align*}
+\varphi_{\*x}^{L}\left(f, i\right) &= \frac{1}{\absarg{N_{k}\left(i\right)}} \sum_{S \in N_{k\left(i\right)}}
+\frac{1}{\absarg{N_{k}\left(i\right) - 1 \choose \absarg{S} - 1}} \left[v_{\*x}\left(S\right) - v_{\*x}\left(S - \{i\}\right)\right]
+\end{align*}
+
+1. When $k$ is small, this will be an efficient approximation.
+
+1. This is sometimes called $L$-Shapley. $L$ is short for local.
+
+.center[
+<img width="400" src="figures/l-c-shapley.png"/>
+]
 
 ---
 

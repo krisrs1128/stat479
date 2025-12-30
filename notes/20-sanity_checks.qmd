@@ -1,5 +1,5 @@
 
-### 18. Sanity Checks and Benchmarking
+### 20. Sanity Checks and Benchmarking
 
 * application to case study
 
@@ -16,11 +16,15 @@
 
 ---
 
-### Landcover dataloader
+### Readings
+
+* Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., & Kim, B. (2018). Sanity Checks for Saliency Maps. doi:10.48550/ARXIV.1810.03292
+* Captum - Model Interpretability for Pytorch.  Getting started with Captum - Titanic Data Analysis. (n.d.).  https://captum.ai/tutorials/Titanic_Basic_Interpret
+
 
 ---
 
-### Training and tuning
+### Dataloader
 
 ---
 
@@ -29,6 +33,10 @@
 ---
 
 ### Gradient-based expalantions
+
+---
+
+### Integrated gradient explanations
 
 ---
 
@@ -52,11 +60,15 @@
 
 ---
 
-### Random weights check
+### Model randomization check
 
 ---
 
-### Random labels check
+### Cascading randomization
+
+---
+
+### Data randomization check
 
 ---
 
@@ -80,27 +92,19 @@
 
 ---
 
+### Random ranking
+
+---
+
+### Simulation Validation
+
+---
+
 ### ROAR curves
 
 ---
 
 ### Pseudocode
-
----
-
-### Mini-benchmarking study
-
----
-
-### Considered methods
-
----
-
-### Training setup
-
----
-
-### Evaluation results
 
 ---
 
