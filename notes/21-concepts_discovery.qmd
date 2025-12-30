@@ -1,4 +1,4 @@
-### 19. Linear Probes and Concepts
+### 21. Linear Probes and Concepts
 
 * motivating application
 
@@ -18,31 +18,48 @@
 
 ---
 
-### Motivating Problem
+### Readings
+
+Alain, G., & Bengio, Y. (2017). Understanding intermediate layers using linear classifier probes. OpenReview. https://openreview.net/forum?id=ryF7rTqgl
+
+Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Efficient computation of concept activation vectors for explaining deep neural networks. In Proceedings of the 42nd International Conference on Machine Learning. https://openreview.net/forum?id=kRmfzTfIGe
 
 ---
 
-### Disentangled Representations
-
-hypothesis that model is learning
+### Motivating Case Study
 
 ---
 
-### Superposition Hypothesis
+### Case Study
 
-competing hypothesis that maybe the same neuron learns several overlapping things
+**Question**. Can we complement on-the-ground socioeconomic surveys with passively observed aerial imagery?
+
+**Main Data**. Coupled survey data + aerial imagery.
+- Survey responses for 51,781 "liveability grid cells" of size 100m^2
+- Imagery (1m/px). 500 x 500 patches.
+- Gathered from 13 areas in the Netherlands.
+
+**Supplemental Data**.
+- FLAIR. Land use from French National Institute of Geographical and Forest Information.
+
+**Goal**. Underestand what concepts the model has learned, so it can be deployed with more confidence.
 
 ---
 
-### "Shared" Language
+### Formulation
 
-need some shared point of reference
+**Livability**. $y \in \mathbf{R}$
+**Predictors**. $\mathcal{D}_{r} = x \in \mathbf{R}^{3 \times 500 \times 500}$. Imagery.
+
+**Concept labels**. $c \in \{1, \dots, K\}$.
+**Concepts**. $\mathcal{D}_{c} = x \in \mathbf{R}^{3 \times 500 \times 500}$.
+
+**Model**. $f(x; \theta)$
+**Task**. Which "concepts" does the
 
 ---
 
-### Broden Dataset
-
-"Broad and Densley Labeled"
+<img src="figures/kim_iclr.png" class="center"/>
 
 ---
 
@@ -129,6 +146,10 @@ $\nabla y_{k}\left(h\left(\*x\right)\right)$ is the direction in the activation
 space with the steepest increase in class $k$'s logit.
 </span>
 ]
+
+---
+
+### Alternative Step 2: FastCAV
 
 ---
 

@@ -36,12 +36,11 @@ Turner, R. E. (2023). An Introduction to Transformers. http://doi.org/10.48550/A
 
 ---
 
-### Formulation
+### Statistical Formulation
 
 **Text**. Token sequence $x_1, \dots, x_n \in \{0,1\}^V$
 **Labels**. $y \in \{0,1\}^{13}$
 **Model**. LLM $f(x; \theta)$
-
 **Task**. Which phrases and which parts of $\theta$ recognize emotion?
 
 ---

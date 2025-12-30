@@ -1,4 +1,4 @@
-### 20. Applying Probes and Concepts
+### 22. Applying Probes and Concepts
 
 * application to case study
 
@@ -15,6 +15,14 @@
 * Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
 * Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
 * Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Readings
+
+Alain, G., & Bengio, Y. (2017). Understanding intermediate layers using linear classifier probes. OpenReview. https://openreview.net/forum?id=ryF7rTqgl
+
+Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Efficient computation of concept activation vectors for explaining deep neural networks. In Proceedings of the 42nd International Conference on Machine Learning. https://openreview.net/forum?id=kRmfzTfIGe
 
 ---
 
@@ -43,6 +51,8 @@
 ---
 
 ### Spurious Concepts
+
+(why we would want to test)
 
 ---
 
@@ -86,34 +96,6 @@ melanoma.
 Figure from `r Citep(bib, "Lucieri2022")`. In this case, the model is incorrect despite concepts suggesting the correct diagnosis.
 </span>
 ]
-
----
-
-## Statistical Sufficiency
-
----
-
-### Missing Concepts?
-
----
-
-### Regression Perspective
-
----
-
-### Formalization
-
----
-
-### Sample-level scores
-
----
-
-### Cartoon
-
----
-
-### Sufficiency measure
 
 ---
 
