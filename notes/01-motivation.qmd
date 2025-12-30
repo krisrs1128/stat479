@@ -71,6 +71,36 @@ materials
 
 ---
 
+### What can go wrong?
+
+<img src="figures/asthma.png" width=1000 class="center"/>
+
+Example from `r Citep(bib, "Caruana2015IntelligibleMF")`.
+
+
+---
+
+### What can go wrong?
+
+<img src="figures/adversarial-stopsign.webp" width = 600 class="center"/>
+
+Example from `r Citep(bib, "Gu2017BadNetsIV")`.
+
+
+---
+
+### What can go wrong?
+
+<img src="figures/bard-hallucination.webp" width=900/>
+
+---
+
+### What can go wrong?
+
+<img src="figures/spurious_xray.png" width=700 class="center"/>
+
+---
+
 ### Problems
 
 * Fairness
