@@ -92,7 +92,8 @@ Weighted regression recovers exact Shapley values $\varphi_{x}(f, d)$.
 ---
 
 ### Exercise: Annotate Code Sketch
-```{python, eval = FALSE}
+```{python}
+#| eval: false
 # initialize data structures
 mask_matrix = np.zeros((nsamples, M))
 kernel_weights = np.zeros(nsamples)

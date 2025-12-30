@@ -44,6 +44,7 @@ Two major oxygenation events occurred in Earth's history:
 **Question**. How rapidly did the NOE occur?
 
 **Data**. Measurements from ancient rocks:
+
 - Age (millions of years)
 - Environment (deep ocean, lakes, etc.)
 - Trace elements and total organic carbon (TOC)
@@ -61,6 +62,7 @@ Two major oxygenation events occurred in Earth's history:
 **Goal**. Determine how $f$ depends on age at fixed context.
 
 **Requirements**.
+
 - Capture sharp transitions in $y$
 - Isolate contribution of age from confounding context
 
@@ -91,6 +93,7 @@ For regression: arithmetic mean. For classification: majority vote.
 **Solution**. At each split, consider only $m$ random predictors from the full set of $p$ predictors.
 
 Typical choices:
+
 - Classification: $m \approx \sqrt{p}$
 - Regression: $m \approx p/3$
 
@@ -125,8 +128,6 @@ This decorrelates trees by ensuring $(p-m)/p$ of splits exclude the dominant pre
 ### Sequential Learning
 
 Unlike bagging (parallel trees), boosting grows trees sequentially. Each tree fits the residuals from previous trees.
-
-**Algorithm**.
 
 1. Initialize $\hat{f}(x) = 0$ and $r_i = y_i$ for all $i$
 2. For $b = 1, 2, \ldots, B$:
@@ -166,8 +167,6 @@ where $p(t)$ is the proportion of samples at node $t$ and $\Delta_i(t)$ is the w
 
 Measure accuracy drop when feature values are randomly shuffled.
 
-**Algorithm**.
-
 1. Train forest on data $D$
 2. Calculate OOB error $E_{\text{orig}}$
 3. For each tree $b$:
@@ -203,6 +202,7 @@ This shows the marginal effect of $X_S$ on the response after accounting for ave
 ### Interpretation
 
 $f_S(x_S)$ represents the effect of $X_S$ **after accounting for** the average effects of $X_C$. This differs from the conditional expectation $\tilde{f}_S(x_S) = \mathbb{E}[f(X_S, X_C) | X_S]$, which ignores $X_C$.
+<br/>
 
 The two coincide only if $X_S \perp X_C$. If $f(X) = h_1(X_S) + h_2(X_C)$ (additive), then $f_S(x_S) = h_1(x_S)$ up to an additive constant. If $f(X) = h_1(X_S) \cdot h_2(X_C)$ (multiplicative), then $f_S(x_S) = h_1(x_S)$ up to a multiplicative constant.
 

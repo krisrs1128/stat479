@@ -1,9 +1,12 @@
 # 5. Nonlinear Models
 
-* Motivating case study
-* Kernels
+* motivating case study
+
+* kernels
+
 * GP regression
-* Tuning
+
+* tuning
 
 ---
 

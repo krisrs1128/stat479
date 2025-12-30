@@ -227,6 +227,7 @@ True causal effect of $X_2$ on $Y$: zero.
 ### Marginal SHAP
 
 ```{r}
+#| eval: false
 shap_marg <- fastshap::explain(
   fit,
   X = X,
@@ -245,6 +246,7 @@ Correctly identifies $X_2$ as irrelevant.
 ### Conditional SHAP
 
 ```{r}
+#| eval: false
 shap_cond <- shapr::explain(
   fit,
   x_explain = X,
@@ -337,7 +339,7 @@ Larger error. Attributes importance to $X_1$ due to correlation with other featu
 
 # Correlated data
 Sigma <- matrix(c(1, 0.9, 0.9, 1), 2, 2)
-X_corr <- mvrnorm(1000, mu = c(0, 0), Sigma = Sigma)
+X_corr <- MASS::mvrnorm(1000, mu = c(0, 0), Sigma = Sigma)
 
 # Point to explain
 x_explain <- c(1.5, 1.2)

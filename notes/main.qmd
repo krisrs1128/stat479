@@ -22,3 +22,9 @@ bib <- ReadBib("references.bib")
 {{< include 10-ensemble_interpretation.qmd >}}
 {{< include 11-shap_theory.qmd >}}
 {{< include 12-shap_compute.qmd >}}
+{{< include 13-shap_perspectives.qmd >}}
+{{< include 14-shap_interventions.qmd >}}
+{{< include 15-deep_learning_setup.qmd >}}
+{{< include 16-deep_learning_compose.qmd >}}
+{{< include 17-attention.qmd >}}
+{{< include 18-transformers.qmd >}}

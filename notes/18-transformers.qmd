@@ -1,0 +1,169 @@
+# 18. Transformers
+
+* MLP component
+
+* transformers
+
+* variations
+
+* application to case study
+
+---
+
+### Learning outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Readings
+
+Turner, R. E. (2023). An Introduction to Transformers. http://doi.org/10.48550/ARXIV.2304.10557
+
+---
+
+### Residual Connections
+
+$$x^{(m)} = x^{(m-1)} + \text{res}_\theta(x^{(m-1)})$$
+
+**Purpose**.
+
+- Initialize near the identity (stabilize training)
+- Create "residual stream" that layers build on
+
+---
+
+### Layer Normalization
+
+Normalize each token separately:
+$$\tilde{x}_{d,n} = \frac{x_{d,n} - \mu_n}{\sqrt{\sigma_n^2}} \gamma_d + \beta_d$$
+
+where $\mu_n = \frac{1}{D}\sum_d x_{d,n}$, $\sigma_n^2 = \frac{1}{D}\sum_d (x_{d,n} - \mu_n)^2$
+
+**Purpose**. Prevent feature explosion through depth
+
+*(Figure 5 from Turner: compare LayerNorm vs BatchNorm)*
+
+---
+
+### Transformer Block
+
+Combine MHSA + MLP + residuals + normalization:
+
+1. $\tilde{X} = \text{LayerNorm}(X^{(m-1)})$
+2. $Y^{(m)} = X^{(m-1)} + \text{MHSA}(\tilde{X})$
+3. $\tilde{Y} = \text{LayerNorm}(Y^{(m)})$
+4. $X^{(m)} = Y^{(m)} + \text{MLP}(\tilde{Y})$
+
+*(Figure 7 from Turner)*
+
+---
+
+### PyTorch Implementation
+
+```python
+import torch.nn as nn
+
+block = nn.TransformerEncoderLayer(
+    d_model=D,           # embedding dimension
+    nhead=H,             # number of heads
+    dim_feedforward=2048 # MLP hidden size
+)
+
+X_next = block(X)  # X: (SeqLen, Batch, Dim)
+```
+
+---
+
+## Variants
+
+---
+
+### Positional Encoding
+
+**Problem**. Token order matters ("herbivores eat plants" $\neq$ "plants eat herbivores")
+
+**Solution**. Add position information to $x_n^{(0)}$
+- Fixed (sinusoidal encoding)
+- Learned (parameter per position)
+
+---
+
+### Autoregressive Masking
+
+**Task**. Predict $p(w_n | w_{1:n-1})$
+
+**Naive approach**. Run transformer $N$ times with growing sequences. Requires
+$O(N^2)$ passes
+
+**Solution**. Mask attention upper-triangular
+$$A_{n,n'} = 0 \text{ when } n > n'$$
+
+**Result**. Token $n$ only sees tokens $1, \dots, n-1$
+Can use a single forward pass for all predictions
+
+---
+
+### Classification Head
+
+**Task**. Image classification from patches $X^{(0)}$
+
+**Approach**. Add learned token $x_0^{(0)}$ at the start.
+Use $x_0^{(M)}$ for classification:
+$$p(y | X^{(0)}) = \text{softmax}(W x_0^{(M)})$$
+
+This maintains a global representation that can be refined at each layer.
+
+---
+
+## Case Study: enVent
+
+---
+
+### Visualizing Attention
+
+**Input**. ""
+
+**Question**. Does model attend to ...
+
+---
+
+### Extracting Weights
+
+```python
+# Single-example batches
+loader = DataLoader(dataset, batch_size=1)
+
+# Extract all layers
+results = extract_hidden_states(
+    loader,
+    layers=range(num_layers),
+    do_final_cat=False
+)
+
+torch.save(results, 'attention_weights.pt')
+```
+
+---
+
+### Visualization
+
+**Attention matrix** $A_h^{(m)} \in \mathbb{R}^{N \times N}$:
+- Rows: keys (information providers)
+- Columns: queries (information receivers)
+- Intensity: attention weight magnitude
+
+---
+
+### Analysis
+
+Do we see high attention on:
+- Emotion words ("anger", "fear", "pride")
+- Causal markers ("because", "after", "due to")
+
+We will compare attention patterns across emotion categories.
+
+---
+
+### Exercise

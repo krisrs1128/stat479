@@ -1,0 +1,186 @@
+# 17. Attention
+
+* motivating case study
+
+* data processing goals
+
+* attention
+
+* multihead attention
+
+---
+
+### Learning outcomes
+
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Readings
+
+Turner, R. E. (2023). An Introduction to Transformers. http://doi.org/10.48550/ARXIV.2304.10557
+
+---
+
+### Case Study
+
+**Question**. How do LLMs recognize emotion in text?
+
+**Data**. enVent dataset
+
+- 6600 brief emotional narratives
+- Labels: anger, boredom, disgust, fear, guilt, joy, pride, relief, sadness, shame, surprise, trust
+
+**Goal**. Identify which tokens and parameters detect emotion
+
+---
+
+### Formulation
+
+**Text**. Token sequence $x_1, \dots, x_n \in \{0,1\}^V$
+**Labels**. $y \in \{0,1\}^{13}$
+**Model**. LLM $f(x; \theta)$
+
+**Task**. Which phrases and which parts of $\theta$ recognize emotion?
+
+---
+
+## Attention Mechanism
+
+---
+
+### Input Format
+
+**Input**. $N$ vectors $x_n^{(0)} \in \mathbf{R}^D$, arranged as matrix $X^{(0)} \in \mathbf{R}^{D \times N}$
+
+**Examples**.
+
+- Text: word/subword tokens, each a learned vector
+- Images: patches reshaped to vectors, embedded via learned $W$
+
+*(Figure 1 from Turner)*
+
+---
+
+### Transformer Architecture
+
+Iterate $M$ layers:
+$$X^{(m)} = \text{block}(X^{(m-1)})$$
+
+Each block has two stages:
+
+1. **Attention**. Process across sequence (horizontal)
+2. **MLP**. Process across features (vertical)
+
+This gives a new sequence representation.
+
+---
+
+### Attention: Weighted Average
+
+Output at position $n$:
+$$y_n^{(m)} = \sum_{n'=1}^N x_{n'}^{(m-1)} A_{n',n}^{(m)}$$
+
+**Attention matrix** $A^{(m)} \in \mathbf{R}^{N \times N}$:
+
+- Column-normalized: $\sum_{n'} A_{n',n} = 1$
+- $A_{n',n}$ = relevance of position $n'$ to position $n$
+
+Matrix form: $Y^{(m)} = X^{(m-1)} A^{(m)}$
+
+*(Figure 3 from Turner)*
+
+---
+
+### Self-Attention
+
+**Question**. Where does $A$ come from?
+
+**Answer**. Compute from input itself
+
+---
+
+### Attempt 1: Dot Product
+
+$$A_{n,n'} = \frac{\exp(x_n^\top x_{n'})}{\sum_{n''} \exp(x_{n''}^\top x_{n'})}$$
+
+**Problem**. Conflates content and similarity, forces symmetry
+
+---
+
+### Attempt 2: Bilinear Form
+
+$$A_{n,n'} = \frac{\exp(x_n^\top U^\top U x_{n'})}{\sum_{n''} \exp(x_{n''}^\top U^\top U x_{n'})}$$
+
+**Progress**. Decouples content/similarity using projection to $K < D$ dimensions
+**Problem**. Still symmetric
+
+---
+
+### Exercise
+
+
+---
+
+### Final Form: Asymmetric Attention
+
+$$A_{n,n'} = \frac{\exp(k_n^\top q_{n'})}{\sum_{n''} \exp(k_{n''}^\top q_{n'})}$$
+
+where
+
+- **Query**. $q_n = U_q x_n$ (what I'm looking for)
+- **Key**. $k_n = U_k x_n$ (what I contain)
+
+Parameters: $U_q, U_k \in \mathbf{R}^{K \times D}$
+
+---
+
+## Multi-Head Attention
+
+---
+
+### Motivation
+
+**Limitation**. Single attention matrix forces one similarity score per token pair.
+
+**Need**. Tokens should be similar in some dimensions, different in others.
+
+**Example**. "teacher" and "student"
+
+- Similar context
+- Different roles
+
+**Solution**. Multiple heads capture multiple relationships simultaneously.
+
+---
+
+### Multi-Head Self-Attention (MHSA)
+
+Run $H$ attention heads in parallel:
+$$Y^{(m)} = \sum_{h=1}^H V_h^{(m)} X^{(m-1)} A_h^{(m)}$$
+
+Each head $h$:
+
+- Own queries: $q_{h,n} = U_{q,h} x_n$
+- Own keys: $k_{h,n} = U_{k,h} x_n$
+- Own attention: $A_h^{(m)}$
+
+Project down: $V_h \in \mathbf{R}^{D \times D}$
+
+*(Figure 4 from Turner)*
+
+---
+
+### MLP Stage
+
+Refine features at each position independently:
+$$x_n^{(m)} = \text{MLP}_\theta(y_n^{(m)})$$
+
+**Key**. Same parameters $\theta$ for all positions $n$
+
+---
+
+### Exercise
+
+---
