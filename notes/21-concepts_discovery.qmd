@@ -1,4 +1,4 @@
-### 21. Linear Probes and Concepts
+# 21. Linear Probes and Concepts
 
 * motivating application
 
@@ -26,36 +26,17 @@ Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Effic
 
 ---
 
-### Motivating Case Study
-
----
-
 ### Case Study
 
-**Question**. Can we complement on-the-ground socioeconomic surveys with passively observed aerial imagery?
+**Question**. Predict livability from aerial imagery. Can we trust what the model learns?
 
-**Main Data**. Coupled survey data + aerial imagery.
-- Survey responses for 51,781 "liveability grid cells" of size 100m^2
-- Imagery (1m/px). 500 x 500 patches.
-- Gathered from 13 areas in the Netherlands.
+**Data**. 51,781 grid cells (100m²) in Netherlands. Each has livability score $y \in \mathbf{R}$ and 500×500px aerial image $x$.
 
-**Supplemental Data**.
-- FLAIR. Land use from French National Institute of Geographical and Forest Information.
+**Supplemental**. FLAIR land use labels from French National Institute.
 
-**Goal**. Underestand what concepts the model has learned, so it can be deployed with more confidence.
+**Goal**. Which visual concepts does $f(x;\theta)$ use to predict $y$?
 
----
-
-### Formulation
-
-**Livability**. $y \in \mathbf{R}$
-**Predictors**. $\mathcal{D}_{r} = x \in \mathbf{R}^{3 \times 500 \times 500}$. Imagery.
-
-**Concept labels**. $c \in \{1, \dots, K\}$.
-**Concepts**. $\mathcal{D}_{c} = x \in \mathbf{R}^{3 \times 500 \times 500}$.
-
-**Model**. $f(x; \theta)$
-**Task**. Which "concepts" does the
+**Concept labels** $c \in \{1,\ldots,K\}$ from auxiliary dataset.
 
 ---
 
@@ -69,34 +50,52 @@ Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Effic
 
 ### Notation
 
+$h_l(x)$ — activation vector at layer $l$
+
+$p_l(h) = \text{softmax}(W_l h + b_l)$ — linear classifier predicting $y$ from $h_l$
+
+**Diode constraint**. $\frac{\partial \mathcal{L}}{\partial \theta} = 0$ (probe training doesn't affect base model)
+
 ---
 
 ### Estimation
+
+Minimize empirical risk on hidden representations:
+$$\min_{W_l, b_l} \sum_{i=1}^N \mathcal{L}(p_l(h_l(x_i)), y_i)$$
+
+**Validation**. Test on held-out data to ensure genuine learned features, not memorization.
+
+**Information vs. Accessibility**. Total mutual information $I(X; h_l)$ may decrease with depth (Data Processing Inequality), but *linear accessibility* of task-relevant information typically increases.
 
 ---
 
 ### Cartoon
 
+<img src="figures/probe_cartoon.png" width="600"/>
+
+Early layers: generic features (edges). Deep layers: task-specific, linearly separable.
+
 ---
 
 ### Outputs
+
+- Layer-wise error $\to$ where model "solves" task
+- Training dynamics $\to$ epochs until layer becomes useful
+- Representational capacity $\to$ signal preserved at each bottleneck
 
 ---
 
 ### Example: Skip Connections
 
-This flags bugs in complex architectures.
+**Bug detection via probes**. Skip connection from layer 1→64 rendered layers 2–63 "dead" (flat error rates).
 
-.center[
-<span style="font-size: 18px;">
 <img width="500" src="figures/pathological_training.gif"/> <br/>
-In this example from `r Citep(bib, "alain2017understanding")`, a skip connection across layers 1 - 64  has prevented learning across those layers.
-</span>
-]
 
 ---
 
 ### Exercise: Pseudocode
+
+Write the pseudocode to extract activations and train a probe for a single layer.
 
 ---
 
@@ -106,63 +105,66 @@ In this example from `r Citep(bib, "alain2017understanding")`, a skip connection
 
 ### Notation
 
+**CAV**. $v_c^l \in \mathbf{R}^{d_l}$ — direction of concept $c$ in layer $l$
+
+**Concept Sensitivity**. Directional derivative of class $k$ logit along concept vector:
+$$S_{c,k}(x) = \nabla_{h} f_k(h_l(x)) \cdot v_c^l$$
+
+**TCAV Score**. $T_{c,k} = \frac{|\{x \in X_k : S_{c,k}(x) > 0\}|}{|X_k|}$
+
+Fraction of class-$k$ images where concept $c$ increases model confidence.
+
 ---
 
-**Step 1**. Define a collection of images $\*x_{n}$ that represents the concept. Also construct a control pool of random images $\*x_{n}^\prime$.
+**Step 1**. Define concept images $x_n \in D_c$ (positive set). Construct control pool $x_n' \in N$ (negative set, random images).
 
-.center[
 <span style="font-size: 18px;">
 <img src="figures/concepts_step1.png" width=600/><br/>
-Here, we are interested in the concept "stripes." Figure from `r Citep(bib, "tcav")`.
+Concept: "stripes"
 </span>
-]
 
 ---
 
-**Step 2**. Use an intermediate layer's activations $h\left(\*x\right)$ as
-predictors for a linear classifier to distinguish the groups. This is like
-probes, except the task is derived from Step 1.
+**Step 2**. Find direction $v_c^l$ that best separates $h_l(D_c)$ from $h_l(N)$ in activation space.
 
-.center[
+**Standard**. Train linear SVM. CAV is the normal vector to decision boundary.
+
 <span style="font-size: 18px;">
-<img src="figures/concepts_step2.png" width=530/><br/>
-Let $\*v$ denote the normal to the decision boundary.
+<img src="figures/concepts_step2.png" width=530/>
 </span>
-]
 
 ---
 
-**Step 3**. Compare the direction $v$ to the directions in the embedding spac
-that increase each sample's class $k$ probability.
+**Step 3**. Compute sensitivity of model's prediction to this direction.
 
-\begin{align*}
-S_{k}\left(\*x\right) = \nabla y_{k}\left(h\left(\*x\right)\right)^\top \*v
-\end{align*}
+$$\text{Sensitivity} = \text{Model Gradient} \cdot \text{Concept Direction}$$
 
-.center[
+Global explanation: "To what extent does concept 'stripes' contribute to the model's definition of 'zebra'?"
+
 <span style="font-size: 18px;">
 <img src="figures/concepts_step3.png" width=700/><br/>
-$\nabla y_{k}\left(h\left(\*x\right)\right)$ is the direction in the activation
-space with the steepest increase in class $k$'s logit.
+$\nabla y_k(h(x))$ is the steepest ascent direction for class $k$'s logit.
 </span>
-]
 
 ---
 
 ### Alternative Step 2: FastCAV
 
----
+$v_{\text{FastCAV}} = \frac{\bar{h}_c - \bar{h}_r}{\|\bar{h}_c - \bar{h}_r\|}$
 
-### Testing
+Equivalent to SVM under isotropic covariance ($\Sigma = \sigma^2 I$).
 
-- We should check that we're not seeing patterns in noise. It's possible the
-model has learned nothing about a concept.
-
-- Next time, define a hypothesis test using "negative control" CAVs.
+Leads to 46.4× average speedup.
 
 ---
 
-### Exercise: CAV for a 2-layer network
+### Testing for Significance
+
+1. Generate CAVs from multiple random negative sets
+2. Build null distribution of TCAV scores
+3. Two-sided t-test: is actual concept significant vs. random baseline?
+
+More details in next lecture.
 
 ---
 
@@ -172,12 +174,26 @@ model has learned nothing about a concept.
 
 ### Similarities
 
----
-
-### Probes-specific
-
----
-
-### Concepts-specific
+- Post-hoc (frozen model)
+- Linear accessibility assumption
+- Activation-based ($h_l(x)$)
 
 ---
+
+### Differences
+
+**Probes-specific**
+
+- Align using model's task labels ($y$)
+- Final output is probe accuracy
+- Goal is to measure the available task-specific information
+
+**Concepts-specific**
+
+- Align using human semantics ($c$)
+- Final output is TCAV sensitivity score
+- Goal is to model reasoning with human-understandable features
+
+---
+
+### Exercise: Theoretical CAV

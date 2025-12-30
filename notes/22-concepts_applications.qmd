@@ -1,4 +1,4 @@
-### 22. Applying Probes and Concepts
+# 22. Applying Probes and Concepts
 
 * application to case study
 
@@ -26,23 +26,22 @@ Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Effic
 
 ---
 
-### `captum` package
-
----
-
 ### Extracting activations
 
----
+In PyTorch, use `register_forward_hook` to capture $h_l(x)$ during forward pass.
 
-### Concepts data structure
+```python
+activations = {}
 
----
+def activation_fun(name):
+    def hook(model, input, output):
+        activations[name] = output.detach()
+    return hook
 
-### Estimating concept directions
-
----
-
-### Outputs
+# Register hooks on layers of interest
+model = torchvision.models.resnet50(pretrained=True).eval()
+model.layer3.register_forward_hook(activation_fun('layer3'))
+```
 
 ---
 
@@ -50,52 +49,124 @@ Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Effic
 
 ---
 
-### Spurious Concepts
+### Spurious Concepts: Why Test?
 
-(why we would want to test)
+- High-dimensional spaces ($d=2048$): almost any two 50-image sets are separable. Random directions may align with gradients by chance.
 
----
-
-**Step 4**. Let $N_{k}$ be the number of images in class $k$, and define the test
-statistic:
-
-\begin{align*}
-T_{k} = \frac{1}{N_{k}}\absarg{\{\*x \in \text{Class } k : S_{k}\left(\*x\right) > 0\}}.
-\end{align*}
-
-.center[
-<span style="font-size: 18px;">
-<img src="figures/concepts_step4.png" width=580/><br/>
-We count the number of class $k$'s gradients that are in the same halfspace as $\*v$.<br/>
-</span>
-]
+- Need to calibrate. Is TCAV=0.6 high or just noise?
 
 ---
 
-**Step 5** Test the significance of $T_{k}$ by learning reference $\*v$ trained
-to distinguish randomly chosen example images.
+**Step 4**. Let $N_k$ be the number of images in class $k$. The **TCAV Score** ($T_k$) is:
 
-.center[
+$$T_k = \frac{1}{N_k}\left|\{x \in \text{Class } k : S_k(x) > 0\}\right|$$
+
+- $T_k > 0.5$: concept generally increases prediction
+- $T_k < 0.5$: concept generally decreases prediction
+
 <span style="font-size: 18px;">
-<img src="figures/concepts_step5.png" width=700/><br/>
-Random classification directions serve as a negative control.
+<img src="figures/concepts_step4.png" width=600/><br/>
+Concept: "stripes"
 </span>
-]
 
 ---
 
-### Real-World Example
+**Step 5**. Test significance by learning reference $\vec{v}$ trained on random image sets.
 
-Concepts have been applied to medical imaging tasks. In this example, concepts
-give additional context about why a model might classify the lesion as a
-melanoma.
+- Run CAV process 50+ times with different random negative sets
+- Generate null distribution of TCAV scores
+- Two-sided t-test: is concept's $T_k$ statistically significant ($p < 0.05$)?
 
-.center[
 <span style="font-size: 18px;">
-<img src="figures/lucieri_fig5.png" width=800/> <br/>
-Figure from `r Citep(bib, "Lucieri2022")`. In this case, the model is incorrect despite concepts suggesting the correct diagnosis.
+<img src="figures/concepts_step5.png" width=600/><br/>
+Concept: "stripes"
 </span>
-]
+
+---
+
+### Real-World Example: Medical Imaging
+
+- **Model**. Melanoma detector
+- **TCAV audit**. High sensitivity to "ruler markings"
+- **Conclusion**. Spurious correlation (rulers mark dangerous lesions)
+
+---
+
+### Concepts data structure
+
+We need three things.
+
+1. **Concept Sets**. Folders of images representing "trees," "water," "parking," etc.
+2. **Random Pool**. Large, diverse set of images (e.g., ImageNet) for null hypothesis
+3. **Layer Activations**. Dictionary mapping `layer_name` $\to$ `tensor(N, dim)`
+
+---
+
+### Concepts data structure
+
+```python
+from captum.concept import TCAV, Concept
+from captum.attr import LayerIntegratedGradients
+
+# 1. load model and specify layers
+model = torchvision.models.googlenet(pretrained=True).eval()
+layers = ['inception4c', 'inception4d', 'inception4e']
+
+# 2. folders contain example images
+stripes = Concept(id=0, name="striped", data_iter=load_concept("striped/"))
+random = Concept(id=1, name="random", data_iter=load_concept("random/"))
+```
+
+---
+
+### Estimating concept directions
+
+```python
+# 3. initialize tcav class
+tcav = TCAV(model=model, layers=layers,
+            layer_attr_method=LayerIntegratedGradients(model, None))
+
+# 4. TCAV test: does "stripes" influence "zebra" predictions?
+scores = tcav.interpret(inputs=zebra_images,
+                        experimental_sets=[[stripes, random]],
+                        target=340)  # zebra class
+```
+
+---
+
+### FastCAV
+
+```python
+from fastcav import FastCAVCaptumClassifier
+
+tcav = TCAV(model=model, layers=layers,
+            classifier=FastCAVCaptumClassifier(),  # <-- only change
+            layer_attr_method=LayerIntegratedGradients(model, None))
+
+# Same workflow, identical results, faster
+scores = tcav.interpret(inputs=zebra_images, experimental_sets=[[stripes, random]], target=340)
+```
+
+---
+
+### Outputs
+
+**TCAV Score**. Nested dictionary structure
+```python
+tcav_scores = {
+    '0-3': {  # concept pair IDs
+        'inception4c': {
+            'sign_count': tensor([0.98, 0.02]),  # fraction positive
+            'magnitude': tensor([1.97, -1.97])    # average sensitivity
+            ...
+}
+```
+
+**sign_count**. Fraction of inputs where concept increases prediction (TCAV score proper)
+
+**magnitude**. Average directional sensitivity across inputs
+
+`sign_count[0] = 0.98` means "stripes" positively influences 98% of zebra predictions
 
 ---
 
@@ -124,5 +195,3 @@ Figure from `r Citep(bib, "Lucieri2022")`. In this case, the model is incorrect 
 ---
 
 ### Exercise: Complementarity
-
----
