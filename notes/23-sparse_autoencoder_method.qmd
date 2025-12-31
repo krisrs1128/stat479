@@ -1,4 +1,4 @@
-### 21. Sparse Autoencoders
+# 21. Sparse Autoencoders
 
 * motivating application
 
@@ -18,36 +18,23 @@
 
 ---
 
-### Protein Language Models
+### Motivating Case Study
 
 ---
 
-### Why are proteins important?
-
-
----
-
-### Protein sequence data
+### Questions
 
 ---
 
-### Sequencing foundation models
+### Formulation
 
 ---
 
-### Training
+### Superposition Hypothesis
 
 ---
 
-### What did they learn?
-
----
-
-### Applications
-
----
-
-## Optimization Objective
+## Model and Optimization
 
 ---
 
@@ -66,7 +53,7 @@ of interpretable features.
 
 ---
 
-### Formulation
+### Objective
 
 Following `r Citep(bib, "Yun2021-jc")`, suppose $\*x_{n}$ are the concatenated
 activations across all layers in the network. Then solve:
@@ -119,11 +106,17 @@ overcomplete, it can reconstruct relatively complex patterns.
 
 ---
 
-### Iterative Sparse THresholding
+### Iterative Sparse Thresholding
 
 ---
 
-### Cartoon
+### "Dead" Atoms
+
+---
+
+### Diagram
+
+(create figure giving geometric interpretation)
 
 ---
 
@@ -140,3 +133,7 @@ overcomplete, it can reconstruct relatively complex patterns.
 ---
 
 ### Sample weights
+
+---
+
+### Exercise: FISTA Pseudocode

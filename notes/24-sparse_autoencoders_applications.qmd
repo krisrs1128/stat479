@@ -1,8 +1,8 @@
-### 22. Applying Sparse Autoencoders
+# 22. Applying Sparse Autoencoders
+
+* interpreting clusters
 
 * application to case study
-
-* handling "dead" atoms
 
 * model safety and control
 
@@ -16,5 +16,113 @@
 
 ---
 
+### Monosemanticity
 
 ---
+
+### Examples of Superposition
+
+---
+
+### Manual Interpretability
+
+---
+
+### Automated Interpretability
+
+---
+
+### Feature Activation Distributions
+
+---
+
+### Golden Gate Feature
+
+---
+
+### Code Error Feature
+
+---
+
+### Reading $t$-SNE Plots
+
+---
+
+### Feature Neighborhoods
+
+---
+
+### Feature Completeness
+
+---
+
+### Computational Intermediates
+
+---
+
+## Case Study
+
+---
+
+### Data Overview
+
+(add description of the data, how it was put into a loader)
+
+---
+
+### Extracting Activations
+
+(add figure from code demo)
+
+---
+
+### Fitting SAE
+
+(add code snippet)
+
+---
+
+### Training Losses
+
+(add figures)
+
+---
+
+### Example Features
+
+(will add based on code)
+
+---
+
+### Example Features
+
+(will add based on code)
+
+---
+
+### Takeaways
+
+- assumptions
+- checks
+
+---
+
+## Safety and Control
+
+---
+
+### Steering Generations
+
+---
+
+### Mathematical Implementation
+
+---
+
+### Steering Protein Language Models
+
+---
+
+### Exercise
+
+(group bias adaptation)
