@@ -26,9 +26,18 @@ Schmalwasser, L., Penzel, N., Denzler, J., & Niebling, J. (2025). FastCAV: Effic
 
 ---
 
-### Case Study
+### Motivating Case Study
 
-**Question**. Predict livability from aerial imagery. Can we trust what the model learns?
+Predict livability from aerial imagery.
+
+- Can we trust what the model learns?
+- Will it generalize?
+
+<img src="figures/"/>
+
+---
+
+### Statistical Formulation
 
 **Data**. 51,781 grid cells (100m²) in Netherlands. Each has livability score $y \in \mathbf{R}$ and 500×500px aerial image $x$.
 

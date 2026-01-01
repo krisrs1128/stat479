@@ -32,3 +32,5 @@ bib <- ReadBib("references.bib")
 {{< include 20-sanity_checks.qmd >}}
 {{< include 21-concepts_discovery.qmd >}}
 {{< include 22-concepts_applications.qmd >}}
+{{< include 23-sparse_autoencoder_method.qmd >}}
+{{< include 24-sparse_autoencoder_applications.qmd >}}

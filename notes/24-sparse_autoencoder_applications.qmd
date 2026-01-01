@@ -1,0 +1,256 @@
+# 24. Interpreting and Applying SAEs
+
+* interpreting features
+
+* application to case study
+
+* model safety and control
+
+---
+
+### Learning Outcomes
+
+* Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks
+* Analyze large-scale foundation models using methods like sparse autoencoders and describe their relevance to problems of model control and AI-driven design.
+* Within a specific application context, evaluate the trade-offs associated with competing interpretable machine learning techniques.
+
+---
+
+### Monosemanticity
+
+**Definition**. A feature responds to a single coherent concept.
+
+They observe this empirically in their LLM:
+
+* **Cross-lingual**. Same concept in multiple languages
+* **Cross-modal**. Same concept in text and images
+* **Cross-abstraction**. Abstract discussion and concrete instances
+
+For example, the code vulnerability feature responds to:
+
+* Buffer overflow in C code
+* Blog post discussing CVEs
+* Image of XKCD comic about SQL injection
+
+---
+
+### Feature Geometry
+
+Cosine similarity between atom vectors $W_{\cdot,i}^{dec}$ and $W_{\cdot,j}^{dec}$ correlates with semantic similarity.
+
+**Neighborhoods**.
+
+* Close features share meaning
+* Distances form semantic hierarchies
+
+**Example**. Golden Gate Bridge feature neighbors: Alcatraz (closest), Lake Tahoe, Yosemite, other landmarks (further)
+
+---
+
+### Feature Splitting
+
+As $F$ increases, coarse features split into finer ones. For example,
+
+* 1M SAE: "San Francisco" (single feature)
+* 4M SAE: 2 features
+* 34M SAE: 11 fine-grained features
+
+Rare concepts require larger dictionaries.
+
+---
+
+### Frequency-Size Relationship
+
+Dictionary size needed for concept with frequency $p$:
+$$F \approx \frac{c}{p}$$
+
+50% coverage threshold inversely proportional to number of "alive" features.
+
+Suggests $F$ should be comparable to inverse rarest concept frequency.
+
+---
+
+## Validation Methods
+
+---
+
+### Manual Inspection
+
+1. Examine top-20 activating examples
+2. Hypothesize feature meaning
+3. Check random samples from activation bins
+4. Test on synthetic prompts
+
+This is limited: subjective, labor-intensive, doesn't scale to 1M+ features.
+
+---
+
+### Automated Interpretability
+
+1. Show an LLM high-activation examples
+2. Request natural language description
+3. Score held-out examples against the description
+
+**Rubric**.
+
+* 0: Irrelevant
+* 1: Vaguely related
+* 2: Loosely related
+* 3: Perfectly matches
+
+They found strong activations $\to$ high scores.
+
+---
+
+### Specificity
+
+**Definition**. When a feature fires, is the concept present?
+
+**Measurement**. Automated scoring of activating examples.
+
+**Observation**.
+
+* Strong activations: high specificity
+* Weak activations: lower specificity
+
+**Possible causes**.
+
+* Activation encodes confidence
+* Central vs peripheral examples
+* Dictionary learning is not perfect
+
+---
+
+### Sensitivity
+
+**Definition**. When a concept is present, does the feature fire?
+
+**Challenge**. Hard to sample unbiased concept instances.
+
+**Sanity check**.
+
+- Translate triggering text to multiple languages -- does the feature still fire?
+- Example showing the Golden Gate Bridge feature fires on Wikipedia article in Chinese, Japanese, Russian, French, Greek.
+
+---
+
+## Feature Types
+
+---
+
+### Addition feature (1M/697189)
+
+* Fires on function names that add
+* Fires at end of addition function definitions
+* Handles function composition: fires on `bar()` that calls `add()`
+
+**Check**. Clamping feature on non-addition code $\to$ model treats it as addition.
+
+---
+
+### Code Error Feature
+
+Activates on...
+
+* Array overflow
+* Divide by zero
+* Type errors
+* Null pointer dereference
+* `exit(1)`
+
+**Steering**.
+
+* Clamp high $\to$ hallucinates errors
+* Clamp low $\to$ ignores real bugs
+
+---
+
+### Safety-Relevant Features
+
+Probably important for an LLM company to resolve...
+
+* Deception and manipulation
+* Power-seeking and treacherous turns
+* Bias and discrimination
+* Dangerous content (CBRN, exploits)
+* Sycophancy
+
+---
+
+## Case Study
+
+---
+
+### Computational Intermediates
+
+Features represent intermediate reasoning steps.
+
+"The capital of the state where Kobe Bryant played basketball is ____"
+
+**Top features by attribution**.
+
+1. Kobe Bryant
+2. California
+3. "Capital"
+4. Los Angeles
+5. Lakers
+
+---
+
+### Comparison to Neurons
+
+**Correlation test**. For random features, measure max correlation with any neuron.
+
+**Result**. 82% of features have $r < 0.3$ with all neurons.
+
+Features appear more interpretable than neurons. Qualitatively different, not just neuron activity.
+
+---
+
+## Applications
+
+---
+
+### Activation Steering
+
+1. Decompose: $x = \text{SAE}(x) + \text{error}(x)$
+2. Modify: $f_i(x) \leftarrow s$
+3. Reconstruct: $x_{new} = b^{dec} + \sum_j f_j(x) W_{\cdot,j}^{dec} + \text{error}(x)$
+4. Continue forward pass with $x_{new}$
+
+Notes:
+
+- Typically $s \in [-10, 10] \times \max_x f_i(x)$
+- Golden Gate Bridge feature at $10\times$ max $\to$ model self-identifies as the bridge.
+
+---
+
+### Safety Monitoring
+
+**Proposal**. Monitor safety-relevant features during inference.
+
+**Example checks**.
+
+* Does "deception" feature activate during helpful responses?
+* What activates before dangerous content generation?
+* Which features necessary for CBRN refusal?
+
+---
+
+### Comparison to Linear Probes
+
+**Few-shot probe baseline**.
+
+* Mean difference of residual stream on positive vs negative examples
+* 2/7 cases: probes and features equally effective
+* 5/7 cases: features work, probes don't
+
+**Benefit of SAEs**.
+
+* Unsupervised discovery
+* Amortized cost (one training, many searches)
+* Unsupervised $\to$ Can find unexpected abstractions
+
+---
+
+### Exercise: Feature Search

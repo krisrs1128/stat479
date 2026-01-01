@@ -27,7 +27,7 @@ downstream genes.
 
 - Their status is determined by combinations of binding transcription factors and chromatin marks
 
-Understanding these interactions explains genotype → phenotype.
+Understanding these interactions explains genotype $\to$ phenotype.
 
 ---
 

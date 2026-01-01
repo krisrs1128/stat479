@@ -1,4 +1,4 @@
-# 21. Sparse Autoencoders
+# 23. Sparse Autoencoder Design
 
 * motivating application
 
@@ -20,120 +20,225 @@
 
 ### Motivating Case Study
 
+Proteins are the building blocks of cells. Each protein is a sequence of amino
+acids, and the structure and function of these proteins can be studied using
+protein language models.
+
 ---
 
 ### Questions
 
+What are the most important biological features that have been learned by
+protein language models?
+
 ---
 
-### Formulation
+### Statistical Formulation
+
+**Protein Sequences**. One-hot encoded amino acid sequences $x \in \mathbf{R}^{26 \times T}$. Lengths $T$ may vary.
+
+**Foundation Model** $f\left(x; \theta\right)$. Transforms raw sequence data into representations $h^{l} = \left(index, feature\right)$ across layers $l$.
+
+---
+
+### The Polysemanticity Problem
+
+Individual neurons in neural networks respond to multiple unrelated concepts.
+
+For example, a single neuron might activate for:
+* Arabic script
+* Genetic sequences
+* Mathematical notation
+* Base64 encoded data
+
+This **polysemanticity** makes interpretation impossible at the neuron level.
 
 ---
 
 ### Superposition Hypothesis
 
----
+**Linear Representation**. Features $f_1, \ldots, f_F$ are represented as directions $W_1, \ldots, W_F \in \mathbb{R}^D$:
+$$x = \sum_{i=1}^F x_{f_i} W_i$$
+where $x_{f_i}$ is the activation strength of feature $i$.
 
-## Model and Optimization
+**Naive expectation**. Can only represent $F \leq D$ features (one per dimension).
 
----
+**Superposition**. When features are sparse (each $x_{f_i} > 0$ rarely), can represent $F \gg D$ features.
 
-### Sparse Autoencoders
-
-1. We need to have specific concepts in mind before we can use concept methods.
-How can we find out what the model "knows" from scratch?
-
-1. We might try to analyze individual neurons, but individual neurons often play
-multiple roles. This "distributed representation" property makes the neurons
-more difficult to study (they are also the reason the model is powerful).
-
-1. One idea is to apply dictionary learning to the space of model embeddings.
-This method can disentangle the many roles for each neuron into a discrete set
-of interpretable features.
+* Sparsity means most interference terms $x_{f_i} x_{f_j} \langle W_i, W_j \rangle$ are zero
+* Neurons observe $\langle w_n, x \rangle = \sum_i x_{f_i} \langle w_n, W_i \rangle$ (mixture → polysemanticity)
+* Feature directions $W_i$ are recoverable via sparse dictionary learning
 
 ---
 
-### Objective
+### The Dictionary Learning Problem
 
-Following `r Citep(bib, "Yun2021-jc")`, suppose $\*x_{n}$ are the concatenated
-activations across all layers in the network. Then solve:
+Given activations $x \in \mathbf{R}^D$, find:
 
-.pull-left[
-\begin{align*}
-\arg\min_{\Phi, \left(\alpha_{n}\right)} \sum_{n = 1}^{N} \|\*x_n - \*\Phi\*\alpha_{n}\|_{2} + \lambda\|\alpha_n\|_{1} \\
-\text{subject to } \alpha_{n} \succeq 0 \text{ for } n = 1, \dots, N
-\end{align*}
-]
+* Feature directions $W^{dec} \in \mathbf{R}^{D \times F}$ (the "dictionary atoms")
+* Sparse coefficients $f(x) \in \mathbf{R}^F$
 
-.pull-right[
-<span style="font-size: 18px;">
-<img width="500" src="figures/dictionary_rectangles.png"/>
-</span>
-]
+Such that: $x \approx \sum_{i=1}^F f_i(x) W_{\cdot,i}^{dec}$
+
+**Constraint**. $\|f(x)\|_0 \ll F$ (most coefficients are zero)
 
 ---
 
-### Atoms
-
-The columns $\varphi_{k}$ of $\Phi$ are called atoms. Since the basis is
-overcomplete, it can reconstruct relatively complex patterns.
-
-.center[
-<span style="font-size: 18px;">
-<img width="600" src="figures/atoms_interpretation.png"/>
-</span>
-]
+## Sparse Autoencoder Architecture
 
 ---
 
-### Sparsity
+### Model Structure
+
+**Encoder**.
+$$f(x) = \text{ReLU}(W^{enc} x + b^{enc})$$
+where $W^{enc} \in \mathbf{R}^{F \times D}$
+
+**Decoder**.
+$$\hat{x} = W^{dec} f(x) + b^{dec}$$
+where $W^{dec} \in \mathbf{R}^{D \times F}$
+
+Overcomplete Basis: $F \gg D$
 
 ---
 
-### SAE vs. PCA
+### Objective Function
+
+$$\mathcal{L} = \mathbf{E}_{x} \left[ \|x - \hat{x}\|_2^2 + \lambda \sum_{i=1}^F f_i(x) \|W_{\cdot,i}^{dec}\|_2 \right]$$
+
+**Terms**.
+1. Reconstruction error
+2. Sparsity penalty weighted by atom norm
+
+The weights $f_{i}\left(x\right)$ replace the usual unit norm constraint.
 
 ---
 
-## Learning Algorithm
+### Soft Thresholding
+
+The encoder $\text{ReLU}(W^{enc} x + b^{enc})$ approximates the solution to:
+$$\min_f \frac{1}{2}\|x - W^{dec}f\|_2^2 + \lambda\|f\|_1$$
+
+This is a soft-thresholding operation: $S_\lambda(v)_i = \text{sign}(v_i) \max(0, |v_i| - \lambda)$
 
 ---
 
-### Gradient Descent
+### SAE vs PCA
+
+| Property | PCA | SAE |
+|----------|-----|-----|
+| Basis | Orthogonal | Overcomplete, non-orthogonal |
+| Objective | Maximize variance | Sparse reconstruction |
+| Features | Dense | Sparse |
+| Semantics | Polysemantic | Monosemantic |
+
+PCA finds directions of variation. SAEs find directions of meaning.
 
 ---
 
-### Cartoon
+## Optimization
 
 ---
 
-### Iterative Sparse Thresholding
+### Proximal Gradient Methods
+
+When $f$ is differentiable and $g$ is convex (not necessarily differentiable), we can solve
+
+$$\min f(x) + g(x)$$
+
+using iterates
+
+$$x^{(k+1)} = \text{prox}_{\eta g} (x^{(k)} - \eta \nabla f(x^{(k)}))$$
+
+For SAEs, $g = \lambda\|f\|_1$:
+1. Gradient step on reconstruction error
+2. Soft-threshold to enforce sparsity: $\text{prox}_{\lambda\eta}(v) = S_{\lambda\eta}(v)$
 
 ---
 
-### "Dead" Atoms
+### FISTA (Fast Iterative Soft-Thresholding)
+
+Achieves optimal $O(1/k^2)$ convergence via momentum:
+
+1. $f^{(k)} = S_{\lambda/L} (y^{(k)} - \frac{1}{L} \nabla_f \|x - W^{dec}f\|_2^2|_{f=y^{(k)}})$
+2. $t_{k+1} = \frac{1 + \sqrt{1 + 4t_k^2}}{2}$
+3. $y^{(k+1)} = f^{(k)} + \frac{t_k - 1}{t_{k+1}} (f^{(k)} - f^{(k-1)})$
 
 ---
 
-### Diagram
+### Experimental Setup
 
-(create figure giving geometric interpretation)
+**Model**. Claude 3 Sonnet (middle layer residual stream)
 
----
+**Dictionary sizes**. 1M, 4M, 34M features
 
-### Derivation
+**Training**.
+* Data: Mix similar to pretraining (The Pile, Common Crawl)
+* No RLHF-style dialogue data
+* Single epoch
 
----
-
-## Outputs
-
----
-
-### Atoms
+**Dead features**. 2% (1M), 35% (4M), 65% (34M)
 
 ---
 
-### Sample weights
+### Hyperparameter Tuning
+
+Observe empirical scaling laws.
+
+<img src="figures/sae_scaling_law.png" class="center"/>
 
 ---
 
-### Exercise: FISTA Pseudocode
+
+## Interpreting Outputs
+
+---
+
+### The Learned Dictionary
+
+- Columns $W_{\cdot,i}^{dec}$ are feature directions in activation space
+
+- Coefficients $f_i(x)$ indicate strength of feature $i$ for input $x$
+
+For Claude 3 Sonnet (34M SAE features):
+
+* Average $L_0 < 300$ active features per token
+* Reconstruction explains 65% of variance
+
+---
+
+### Visualization Method
+
+For each feature $i$:
+
+1. Compute $f_i(x)$ over dataset
+2. Collect top-$k$ examples by activation strength
+3. Inspect contexts where feature fires
+
+What concept consistently appears in high-activation contexts?
+
+---
+
+### Feature Examples
+
+We'll go over these in detail next lecture.
+
+**Golden Gate Bridge** (34M/31164353):
+* Descriptions in multiple languages
+* Images of the bridge
+* Related SF landmarks (weaker)
+
+**Immunology** (1M/533737):
+* Neighborhood includes immunodeficiency, vaccines, organ systems
+* Separate cluster for legal immunity
+
+---
+
+### Exercise: Implement FISTA
+
+Given $x \in \mathbf{R}^D$, $W^{dec} \in \mathbf{R}^{D \times F}$, $\lambda > 0$:
+
+Implement FISTA to solve:
+$$\min_f \frac{1}{2}\|x - W^{dec}f\|_2^2 + \lambda\|f\|_1$$
+
+Compare convergence rate to standard ISTA.
