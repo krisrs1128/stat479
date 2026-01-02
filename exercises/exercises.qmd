@@ -1,0 +1,170 @@
+# Interpretable Machine Learning Exercises
+
+## Motivation
+
+1. [Past experience] The need for interpretable machine learning arises across many areas of study. This question asks you to share your experience with some of these areas.
+
+    - Introduce yourself to your neighbors. What is your name and degree program? What are your areas of interest? How might interpretability or explainability be helpful in the work that you do?
+    - Have you encountered a situation in the past where you think interpretability or explainability would be useful? Describe the situation and your overall goals. How did you address them and are there any ways the approach could have been improved?
+
+1. [Jargon-free summary] Imagine you are working as a statistical consultant
+and have chosen to include a model explanation technique from this week. Your
+clients are familiar with the basics of machine learning (e.g., supervised vs.
+unsupervised learning) but not the interpretability literature. Give a
+jargon-free but precise description of {filled in during class}. What does it
+output and what is the correct interpretation?
+
+1. [Example Critique] Summarize example {given in class} from {this week's
+reading}. What kinds of real-world situations is that example supposed to
+reflect?  Do you think the proposed method would actually work in those
+situations, and what kinds of difficulties can you imagine arising in practice?
+
+1. [Clear/Confusing] For this week's material, describe,
+
+    - A concept that you learned for the first time.
+    - A check you can apply to ensure your interpretations are reliable.
+    - A point that are not confident you could apply in practice.
+
+    Be as specific as possible.
+
+## Intrinsically Interpretable Models
+
+1. [Tree Importances] In your own words, summarize how one of these techniques
+measures variable importance in tree models: Permutation VI, MDI, MDI+. For your
+chosen approach, what is one strength and one weakness?
+
+## Post-hoc Explanations
+
+1. [SHAP Waterfall] We saw a visualization of $\varphi_{x}\left(f, i\right)$ for
+a single sample $i$ in the census dataset. The plot below gives the analogous
+visualization for all N samples in that data. How do you interpret it?
+
+        ```{r}
+        #| label: waterfall
+        #| out-width: 70%
+        #| align: center
+        knitr::include_graphics("figures/shap_waterfall.png")
+        ```
+
+1. [SHAP Visual Explanation] We gave a geometric interpretation of $v({1})$ in a
+toy example. Can you give the geometric interpretation of: $v({1, 2}), v({2})$, or
+$v({\empty})$?
+
+        ```{r}
+        #| label: shap-visual
+        #| out-width: 70%
+        #| align: center
+        knitr::include_graphics("figures/shap_visual_exp.png")
+        ```
+
+1. [KernelSHAP Code] These questions accompany the KernelSHAP code snippet.
+
+    - How does the mask variable relate to the subsets $S$ discussed in the notes?
+    - How many linear regressions are run to compute SHAP values across all
+    samples? How large are the input datasets for each of those regressions, and
+    how is it related to nsamples?
+    - What is the relationship between the returned attributions $\varphi$ and
+    the coefficients of our weighted linear regression?
+    - `synth_data` can be viewed as `nsamples` blocks of $N$ rows each. How do
+    the blocks differ from one another?
+    - If we ignore the terms involving the last column of mask_matrix (i.e.,
+    `mask_matrix[:, -1]`), then how can we interpret the response of the
+    weighted linear regression?
+
+1. [Compare and Contrast] Compare and contrast the explainability techniques {A}
+and {B} (A and B given in class). Comment on:
+    - What are the final outputs of the method?
+    - How do the mathematical formulations relate to one another?
+    - Who is the assumed audience for the method's final output?
+
+1. [Split Choice Visual Explanation] Develop a visual explanation of the
+following excerpt from our reading (equations 8.2 - 8.3 in ISLR). Make sure to
+explain how the mathematical symbols relate to the parts of your visual
+explanation.  Precisely describe any simplifying assumptions to make the figure
+clearer.
+
+    > For any j and s, we define the pair of half-planes
+    $$R_1(j, s)=\left\{X \mid X_j<s\right\} \text { and } R_2(j, s)=\left\{X \mid X_j \geq s\right\},$$
+    and we seek the value of j and s that minimize the equation
+    $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
+
+## Deep Learning
+
+1. [Sanity Checks Review] The reviews for Adebayo et al. 2018 are publicly
+available. Reviewer 1 has some excellent critiques. Discuss the points below.
+Why do you think the reviewer raised them, and what types of follow-up analysis
+do they suggest?
+
+    - "Role of and relation to human judgement: Visual explanations are useless
+    if humans do not interpret them correctly (see framework in [1])... Do the
+    proposed sanity checks help identify explanation methods which are more
+    human friendly? Even if the answer to the last question is no, it would be
+    useful to discuss."
+
+    - What if the layers are randomized in the other direction (from input to
+    output)? Is it still the classifier layer that matters most?
+
+    - The analysis of a conv layer is rather hand wavy. It is not clear to me
+    that edges should appear in the produced saliency mask as claimed at l241.
+    The evidence in figure 6 helps, but it is not completely convincing and the
+    visualizations do not (strictly speaking) immitate an edge detector (e.g.,
+    look at the vegitation in front of the lighthouse).
+
+1. [Saliency Map Context] In week 1, we introduced the following vocabulary:
+inherently interpretable models, post-hoc explanations, local explanations,
+global explanations. How do saliency maps relate to each of these terms?
+
+1. [Model developers vs. users] Linear probes were proposed with model
+developers in mind. How would you explain the outputs of either approach to an
+audience of model users? First, explain what the main outputs are, and then
+relate them to outputs they may be familiar from more basic statistics or
+machine learning courses.
+
+1. [Probe Applications] Linear probes were presented in the context of natural
+image classification problems. To what extent can these ideas be adapted to
+other types of data? Choose one of the following dataset types below, and
+discuss which elements of the two techniques do/do not seem generalizable to
+that context:
+
+    - Node classification in a network dataset
+    - Text generation in a natural language dataset
+    - Loan default prediction in a financial dataset
+    - Cell type annotation in a single-cell dataset
+    - Galaxy type classification from a telescope images dataset
+    - Cancer tumor segmentation in a histopathology dataset
+
+1. [FastCAV Visual Explanation] Develop a visual explanation for the following
+excerpt from our reading (equations 6 in Schmalwasser et al. 2025). Make sure to
+explain how the mathematical symbols relate to the parts of your visual
+explanation.  Precisely describe any simplifying assumptions to make the figure
+clearer.
+
+    > In Equation (3), we again apply the respective maximum likelihood estimator $\hat{\mu}_{D_c}$ meaning $v_l^c \propto \hat{\mu}_{D_c} - \hat{\mu}_{D_c \cup D_r}$. Under the assumptions specified above and again drawing an expectation over the sample of random inputs and concept examples, we get $\mathbb{E}[v_l^c] \propto \mu_c - \frac{\mu_c + \mu_r}{2} = \frac{\mu_c - \mu_r}{2}$.
+
+1. [FastCAV inputs/outputs] Review the concept-based explanation experiments
+discussed in section 4.3 of Schmalwasser et al. (2025).
+
+    - What are the inputs required for CAV extraction.
+    - How do you read Figure 3 and what are the main claims the authors make based on it?
+    - In your view, how strong is the evidence for the authors’ interpretation?
+
+1. [Agency vs. Automation] The excerpt below comes from Agency plus automation:
+Designing artificial intelligence into interactive systems (Heer 2018). Consider
+how the techniques discussed this week relate to the intelligence augmentation
+research agenda discussed here.
+
+    > Much contemporary rhetoric regards the prospects and pitfalls of using artificial intelligence techniques to automate an increasing range of tasks, especially those once considered the purview of people alone….This long-standing focus on purely automated methods unnecessarily cedes a promising design space: one in which computational assistance augments and enriches, rather than replaces, people’s intellectual work. This tension between human agency and machine automation poses vital challenges for design and engineering…To improve outcomes and support learning by both people and machines, we describe the use of shared representations of tasks augmented with predictive models of human capabilities and actions. We conclude with a discussion of future prospects and scientific frontiers for intelligence augmentation research.
+
+
+
+1. [SAE Applications] Can Sparse Autoencoders be applied to these problems? If so, explain how, if not, explain why not.
+
+    - Updating all parameters when training an LLM is expensive. You would like to develop a new training strategy that pauses every 100,000 steps and freezes weights from layers that have not changed much since the last check.
+    - You have extracted activations from a medical image classification model across two different datasets, one related to a vulnerable patient population and another from a healthy control. You would like to see what aspects of the learned representations differ across these groups.
+    - A new deep learning model architecture has been introduced in your research area. A critic argues that the learned representations are not fundamentally different, despite the improved performance. You would like to resolve the dispute by objectively comparing the representations.
+
+1. [SAE vs. Concepts] Compare and contrast testing concept activation vectors
+with feature surveys in sparse autoencoders.
+
+    - How do the methods compare in the way that they extract interpretable directions from model embedding spaces?
+    - How do the methods compare with respect to the types of problems they apply their methods to?
