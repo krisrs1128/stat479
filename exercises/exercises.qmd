@@ -33,29 +33,81 @@ situations, and what kinds of difficulties can you imagine arising in practice?
 measures variable importance in tree models: Permutation VI, MDI, MDI+. For your
 chosen approach, what is one strength and one weakness?
 
+1. [Intrinsic Interpretability Portfolio] The goal of this exercise is to give
+you a chance to experiment with two intrinsic interpretability techniques in a
+problem of your choice. The most important aspect of the entire exercise is that
+you have a chance to get hands-on experience with the topics discussed in this
+course, so that you can develop a more critical eye towards what does and does
+not work well in a topic that you care about.
+
+    a. **Problem Formulation**. Describe the problem context, a representative dataset,
+    and why intrinsic interpretability is important. What types of people would be
+    the main beneficiaries of effective interpretation/explanation, and what exactly
+    would they be able to get out of it? Search for related literature applying
+    interpretable ML methods to this type of data and briefly summarize the main
+    approaches you identify.
+
+    b. **Method Application**. Train an intrinsically interpretable model to the
+    dataset you described above.  Determine whether the output is a local or a
+    global explanation. You should not need to write a lot of code for this
+    exercise, but you should think carefully about how well the method fits to
+    your problem.
+
+    c. **Discussion**. Provide the main takeaways of the analysis – what would
+    you share in a report to one of the beneficiaries you identified above? Did
+    you confirm any established facts or encounter new surprises?  Include 1 - 2
+    figures resulting from your analysis and summarize how to read them.
+
+    d. **Sanity Check**. Prepare a follow-up check to evaluate the reliability
+    of your conclusions. For example, you may:
+
+        - Repeat the analysis with alternative hyperparameters to see that the key conclusions are robust.
+        - Permute labels in a labeled dataset to serve as a no-signal control.
+        - Repeat the analysis on subsampled versions of the data, to check that conclusions are stable.
+
 ## Post-hoc Explanations
 
 1. [SHAP Waterfall] We saw a visualization of $\varphi_{x}\left(f, i\right)$ for
 a single sample $i$ in the census dataset. The plot below gives the analogous
 visualization for all N samples in that data. How do you interpret it?
 
-        ```{r}
-        #| label: waterfall
-        #| out-width: 70%
-        #| align: center
-        knitr::include_graphics("figures/shap_waterfall.png")
-        ```
+    ```{r}
+    #| label: waterfall
+    #| out-width: 70%
+    #| align: center
+    knitr::include_graphics("figures/shap_waterfall.png")
+    ```
 
 1. [SHAP Visual Explanation] We gave a geometric interpretation of $v({1})$ in a
 toy example. Can you give the geometric interpretation of: $v({1, 2}), v({2})$, or
 $v({\empty})$?
 
-        ```{r}
-        #| label: shap-visual
-        #| out-width: 70%
-        #| align: center
-        knitr::include_graphics("figures/shap_visual_exp.png")
-        ```
+    ```{r}
+    #| label: shap-visual
+    #| out-width: 70%
+    #| align: center
+    knitr::include_graphics("figures/shap_visual_exp.png")
+    ```
+
+1. [LinearSHAP Derivation] For certain choices of $v$, SHAP values can be
+computed in closed form. For example, in class we showed that if
+    \begin{align}
+    f(x) = \beta_0 + \sum_{j=1}^d \beta_j x_j\\
+    v(S) = f(x_S, x^{0}_{\bar{S}})
+    \end{align}
+    then $\phi_j(f, x) = \beta_j(x_j - x_j^{0}).$ In this problem, we will
+    consider the alternative
+    $$v(S) = \mathbb{E}[f(x_S^e, x_{\bar{S}})]$$
+    where the randomness in the expectation is over $x_{\bar{S}}$.
+
+    a. Describe the qualitative differences between the choices of $v$ in equations \eqref{}.
+
+    b. Show that with the choice of $v$ in equation \eqref{}, the associated SHAP values are
+
+    $$\phi_j(f, x) = \beta_j\left(x_j - \mathbf{E}\left[x_i\right]\right)$$
+
+    c. Compare and contrast the SHAP values associated with the two choices of
+    $v$. On what types of data do you expect the explanations to be similar or different?
 
 1. [KernelSHAP Code] These questions accompany the KernelSHAP code snippet.
 
