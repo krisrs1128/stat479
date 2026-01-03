@@ -1,0 +1,9 @@
+# Homework 1
+
+1. interpreting lasso CV  and coefficient path plots
+
+1. implement CV from scratch
+
+1. PCS - feature engineering and model comparison
+
+1. prediction stability plots

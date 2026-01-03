@@ -33,10 +33,31 @@ situations, and what kinds of difficulties can you imagine arising in practice?
 measures variable importance in tree models: Permutation VI, MDI, MDI+. For your
 chosen approach, what is one strength and one weakness?
 
+1. [Split Choice Visual Explanation] Develop a visual explanation of the
+following excerpt from our reading (equations 8.2 - 8.3 in ISLR). Make sure to
+explain how the mathematical symbols relate to the parts of your visual
+explanation.  Precisely describe any simplifying assumptions to make the figure
+clearer.
+
+    > For any $j$ and $s$, we define the pair of half-planes
+    $$R_1(j, s)=\left\{X \mid X_j<s\right\} \text { and } R_2(j, s)=\left\{X \mid X_j \geq s\right\},$$
+    and we seek the value of j and s that minimize the equation
+    $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
+
+
+1. [GPs Marginal Likelihood].
+
+1. diagram tree <--> partition
+
+2. kernels and GP samples
+    - plot kernel k(x, x' = 1) for a few kernels
+    - draw samples
+    - same with product or sum of kernels
+
 1. [Intrinsic Interpretability Portfolio] The goal of this exercise is to give
 you a chance to experiment with two intrinsic interpretability techniques in a
-problem of your choice. The most important aspect of the entire exercise is that
-you have a chance to get hands-on experience with the topics discussed in this
+problem of your choice. The most important aspect of the exercise is that you
+have a chance to get hands-on experience with the topics discussed in this
 course, so that you can develop a more critical eye towards what does and does
 not work well in a topic that you care about.
 
@@ -47,23 +68,49 @@ not work well in a topic that you care about.
     interpretable ML methods to this type of data and briefly summarize the main
     approaches you identify.
 
-    b. **Method Application**. Train an intrinsically interpretable model to the
-    dataset you described above.  Determine whether the output is a local or a
-    global explanation. You should not need to write a lot of code for this
-    exercise, but you should think carefully about how well the method fits to
-    your problem.
+    b. **Method 1 Application**. Train an intrinsically interpretable model to
+    the dataset you described above. Report the out-of-sample prediction
+    accuracy and an interpretability-related output (e.g., random forest
+    variable importance plot or GP posterior samples).
 
-    c. **Discussion**. Provide the main takeaways of the analysis – what would
-    you share in a report to one of the beneficiaries you identified above? Did
-    you confirm any established facts or encounter new surprises?  Include 1 - 2
-    figures resulting from your analysis and summarize how to read them.
+    c. **Method 2 Application**. Repeat the previous part with the a new
+    intrinsically interpretable model.
 
-    d. **Sanity Check**. Prepare a follow-up check to evaluate the reliability
-    of your conclusions. For example, you may:
+    d. **Discussion**. Compare the results from the two methods. Which
+    conclusions are stable and which are not, and can you offer potential
+    reasons for differences?  What would you share in a report to one of the
+    beneficiaries you identified above?  Include 1 - 2 figures resulting from
+    your analysis and summarize how to read them.
+
+    e. **Sanity Check**. Prepare a follow-up check to evaluate the reliability
+    of one of the models. It is okay if the results raise potential problems,
+    just make sure to discuss how they affect the takeaways. For example, you
+    may:
 
         - Repeat the analysis with alternative hyperparameters to see that the key conclusions are robust.
         - Permute labels in a labeled dataset to serve as a no-signal control.
-        - Repeat the analysis on subsampled versions of the data, to check that conclusions are stable.
+        - Repeat the analysis on bootstrap versions of the data, to check that conclusions are stable.
+
+1. random forest variable importance after trimming top variables
+
+    - train RF, tune over mtry
+    - explain how variable importance is defined
+    - identify most important features
+    - remove those features and retrain the model
+    - what is the drop in performance? explain observations
+
+1. collinearity with lasso and decision trees
+
+    - Use EDA to identify the features that are most collinear
+    - write a function that bootstraps the lasso. Return matrix B x D of coefficient values across bootstrap samples.
+    - write a function that does the same with trees (optionally, may write a single function that solves both)
+
+1. boosting from scratch
+
+    - fit shallow decision tree to simulated data. plot x vs. y + f1(x)
+    - extract residuals. plot x vs. e
+    - fit new decision tree to residuals. plot x vs. e + f2(x) and x vs. y + ( f1(x) + f2(x) )
+    - comment on implications for interpretability.
 
 ## Post-hoc Explanations
 
@@ -123,22 +170,33 @@ computed in closed form. For example, in class we showed that if
     `mask_matrix[:, -1]`), then how can we interpret the response of the
     weighted linear regression?
 
+1. [marginal vs. conditional shap]. In a dataset with highly colinear features,
+see how conditional SHAP can give high attributions even when coefficients are
+small. Explain why this discrepancy arises.
+
+1. [importance of baselines] Two data scientists get different explanations for
+the same model. They chose different baselines. Explain why they get the
+different results, and explain the
+
+1. [KernelSHAP variance] Compute KernelSHAP across different sample sizes and
+for many replicates. What is the dependence on sample size? What would you
+recommend?
+
+1. [SHAP Stability]. Fix a model. Evaluate overall SHAP value when applied to
+different subsamples.
+
+1. [Comparing models with SHAP]
+    - data splitting, then EDA on training set. Report one interesting finding.
+    - fit RF + Lasso
+    - compare prediction accuracy
+    - compute SHAP values for a single run
+    - Run bootstrap on training set. How do explanations change?
+
 1. [Compare and Contrast] Compare and contrast the explainability techniques {A}
 and {B} (A and B given in class). Comment on:
     - What are the final outputs of the method?
     - How do the mathematical formulations relate to one another?
     - Who is the assumed audience for the method's final output?
-
-1. [Split Choice Visual Explanation] Develop a visual explanation of the
-following excerpt from our reading (equations 8.2 - 8.3 in ISLR). Make sure to
-explain how the mathematical symbols relate to the parts of your visual
-explanation.  Precisely describe any simplifying assumptions to make the figure
-clearer.
-
-    > For any j and s, we define the pair of half-planes
-    $$R_1(j, s)=\left\{X \mid X_j<s\right\} \text { and } R_2(j, s)=\left\{X \mid X_j \geq s\right\},$$
-    and we seek the value of j and s that minimize the equation
-    $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
 
 ## Deep Learning
 
