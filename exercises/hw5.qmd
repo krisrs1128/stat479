@@ -1,0 +1,11 @@
+# Homework 5
+
+1. marginal vs. conditional shap
+
+1. importance of shap baselines
+
+1. layernorm from scratch
+
+1. width vs. depth
+
+1. hotel reviews embeddings

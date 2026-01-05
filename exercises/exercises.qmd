@@ -2,7 +2,7 @@
 
 ## Motivation
 
-1. [Past experience] The need for interpretable machine learning arises across many areas of study. This question asks you to share your experience with some of these areas.
+1. [Past Experience] The need for interpretable machine learning arises across many areas of study. This question asks you to share your experience with some of these areas.
 
     - Introduce yourself to your neighbors. What is your name and degree program? What are your areas of interest? How might interpretability or explainability be helpful in the work that you do?
     - Have you encountered a situation in the past where you think interpretability or explainability would be useful? Describe the situation and your overall goals. How did you address them and are there any ways the approach could have been improved?
@@ -29,6 +29,24 @@ situations, and what kinds of difficulties can you imagine arising in practice?
 
 ## Intrinsically Interpretable Models
 
+1. [Linear Model Interpretability]
+
+    - simulatability
+    - modularity
+
+1. [Prior and Posterior Predictive Distributions]
+
+1. [GP Missing Data]
+
+1. [GPs Marginal Likelihood].
+
+1. diagram tree <--> partition
+
+1. kernels and GP samples
+    - plot kernel k(x, x' = 1) for a few kernels
+    - draw samples
+    - same with product or sum of kernels
+
 1. [Tree Importances] In your own words, summarize how one of these techniques
 measures variable importance in tree models: Permutation VI, MDI, MDI+. For your
 chosen approach, what is one strength and one weakness?
@@ -44,15 +62,6 @@ clearer.
     and we seek the value of j and s that minimize the equation
     $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
 
-
-1. [GPs Marginal Likelihood].
-
-1. diagram tree <--> partition
-
-2. kernels and GP samples
-    - plot kernel k(x, x' = 1) for a few kernels
-    - draw samples
-    - same with product or sum of kernels
 
 1. [Intrinsic Interpretability Portfolio] The goal of this exercise is to give
 you a chance to experiment with two intrinsic interpretability techniques in a
@@ -156,17 +165,41 @@ computed in closed form. For example, in class we showed that if
     c. Compare and contrast the SHAP values associated with the two choices of
     $v$. On what types of data do you expect the explanations to be similar or different?
 
-1. [KernelSHAP Code] These questions accompany the KernelSHAP code snippet.
+1. [KernelSHAP Code] These questions accompany the KernelSHAP code snippet below.
 
-    - How does the mask variable relate to the subsets $S$ discussed in the notes?
-    - How many linear regressions are run to compute SHAP values across all
+        ```{python}
+        #| eval: false
+        # initialize data structures
+        mask_matrix = np.zeros((nsamples, M))
+        kernel_weights = np.zeros(nsamples)
+        synth_data = np.tile(self.data, (nsamples, 1))
+
+        # keep values at random subsets of features
+        for i in range(nsamples):
+            mask = np.random.choice([0, 1], size=M)
+            mask_matrix[i] = mask
+            synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
+            kernel_weights[i] = (M - np.sum(mask)) * np.sum(mask)
+
+        # model predictions on masked data
+        model_out = self.model(synth_data)
+        f = np.mean(model_out.reshape(nsamples, self.N, -1), axis=1) - self.f_bar
+
+        # weighted regression on adjusted f
+        X = mask_matrix - mask_matrix[:, -1][:, None]
+        y = f.flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
+        lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
+        ```
+
+    a. How does the mask variable relate to the subsets $S$ discussed in the notes?
+    b. How many linear regressions are run to compute SHAP values across all
     samples? How large are the input datasets for each of those regressions, and
     how is it related to nsamples?
-    - What is the relationship between the returned attributions $\varphi$ and
+    c. What is the relationship between the returned attributions $\varphi$ and
     the coefficients of our weighted linear regression?
-    - `synth_data` can be viewed as `nsamples` blocks of $N$ rows each. How do
+    d. `synth_data` can be viewed as `nsamples` blocks of $N$ rows each. How do
     the blocks differ from one another?
-    - If we ignore the terms involving the last column of mask_matrix (i.e.,
+    e. If we ignore the terms involving the last column of mask_matrix (i.e.,
     `mask_matrix[:, -1]`), then how can we interpret the response of the
     weighted linear regression?
 
@@ -200,6 +233,62 @@ and {B} (A and B given in class). Comment on:
 
 ## Deep Learning
 
+1. [Two moons]
+
+1. [width vs. depth] Models with same total number of parameters, but change the
+
+1. [Layernorm from Scratch]
+
+1. [Normalization Ablations]
+
+1. [Hotel Review Embeddings] This exercise explores how large language models
+capture meaning from a corpus of [hotel
+reviews](https://github.com/krisrs1128/stat436_f24/raw/refs/heads/main/data/reviews.csv).
+We will use the llama3.2:1b model. (give details on tokenizing the reviews and
+loading the models using either R or python)
+
+    a. How many heads are used in the MHA mechanism in the first transformer layer?
+
+    b. Extract embeddings at layers 2 and 9. Store the results in arrays with
+    shape $N \times D_{l}$.
+
+    c. Compute the pairwise distances $\|h_{i}^{l} - h_{i'}^{l}\|$ between all review
+    embeddings at layers $l = 2$ and 9. Make a scatterplot where each point
+    corresponds to a single pair $ii'$, the $x$-axis corresponds to $l = 2$, and
+    the $y$-axis corresponds to $l = 9$.
+
+    d. Find a pair of reviews that lies far from the identity line in the
+    scatterplot from part (c). Comment on how this relates to property that
+    deeper layers learn more abstract representations of the input.
+
+some helper code:
+
+        ```{python}
+        #| eval: false
+        def extract_embeddings(text, model, tokenizer, layer=-1):
+            inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=False)
+            with torch.no_grad():
+                outputs = model(**inputs, output_hidden_states=True)
+            return outputs.hidden_states[layer].mean(axis=(0, 1))
+
+
+        # Load pre-trained model and tokenizer
+        tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125m")
+        model = GPTNeoModel.from_pretrained("EleutherAI/gpt-neo-125m")
+        model = model.eval()
+        ```
+
+1. [Integrated Gradients Loop]
+
+1. [Self-Attention from Scratch]
+
+    - implementation with matrix multiplications
+    - implementation with einsum
+    - comparison with pytorch implementation
+
+1. [Sequence Length Scaling] For attention mechanism, see how computational cost
+grows as sequence length increases.
+
 1. [Sanity Checks Review] The reviews for Adebayo et al. 2018 are publicly
 available. Reviewer 1 has some excellent critiques. Discuss the points below.
 Why do you think the reviewer raised them, and what types of follow-up analysis
@@ -224,11 +313,15 @@ do they suggest?
 inherently interpretable models, post-hoc explanations, local explanations,
 global explanations. How do saliency maps relate to each of these terms?
 
-1. [Model developers vs. users] Linear probes were proposed with model
+1. [Saliency-based Model Critique]
+
+1. [Model Developers vs. Users] Linear probes were proposed with model
 developers in mind. How would you explain the outputs of either approach to an
 audience of model users? First, explain what the main outputs are, and then
 relate them to outputs they may be familiar from more basic statistics or
 machine learning courses.
+
+1. [Linear Probe Pseudocode]
 
 1. [Probe Applications] Linear probes were presented in the context of natural
 image classification problems. To what extent can these ideas be adapted to
@@ -265,7 +358,7 @@ research agenda discussed here.
 
     > Much contemporary rhetoric regards the prospects and pitfalls of using artificial intelligence techniques to automate an increasing range of tasks, especially those once considered the purview of people alone….This long-standing focus on purely automated methods unnecessarily cedes a promising design space: one in which computational assistance augments and enriches, rather than replaces, people’s intellectual work. This tension between human agency and machine automation poses vital challenges for design and engineering…To improve outcomes and support learning by both people and machines, we describe the use of shared representations of tasks augmented with predictive models of human capabilities and actions. We conclude with a discussion of future prospects and scientific frontiers for intelligence augmentation research.
 
-
+1. [Implement FISTA]
 
 1. [SAE Applications] Can Sparse Autoencoders be applied to these problems? If so, explain how, if not, explain why not.
 

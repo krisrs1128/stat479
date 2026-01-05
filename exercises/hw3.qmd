@@ -1,9 +1,9 @@
 # Homework 3
 
+1. diagram tree <-> partition
+
+1. GP marginal likelihood
+
+1. boosting from scratch
+
 1. linear shap derivation
-
-1. marginal vs. conditional shap
-
-1. importance of shap baselines
-
-1. comparing models with SHAP
