@@ -255,3 +255,9 @@ The original motivation were trees that doctor's had created informally `r Citep
 <img src="figures/brieman_medical.png" class="center"/>
 :::
 ::::
+
+---
+
+### Exercise: Split Choice Visual Explanation
+
+Respond to [Split Choice Visual Explanation] in the exercise sheet.

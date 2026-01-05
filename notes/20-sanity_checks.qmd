@@ -44,7 +44,7 @@
 
 ---
 
-### Exercise: Model critique
+### Exercise: Saliency-based Model Critique
 
 ---
 
@@ -212,4 +212,4 @@ Plot accuracy vs. $t$.
 
 ---
 
-### Exercise: Purpose and comparison
+### Exercise: Jargon-free Summary

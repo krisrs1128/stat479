@@ -84,7 +84,7 @@ inference complexity factor in.
 
 ---
 
-### Exercise: Linear models
+### Exercise: Linear Model Interpretability
 
 ---
 
@@ -187,7 +187,7 @@ argued that it can be misleading `r Citep(bib, "Rudin2019")`.
 
 ---
 
-### Exercise: Local feature importance
+### Exercise:
 
 ---
 

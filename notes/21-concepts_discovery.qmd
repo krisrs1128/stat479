@@ -102,7 +102,7 @@ Early layers: generic features (edges). Deep layers: task-specific, linearly sep
 
 ---
 
-### Exercise: Pseudocode
+### Exercise: Linear Probe Pseudocode
 
 Write the pseudocode to extract activations and train a probe for a single layer.
 
@@ -205,4 +205,4 @@ More details in next lecture.
 
 ---
 
-### Exercise: Theoretical CAV
+### Exercise: Agency vs. Automation

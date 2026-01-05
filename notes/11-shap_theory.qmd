@@ -174,19 +174,13 @@ Conditional expectation when features $S$ are fixed at $x_S$.
 
 ---
 
-### Exercise: Geometric Interpretation
+### Exercise: SHAP Visual Explanation
 
-How to compute $\varphi_{\mathbf{x}}(f, 2)$ in this example? We need:
-
-* $v(\{1, 2\})$
-* $v(\{2\})$
-* $v(\emptyset)$
-
-What is the geometric meaning of each term?
+Respond to [SHAP Visual Explanation] in the exercise sheet.
 
 ---
 
-### The Central Difficulty
+### Main Difficulty
 
 The conditional expectation $\mathbb{E}[f(x_S, X_{S^C}) \mid x_S]$ is generally **not computable**.
 
@@ -200,7 +194,7 @@ This forces a choice:
    - Respects correlations
    - Hard to estimate, often biased
 
-This is the topic of next lecture.
+We discuss this further next week.
 
 ---
 

@@ -91,30 +91,7 @@ Weighted regression recovers exact Shapley values $\varphi_{x}(f, d)$.
 
 ---
 
-### Exercise: Annotate Code Sketch
-```{python}
-#| eval: false
-# initialize data structures
-mask_matrix = np.zeros((nsamples, M))
-kernel_weights = np.zeros(nsamples)
-synth_data = np.tile(self.data, (nsamples, 1))
-
-# keep values at random subsets of features
-for i in range(nsamples):
-    mask = np.random.choice([0, 1], size=M)
-    mask_matrix[i] = mask
-    synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
-    kernel_weights[i] = (M - np.sum(mask)) * np.sum(mask)
-
-# model predictions on masked data
-model_out = self.model(synth_data)
-f = np.mean(model_out.reshape(nsamples, self.N, -1), axis=1) - self.f_bar
-
-# weighted regression on adjusted f
-X = mask_matrix - mask_matrix[:, -1][:, None]
-y = f.flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
-lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
-```
+### Exercise: KernelSHAP Code
 
 ---
 

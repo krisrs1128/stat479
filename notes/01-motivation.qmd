@@ -183,11 +183,13 @@ See `r Citep(bib, "mitPredictiveModels")`.
 
 ---
 
-### Exercise 1 - 1
+### Exercise: Past Experience
 
-- Introduce yourself to your neighbors. What is your name and degree program? What are your areas of interest? How might interpretability or explainability be helpful in the work that you do?
+Introduce yourself to your neighbors. What is your name and degree program? What
+are your areas of interest? How might interpretability or explainability be
+helpful in the work that you do?
 
-- Have you encountered a situation in the past where you think interpretability or explainability would be useful? Describe the situation and your overall goals. How did you address them and are there any ways the approach could have been improved?
+Then respond to [Past Experience] in the exercise sheet.
 
 ---
 

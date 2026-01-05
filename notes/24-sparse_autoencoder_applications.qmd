@@ -177,6 +177,10 @@ Probably important for an LLM company to resolve...
 
 ---
 
+### Exercise: SAE Applications
+
+---
+
 ## Case Study
 
 ---
