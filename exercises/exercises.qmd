@@ -29,10 +29,126 @@ situations, and what kinds of difficulties can you imagine arising in practice?
 
 ## Intrinsically Interpretable Models
 
-1. [Linear Model Interpretability]
+1. [Linear Model Interpretability] A researcher uses a sparse linear regression
+to predict how a patient will respond to a new drug. The model uses the
+expression levels of 5K genes as potential features. After training, the model
+selects 40 genes with non-zero coefficients.
 
-    - simulatability
-    - modularity
+    a. The model reduced the features from 5K to 40. According to the
+    definitions given in Murdoch et al. (2019) or Lipton (2018), is this model
+    simulatable?
+
+    b. In these data, many genes belong to the same molecular pathways. They are
+    therefore highly correlated. How does this affect the modularity of the
+    resulting model?
+
+1. [Interpreting Lasso Plots] Figure \ref{fig:} shows the results of a lasso
+model fit to predict ozone concentration based on weather features, like
+temperature and humidity.  Specifically, we solve the optimization
+
+        $$\min_{\beta_0, \beta} \left( \frac{1}{2n} \sum_{i=1}^{n} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
+
+    where $y$ is the log ozone concentration and $x_{i}\in \mathbf{R}^{45}$ contains
+    all weather features and their first-order interactions. There are $N = 330$
+    samples total. This problem asks you to explain the output in precise mathematical terms.
+
+        ```{r}
+        #| label: lasso-plots
+        library(faraway)
+        library(glmnet)
+        data(ozone)
+
+        # create a features using second-order interactions
+        x <- model.matrix(O3 ~ .^2, data = ozone)[, -1]
+        cv_fit <- cv.glmnet(x, log(ozone$O3), alpha = 1)
+
+        # plot the results
+        par(mfrow = c(1, 2))
+        plot(cv_fit)
+        abline(v = log(cv_fit$lambda.1se), col = "blue", lty = 2)
+        plot(cv_fit$glmnet.fit, xvar = "lambda", label = TRUE)
+        par(mfrow = c(1, 1))
+        ```
+
+    a. The left-hand panel shows the cross validation error as a function of
+    $\lambda$. The two dashed lines correspond to $\lambda_{\text{min}}$ and
+    $\lambda_{1\text{se}}$. Which is which? Explain when to prefer one choice
+    over the other.
+
+    b. As we increase $-\log\lambda$, how does the selected model's bias and
+    variance change? Refer to the figure in your explanation.
+
+    c. Consider the blue path in the right-hand panel. Notice that its magnitude
+    initially increases, but around $−log\lambda\approx 5$, it decreases, even
+    though the penalty $\lambda$ is getting weaker. Why might this occur, and
+    what does it suggest about the relationship across predictors?
+
+    d. As $-log\lambda$ increases, the paths in the right-hand panel converge to
+    a specific set of values. What are these values?
+
+1. implement CV from scratch
+
+1. [Cross-Validation for Lasso] Consider the lasso estimator
+
+        $$\min_{\beta_0, \beta} \left( \frac{1}{2n} \sum_{i=1}^{n} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
+
+    where $\lambda \geq 0$ is the sparsity penalty. In this problem, you will
+    implement cross-validation to guide selection of $\lambda$.
+
+    a. You have asked your colleagues to help prepare pseudocode for your
+    cross-validation study. Are their designs correct? If not, how would it
+    affect your later data analysis. Explain your reasoning.
+
+    Implementation 1:
+        ```r
+        Input: data (X, y), folds {F1, ..., FK}, lambda_grid
+
+        for each lambda in lambda_grid:
+            fit lasso on (X, y) using lambda
+            store coefficients beta_hat[lambda]
+
+        for k = 1 to K:
+            X_val, y_val = data in fold Fk
+            for each lambda in lambda_grid:
+                y_pred = predict(X_val, beta_hat[lambda])
+                error[k, lambda] = mean_squared_error(y_val, y_pred)
+
+        cv_error[lambda] = average_k error[k, lambda]
+        lambda_star = argmin_lambda cv_error[lambda]
+        ```
+
+    Implementation 2:
+
+    ```r
+    Input: data (X, y), folds {F1, ..., FK}, lambda_grid
+
+    for k = 1 to K:
+        X_train, y_train = data not in fold Fk
+        X_val, y_val = data in fold Fk
+
+        for each lambda in lambda_grid:
+            fit lasso on (X_train, y_train) using lambda
+            y_pred = predict(X_val)
+            error[k, lambda] = mean_squared_error(y_val, y_pred)
+
+    cv_error[lambda] = average_k error[k, lambda]
+    lambda_star = argmin_lambda cv_error[lambda]
+    ```
+
+    b. Implement $K$-fold cross-validation for the lasso from scratch. You may
+    use existing packages to fit the lasso at a single choice of $\lambda$. Your
+    code should take $X, y, K$, and a grid of $\lambda$ as input. It should
+    return the mean cross-validated error at each $\lambda$, as well as an
+    optimal $\lambda_{\text{min}}$.
+
+    c. How would you modify your implementation if you wanted to identify
+    $\lambda_{1\text{se}}$? A new code implementation is not necessary, but
+    explain your reasoning. How does using $\lambda_{1\text{se}}$ relate to the
+    interpretability criteria of sparsity and simulatability?
+
+1. PCS - feature engineering and model comparison
+
+1. prediction stability plots
 
 1. [Prior and Posterior Predictive Distributions]
 
