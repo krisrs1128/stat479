@@ -1,4 +1,14 @@
-# Interpretable Machine Learning Exercises
+---
+title: Interpretable Machine Learning Exercises
+format:
+  pdf:
+    keep-tex: false
+execute:
+    message: false
+    warning: false
+    echo: true
+---
+
 
 ## Motivation
 
@@ -46,51 +56,48 @@ selects 40 genes with non-zero coefficients.
 model fit to predict ozone concentration based on weather features, like
 temperature and humidity.  Specifically, we solve the optimization
 
-        $$\min_{\beta_0, \beta} \left( \frac{1}{2n} \sum_{i=1}^{n} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
+    $$\min_{\beta_0, \beta} \left( \frac{1}{2N} \sum_{n=1}^{N} (y_n - \beta_0 - x_n^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
 
     where $y$ is the log ozone concentration and $x_{i}\in \mathbf{R}^{45}$ contains
     all weather features and their first-order interactions. There are $N = 330$
-    samples total. This problem asks you to explain the output in precise mathematical terms.
+   samples total. This problem asks you to explain the output in precise mathematical terms.
 
-        ```{r}
-        #| label: lasso-plots
-        library(faraway)
-        library(glmnet)
-        data(ozone)
+   ```{r lasso-plots, echo=TRUE}
+   library(faraway)
+   library(glmnet)
+   data(ozone)
 
-        # create a features using second-order interactions
-        x <- model.matrix(O3 ~ .^2, data = ozone)[, -1]
-        cv_fit <- cv.glmnet(x, log(ozone$O3), alpha = 1)
+   # create features using first-order interactions
+   x <- model.matrix(O3 ~ .^2, data = ozone)[, -1]
+   cv_fit <- cv.glmnet(x, log(ozone$O3), alpha = 1)
 
-        # plot the results
-        par(mfrow = c(1, 2))
-        plot(cv_fit)
-        abline(v = log(cv_fit$lambda.1se), col = "blue", lty = 2)
-        plot(cv_fit$glmnet.fit, xvar = "lambda", label = TRUE)
-        par(mfrow = c(1, 1))
-        ```
+   # plot the results
+   par(mfrow = c(1, 2))
+   plot(cv_fit)
+   abline(v = log(cv_fit$lambda.1se), col = "blue", lty = 2)
+   plot(cv_fit$glmnet.fit, xvar = "lambda", label = TRUE)
+   par(mfrow = c(1, 1))
+   ```
 
-    a. The left-hand panel shows the cross validation error as a function of
-    $\lambda$. The two dashed lines correspond to $\lambda_{\text{min}}$ and
-    $\lambda_{1\text{se}}$. Which is which? Explain when to prefer one choice
-    over the other.
+   a. The left-hand panel shows the cross validation error as a function of
+   $\lambda$. The two dashed lines correspond to $\lambda_{\text{min}}$ and
+   $\lambda_{1\text{se}}$. Which is which? Explain when to prefer one choice
+   over the other.
 
-    b. As we increase $-\log\lambda$, how does the selected model's bias and
-    variance change? Refer to the figure in your explanation.
+   b. As we increase $-\log\lambda$, how does the selected model's bias and
+   variance change? Refer to the figure in your explanation.
 
-    c. Consider the blue path in the right-hand panel. Notice that its magnitude
-    initially increases, but around $−log\lambda\approx 5$, it decreases, even
-    though the penalty $\lambda$ is getting weaker. Why might this occur, and
-    what does it suggest about the relationship across predictors?
+   c. Consider the blue path in the right-hand panel. Notice that its magnitude
+   initially increases, but around $−\log\lambda\approx 5$, it decreases, even
+   though the penalty $\lambda$ is getting weaker. Why might this occur, and
+   what does it suggest about the relationship across predictors?
 
-    d. As $-log\lambda$ increases, the paths in the right-hand panel converge to
-    a specific set of values. What are these values?
-
-1. implement CV from scratch
+   d. As $-\log\lambda$ increases, the paths in the right-hand panel converge to
+   a specific set of values. What are these values?
 
 1. [Cross-Validation for Lasso] Consider the lasso estimator
 
-        $$\min_{\beta_0, \beta} \left( \frac{1}{2n} \sum_{i=1}^{n} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
+    $$\min_{\beta_0, \beta} \left( \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
 
     where $\lambda \geq 0$ is the sparsity penalty. In this problem, you will
     implement cross-validation to guide selection of $\lambda$.
@@ -99,56 +106,100 @@ temperature and humidity.  Specifically, we solve the optimization
     cross-validation study. Are their designs correct? If not, how would it
     affect your later data analysis. Explain your reasoning.
 
-    Implementation 1:
-        ```r
-        Input: data (X, y), folds {F1, ..., FK}, lambda_grid
+   Implementation 1:
 
-        for each lambda in lambda_grid:
-            fit lasso on (X, y) using lambda
-            store coefficients beta_hat[lambda]
+   ```r
+   Input: data (X, y), folds {F1, ..., FK}, lambda_grid
 
-        for k = 1 to K:
-            X_val, y_val = data in fold Fk
-            for each lambda in lambda_grid:
-                y_pred = predict(X_val, beta_hat[lambda])
-                error[k, lambda] = mean_squared_error(y_val, y_pred)
+   for each lambda in lambda_grid:
+       fit lasso on (X, y) using lambda
+       store coefficients beta_hat[lambda]
 
-        cv_error[lambda] = average_k error[k, lambda]
-        lambda_star = argmin_lambda cv_error[lambda]
-        ```
+   for k = 1 to K:
+       X_val, y_val = data in fold Fk
+       for each lambda in lambda_grid:
+           y_pred = predict(X_val, beta_hat[lambda])
+           error[k, lambda] = mean_squared_error(y_val, y_pred)
 
-    Implementation 2:
+   cv_error[lambda] = average_k error[k, lambda]
+   lambda_star = argmin_lambda cv_error[lambda]
+   ```
 
-    ```r
-    Input: data (X, y), folds {F1, ..., FK}, lambda_grid
+   Implementation 2:
 
-    for k = 1 to K:
-        X_train, y_train = data not in fold Fk
-        X_val, y_val = data in fold Fk
+   ```r
+   Input: data (X, y), folds {F1, ..., FK}, lambda_grid
 
-        for each lambda in lambda_grid:
-            fit lasso on (X_train, y_train) using lambda
-            y_pred = predict(X_val)
-            error[k, lambda] = mean_squared_error(y_val, y_pred)
+   for k = 1 to K:
+       X_train, y_train = data not in fold Fk
+       X_val, y_val = data in fold Fk
 
-    cv_error[lambda] = average_k error[k, lambda]
-    lambda_star = argmin_lambda cv_error[lambda]
-    ```
+       for each lambda in lambda_grid:
+           fit lasso on (X_train, y_train) using lambda
+           y_pred = predict(X_val)
+           error[k, lambda] = mean_squared_error(y_val, y_pred)
 
-    b. Implement $K$-fold cross-validation for the lasso from scratch. You may
-    use existing packages to fit the lasso at a single choice of $\lambda$. Your
-    code should take $X, y, K$, and a grid of $\lambda$ as input. It should
-    return the mean cross-validated error at each $\lambda$, as well as an
-    optimal $\lambda_{\text{min}}$.
+   cv_error[lambda] = average_k error[k, lambda]
+   lambda_star = argmin_lambda cv_error[lambda]
+   ```
 
-    c. How would you modify your implementation if you wanted to identify
-    $\lambda_{1\text{se}}$? A new code implementation is not necessary, but
-    explain your reasoning. How does using $\lambda_{1\text{se}}$ relate to the
-    interpretability criteria of sparsity and simulatability?
+   b. Implement $K$-fold cross-validation for the lasso from scratch. You may
+   use existing packages to fit the lasso at a single choice of $\lambda$. Your
+   code should take $X, y, K$, and a grid of $\lambda$ as input. It should
+   return the mean cross-validated error at each $\lambda$, as well as an
+   optimal $\lambda_{\text{min}}$.
+
+   c. How would you modify your implementation if you wanted to identify
+   $\lambda_{1\text{se}}$? A new code implementation is not necessary, but
+   explain your reasoning. How does using $\lambda_{1\text{se}}$ relate to the
+   interpretability criteria of sparsity and simulatability?
 
 1. PCS - feature engineering and model comparison
 
-1. prediction stability plots
+
+1. [Prediction stability plots] In this exercise, you will investigate
+prediction stability for lasso regression under data perturbations. You will
+consider the `prostate` dataset, which reports prostate specific antigen levels
+along with other lab measurements among men about to undergo prostatectomy.  You
+will compare predictive accuracy and stability across different modeling
+choices.
+
+   a. Sketch (by hand) the prediction stability plot associated with a model
+   with low variance but high bias in its predcitions. Repeat the exercise for
+   a model with high variance but low bias.
+
+   b. Is it possible for a model to have stable predictions but unstable
+   coefficients? Explain why or why not.
+
+   c. The code below fits a lasso model with to the prostate dataset.
+
+   ```{r, eval=FALSE}
+   library(glmnet)
+
+   x <- model.matrix(lpsa ~ ., data = prostate)[, -1]
+   y <- prostate$lpsa
+
+   cv_fit <- cv.glmnet(x, y, alpha = 1)
+   fit <- cv_fit$glmnet.model
+   ```
+
+   Select 20 samples as a held-out test set. Repeat the following steps $B = 100$ times:
+
+   * Apply bootstrap resampling to the training data
+   * Refit the lasso on each bootstrap, using CV to tune $\lambda$ each time
+   * Make predictions on the 20 test points.
+
+   Create the associated prediction stability plot.
+
+   d. Repeat the steps above with ridge regression, which can be run using the following code:
+
+   ```{r, eval=FALSE}
+   cv_fit <- cv.glmnet(x, y, alpha = 0)
+   fit <- cv_fit$glmnet.model
+   ```
+
+   Compare the models with respect to prediction accuracy, prediction
+   stability, and the sparsity interpretability criterion.
 
 1. [Prior and Posterior Predictive Distributions]
 
@@ -243,23 +294,25 @@ not work well in a topic that you care about.
 a single sample $i$ in the census dataset. The plot below gives the analogous
 visualization for all N samples in that data. How do you interpret it?
 
-    ```{r}
-    #| label: waterfall
-    #| out-width: 70%
-    #| align: center
-    knitr::include_graphics("figures/shap_waterfall.png")
-    ```
+```{r}
+#| label: waterfall
+#| out-width: 70%
+#| align: center
+#| echo: false
+knitr::include_graphics("figures/shap_waterfall.png")
+```
 
 1. [SHAP Visual Explanation] We gave a geometric interpretation of $v({1})$ in a
 toy example. Can you give the geometric interpretation of: $v({1, 2}), v({2})$, or
 $v({\empty})$?
 
-    ```{r}
-    #| label: shap-visual
-    #| out-width: 70%
-    #| align: center
-    knitr::include_graphics("figures/shap_visual_exp.png")
-    ```
+```{r}
+#| label: shap-visual
+#| out-width: 70%
+#| align: center
+#| echo: false
+knitr::include_graphics("figures/shap_visual_exp.png")
+```
 
 1. [LinearSHAP Derivation] For certain choices of $v$, SHAP values can be
 computed in closed form. For example, in class we showed that if
@@ -270,54 +323,57 @@ computed in closed form. For example, in class we showed that if
     then $\phi_j(f, x) = \beta_j(x_j - x_j^{0}).$ In this problem, we will
     consider the alternative
     $$v(S) = \mathbb{E}[f(x_S^e, x_{\bar{S}})]$$
-    where the randomness in the expectation is over $x_{\bar{S}}$.
+   where the randomness in the expectation is over $x_{\bar{S}}$.
 
-    a. Describe the qualitative differences between the choices of $v$ in equations \eqref{}.
+   a. Describe the qualitative differences between the choices of $v$ in equations \eqref{}.
 
-    b. Show that with the choice of $v$ in equation \eqref{}, the associated SHAP values are
+   b. Show that with the choice of $v$ in equation \eqref{}, the associated SHAP values are
 
-    $$\phi_j(f, x) = \beta_j\left(x_j - \mathbf{E}\left[x_i\right]\right)$$
+   $$\phi_j(f, x) = \beta_j\left(x_j - \mathbf{E}\left[x_i\right]\right)$$
 
-    c. Compare and contrast the SHAP values associated with the two choices of
-    $v$. On what types of data do you expect the explanations to be similar or different?
+   c. Compare and contrast the SHAP values associated with the two choices of
+   $v$. On what types of data do you expect the explanations to be similar or different?
 
 1. [KernelSHAP Code] These questions accompany the KernelSHAP code snippet below.
 
-        ```{python}
-        #| eval: false
-        # initialize data structures
-        mask_matrix = np.zeros((nsamples, M))
-        kernel_weights = np.zeros(nsamples)
-        synth_data = np.tile(self.data, (nsamples, 1))
+   ```{python, eval=FALSE}
+   # initialize data structures
+   mask_matrix = np.zeros((nsamples, M))
+   kernel_weights = np.zeros(nsamples)
+   synth_data = np.tile(self.data, (nsamples, 1))
 
-        # keep values at random subsets of features
-        for i in range(nsamples):
-            mask = np.random.choice([0, 1], size=M)
-            mask_matrix[i] = mask
-            synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
-            kernel_weights[i] = (M - np.sum(mask)) * np.sum(mask)
+   # keep values at random subsets of features
+   for i in range(nsamples):
+       mask = np.random.choice([0, 1], size=M)
+       mask_matrix[i] = mask
+       synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
+       kernel_weights[i] = (M - np.sum(mask)) * np.sum(mask)
 
-        # model predictions on masked data
-        model_out = self.model(synth_data)
-        f = np.mean(model_out.reshape(nsamples, self.N, -1), axis=1) - self.f_bar
+   # model predictions on masked data
+   model_out = self.model(synth_data)
+   f = np.mean(model_out.reshape(nsamples, self.N, -1), axis=1) - self.f_bar
 
-        # weighted regression on adjusted f
-        X = mask_matrix - mask_matrix[:, -1][:, None]
-        y = f.flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
-        lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
-        ```
+   # weighted regression on adjusted f
+   X = mask_matrix - mask_matrix[:, -1][:, None]
+   y = f.flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
+   lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
+   ```
 
-    a. How does the mask variable relate to the subsets $S$ discussed in the notes?
-    b. How many linear regressions are run to compute SHAP values across all
-    samples? How large are the input datasets for each of those regressions, and
-    how is it related to nsamples?
-    c. What is the relationship between the returned attributions $\varphi$ and
-    the coefficients of our weighted linear regression?
-    d. `synth_data` can be viewed as `nsamples` blocks of $N$ rows each. How do
-    the blocks differ from one another?
-    e. If we ignore the terms involving the last column of mask_matrix (i.e.,
-    `mask_matrix[:, -1]`), then how can we interpret the response of the
-    weighted linear regression?
+   a. How does the mask variable relate to the subsets $S$ discussed in the notes?
+
+   b. How many linear regressions are run to compute SHAP values across all
+   samples? How large are the input datasets for each of those regressions, and
+   how is it related to nsamples?
+
+   c. What is the relationship between the returned attributions $\varphi$ and
+   the coefficients of our weighted linear regression?
+
+   d. `synth_data` can be viewed as `nsamples` blocks of $N$ rows each. How do
+   the blocks differ from one another?
+
+   e. If we ignore the terms involving the last column of mask_matrix (i.e.,
+   `mask_matrix[:, -1]`), then how can we interpret the response of the
+   weighted linear regression?
 
 1. [marginal vs. conditional shap]. In a dataset with highly colinear features,
 see how conditional SHAP can give high attributions even when coefficients are
@@ -363,40 +419,37 @@ reviews](https://github.com/krisrs1128/stat436_f24/raw/refs/heads/main/data/revi
 We will use the llama3.2:1b model. (give details on tokenizing the reviews and
 loading the models using either R or python)
 
-    a. How many heads are used in the MHA mechanism in the first transformer layer?
+   a. How many heads are used in the MHA mechanism in the first transformer layer?
 
-    b. Extract embeddings at layers 2 and 9. Store the results in arrays with
-    shape $N \times D_{l}$.
+   b. Extract embeddings at layers 2 and 9. Store the results in arrays with
+   shape $N \times D_{l}$.
 
-    c. Compute the pairwise distances $\|h_{i}^{l} - h_{i'}^{l}\|$ between all review
-    embeddings at layers $l = 2$ and 9. Make a scatterplot where each point
-    corresponds to a single pair $ii'$, the $x$-axis corresponds to $l = 2$, and
-    the $y$-axis corresponds to $l = 9$.
+   c. Compute the pairwise distances $\|h_{i}^{l} - h_{i'}^{l}\|$ between all review
+   embeddings at layers $l = 2$ and 9. Make a scatterplot where each point
+   corresponds to a single pair $ii'$, the $x$-axis corresponds to $l = 2$, and
+   the $y$-axis corresponds to $l = 9$.
 
-    d. Find a pair of reviews that lies far from the identity line in the
-    scatterplot from part (c). Comment on how this relates to property that
-    deeper layers learn more abstract representations of the input.
+   d. Find a pair of reviews that lies far from the identity line in the
+   scatterplot from part (c). Comment on how this relates to property that
+   deeper layers learn more abstract representations of the input.
 
-some helper code:
+   some helper code:
 
-        ```{python}
-        #| eval: false
-        def extract_embeddings(text, model, tokenizer, layer=-1):
-            inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=False)
-            with torch.no_grad():
-                outputs = model(**inputs, output_hidden_states=True)
-            return outputs.hidden_states[layer].mean(axis=(0, 1))
+   ```{python, eval=FALSE}
+   def extract_embeddings(text, model, tokenizer, layer=-1):
+       inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=False)
+       with torch.no_grad():
+           outputs = model(**inputs, output_hidden_states=True)
+       return outputs.hidden_states[layer].mean(axis=(0, 1))
 
 
-        # Load pre-trained model and tokenizer
-        tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125m")
-        model = GPTNeoModel.from_pretrained("EleutherAI/gpt-neo-125m")
-        model = model.eval()
-        ```
+   # Load pre-trained model and tokenizer
+   tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125m")
+   model = GPTNeoModel.from_pretrained("EleutherAI/gpt-neo-125m")
+   model = model.eval()
+   ```
 
-1. [Integrated Gradients Loop]
-
-1. [Self-Attention from Scratch]
+1. [Integrated Gradients Loop]1. [Self-Attention from Scratch]
 
     - implementation with matrix multiplications
     - implementation with einsum
