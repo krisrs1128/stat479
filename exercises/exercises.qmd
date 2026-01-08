@@ -52,15 +52,13 @@ selects 40 genes with non-zero coefficients.
     therefore highly correlated. How does this affect the modularity of the
     resulting model?
 
-1. [Interpreting Lasso Plots] Figure \ref{fig:} shows the results of a lasso
-model fit to predict ozone concentration based on weather features, like
-temperature and humidity.  Specifically, we solve the optimization
+1. [Interpreting Lasso Regularization Paths] We will investigate how
+regularization strength affects model selection and prediction error in a
+concrete example. The code below predicts log ozone concentration from weather
+features using the lasso objective:
+   $$\min_{\beta_0, \beta \in \mathbf{R}^{45}} \left\{ \frac{1}{2N} \sum_{n=1}^{N} (y_n - \beta_0 - x_n^T \beta)^2 + \lambda \|\beta\|_1 \right\}$$
 
-    $$\min_{\beta_0, \beta} \left( \frac{1}{2N} \sum_{n=1}^{N} (y_n - \beta_0 - x_n^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
-
-    where $y$ is the log ozone concentration and $x_{i}\in \mathbf{R}^{45}$ contains
-    all weather features and their first-order interactions. There are $N = 330$
-   samples total. This problem asks you to explain the output in precise mathematical terms.
+   where $N = 330$ samples, $y_n = \log(\text{ozone})_n$, and $x_n \in \mathbb{R}^{45}$ contains weather features and all pairwise interactions. Figure \ref{fig:lasso-plots} displays cross-validation error (left) and coefficient paths (right) as functions of $\lambda$.
 
    ```{r lasso-plots, echo=TRUE}
    library(faraway)
@@ -79,21 +77,19 @@ temperature and humidity.  Specifically, we solve the optimization
    par(mfrow = c(1, 1))
    ```
 
-   a. The left-hand panel shows the cross validation error as a function of
-   $\lambda$. The two dashed lines correspond to $\lambda_{\text{min}}$ and
-   $\lambda_{1\text{se}}$. Which is which? Explain when to prefer one choice
-   over the other.
+   a. Identify the two vertical dashed lines in the left panel. Which
+   corresponds to $\lambda_{\min}$ and which to $\lambda_{1\text{se}}$? When should you prefer $\lambda_{1\text{se}}$ over $\lambda_{\min}$?
 
-   b. As we increase $-\log\lambda$, how does the selected model's bias and
-   variance change? Refer to the figure in your explanation.
+   b. Explain the bias-variance tradeoff visible in these plots. As $-\log \lambda$ increases (i.e., $\lambda$ decreases), how do model bias and
+   variance change? Point to specific features in both panels that support your
+   answer.
 
-   c. Consider the blue path in the right-hand panel. Notice that its magnitude
-   initially increases, but around $−\log\lambda\approx 5$, it decreases, even
-   though the penalty $\lambda$ is getting weaker. Why might this occur, and
-   what does it suggest about the relationship across predictors?
+   c. Explain the non-monotonic coefficient path.
 
-   d. As $-\log\lambda$ increases, the paths in the right-hand panel converge to
-   a specific set of values. What are these values?
+   * The blue trajectory in the right panel initially increases in magnitude, but near $-\log \lambda \approx 5$ it *decreases*, even as the penalty weakens.
+   * Why might this occur? What does it suggest about relationships between this predictor and others?
+
+   d. Identify the limiting behavior. As $-\log \lambda \to \infty$ (equivalently $\lambda \to 0$), the coefficient paths converge. What estimator do they approach?
 
 1. [Cross-Validation for Lasso] Consider the lasso estimator
 
@@ -279,13 +275,16 @@ hierarchical GP prior where kernel hyperparameters are themselves random:
 1. [Partition $\iff$ Tree] Any decision tree corresponds to a partition of the
 input space. This is especially easy to visualize in two dimensions.
 
-    a. For the partition in @fig-partition, sketch the corresponding decision tree.
+   a. For the partition in @fig-partition-tree(a), sketch the corresponding decision tree.
 
-    b. For the tree in @fig-tree, sketch the corresponding partition.
+   b. For the tree in @fig-partition-tree(b), sketch the corresponding partition.
 
-   ::: {#fig-partition-tree layout-ncol=2}
-   ![Partition example](figures/partition_example-pair.svg){#fig-partition}
-   ![Tree example](figures/tree_example-pair.svg){#fig-tree}
+   ::: {#fig-partition-tree layout-ncol=2 fig-cap="Tree and partition for the problem 'Partition $\iff$ Tree.'"}
+
+   ![Partition example](figures/partition_example-pair.svg){fig-subcap="Partition"}
+
+   ![Tree example](figures/tree_example-pair.svg){fig-subcap="Decision tree"}
+
    :::
 
 1. [Kernels and GP Samples] A Gaussian Process on a set $X$ is determined by its
