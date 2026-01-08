@@ -200,55 +200,57 @@ choices.
    Compare the models with respect to prediction accuracy, prediction
    stability, and the sparsity interpretability criterion.
 
-1. [Prior and Posterior Predictive Distributions] The prior and posterior
-predictive distributions describe plausible functions before and after seeing
-the data, respectively. This problem asks you to compare these distributions on
-a simulated example.
-
-   a. Before seeing any data, we encode our prior beliefs using the generative
-   mechanism below. This is a GP with an RBF kernel whose hyperparameters are
-   drawn from log-normal priors.
+1. [Prior and Posterior Predictive Distributions] Study how observing data
+transforms the distribution over functions in a GP model. Consider a
+hierarchical GP prior where kernel hyperparameters are themselves random:
 
    \begin{align*}
-    A &\sim \mathrm{LogNormal}(-1, 1) \\
-    \ell &\sim \mathrm{LogNormal}(0, 1) \\
-    f(\cdot) \mid A, \ell &\sim \mathrm{GP}\!\left(
-    0,\;
-    A^2 \exp\!\left(-\frac{(x-x^{\prime})^2}{2\ell^2}\right)
-    \right). \\
+   A &\sim \text{LogNormal}(-1, 1) \\
+   \ell &\sim \text{LogNormal}(0, 1) \\
+   f \mid A, \ell &\sim \text{GP}\left(0,; k_{\text{RBF}}(x, x')\right), \quad k_{\text{RBF}}(x, x') = A^2 \exp\left(-\frac{(x-x')^2}{2\ell^2}\right).
    \end{align*}
-   When using `greta.gp`, this can be encoded using the block below. Explain
-   what would be the effect of increasing the first argument to `lognormal` call
-   used to define `amplitude`. Repeat this for `lengthscale` and `sigma`.
 
-   ```{r, eval=FALSE}
+   a. Interpret the hyperparameter priors.
+
+   The `greta.gp` syntax below implements this model. For each of amplitude,
+   lengthscale, and sigma: what is the effect of increasing the first argument
+   (the log-scale mean) in the lognormal call?
+
+   ```{r, eval = FALSE}
     set.seed(479)
     amplitude <- lognormal(-1, 1)
     lengthscale <- lognormal(0, 1)
     sigma <- lognormal(0, 1)
-
     k <- rbf(lengthscale, amplitude)
     f <- gp(x_obs, k)
    ```
 
-   b. Draw 50 samples from the prior predictive distribution $p\left(f\right)$.
+   b. Sample from the prior predictive distribution. Specifically, draw 50 function
+   realizations $f^{(i)} \sim p(f)$ by marginalizing over hyperparameters:
+   sample $(A^{(i)}, \ell^{(i)})$, then sample $f^{(i)}$ from the corresponding
+   GP. Then plot these samples over a grid covering the domain of interest.
 
-   c. Imagine we have now sampled the data $(x_{n}, y_{n})$ visible in Figure
-   \ref{fig:predictive_data}, which can be downloaded at [this
-   link](https://github.com/krisrs1128/stat479/blob/master/data/prior_posterior_example_data.csv).
-   Use these data to draw 50 samples from the posterior predictive $p\left(f
-   \mid \left(x_{n}, y_{n}\right)\right)$.
+   _Hint: The code sketch below gives a prior draw._
+
+   ```{r, eval = FALSE}
+    f <- gp(x_obs, k) # GP at observed locations
+    f_grid <- project(f, x_grid) # GP at plotting grid
+    prior_samples <- calculate(f_grid)
+   ```
+
+   c. Condition on the observed data. First download the dataset $\mathcal{D} = {(x_n, y_n)}_{n=1}^{100}$ from ~[this link](https://github.com/krisrs1128/stat479/blob/master/data/prior_posterior_example_data.csv)~. The data are plotted in @observed-data. Note the heterogeneous sampling density. Then draw 50 samples from the posterior predictive distribution $p(f \mid \mathcal{D})$ using the same hierarchical prior.
 
    ```{r}
+   #| label: fig-observed-data
    #| out-width: 50%
    #| align: center
    library(tidyverse)
    theme_set(theme_classic())
 
    x_obs <- c(
-    runif(50, 1, 3), # dense
-    runif(25, -1, 1), # medium
-    runif(25, 7, 12) # sparse
+     runif(50, 1, 3), # dense
+     runif(25, -1, 1), # medium
+     runif(25, 7, 12) # sparse
    )
 
    data_obs <- tibble(x = x_obs) |>
@@ -257,12 +259,13 @@ a simulated example.
     geom_point()
    ```
 
-   d. Visualize the results from parts (b) and (c). Your results should look
-   similar to Figure \ref{fig:predictive_example}. Comment on the differences
-   between the prior and posterior predictive samples.
+   d. Overlay the samples from (b) and (c) in separate panels (compare with
+   Figure \ref{fig:predictive_example}). Describe how the posterior differs from
+   the prior: where does uncertainty concentrate? How does sampling density in
+   $\mathcal{D}$ affect posterior behavior?
 
    ```{r}
-   #| label: prior_posterior
+   #| label: fig-prior_posterior
    #| out-width: 70%
    #| align: center
    #| echo: false
@@ -273,12 +276,62 @@ a simulated example.
 
 1. [GPs Marginal Likelihood].
 
-1. diagram tree <--> partition
+1. [Partition $\iff$ Tree] Any decision tree corresponds to a partition of the
+input space. This is especially easy to visualize in two dimensions.
 
-1. kernels and GP samples
-    - plot kernel k(x, x' = 1) for a few kernels
-    - draw samples
-    - same with product or sum of kernels
+    a. For the partition in @fig-partition, sketch the corresponding decision tree.
+
+    b. For the tree in @fig-tree, sketch the corresponding partition.
+
+   ::: {#fig-partition-tree layout-ncol=2}
+   ![Partition example](figures/partition_example-pair.svg){#fig-partition}
+   ![Tree example](figures/tree_example-pair.svg){#fig-tree}
+   :::
+
+1. [Kernels and GP Samples] A Gaussian Process on a set $X$ is determined by its
+covariance kernel $k: X \times X \to \mathbb{R}$. The kernel encodes structural
+assumptions: smoothness, periodicity, polynomial growth. Since sums and products
+of positive definite kernels remain positive definite, one builds complex priors
+compositionally.
+
+   Investigate this compositional structure through explicit computation and
+   sampling. See @fig-gp_kernels-1 and @fig-gp_kernels-2 for reference—your
+   results will differ due to hyperparameter choices.
+
+   a. Select two kernels from [Linear, RBF, Periodic].  State the formula for
+   each kernel $k(x, x')$ and interpret each hyperparameter geometrically or
+   analytically.  Fix hyperparameters and plot the function $x \mapsto k(x, 1)$
+   for each kernel.  Explain: what does this cross-section $k(\cdot, x_0)$
+   represent?
+
+   b. Construct sum and product kernels from your choices in (a): $$k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x'), \quad k_{\text{prod}}(x, x') = k_1(x, x') \cdot k_2(x, x')$$ Plot $x \mapsto k_{\text{sum}}(x, 1)$ and $x \mapsto k_{\text{prod}}(x, 1)$.
+
+   c. Sample function realizations from GPs with the four kernels (the two base kernels and their sum and product). For each:
+
+        * Draw 3–5 sample paths.
+        * Identify which properties (smoothness, oscillation, trend) are induced by the kernel structure.
+        * Explain how composition (sum vs. product) combines these properties.
+
+   ::: {#fig-gp_kernels-1}
+   ![](figures/kernel_comparison_kx.svg){#fig-kernel_kx}
+   Kernels evaluated at $x_{0} = 1$
+   :::
+
+   ::: {#fig-gp_kernels-2}
+   ![](figures/kernel_comparison_f.svg){#fig-tree}
+   Example GP draws
+   :::
+
+   _Hint: You may find the code sketch below helpful._
+   ```{r, eval = FALSE}
+    x_grid <- seq(-5, 5, length.out = 200)
+    k_lin <- linear(#...
+    kernel_values <- calculate(#...
+
+    f <- gp(x_grid, kernel = k_lin)
+    draws <- calculate(f, #...
+    samples_matrix <- draws$f[,,1]
+   ```
 
 1. [Tree Importances] In your own words, summarize how one of these techniques
 measures variable importance in tree models: Permutation VI, MDI, MDI+. For your
@@ -294,7 +347,6 @@ clearer.
     $$R_1(j, s)=\left\{X \mid X_j<s\right\} \text { and } R_2(j, s)=\left\{X \mid X_j \geq s\right\},$$
     and we seek the value of j and s that minimize the equation
     $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
-
 
 1. [Intrinsic Interpretability Portfolio] The goal of this exercise is to give
 you a chance to experiment with two intrinsic interpretability techniques in a
