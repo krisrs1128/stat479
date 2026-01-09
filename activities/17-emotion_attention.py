@@ -21,13 +21,12 @@ from transformers import AutoTokenizer
 from importlib import import_module
 
 helpers = import_module("17-helpers")
-MistralForCausalLM = helpers.MistralForCausalLM
-from utils import TextDataset, extract_hidden_states
+LlamaForCausalLM = helpers.LlamaForCausalLM
 
 
 # Configuration
-MODEL_NAME = 'mistralai/Ministral-8B-Instruct-2410'
-MODEL_SHORT_NAME = 'Ministral-8B-Instruct-2410'
+MODEL_NAME = 'meta-llama/Llama-3.2-1B'
+MODEL_SHORT_NAME = 'Llama3.2_1B'
 PROMPT_TYPE = 'joy_sadness_0'
 BATCH_SIZE = 1
 DEVICE_MAP = 'mps'
@@ -70,7 +69,7 @@ train_data['input_text'] = train_data['hidden_emo_text'].apply(prompt_func)
 
 # Create dataset and dataloader
 labels = torch.from_numpy(train_data[['emotion_id'] + appraisals].to_numpy())
-dataset = TextDataset(train_data['input_text'].tolist(), labels)
+dataset = helpers.TextDataset(train_data['input_text'].tolist(), labels)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # Initialize tokenizer and model
@@ -79,7 +78,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, padding_side='left')
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-model = MistralForCausalLM.from_pretrained(MODEL_NAME, device_map=DEVICE_MAP)
+model = LlamaForCausalLM.from_pretrained(MODEL_NAME, device_map=DEVICE_MAP)
 
 # Extract attention weights
 dataloader_1bs = DataLoader(dataset, batch_size=1, shuffle=False)
@@ -87,7 +86,7 @@ extraction_layers = list(range(model.config.num_hidden_layers))
 extraction_locs = [10]
 extraction_tokens = [-1]
 
-results = extract_hidden_states(
+results = helpers.extract_hidden_states(
     dataloader_1bs,
     tokenizer,
     model,

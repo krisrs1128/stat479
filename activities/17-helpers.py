@@ -11,6 +11,8 @@ import torch
 import torch.utils.checkpoint
 from torch import nn
 from torch.nn import CrossEntropyLoss
+from torch.utils.data import Dataset
+from tqdm import tqdm
 
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache, SlidingWindowCache, StaticCache
@@ -33,24 +35,35 @@ from transformers.utils import (
     logging,
     replace_return_docstrings,
 )
-from transformers.models.mistral.configuration_mistral import MistralConfig
+from transformers.models.llama.configuration_llama import LlamaConfig
 from transformer_lens.hook_points import HookedRootModule, HookPoint
 
+
+extraction_locations = {1: "model.layers.[LID].hook_initial_hs",
+                        2: "model.layers.[LID].hook_after_attn_normalization",
+                        3: "model.layers.[LID].hook_after_attn",
+                        4: "model.layers.[LID].hook_after_attn_hs",
+                        5: "model.layers.[LID].hook_after_mlp_normalization",
+                        6: "model.layers.[LID].hook_after_mlp",
+                        7: "model.layers.[LID].hook_after_mlp_hs",
+                        8: "model.layers.[LID].self_attn.hook_attn_heads",
+                        9: "model.final_hook",
+                        10: "model.layers.[LID].self_attn.hook_attn_weights",
+                    }
 
 if is_flash_attn_2_available():
     from transformers.modeling_flash_attention_utils import _flash_attention_forward
 
 logger = logging.get_logger(__name__)
 
-_CHECKPOINT_FOR_DOC = "mistralai/Mistral-7B-v0.1"
-_CONFIG_FOR_DOC = "MistralConfig"
+_CHECKPOINT_FOR_DOC = "meta-llama/Llama-2-7b-hf"
+_CONFIG_FOR_DOC = "LlamaConfig"
 
 
-# Copied from transformers.models.llama.modeling_llama.LlamaRMSNorm with Llama->Mistral
-class MistralRMSNorm(nn.Module):
+class LlamaRMSNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         """
-        MistralRMSNorm is equivalent to T5LayerNorm
+        LlamaRMSNorm is equivalent to T5LayerNorm
         """
         super().__init__()
         self.weight = nn.Parameter(torch.ones(hidden_size))
@@ -67,19 +80,45 @@ class MistralRMSNorm(nn.Module):
         return f"{tuple(self.weight.shape)}, eps={self.variance_epsilon}"
 
 
-class MistralRotaryEmbedding(nn.Module):
-    def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):
+class LlamaRotaryEmbedding(nn.Module):
+    def __init__(self, dim=None, max_position_embeddings=2048, base=10000, device=None, scaling_factor=1.0, rope_type="default", config=None):
         super().__init__()
+        # BC handling
+        self.rope_kwargs = {}
+        if config is None:
+            self.rope_kwargs = {
+                "rope_type": rope_type,
+                "factor": scaling_factor,
+                "dim": dim,
+                "base": base,
+                "max_position_embeddings": max_position_embeddings,
+            }
+            self.rope_type = rope_type
+            self.max_seq_len_cached = max_position_embeddings
+            self.original_max_seq_len = max_position_embeddings
+        else:
+            if config.rope_scaling is not None:
+                self.rope_type = config.rope_scaling.get("rope_type", config.rope_scaling.get("type"))
+            else:
+                self.rope_type = "default"
+            self.max_seq_len_cached = config.max_position_embeddings
+            self.original_max_seq_len = config.max_position_embeddings
 
+        self.config = config
         self.dim = dim
         self.max_position_embeddings = max_position_embeddings
         self.base = base
-        inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim, 2, dtype=torch.int64).float().to(device) / self.dim))
+        from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
+        self.rope_init_fn = ROPE_INIT_FUNCTIONS.get(self.rope_type if config else "default")
+        if self.rope_init_fn:
+            inv_freq, self.attention_scaling = self.rope_init_fn(self.config if config else type('obj', (object,), {'rope_scaling': None, 'max_position_embeddings': max_position_embeddings, 'hidden_size': dim*2, 'num_attention_heads': 1})(), device, **self.rope_kwargs if not config else {})
+        else:
+            inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim or dim, 2, dtype=torch.int64).float().to(device) / (self.dim or dim)))
+            self.attention_scaling = 1.0
         self.register_buffer("inv_freq", inv_freq, persistent=False)
+        self.original_inv_freq = self.inv_freq
 
     @torch.no_grad()
-    # copied from transformers.models.llama.modeling_llama.LlamaRotaryEmbedding.forward
-    # TODO(joao): add me back asap :)
     def forward(self, x, position_ids):
         # x: [bs, num_attention_heads, seq_len, head_size]
         inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
@@ -93,10 +132,14 @@ class MistralRotaryEmbedding(nn.Module):
             emb = torch.cat((freqs, freqs), dim=-1)
             cos = emb.cos()
             sin = emb.sin()
+
+        # Advanced RoPE types apply a post-processing scaling factor
+        cos = cos * self.attention_scaling
+        sin = sin * self.attention_scaling
+
         return cos.to(dtype=x.dtype), sin.to(dtype=x.dtype)
 
 
-# Copied from transformers.models.llama.modeling_llama.rotate_half
 def rotate_half(x):
     """Rotates half the hidden dims of the input."""
     x1 = x[..., : x.shape[-1] // 2]
@@ -104,7 +147,6 @@ def rotate_half(x):
     return torch.cat((-x2, x1), dim=-1)
 
 
-# Copied from transformers.models.llama.modeling_llama.apply_rotary_pos_emb
 def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
     """Applies Rotary Position Embedding to the query and key tensors.
 
@@ -132,21 +174,21 @@ def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
     return q_embed, k_embed
 
 
-class MistralMLP(nn.Module):
+class LlamaMLP(nn.Module):
     def __init__(self, config):
         super().__init__()
+        self.config = config
         self.hidden_size = config.hidden_size
         self.intermediate_size = config.intermediate_size
-        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
-        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
-        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=getattr(config, 'mlp_bias', False))
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=getattr(config, 'mlp_bias', False))
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=getattr(config, 'mlp_bias', False))
         self.act_fn = ACT2FN[config.hidden_act]
 
-    def forward(self, hidden_state):
-        return self.down_proj(self.act_fn(self.gate_proj(hidden_state)) * self.up_proj(hidden_state))
+    def forward(self, x):
+        return self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
 
 
-# Copied from transformers.models.llama.modeling_llama.repeat_kv
 def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     """
     This is the equivalent of torch.repeat_interleave(x, dim=1, repeats=n_rep). The hidden states go from (batch,
@@ -159,13 +201,10 @@ def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
 
 
-class MistralAttention(nn.Module):
-    """
-    Multi-headed attention from 'Attention Is All You Need' paper. Modified to use sliding window attention: Longformer
-    and "Generating Long Sequences with Sparse Transformers".
-    """
+class LlamaAttention(nn.Module):
+    """Multi-headed attention from 'Attention Is All You Need' paper"""
 
-    def __init__(self, config: MistralConfig, layer_idx: Optional[int] = None):
+    def __init__(self, config: LlamaConfig, layer_idx: Optional[int] = None):
         super().__init__()
         self.config = config
         self.layer_idx = layer_idx
@@ -179,23 +218,19 @@ class MistralAttention(nn.Module):
         self.attention_dropout = config.attention_dropout
         self.hidden_size = config.hidden_size
         self.num_heads = config.num_attention_heads
-        self.head_dim = config.head_dim
+        self.head_dim = getattr(config, "head_dim", self.hidden_size // self.num_heads)
         self.num_key_value_heads = config.num_key_value_heads
         self.num_key_value_groups = self.num_heads // self.num_key_value_heads
         self.max_position_embeddings = config.max_position_embeddings
         self.rope_theta = config.rope_theta
         self.is_causal = True
 
-        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=False)
-        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=False)
-        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=False)
-        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=False)
+        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=getattr(config, 'attention_bias', False))
+        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=getattr(config, 'attention_bias', False))
+        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=getattr(config, 'attention_bias', False))
+        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=getattr(config, 'attention_bias', False))
 
-        self.rotary_emb = MistralRotaryEmbedding(
-            self.head_dim,
-            max_position_embeddings=self.max_position_embeddings,
-            base=self.rope_theta,
-        )
+        self.rotary_emb = LlamaRotaryEmbedding(config=config)
         self.hook_attn_heads = HookPoint() #added
         self.hook_attn_weights = HookPoint() #added
 
@@ -258,14 +293,13 @@ class MistralAttention(nn.Module):
         return attn_output, attn_weights, past_key_value
 
 
-class MistralFlashAttention2(MistralAttention):
+class LlamaFlashAttention2(LlamaAttention):
     """
-    Mistral flash attention module. This module inherits from `MistralAttention` as the weights of the module stays
+    Llama flash attention module. This module inherits from `LlamaAttention` as the weights of the module stays
     untouched. The only required change would be on the forward pass where it needs to correctly call the public API of
     flash attention and deal with padding tokens in case the input contains any of them.
     """
 
-    # Copied from transformers.models.llama.modeling_llama.LlamaFlashAttention2.__init__
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -354,7 +388,7 @@ class MistralFlashAttention2(MistralAttention):
             q_len,
             position_ids=position_ids,
             dropout=dropout_rate,
-            sliding_window=getattr(self.config, "sliding_window", None),
+            sliding_window=getattr(self, "sliding_window", None),
             use_top_left_mask=self._flash_attn_uses_top_left_mask,
             is_causal=self.is_causal,
         )
@@ -368,16 +402,14 @@ class MistralFlashAttention2(MistralAttention):
         return attn_output, attn_weights, past_key_value
 
 
-# copied from transformers.models.llama.modeling_llama.LlamaSdpaAttention with Llama->Mistral
-# TODO(joao): add me back asap :)
-class MistralSdpaAttention(MistralAttention):
+class LlamaSdpaAttention(LlamaAttention):
     """
-    Mistral attention module using torch.nn.functional.scaled_dot_product_attention. This module inherits from
-    `MistralAttention` as the weights of the module stays untouched. The only changes are on the forward pass to adapt to
+    Llama attention module using torch.nn.functional.scaled_dot_product_attention. This module inherits from
+    `LlamaAttention` as the weights of the module stays untouched. The only changes are on the forward pass to adapt to
     SDPA API.
     """
 
-    # Adapted from MistralAttention.forward
+    # Adapted from LlamaAttention.forward
     def forward(
         self,
         hidden_states: torch.Tensor,
@@ -392,7 +424,7 @@ class MistralSdpaAttention(MistralAttention):
         if output_attentions:
             # TODO: Improve this warning with e.g. `model.config.attn_implementation = "manual"` once this is implemented.
             logger.warning_once(
-                "MistralModel is using MistralSdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, "
+                "LlamaModel is using LlamaSdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, "
                 'but specifying the manual implementation will be required from Transformers version v5.0.0 onwards. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.'
             )
             return super().forward(
@@ -459,25 +491,23 @@ class MistralSdpaAttention(MistralAttention):
         return attn_output, None, past_key_value
 
 
-MISTRAL_ATTENTION_CLASSES = {
-    "eager": MistralAttention,
-    "flash_attention_2": MistralFlashAttention2,
-    "sdpa": MistralSdpaAttention,
+LLAMA_ATTENTION_CLASSES = {
+    "eager": LlamaAttention,
+    "flash_attention_2": LlamaFlashAttention2,
+    "sdpa": LlamaSdpaAttention,
 }
 
 
-# copied from transformers.models.llama.modeling_llama.LlamaDecoderLayer with Llama->Mistral, LLAMA->MISTRAL
-# TODO(joao): add me back asap :)
-class MistralDecoderLayer(nn.Module):
-    def __init__(self, config: MistralConfig, layer_idx: int):
+class LlamaDecoderLayer(nn.Module):
+    def __init__(self, config: LlamaConfig, layer_idx: int):
         super().__init__()
         self.hidden_size = config.hidden_size
 
-        self.self_attn = MISTRAL_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
+        self.self_attn = LLAMA_ATTENTION_CLASSES[config._attn_implementation](config=config, layer_idx=layer_idx)
 
-        self.mlp = MistralMLP(config)
-        self.input_layernorm = MistralRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
-        self.post_attention_layernorm = MistralRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.mlp = LlamaMLP(config)
+        self.input_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.post_attention_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
 
 
         self.hook_initial_hs = HookPoint() #added
@@ -569,7 +599,7 @@ class MistralDecoderLayer(nn.Module):
         return outputs
 
 
-MISTRAL_START_DOCSTRING = r"""
+LLAMA_START_DOCSTRING = r"""
     This model inherits from [`PreTrainedModel`]. Check the superclass documentation for the generic methods the
     library implements for all its model (such as downloading or saving, resizing the input embeddings, pruning heads
     etc.)
@@ -579,7 +609,7 @@ MISTRAL_START_DOCSTRING = r"""
     and behavior.
 
     Parameters:
-        config ([`MistralConfig`]):
+        config ([`LlamaConfig`]):
             Model configuration class with all the parameters of the model. Initializing with a config file does not
             load the weights associated with the model, only the configuration. Check out the
             [`~PreTrainedModel.from_pretrained`] method to load the model weights.
@@ -587,18 +617,19 @@ MISTRAL_START_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    "The bare Mistral Model outputting raw hidden-states without any specific head on top.",
-    MISTRAL_START_DOCSTRING,
+    "The bare LLaMA Model outputting raw hidden-states without any specific head on top.",
+    LLAMA_START_DOCSTRING,
 )
-class MistralPreTrainedModel(PreTrainedModel):
-    config_class = MistralConfig
+class LlamaPreTrainedModel(PreTrainedModel):
+    config_class = LlamaConfig
     base_model_prefix = "model"
     supports_gradient_checkpointing = True
-    _no_split_modules = ["MistralDecoderLayer"]
-    _skip_keys_device_placement = "past_key_values"
+    _no_split_modules = ["LlamaDecoderLayer"]
+    _skip_keys_device_placement = ["past_key_values"]
     _supports_flash_attn_2 = True
     _supports_sdpa = True
     _supports_cache_class = True
+    _supports_quantized_cache = True
     _supports_static_cache = True
 
     def _init_weights(self, module):
@@ -613,7 +644,7 @@ class MistralPreTrainedModel(PreTrainedModel):
                 module.weight.data[module.padding_idx].zero_()
 
 
-MISTRAL_INPUTS_DOCSTRING = r"""
+LLAMA_INPUTS_DOCSTRING = r"""
     Args:
         input_ids (`torch.LongTensor` of shape `(batch_size, sequence_length)`):
             Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you provide
@@ -689,28 +720,28 @@ MISTRAL_INPUTS_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    "The bare Mistral Model outputting raw hidden-states without any specific head on top.",
-    MISTRAL_START_DOCSTRING,
+    "The bare LLaMA Model outputting raw hidden-states without any specific head on top.",
+    LLAMA_START_DOCSTRING,
 )
-class MistralModel(MistralPreTrainedModel):
+class LlamaModel(LlamaPreTrainedModel):
     """
-    Transformer decoder consisting of *config.num_hidden_layers* layers. Each layer is a [`MistralDecoderLayer`]
+    Transformer decoder consisting of *config.num_hidden_layers* layers. Each layer is a [`LlamaDecoderLayer`]
 
     Args:
-        config: MistralConfig
+        config: LlamaConfig
     """
 
-    def __init__(self, config: MistralConfig):
+    def __init__(self, config: LlamaConfig):
         super().__init__(config)
         self.padding_idx = config.pad_token_id
         self.vocab_size = config.vocab_size
 
         self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)
         self.layers = nn.ModuleList(
-            [MistralDecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+            [LlamaDecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
         )
-        self._attn_implementation = config._attn_implementation
-        self.norm = MistralRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.norm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.rotary_emb = LlamaRotaryEmbedding(config=config)
 
         self.gradient_checkpointing = False
         # Initialize weights and apply final processing
@@ -724,7 +755,7 @@ class MistralModel(MistralPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(MISTRAL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -783,10 +814,13 @@ class MistralModel(MistralPreTrainedModel):
             position_ids = cache_position.unsqueeze(0)
 
         causal_mask = self._update_causal_mask(
-            attention_mask, inputs_embeds, cache_position, past_key_values, use_cache, output_attentions
+            attention_mask, inputs_embeds, cache_position, past_key_values, output_attentions
         )
 
         hidden_states = inputs_embeds
+
+        # create position embeddings to be shared across the decoder layers
+        position_embeddings = self.rotary_emb(hidden_states, position_ids)
 
         # decoder layers
         all_hidden_states = () if output_hidden_states else None
@@ -807,6 +841,7 @@ class MistralModel(MistralPreTrainedModel):
                     output_attentions,
                     use_cache,
                     cache_position,
+                    position_embeddings,
                 )
             else:
                 layer_outputs = decoder_layer(
@@ -817,6 +852,7 @@ class MistralModel(MistralPreTrainedModel):
                     output_attentions=output_attentions,
                     use_cache=use_cache,
                     cache_position=cache_position,
+                    position_embeddings=position_embeddings,
                 )
 
             hidden_states = layer_outputs[0]
@@ -854,18 +890,9 @@ class MistralModel(MistralPreTrainedModel):
         input_tensor: torch.Tensor,
         cache_position: torch.Tensor,
         past_key_values: Cache,
-        use_cache: bool,
         output_attentions: bool,
     ):
         if self.config._attn_implementation == "flash_attention_2":
-            if attention_mask is not None and use_cache:
-                is_padding_right = attention_mask[:, -1].sum().item() != input_tensor.size()[0]
-                if is_padding_right:
-                    raise ValueError(
-                        "You are attempting to perform batched generation with padding_side='right'"
-                        " this may lead to unexpected behaviour for Flash Attention version of Mistral. Make sure to "
-                        " call `tokenizer.padding_side  = 'left'` before tokenizing the input. "
-                    )
             if attention_mask is not None and 0.0 in attention_mask:
                 return attention_mask
             return None
@@ -875,19 +902,17 @@ class MistralModel(MistralPreTrainedModel):
         # to infer the attention mask.
         past_seen_tokens = past_key_values.get_seq_length() if past_key_values is not None else 0
         using_static_cache = isinstance(past_key_values, StaticCache)
-        using_sliding_window_cache = isinstance(past_key_values, SlidingWindowCache)
 
         # When output attentions is True, sdpa implementation's forward method calls the eager implementation's forward
         if (
             self.config._attn_implementation == "sdpa"
-            and not (using_static_cache or using_sliding_window_cache)
+            and not using_static_cache
             and not output_attentions
         ):
             if AttentionMaskConverter._ignore_causal_mask_sdpa(
                 attention_mask,
                 inputs_embeds=input_tensor,
                 past_key_values_length=past_seen_tokens,
-                sliding_window=self.config.sliding_window,
                 is_training=self.training,
             ):
                 return None
@@ -895,9 +920,9 @@ class MistralModel(MistralPreTrainedModel):
         dtype, device = input_tensor.dtype, input_tensor.device
         min_dtype = torch.finfo(dtype).min
         sequence_length = input_tensor.shape[1]
-        # SlidingWindowCache or StaticCache
-        if using_sliding_window_cache or using_static_cache:
-            target_length = past_key_values.get_max_cache_shape()
+        # StaticCache
+        if using_static_cache:
+            target_length = past_key_values.get_max_length()
         # DynamicCache or no cache
         else:
             target_length = (
@@ -907,16 +932,16 @@ class MistralModel(MistralPreTrainedModel):
             )
 
         # In case the provided `attention` mask is 2D, we generate a causal mask here (4D).
-        causal_mask = self._prepare_4d_causal_attention_mask_with_cache_position(
+        from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask_with_cache_position
+        causal_mask = _prepare_4d_causal_attention_mask_with_cache_position(
             attention_mask,
             sequence_length=sequence_length,
             target_length=target_length,
             dtype=dtype,
             device=device,
+            min_dtype=min_dtype,
             cache_position=cache_position,
             batch_size=input_tensor.shape[0],
-            config=self.config,
-            past_key_values=past_key_values,
         )
 
         if (
@@ -941,7 +966,7 @@ class MistralModel(MistralPreTrainedModel):
         device: torch.device,
         cache_position: torch.Tensor,
         batch_size: int,
-        config: MistralConfig,
+        config: LlamaConfig,
         past_key_values: Cache,
     ):
         """
@@ -1000,12 +1025,12 @@ class MistralModel(MistralPreTrainedModel):
         return causal_mask
 
 
-class MistralForCausalLM(MistralPreTrainedModel,  HookedRootModule, GenerationMixin): #added
+class LlamaForCausalLM(LlamaPreTrainedModel, HookedRootModule, GenerationMixin): #added
     _tied_weights_keys = ["lm_head.weight"]
 
     def __init__(self, config):
         super().__init__(config)
-        self.model = MistralModel(config)
+        self.model = LlamaModel(config)
         self.vocab_size = config.vocab_size
         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
@@ -1033,7 +1058,7 @@ class MistralForCausalLM(MistralPreTrainedModel,  HookedRootModule, GenerationMi
     def get_decoder(self):
         return self.model
 
-    @add_start_docstrings_to_model_forward(MISTRAL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
         self,
@@ -1067,10 +1092,10 @@ class MistralForCausalLM(MistralPreTrainedModel,  HookedRootModule, GenerationMi
         Example:
 
         ```python
-        >>> from transformers import AutoTokenizer, MistralForCausalLM
+        >>> from transformers import AutoTokenizer, LlamaForCausalLM
 
-        >>> model = MistralForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
-        >>> tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+        >>> model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf")
+        >>> tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf")
 
         >>> prompt = "Hey, are you conscious? Can you talk to me?"
         >>> inputs = tokenizer(prompt, return_tensors="pt")
@@ -1135,9 +1160,9 @@ class MistralForCausalLM(MistralPreTrainedModel,  HookedRootModule, GenerationMi
 
 @add_start_docstrings(
     """
-    The Mistral Model transformer with a sequence classification head on top (linear layer).
+    The Llama Model transformer with a sequence classification head on top (linear layer).
 
-    [`MistralForSequenceClassification`] uses the last token in order to do the classification, as other causal models
+    [`LlamaForSequenceClassification`] uses the last token in order to do the classification, as other causal models
     (e.g. GPT-2) do.
 
     Since it does classification on the last token, it requires to know the position of the last token. If a
@@ -1146,14 +1171,13 @@ class MistralForCausalLM(MistralPreTrainedModel,  HookedRootModule, GenerationMi
     padding tokens when `inputs_embeds` are passed instead of `input_ids`, it does the same (take the last value in
     each row of the batch).
     """,
-    MISTRAL_START_DOCSTRING,
+    LLAMA_START_DOCSTRING,
 )
-# Copied from transformers.models.llama.modeling_llama.LlamaForSequenceClassification with Llama->Mistral, LLAMA->MISTRAL
-class MistralForSequenceClassification(MistralPreTrainedModel):
+class LlamaForSequenceClassification(LlamaPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.model = MistralModel(config)
+        self.model = LlamaModel(config)
         self.score = nn.Linear(config.hidden_size, self.num_labels, bias=False)
 
         # Initialize weights and apply final processing
@@ -1165,7 +1189,7 @@ class MistralForSequenceClassification(MistralPreTrainedModel):
     def set_input_embeddings(self, value):
         self.model.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(MISTRAL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: Optional[torch.LongTensor] = None,
@@ -1240,17 +1264,16 @@ class MistralForSequenceClassification(MistralPreTrainedModel):
 
 @add_start_docstrings(
     """
-    The Mistral Model transformer with a token classification head on top (a linear layer on top of the hidden-states
+    The Llama Model transformer with a token classification head on top (a linear layer on top of the hidden-states
     output) e.g. for Named-Entity-Recognition (NER) tasks.
     """,
-    MISTRAL_START_DOCSTRING,
+    LLAMA_START_DOCSTRING,
 )
-# Copied from transformers.models.llama.modeling_llama.LlamaForTokenClassification with Llama->Mistral, LLAMA->MISTRAL
-class MistralForTokenClassification(MistralPreTrainedModel):
+class LlamaForTokenClassification(LlamaPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.model = MistralModel(config)
+        self.model = LlamaModel(config)
         if getattr(config, "classifier_dropout", None) is not None:
             classifier_dropout = config.classifier_dropout
         elif getattr(config, "hidden_dropout", None) is not None:
@@ -1269,7 +1292,7 @@ class MistralForTokenClassification(MistralPreTrainedModel):
     def set_input_embeddings(self, value):
         self.model.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(MISTRAL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     @add_code_sample_docstrings(
         checkpoint=_CHECKPOINT_FOR_DOC,
         output_type=TokenClassifierOutput,
@@ -1329,19 +1352,17 @@ class MistralForTokenClassification(MistralPreTrainedModel):
 
 @add_start_docstrings(
     """
-The Mistral Model transformer with a span classification head on top for extractive question-answering tasks like
+The Llama Model transformer with a span classification head on top for extractive question-answering tasks like
 SQuAD (a linear layer on top of the hidden-states output to compute `span start logits` and `span end logits`).
     """,
-    MISTRAL_START_DOCSTRING,
+    LLAMA_START_DOCSTRING,
 )
-# Copied from transformers.models.llama.modeling_llama.LlamaForQuestionAnswering with Llama->Mistral,LLAMA->MISTRAL,transformer->model
-class MistralForQuestionAnswering(MistralPreTrainedModel):
-    base_model_prefix = "model"
+class LlamaForQuestionAnswering(LlamaPreTrainedModel):
+    base_model_prefix = "transformer"
 
-    # Copied from models.models.bloom.modeling_bloom.BloomForQuestionAnswering.__init__ with Bloom->Mistral
     def __init__(self, config):
         super().__init__(config)
-        self.model = MistralModel(config)
+        self.transformer = LlamaModel(config)
         self.qa_outputs = nn.Linear(config.hidden_size, 2)
 
         # Initialize weights and apply final processing
@@ -1353,7 +1374,7 @@ class MistralForQuestionAnswering(MistralPreTrainedModel):
     def set_input_embeddings(self, value):
         self.model.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(MISTRAL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: Optional[torch.LongTensor] = None,
@@ -1452,3 +1473,83 @@ def build_prompt(shots = ('joy', 'sadness'), prompt_index = 0):
         prompt += f" Context: {shot} Answer: {emotion}"
     func = lambda x: f'{prompt} Context: {x} Answer:'
     return func
+
+# Define the dataset class for handling text data
+class TextDataset(Dataset):
+    def __init__(self, texts, labels):
+        self.texts = texts
+        # self.labels = labels
+        self.labels = labels
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, idx):
+        label = self.labels[idx]
+        text = self.texts[idx]
+        return text, label
+
+def extract_hidden_states(dataloader, tokenizer, model, logger,
+                          extraction_layers=[0, 1],
+                          extraction_locs=[1, 7],
+                          extraction_tokens=[-1],
+                          do_final_cat = True, return_tokenized_input = False):
+    assert [extraction_loc in extraction_locations.keys() for extraction_loc in extraction_locs]
+    assert (10 not in extraction_locs) or len(extraction_locs) == 1
+
+    output_attentions = 10 in extraction_locs
+
+    return_values = []
+
+    tokenized_input = []
+
+    for i, (batch_texts, _) in tqdm(enumerate(dataloader), total=len(dataloader)):
+
+        inputs = tokenizer(
+            batch_texts,
+            padding='longest',
+            truncation=False,
+            return_tensors="pt",
+        ).to(model.device)
+
+        with torch.no_grad():
+            outputs = model.run_with_cache(**inputs, return_dict=True, output_hidden_states=True, output_attentions=output_attentions)
+
+        cache_dict_ = outputs[1]
+
+        r = extract_from_cache(cache_dict_, extraction_layers=extraction_layers,
+                          extraction_locs=extraction_locs,
+                          extraction_tokens=extraction_tokens)
+
+        return_values.append(r)
+
+        if return_tokenized_input:
+            assert len(inputs['input_ids']) == 1, "Batch size must be 1 for tokenized input extraction"
+            tokenized_input.append(tokenizer.convert_ids_to_tokens([w for w in inputs['input_ids'][0].cpu()]))
+
+    if do_final_cat:
+        return_values = torch.cat(return_values, dim=0)
+
+    if return_tokenized_input:
+        return return_values, tokenized_input
+    return return_values
+
+def extract_from_cache(cache_dict_, extraction_layers=[0, 1],
+                          extraction_locs=[1, 7],
+                          extraction_tokens=[-1]):
+    return_value = []
+
+    for layer in extraction_layers:
+        return_value.append([])
+        for el_ in extraction_locs:
+            el = extraction_locations[el_].replace("[LID]", str(layer))
+            if el_ != 10: # attention weights should be treated differently
+                return_value[-1].append(
+                    cache_dict_[el][:, extraction_tokens].cpu())
+            else:
+                return_value[-1].append(
+                        cache_dict_[el][:, :, extraction_tokens].cpu())
+
+        return_value[-1] = torch.stack(return_value[-1], dim=1)
+    return_value = torch.stack(return_value, dim=1)
+    return return_value
