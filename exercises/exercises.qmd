@@ -268,9 +268,49 @@ hierarchical GP prior where kernel hyperparameters are themselves random:
    knitr::include_graphics("figures/prior_posterior.svg")
    ```
 
-1. [GP Missing Data]
+1. [GPs Marginal Likelihood]. The marginal likelihood surface of a GP can
+exhibit multiple local maxima corresponding to qualitatively different fits.
 
-1. [GPs Marginal Likelihood].
+   a. The code below computes the log marginal likelihood for given
+   hyperparameters. Write the formula for $K_{ij}$ and identify the kernel.
+
+   ```{r}
+   compute_ll <- function(length_scale, sigma_y, sigma_f=1) {
+       K <- sigma_f^2 * exp(-0.5 * outer(x, x, "-")^2 / length_scale^2) +
+           sigma_y^2 * diag(length(x))
+
+       L <- chol(K)
+       alpha <- backsolve(L, forwardsolve(t(L), y))
+       -0.5 * sum(y * alpha) - sum(log(diag(L))) - 0.5 * length(x) * log(2 * pi)
+   }
+   ```
+
+   b. Figure @fig-gp_marginal(a) shows the log marginal likelihood over $(l,
+   \sigma_y)$. Panels in @fig-gp_marginal(b) show posteriors at local maxima A
+   and B. Which panel corresponds to A, and which to B?
+
+   c. Using the data and hyperparameters below, compute both GP posteriors and
+   replicate @fig-gp_marginal(b).
+
+   ```{r}
+   x <- c(-1.3089, 6.7612, 1.0553, -1.1734, -2.9339, 7.2530, -6.5843)
+   y <- c(1.6218, 1.8558, 0.4102, 1.2526, -0.0133, 1.6380, 0.2189)
+   x_test <- seq(-7.5, 7.5, length.out = 201)
+   df <- data.frame(x = x, y = y)
+
+   paramsA <- list(length_scale = 12.4, sigma_y = 0.62)
+   paramsB <- list(length_scale = 1.2, sigma_y = 0.23)
+   ```
+
+   d. In practice, how would you choose between option (A) and (B)?
+
+   ::: {#fig-gp_marginal layout-ncol=2 fig-cap="Two local maxima in the marginal likelihood for problem [GP Marginal Likelihood]."}
+
+   ![gp_marginal_surface](figures/gp_marginal_surface.svg){fig-subcap="surface"}
+
+   ![gp_marginal_fits](figures/gp_marginal_fits.svg){fig-subcap="posteriors"}
+
+   :::
 
 1. [Partition $\iff$ Tree] Any decision tree corresponds to a partition of the
 input space. This is especially easy to visualize in two dimensions.
@@ -279,7 +319,7 @@ input space. This is especially easy to visualize in two dimensions.
 
    b. For the tree in @fig-partition-tree(b), sketch the corresponding partition.
 
-   ::: {#fig-partition-tree layout-ncol=2 fig-cap="Tree and partition for the problem 'Partition $\iff$ Tree.'"}
+   ::: {#fig-partition-tree layout-ncol=2 fig-cap="Tree and partition for the problem [Partition $\iff$ Tree]."}
 
    ![Partition example](figures/partition_example-pair.svg){fig-subcap="Partition"}
 
@@ -470,12 +510,27 @@ selection nontrivial.  Download: [MS features], [cancer status].
    Similarly for the top 10 features by mean MDI.  Does high $\rho_j$ relate to
    importance estimates? Discuss your findings.
 
-1. boosting from scratch
 
-    - fit shallow decision tree to simulated data. plot x vs. y + f1(x)
-    - extract residuals. plot x vs. e
-    - fit new decision tree to residuals. plot x vs. e + f2(x) and x vs. y + ( f1(x) + f2(x) )
-    - comment on implications for interpretability.
+1. [Boosting Iterations] Consider boosting on data from $y = 3\sin(x) + \epsilon$, $\epsilon \sim \mathcal{N}(0, 0.25)$.
+
+   ```{r}
+   set.seed(479)
+   X <- runif(100, -5, 5)
+   y <- 3 * sin(X) + 0.5 * rnorm(100)
+   df <- data.frame(X = X, y = y)
+   ```
+
+   a. Fit a depth-2 tree to $(X, y)$. Compute predictions $\hat{f}^1(x_i)$ and residuals $r_i^{(1)} = y_i - \hat{f}^1(x_i)$.
+
+   b. Fit a depth-2 tree to $(X, r^{(1)})$, yielding $\hat{f}^2$. Repeat on residuals $r^{(2)} = r^{(1)} - \hat{f}^2(x_i)$ to obtain $\hat{f}^3$.
+
+   c. Plot the sequence of fits $\hat{f}^b$ and ensemble predictions $\sum_{k=1}^b \hat{f}^k$ for $b = 1, 2, 3$ (setting $\lambda = 1$). Compare with @fig-boosting-steps.
+
+   d. Comment on interpretability across: (i) a single tree, (ii) the 3-iteration ensemble from (c), and (iii) a 100-iteration ensemble.
+
+   ::: {#fig-boosting-steps fig-cap="Example result for [Boosting Initial Steps]." out-width=40%}
+   ![](figures/boosting_iterations.svg)
+   :::
 
 ## Post-hoc Explanations
 
