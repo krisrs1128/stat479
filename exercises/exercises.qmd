@@ -408,11 +408,67 @@ finding.
     variables. How does this influence how you might explain variable importance
     outputs to your non-statisticial colleagues in future projects?
 
-1. collinearity with lasso and decision trees
+1. [Importance in Arcene]. Here you will study how feature correlation affects
+variable importance estimates in lasso regression and CART. The Arcene dataset
+(NeurIPS 2003 Feature Selection Challenge) contains mass spectrometry data: $n =
+100$ samples, $10K$ spectral features (we consider a subset $p = 200$), binary
+outcome (cancer/healthy). The high-dimensional regime ($p > n$) makes variable
+selection nontrivial.  Download: [MS features], [cancer status].
 
-    - Use EDA to identify the features that are most collinear
-    - write a function that bootstraps the lasso. Return matrix B x D of coefficient values across bootstrap samples.
-    - write a function that does the same with trees (optionally, may write a single function that solves both)
+    a. Fit lasso and CART to predict cancer status. Select hyperparameters $\lambda$
+    (lasso) and $\text{cp}$ (CART) via cross-validation. Report holdout accuracy.
+
+    b. Find:
+
+        * Feature $j_{L}^{\ast} = \arg\max_j |\hat{\beta}_j|$ (largest lasso coefficient magnitude)
+        * Feature $j^*_T$ with maximum CART variable importance (MDI)
+
+    c. Stability analysis: For $b = 1, \ldots, B=50$:
+
+    - Resample data with replacement: $(X_b, y_b)$
+    - Refit both models using $\lambda$ and $\text{cp}$ from part (a)
+
+    Record coefficients $\hat{\beta}^{(b)}$ and importances $I^{(b)}$. For features
+    $j^*_L$ and $j^*_T$, what fraction of bootstrap samples yielded zero coefficient
+    or zero importance?
+
+   _Hint: The pseudocode below may help._
+
+   ```
+    FUNCTION stability(X, y, lambda_star, cp_star, B=50):
+
+        INIT coef[B x p], imp[B x p]
+        FOR b = 1 to B:
+            idx = sample_with_replacement(n)
+            X_b, y_b = X[idx], y[idx]
+
+            lasso = fit_lasso(X_b, y_b, lambda_star, family = "binomial")
+            coef[b] = lasso.coef
+
+            tree = fit_tree(X_b, y_b, cp_star)
+            imp[b] = tree.importance
+
+    RETURN coef, imp
+   ```
+
+   d. Create a plot showing how coefficients and MDI scores vary across
+   bootstrap samples for each of the original features. An example output is
+   given in @fig-lasso_tree_importances. Discuss the implications for using the
+   top lasso coefficients or MDI scores in these dataset.
+
+   ::: {#fig-lasso_tree_importances}
+   ![](figures/lasso_tree_importances.svg){#fig-tree}
+   An example solution to [Importance in Arcene] part (c).
+   :::
+
+   e. Compute the feature correlation matrix $C \in \mathbf{R}^{p \times p}$
+   where $C_{jk} = \text{cor}(X_{\cdot j}, X_{\cdot k})$.  Let $\rho_j =
+   \text{median}_{k \neq j} |C_{jk}|$ denote the median absolute correlation
+   between feature $j$ and any other feature.  Visualize the correlation matrix
+   $C$, ordering rows if helpful. For the top 25 features by mean
+   $\left|\hat{\beta}_j^{(b)}\right|$ across bootstraps, report $\rho_j$.
+   Similarly for the top 10 features by mean MDI.  Does high $\rho_j$ relate to
+   importance estimates? Discuss your findings.
 
 1. boosting from scratch
 
