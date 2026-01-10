@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>definitions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="02-definitions_files/libs/clipboard/clipboard.min.js"></script>
+<script src="02-definitions_files/libs/quarto-html/quarto.js"></script>
+<script src="02-definitions_files/libs/quarto-html/popper.min.js"></script>
+<script src="02-definitions_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="02-definitions_files/libs/quarto-html/anchor.min.js"></script>
+<link href="02-definitions_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="02-definitions_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="02-definitions_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="02-definitions_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="02-definitions_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="02-definitions_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="02-definitions_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="02-definitions_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="02-definitions.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="definitions" class="level1">
+<h1>2. Definitions</h1>
+<ul>
+<li><p>intrinsic vs.&nbsp;post-hoc</p></li>
+<li><p>global vs.&nbsp;local explanation</p></li>
+<li><p>workflow</p></li>
+</ul>
+<hr>
+<section id="learning-outcomes" class="level3">
+<h3 class="anchored" data-anchor-id="learning-outcomes">Learning outcomes</h3>
+<ol type="1">
+<li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
+</ol>
+<hr>
+</section>
+<section id="reading" class="level2">
+<h2 class="anchored" data-anchor-id="reading">Reading</h2>
+<ul>
+<li><p>Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340</p></li>
+<li><p>Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., &amp; Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. https://doi.org/10.1073/pnas.1900654116</p></li>
+</ul>
+<hr>
+</section>
+<section id="intrinsic-interpretability-vs.-post-hoc-explanations" class="level2">
+<h2 class="anchored" data-anchor-id="intrinsic-interpretability-vs.-post-hoc-explanations">Intrinsic Interpretability vs.&nbsp;Post-hoc Explanations</h2>
+<ul>
+<li><p>Intrinsically interpretable: Build a “glass box” from the start. The model is interpretable by design—its structure allows us to understand how it works.</p></li>
+<li><p>Post Hoc: Inspect an already trained “black box” model, which can be chosen simply to maximize accuracy without regard to interpretability. Post-hoc methods extract explanations from models that weren’t designed to be understood</p></li>
+</ul>
+<p><img src="figures/black_box_flashlight.png" width="900" class="center"></p>
+<hr>
+<section id="intrinsic-interpretability" class="level3">
+<h3 class="anchored" data-anchor-id="intrinsic-interpretability">Intrinsic interpretability</h3>
+<p>Some properties that make a model intrinsically interpretable are:</p>
+<ul>
+<li>Sparsity</li>
+<li>Simulatability</li>
+<li>Modularity</li>
+</ul>
+<p>We define these on the next few slides.</p>
+<hr>
+</section>
+<section id="sparsity" class="level3">
+<h3 class="anchored" data-anchor-id="sparsity">Sparsity</h3>
+<ul>
+<li><p>A model is sparse if the number of non-zero parameters is small relative to the total number of available parameters.</p></li>
+<li><p>This is interpretability property is motivated by Occam’s razor: The simplest explanation is likely closest to the truth.</p></li>
+<li><p>Sparsity enhances interpretability only when it correctly captures the structure of the true data-generating process. If the true relationship depends on many features, imposing sparsity introduces bias.</p></li>
+</ul>
+<hr>
+</section>
+<section id="simulatability" class="level3">
+<h3 class="anchored" data-anchor-id="simulatability">Simulatability</h3>
+<p>A model is simulatable if it’s possible to manually compute its output for any input within a reasonable time. Both the number of model parameters and the inference complexity factor in.</p>
+<p><a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/"> <img src="figures/simulatability.gif" class="center" width="650/"> </a></p>
+<hr>
+</section>
+<section id="modularity" class="level3">
+<h3 class="anchored" data-anchor-id="modularity">Modularity</h3>
+<ul>
+<li><p>A model is modular if its prediction function <span class="math inline">\(f(x)\)</span> can be decomposed into interpretable components, each of which can be analyzed independently.</p></li>
+<li><p>One example is an additive decomposition, where the function can be written as,</p>
+<p><span class="math display">\[\begin{align*}
+  f\left(x\right) = b_{0} + \sum_{j = 1}^{J}f_{j}\left(x_{j}\right)
+  \end{align*}\]</span></p>
+<p>and each <span class="math inline">\(f_{i}\)</span> operates on only a single coordinate of the input <span class="math inline">\(x\)</span>.</p></li>
+<li><p>More generally, a model is modular if subsets of its parameters or computations can be viewed as separate, interpretable units.</p></li>
+</ul>
+<hr>
+</section>
+<section id="exercise-linear-model-interpretability" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-linear-model-interpretability">Exercise: Linear Model Interpretability</h3>
+<hr>
+</section>
+<section id="post-hoc-interpretability" class="level3">
+<h3 class="anchored" data-anchor-id="post-hoc-interpretability">Post-hoc interpretability</h3>
+<p>Some common strategies for explaining black box models include,</p>
+<ul>
+<li><p>Feature importances</p></li>
+<li><p>Feature attributions</p></li>
+<li><p>Model distillations</p></li>
+</ul>
+<p>A few examples are given on the next few slides, but first we should distinguish between global and local explanations.</p>
+<hr>
+</section>
+<section id="global-explanation" class="level3">
+<h3 class="anchored" data-anchor-id="global-explanation">Global explanation</h3>
+<ul>
+<li><p>A global explanation characterizes how a model behaves across all possible inputs.</p></li>
+<li><p>These explanations are valuable in scientific studies, where we usually look for universal rules relating sets of variables.</p></li>
+</ul>
+<p><img src="figures/explanation_types.png" width="500" class="center"></p>
+<hr>
+</section>
+<section id="example-variable-importance" class="level3">
+<h3 class="anchored" data-anchor-id="example-variable-importance">Example: Variable importance</h3>
+<p>According to this plot, the variables X4, X2, and X1 seem most important across three separate tree-based models (weeks 4 - 5).</p>
+<p><img src="figures/vip_plots.png" width="800" class="center"></p>
+<hr>
+</section>
+<section id="local-explanation" class="level3">
+<h3 class="anchored" data-anchor-id="local-explanation">Local explanation</h3>
+<ul>
+<li><p>A local explanation describes why a model made a specific prediction for a particular input. The relationships it finds may be unique to that example.</p></li>
+<li><p>These are especially helpful in auditing high-stakes decisions made in specific cases, e.g.&nbsp;loan approvals, medical diagnoses, parole decisions.</p></li>
+</ul>
+<p><img src="figures/explanation_types.png" width="500" class="center"></p>
+<hr>
+</section>
+<section id="example-saliency-map" class="level3">
+<h3 class="anchored" data-anchor-id="example-saliency-map">Example: saliency map</h3>
+<p>In vision models, one use case of local explanations is to identify the parts of an image that are “most important” for particular predicted classes.</p>
+<p><img src="figures/saliency_example.png" width="850" class="center"></p>
+<hr>
+</section>
+<section id="example-shap-attributions" class="level3">
+<h3 class="anchored" data-anchor-id="example-shap-attributions">Example: SHAP attributions</h3>
+<p>For this sample, the most “important” feature is <code>Capital Gain</code>. It is responsible for much of the negative prediction <span class="math inline">\(f\left(x\right)\)</span>, in a sense that will be made precise when we discuss SHAP.</p>
+<p><img src="figures/shap_waterfall.png" class="center"></p>
+<hr>
+</section>
+<section id="interpretability-accuracy-trade-offs" class="level3">
+<h3 class="anchored" data-anchor-id="interpretability-accuracy-trade-offs">Interpretability-accuracy trade-offs</h3>
+<ul>
+<li><p>For many datasets, simple models (like decision trees) offer high descriptive accuracy but have lower predictive accuracy compared to more complex models (like random forests).</p></li>
+<li><p>Similarly, deep neural networks might predict the future well but not be amenable to accurate descriptions in PDR sense.</p></li>
+</ul>
+<hr>
+</section>
+<section id="bias-and-variance" class="level3">
+<h3 class="anchored" data-anchor-id="bias-and-variance">Bias and Variance</h3>
+<p>One intuition for this tradeoff comes from the bias variance tradeoff. More complex models have lower bias, and if we have lots of data, variance is less of a concern.</p>
+<p><img src="figures/bias_variance.png" class="center"></p>
+<hr>
+</section>
+<section id="does-it-exist" class="level3">
+<h3 class="anchored" data-anchor-id="does-it-exist">Does it exist?</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Unlike the bias-variance tradeoff, which has a precise mathematical foundation, the interpretability-accuracy tradeoff is more of a heuristic, and some have argued that it can be misleading <code>r Citep(bib, "Rudin2019")</code>.</p>
+</div><div class="column" style="width:50%;">
+<p><a href="https://research-vp.tau.ac.il/sites/resauth.tau.ac.il/files/DARPA-BAA-16-53_Explainable_Artificial_Intelligence.pdf"> <img src="figures/tradeoff_darpa.png" width="400/"> </a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="exercise" class="level3">
+<h3 class="anchored" data-anchor-id="exercise">Exercise:</h3>
+<hr>
+</section>
+<section id="recommended-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="recommended-workflow">Recommended workflow</h3>
+<p>If applied systematically, techniques from interpretability can be used to check assumptions, identify data and model quality issues, and uncover surprising relationships. The steps below expand on ideas in <code>r Citep(bib, "Murdoch2019")</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">%%{init: {'theme':'forest', 'themeVariables': {'fontSize':'36px', 'fontFamily':'arial'}, 'flowchart': {'padding': 80}}}%%
+graph LR
+    A[Design] --&gt; B[Predictive &lt;br/&gt; Accuracy]
+    B --&gt; C[Stability]
+    C --&gt; D[Explanation &lt;br/&gt; Comparisons]
+    D --&gt; E[External &lt;br/&gt; Checks]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="data-collection" class="level3">
+<h3 class="anchored" data-anchor-id="data-collection">Data collection</h3>
+<ol type="1">
+<li><p>First consider the underlying data collection mechanism. This is essential context for any downstream interpretation.</p></li>
+<li><p>Were the data purely observational, and if so, what led to a sample being observed (or missed)?</p></li>
+<li><p>If it is from an experiment, which aspects were controlled? In what ways is the experimental system representative of the end-use?</p></li>
+</ol>
+<hr>
+</section>
+<section id="predictive-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="predictive-accuracy">Predictive accuracy</h3>
+<ol type="1">
+<li><p>Measure the model’s fit to the data using some measure of performance accuracy on a test set.</p></li>
+<li><p>The test set should mimic what would be encountered during deployment as closely as possible, even though this is impossible in situations where the environment is always changing.</p></li>
+</ol>
+<hr>
+</section>
+<section id="interpretationexplanation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretationexplanation">Interpretation/Explanation</h3>
+<p>Next we can apply our interpretability technique. We should pay attention to <strong>descriptive accuracy</strong>. For example,</p>
+<ul>
+<li><p>How many features do we need before the SHAP approximation matches the full model prediction (Week 6 - 7)?</p></li>
+<li><p>How closely does the distilled model match the original model’s predictions (Week 10)?</p></li>
+<li><p>If using permutation importance, are the permuted data plausible, or do they lie outside the training data (Week 4)?</p></li>
+</ul>
+<hr>
+</section>
+<section id="stability" class="level3">
+<h3 class="anchored" data-anchor-id="stability">Stability</h3>
+<ol type="1">
+<li><p>Are the interpretations robust to perturbations?</p></li>
+<li><p>Data perturbations: Do the same interpretations appear when using different subsamples?</p></li>
+<li><p>Hyperparameter perturbations: Do the same interpretations across similar hyperparameters?</p></li>
+<li><p>Model perturbations: If using a post-hoc explanation, we can see whether the same features arise across multiple models?</p></li>
+</ol>
+<hr>
+</section>
+<section id="compare-interpretations" class="level3">
+<h3 class="anchored" data-anchor-id="compare-interpretations">Compare interpretations</h3>
+<ol type="1">
+<li><p>Apply multiple interpretation methods to the same model.</p></li>
+<li><p>If methods give contradictory results, then at least one has low descriptive accuracy.</p></li>
+</ol>
+<hr>
+</section>
+<section id="external-checks" class="level3">
+<h3 class="anchored" data-anchor-id="external-checks">External checks</h3>
+<p>Test interpretations against domain knowledge or experimental results. If the interpretation claims feature <span class="math inline">\(j\)</span> is important, then can be checked by</p>
+<ul>
+<li>comparing with existing scientific results</li>
+<li>measuring performance when feature <span class="math inline">\(j\)</span> is removed or held constant</li>
+<li>running new experiments that manipulate feature <span class="math inline">\(j\)</span>.</li>
+</ul>
+<hr>
+</section>
+<section id="explanations-for-communication" class="level3">
+<h3 class="anchored" data-anchor-id="explanations-for-communication">Explanations for Communication</h3>
+<p>The talk <code>r Citep(bib, "kim_iclr")</code> describes how interpretability bridges human and machine “concepts.”</p>
+<p><img src="figures/kim_iclr.png" class="center" width="700/"></p>
+<p>This bridge is especially important in collaborative work! Data science never exists in a vacuum.</p>
+<hr>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

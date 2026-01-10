@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>mdi</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="08-mdi_files/libs/clipboard/clipboard.min.js"></script>
+<script src="08-mdi_files/libs/quarto-html/quarto.js"></script>
+<script src="08-mdi_files/libs/quarto-html/popper.min.js"></script>
+<script src="08-mdi_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="08-mdi_files/libs/quarto-html/anchor.min.js"></script>
+<link href="08-mdi_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="08-mdi_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="08-mdi_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="08-mdi_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="08-mdi_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="08-mdi.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="applying-cart" class="level1">
+<h1>8. Applying CART</h1>
+<ul>
+<li><p>application to case study</p></li>
+<li><p>data-driven basis interpretation</p></li>
+<li><p>MDI+</p></li>
+<li><p>comparing importance measures</p></li>
+</ul>
+<hr>
+<section id="learning-outcomes" class="level3">
+<h3 class="anchored" data-anchor-id="learning-outcomes">Learning outcomes</h3>
+<ol type="1">
+<li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
+<li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
+</ol>
+<hr>
+</section>
+<section id="reading" class="level3">
+<h3 class="anchored" data-anchor-id="reading">Reading</h3>
+<ul>
+<li><strong>Section 8.1</strong>. James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). An introduction to statistical learning (2nd edn). doi:10.1007/978-1-0716-1418-1
+<ul>
+<li>PDF available through library: https://search.library.wisc.edu/catalog/9913885290202121</li>
+</ul></li>
+<li><strong>Sections 3 and 4.1</strong>. Agarwal, A., Kenney, A. M., Tan, Y. S., Tang, T. M., &amp; Yu, B. (2023). Integrating random forests and generalized linear models for improved accuracy and interpretability. doi:10.48550/ARXIV.2307.01932
+<ul>
+<li>Will not appear on the exam but will appear on HW</li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="cart-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="cart-case-study">CART Case Study</h2>
+<hr>
+<section id="the-voter-turnout-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-voter-turnout-problem">The Voter Turnout Problem</h3>
+<p><strong>Data</strong>. 344,084 observations - Control group: 191,243 - Treatment groups (civic duty, hawthorne, household, neighbor): ~38,200 each</p>
+<p><strong>Predictors</strong>. Voting history (5 binary indicators for past elections) and age</p>
+<p><strong>Question</strong>. Which voters respond most to social pressure treatments?</p>
+<hr>
+</section>
+<section id="strategy" class="level3">
+<h3 class="anchored" data-anchor-id="strategy">Strategy</h3>
+<p>Learn partition <span class="math inline">\(\{R_j\}\)</span> of predictor space using only non-treatment variables.</p>
+<p>Estimate treatment effect <span class="math inline">\(\tau(x)\)</span> within each region <span class="math inline">\(R_j\)</span>: <span class="math display">\[\hat{\tau}_j = \bar{y}_j^{\text{treated}} - \bar{y}_j^{\text{control}}\]</span></p>
+<p>This identifies <strong>treatment effect heterogeneity</strong>.</p>
+<hr>
+</section>
+<section id="tuning" class="level3">
+<h3 class="anchored" data-anchor-id="tuning">Tuning</h3>
+<p>Cross-validate complexity parameter <span class="math inline">\(cp \in [0.0001, 0.1]\)</span>.</p>
+<p>Optimal tree balances partition refinement against generalization.</p>
+<hr>
+</section>
+<section id="trained-tree-structure" class="level3">
+<h3 class="anchored" data-anchor-id="trained-tree-structure">Trained Tree Structure</h3>
+<p>[Include visualization of fitted tree]</p>
+<hr>
+</section>
+<section id="partition-wise-treatment-effects" class="level3">
+<h3 class="anchored" data-anchor-id="partition-wise-treatment-effects">Partition-wise Treatment Effects</h3>
+<p>[Include figure showing <span class="math inline">\(\hat{\tau}_j\)</span> across regions]</p>
+<p><strong>Target group</strong>. Treatment effects concentrated among occasional voters within specific age groups.</p>
+<p><strong>Zero-effect regions</strong>. “Always voters” and “never voters” show minimal treatment response.</p>
+<hr>
+</section>
+<section id="mean-decrease-in-impurity-mdi" class="level3">
+<h3 class="anchored" data-anchor-id="mean-decrease-in-impurity-mdi">Mean Decrease in Impurity (MDI)</h3>
+<p>For feature <span class="math inline">\(X_k\)</span>, add the impurity reductions across all splits on <span class="math inline">\(X_k\)</span>: <span class="math display">\[\text{MDI}_k = \sum_{s \in S^{(k)}} \frac{N(t(s))}{n} \hat{\Delta}(s)\]</span></p>
+<p>where <span class="math inline">\(S^{(k)}\)</span> are splits using <span class="math inline">\(X_k\)</span>, <span class="math inline">\(N(t(s))\)</span> is node size, and: <span class="math display">\[\hat{\Delta}(s) = \frac{1}{N(t)} \left[\sum_{i \in t} (y_i - \bar{y}_t)^2 - \sum_{i \in t_L} (y_i - \bar{y}_{t_L})^2 - \sum_{i \in t_R} (y_i - \bar{y}_{t_R})^2\right]\]</span></p>
+<p><strong>Problem</strong>. MDI has a bias towards high-cardinality features and is unstable when features are correlated.</p>
+<hr>
+</section>
+</section>
+<section id="mdi" class="level2">
+<h2 class="anchored" data-anchor-id="mdi">MDI+</h2>
+<hr>
+<section id="trees-as-linear-models" class="level3">
+<h3 class="anchored" data-anchor-id="trees-as-linear-models">Trees as Linear Models</h3>
+<p><strong>Observation</strong> <code>r Citep(bib, "Klusowski2023")</code>. A decision tree with splits <span class="math inline">\(S = \{s_1, \ldots, s_m\}\)</span> is equivalent to linear regression on transformed features.</p>
+<p>For each split <span class="math inline">\(s\)</span> of node <span class="math inline">\(t\)</span> on feature <span class="math inline">\(X_k\)</span> at threshold <span class="math inline">\(\omega\)</span>, define: <span class="math display">\[\phi(x; s) = \frac{N(t_R) \mathbb{1}\{x \in t_L\} - N(t_L) \mathbb{1}\{x \in t_R\}}{\sqrt{N(t_L) N(t_R)}}\]</span></p>
+<p><strong>Feature map</strong>. <span class="math inline">\(\Phi(x; S) = (\phi(x; s_1), \ldots, \phi(x; s_m))\)</span> Tree predictions <span class="math inline">\(\hat{f}(x)\)</span> equal OLS predictions on <span class="math inline">\(\Phi(X; S)\)</span>.</p>
+<hr>
+</section>
+<section id="what-this-means-geometrically" class="level3">
+<h3 class="anchored" data-anchor-id="what-this-means-geometrically">What This Means Geometrically</h3>
+<p>Each split <span class="math inline">\(s\)</span> creates a decision stump, an indicator showing whether <span class="math inline">\(x\)</span> falls left, right, or outside node <span class="math inline">\(t\)</span>.</p>
+<p>The matrix <span class="math inline">\(\Phi(X; S) \in \mathbb{R}^{n \times m}\)</span> is the learned basis from the tree structure.</p>
+<hr>
+</section>
+<section id="what-this-means-geometrically-1" class="level3">
+<h3 class="anchored" data-anchor-id="what-this-means-geometrically-1">What This Means Geometrically</h3>
+<p>Tree model: <span class="math inline">\(f(x) = \beta_0 + \sum_{j=1}^m \beta_j \phi_j(x)\)</span></p>
+<p>This is just linear regression in the <span class="math inline">\(\phi\)</span> coordinates.</p>
+<hr>
+</section>
+<section id="mdi-as-r2" class="level3">
+<h3 class="anchored" data-anchor-id="mdi-as-r2">MDI as <span class="math inline">\(R^2\)</span></h3>
+<p>Partition splits by feature: <span class="math inline">\(S = S^{(1)} \cup \cdots \cup S^{(p)}\)</span></p>
+<p>Let <span class="math inline">\(\Phi^{(k)}(X; S)\)</span> be stumps splitting on <span class="math inline">\(X_k\)</span>.</p>
+<p><strong>Theorem</strong>. <span class="math display">\[\text{MDI}_k = \text{TSS} \cdot R^2(y, \hat{y}^{(k)})\]</span></p>
+<p>where <span class="math inline">\(\hat{y}^{(k)}\)</span> are fitted values regressing <span class="math inline">\(y\)</span> on <span class="math inline">\(\Phi^{(k)}(X; S)\)</span> alone.</p>
+<p>MDI measures how much variance <span class="math inline">\(X_k\)</span> explains using only its splits.</p>
+<hr>
+</section>
+<section id="the-overfitting-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-overfitting-problem">The Overfitting Problem</h3>
+<p>MDI evaluates <span class="math inline">\(R^2\)</span> on the same data used to build the tree.</p>
+<p>This is data snooping! Features that happened to reduce training RSS get inflated importance.</p>
+<p>Worse: tree construction already biases toward high-cardinality features and is unstable under correlation.</p>
+<hr>
+</section>
+<section id="mdi-ideas-section-4.1" class="level3">
+<h3 class="anchored" data-anchor-id="mdi-ideas-section-4.1">MDI+ Ideas (section 4.1)</h3>
+<p>Replace in-sample <span class="math inline">\(R^2\)</span> with proper out-of-sample evaluation.</p>
+<ol type="1">
+<li><strong>New features</strong>. Add raw <span class="math inline">\(X_k\)</span> to <span class="math inline">\(\Phi^{(k)}(X)\)</span> to capture smooth/additive structure trees miss</li>
+<li><strong>Regularize</strong>. Fit penalized GLM (e.g., lasso) on augmented features</li>
+<li><strong>Leave-one-out</strong>. Evaluate importance using LOO predictions, not training fit</li>
+</ol>
+<hr>
+</section>
+<section id="mdi-algorithm-section-4.1" class="level3">
+<h3 class="anchored" data-anchor-id="mdi-algorithm-section-4.1">MDI+ Algorithm (section 4.1)</h3>
+<p>Given tree <span class="math inline">\(S\)</span> trained on bootstrap sample <span class="math inline">\(D_n^*\)</span>:</p>
+<p><strong>Step 1</strong>. Create augmented feature map <span class="math display">\[\tilde{\Phi}^{(k)}(X) = [\Phi^{(k)}(X), X_k]\]</span></p>
+<p><strong>Step 2</strong>. Fit regularized GLM <span class="math inline">\(M\)</span> on full data using <span class="math inline">\(\tilde{\Phi}(X)\)</span>. Tune penalty <span class="math inline">\(\lambda\)</span> via approximate LOO.</p>
+<p><strong>Step 3</strong>. For each feature <span class="math inline">\(k\)</span> and observation <span class="math inline">\(i\)</span>, compute LOO partial prediction: <span class="math display">\[\hat{y}_i^k = g^{-1}\left(\sum_{j \neq k} \bar{\tilde{\phi}}_j \hat{\beta}_j + \tilde{\Phi}^{(k)}(x_i) \hat{\beta}_{-i}^{(k)}\right)\]</span></p>
+<p>where <span class="math inline">\(\hat{\beta}_{-i}^{(k)}\)</span> are coefficients fitted without observation <span class="math inline">\(i\)</span>.</p>
+<p><strong>Step 4</strong>. Measure similarity between <span class="math inline">\(y\)</span> and <span class="math inline">\(\hat{y}^{(k)} = (\hat{y}_1^k, \ldots, \hat{y}_n^k)\)</span>: <span class="math display">\[\text{MDI}_k^+ = m(y, \hat{y}^{(k)})\]</span></p>
+<hr>
+</section>
+<section id="justification" class="level3">
+<h3 class="anchored" data-anchor-id="justification">Justification</h3>
+<p><strong>Augmentation</strong>. Trees partition with axis-aligned rectangles. Adding raw <span class="math inline">\(X_k\)</span> captures linear/smooth effects the stumps miss.</p>
+<p><strong>Regularization</strong>. High-dimensional, correlated features from stumps + raw variables need to be stabilized.</p>
+<p><strong>LOO</strong>. Separates training from evaluation. Prevents overstating importance of features that fit training noise.</p>
+<p><strong>GLM flexibility</strong>. Use logistic regression for classification, Huber loss for robustness, etc.</p>
+<hr>
+</section>
+<section id="theoretical-guarantees" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-guarantees">Theoretical Guarantees</h3>
+<p>Under certain conditions, MDI+ achieves:</p>
+<ul>
+<li><strong>Consistency</strong>. Recovers true importance ranking as <span class="math inline">\(n \to \infty\)</span></li>
+<li><strong>Stability</strong>. Less sensitive to feature correlation than MDI or MDA</li>
+<li><strong>Debiasing</strong>. Mitigates tree construction bias toward high-cardinality features</li>
+</ul>
+<p>See paper for formal statements.</p>
+<hr>
+</section>
+<section id="mdi-stability" class="level3">
+<h3 class="anchored" data-anchor-id="mdi-stability">MDI+ Stability</h3>
+<p><img src="figures/mdi_stability.png" class="center" width="900/"></p>
+<hr>
+</section>
+<section id="mdi-under-correlation" class="level3">
+<h3 class="anchored" data-anchor-id="mdi-under-correlation">MDI+ Under Correlation</h3>
+<p><img src="figures/mdi_correlation.png" class="center" width="900/"></p>
+<hr>
+</section>
+<section id="practical-considerations" class="level3">
+<h3 class="anchored" data-anchor-id="practical-considerations">Practical Considerations</h3>
+<p><strong>Hyperparameters</strong></p>
+<ul>
+<li>Choice of augmentation (raw features? polynomials?)</li>
+<li>GLM family (gaussian, binomial, etc.)</li>
+<li>Penalty strength <span class="math inline">\(\lambda\)</span> (tuned via LOO CV)</li>
+<li>Similarity metric <span class="math inline">\(m\)</span> (negative MSE, correlation, etc.)</li>
+</ul>
+<p><strong>Computational cost</strong>. Approximate LOO (Rad &amp; Maleki 2020) avoids refitting <span class="math inline">\(n\)</span> times. Nearly same cost as standard RF.</p>
+<p><strong>Package</strong>. Available in the <code>imodels</code> package (https://csinva.io/imodels/).</p>
+<hr>
+</section>
+<section id="takewaways" class="level3">
+<h3 class="anchored" data-anchor-id="takewaways">Takewaways</h3>
+<p>Decision trees are closely connected to linear regression through a learned piecewise constant basis <span class="math inline">\(\Phi(X; S)\)</span>. MDI is <span class="math inline">\(R^2\)</span> of partial regressions on this basis but suffers from overfitting.</p>
+<p>MDI+ corrects this by:</p>
+<ol type="1">
+<li>Augmenting with features trees naturally miss</li>
+<li>Regularizing high-dimensional basis</li>
+<li>Evaluating out-of-sample via LOO</li>
+</ol>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

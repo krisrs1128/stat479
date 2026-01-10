@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>nonlinear_models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="05-nonlinear_models_files/libs/clipboard/clipboard.min.js"></script>
+<script src="05-nonlinear_models_files/libs/quarto-html/quarto.js"></script>
+<script src="05-nonlinear_models_files/libs/quarto-html/popper.min.js"></script>
+<script src="05-nonlinear_models_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="05-nonlinear_models_files/libs/quarto-html/anchor.min.js"></script>
+<link href="05-nonlinear_models_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="05-nonlinear_models_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="05-nonlinear_models_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="05-nonlinear_models_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="05-nonlinear_models_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="05-nonlinear_models.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="nonlinear-models" class="level1">
+<h1>5. Nonlinear Models</h1>
+<ul>
+<li><p>motivating case study</p></li>
+<li><p>kernels</p></li>
+<li><p>GP regression</p></li>
+<li><p>tuning</p></li>
+</ul>
+<hr>
+<section id="learning-outcomes" class="level3">
+<h3 class="anchored" data-anchor-id="learning-outcomes">Learning outcomes</h3>
+<ol type="1">
+<li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
+</ol>
+<hr>
+</section>
+<section id="reading" class="level2">
+<h2 class="anchored" data-anchor-id="reading">Reading</h2>
+<ul>
+<li><p>Görtler, J., Kehlbeck, R., &amp; Deussen, O. (2019). A visual exploration of Gaussian processes. Distill, 4(4). doi:10.23915/distill.00017</p></li>
+<li><p>Deisenroth, M., Luo, Y., &amp; van der Wilk, M. (2020). A practical guide to Gaussian processes. https://infallible-thompson-49de36.netlify.app/.</p></li>
+</ul>
+<hr>
+</section>
+<section id="motivating-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="motivating-case-study">Motivating Case Study</h2>
+<p><strong>Question:</strong> How quickly does a star rotate around its axis? This has to be answered accurately before we can search for exoplanets around the star.</p>
+<p><strong>Data:</strong> Telescopes make it possible to measure the brightness of a star over time. We can look for periodic patterns in the brightness.</p>
+<p><img src="figures/kepler_telescope.jpg"></p>
+<hr>
+<section id="intuition" class="level3">
+<h3 class="anchored" data-anchor-id="intuition">Intuition</h3>
+<p>Ideally the brighness would be a perfect sine wave. But brightness changes in more complex ways both on the surface of the star and in the space from the star to the telescope.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img src="figures/lighthouse.gif"></p>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.1     ✔ stringr   1.5.2
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05-nonlinear_models_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>How does flux vary as the star rotates?</p>
+<p><img src="figures/stellar-variability_3_0.png" class="center" width="700/"></p>
+<hr>
+</section>
+<section id="statistical-motivation" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-motivation">Statistical Motivation</h3>
+<p><strong>Formulation.</strong></p>
+<ul>
+<li>Period <span class="math inline">\(P\)</span> ≈ rotation period of star</li>
+<li>Variations related to evolving spots</li>
+</ul>
+<p><strong>Goal.</strong> Infer <span class="math inline">\(P\)</span> to understand stellar activity and improve exoplanet detection</p>
+<p><strong>Modeling</strong>. We need a statistical model of functions that:</p>
+<ul>
+<li>Allows for nonlinearity.</li>
+<li>Allows interpretation of quantities like <span class="math inline">\(P\)</span>.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="kernels" class="level2">
+<h2 class="anchored" data-anchor-id="kernels">Kernels</h2>
+<hr>
+<section id="linear-regression-and-similarity" class="level3">
+<h3 class="anchored" data-anchor-id="linear-regression-and-similarity">Linear Regression and Similarity</h3>
+<p><strong>Linear regression</strong> makes predictions using</p>
+<p><span class="math display">\[\begin{align*}
+\mathbb{E}[y | \mathbf{x}] = \mathbf{x}^\top \boldsymbol{\beta}.
+\end{align*}\]</span></p>
+<p>Geometrically, predictions at nearby points should be similar.</p>
+<p>What does “nearby” mean? In linear regression, <span class="math display">\[\begin{align*}
+\mathbf{x}^\top \mathbf{x}'
+\end{align*}\]</span> measures closeness (show the covariance calculation).</p>
+<hr>
+</section>
+<section id="linear-regression-and-similarity-1" class="level3">
+<h3 class="anchored" data-anchor-id="linear-regression-and-similarity-1">Linear Regression and Similarity</h3>
+<p><strong>Kernel answer:</strong> Define closeness explicitly.</p>
+<p><span class="math display">\[\begin{align*}
+k(\mathbf{x}, \mathbf{x}') = \text{how much } f\left(\mathbf{x}\right) \text{ and } f\left(\mathbf{x'}\right) \text{should covary}
+\end{align*}\]</span></p>
+<p>The function <span class="math inline">\(k\)</span> is called a “kernel”.</p>
+<hr>
+</section>
+<section id="radial-basis-function-rbf-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="radial-basis-function-rbf-kernel">Radial Basis Function (RBF) Kernel</h3>
+<p><span class="math display">\[k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{\|x - x'\|^2}{2\ell^2}\right)\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>At distance <span class="math inline">\(|x - x'| = 0\)</span>: perfect correlation</li>
+<li>At distance <span class="math inline">\(|x - x'| = \ell\)</span>: decays to <span class="math inline">\(\sigma_{f}e^{-\frac{1}{2}} \approx 0.6 \sigma_{f}\)</span></li>
+<li>At distance <span class="math inline">\(|x - x'| = 3\ell\)</span>: nearly zero</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="figures/rbf_kernel_matrix.gif"></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="lengthscale-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="lengthscale-interpretation">Lengthscale Interpretation</h3>
+<p><span class="math display">\[\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|\]</span></p>
+<p><strong>Small <span class="math inline">\(\ell\)</span> (relative to data range)</strong></p>
+<ul>
+<li>Allows rapid oscillation</li>
+<li>Can fit data with high-frequency variation</li>
+</ul>
+<p><strong>Long lengthscale:</strong></p>
+<ul>
+<li>Enforces slower variation</li>
+<li>Smooths over local fluctuations</li>
+</ul>
+<hr>
+</section>
+<section id="lengthscale-interpretation-1" class="level3">
+<h3 class="anchored" data-anchor-id="lengthscale-interpretation-1">Lengthscale Interpretation</h3>
+<p><span class="math display">\[\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|\]</span></p>
+<p><img src="figures/gp_length_scale_interpretation.gif" class="center" width="1000/"></p>
+<hr>
+</section>
+<section id="periodic-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="periodic-kernel">Periodic Kernel</h3>
+<p><span class="math display">\[k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2\sin^2(\pi|x-x'|/p)}{\ell^2}\right)\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><span class="math inline">\(p\)</span>: period</li>
+<li><span class="math inline">\(\ell\)</span>: lengthscale (similar to RBF)</li>
+<li><span class="math inline">\(\sigma_f^2\)</span>: signal variance</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="figures/periodic_kernel_matrix.gif" width="200/"></p>
+</div>
+</div>
+<p>This will help us model stellar rotation.</p>
+<hr>
+</section>
+<section id="matérn-kernels" class="level3">
+<h3 class="anchored" data-anchor-id="matérn-kernels">Matérn Kernels</h3>
+<p><span class="math display">\[k_{\text{Matérn-3/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{3}\tau}{\ell}\right)\exp\left(-\frac{\sqrt{3}\tau}{\ell}\right)\]</span></p>
+<p><span class="math display">\[k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} + \frac{5\tau^2}{3\ell^2}\right)\exp\left(-\frac{\sqrt{5}\tau}{\ell}\right)\]</span></p>
+<p><strong>Unlike RBF:</strong> Finite differentiability</p>
+<ul>
+<li>Matérn-3/2: once differentiable</li>
+<li>Matérn-5/2: twice differentiable</li>
+</ul>
+<p>(You don’t need to memorize these formulas!)</p>
+<hr>
+</section>
+<section id="matérn-kernels-1" class="level3">
+<h3 class="anchored" data-anchor-id="matérn-kernels-1">Matérn Kernels</h3>
+<p>We haven’t yet explained how these samples are generated, but samples that use a Matérn kernel are often “rougher” are more realistic.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img src="figures/gp_samples.png"></p>
+</div><div class="column" style="width:50%;">
+<p><img src="figures/matern_samples.png"></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="combining-kernels" class="level3">
+<h3 class="anchored" data-anchor-id="combining-kernels">Combining Kernels</h3>
+<p>If <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span> are valid kernels, so are</p>
+<p><span class="math display">\[\begin{align*}
+k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
+k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
+\end{align*}\]</span></p>
+<p>Addition is like two independent phenomena occuring at once.</p>
+<ul>
+<li><span class="math inline">\(k_{RBF} + k_{\text{periodic}}\)</span>: smooth trend + rotation</li>
+<li>Like hearing a melody + rhythm</li>
+</ul>
+<hr>
+</section>
+<section id="combining-kernels-1" class="level3">
+<h3 class="anchored" data-anchor-id="combining-kernels-1">Combining Kernels</h3>
+<p>If <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span> are valid kernels, so are</p>
+<p><span class="math display">\[\begin{align*}
+k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
+k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
+\end{align*}\]</span></p>
+<p>Multiplication is like where one pattern modulates another.</p>
+<ul>
+<li><span class="math inline">\(k_{RBF} \times k_{\text{periodic}}\)</span>: periodic signal with evolving magnitude</li>
+<li>Like a volume knob controlling a repetitive signal</li>
+</ul>
+<hr>
+</section>
+<section id="combining-kernels-2" class="level3">
+<h3 class="anchored" data-anchor-id="combining-kernels-2">Combining Kernels</h3>
+<p>Since kernels are closed using these algebraic operations, they can be tailored to the specific problem of interest.</p>
+<p><img src="figures/combining_kernels.png" class="center"></p>
+<hr>
+</section>
+</section>
+<section id="gaussian-process-regression" class="level2">
+<h2 class="anchored" data-anchor-id="gaussian-process-regression">Gaussian Process Regression</h2>
+<hr>
+<section id="gaussian-process-prior" class="level3">
+<h3 class="anchored" data-anchor-id="gaussian-process-prior">Gaussian Process Prior</h3>
+<p><strong>Definition.</strong> A Gaussian Process (GP) is a collection of random variables, any finite subset of which is jointly Gaussian</p>
+<p><span class="math display">\[f \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))\]</span></p>
+<p>This can be used to define a prior distribution over functions. <span class="math display">\[\mathbf{f} = [f(x_1), \ldots, f(x_N)]^\top \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{K})\]</span></p>
+<p>where <span class="math inline">\(\mu_i = m(x_i)\)</span> and <span class="math inline">\(K_{ij} = k(x_i, x_j)\)</span> WE often set <span class="math inline">\(m(\mathbf{x}) = 0\)</span>.</p>
+<hr>
+</section>
+<section id="function-space-perspective" class="level3">
+<h3 class="anchored" data-anchor-id="function-space-perspective">Function space perspective</h3>
+<p><strong>Classical statistics</strong> Estimate fixed-dimensional parameters <span class="math inline">\(\theta\)</span> of a function.</p>
+<p><strong>GPs</strong> Estimate the entire function <span class="math inline">\(f\)</span>.</p>
+<p><strong>Observation</strong> This seems impossible, since functions are infinite-dimensional. But we only observe <span class="math inline">\(f\)</span> at finitely many points, <span class="math display">\[\begin{align*}
+\mathbf{f}_{N} = \left(f\left(x_1\right), \dots, f(x_N)\right)
+\end{align*}\]</span> and a GP can give us a prior for <em>any</em> choice of <span class="math inline">\(x_{1}, \dots, x_{N}\)</span>.</p>
+<p>This is what it means to define a “distribution over functions.”</p>
+<hr>
+</section>
+<section id="prior-covariance-structure" class="level3">
+<h3 class="anchored" data-anchor-id="prior-covariance-structure">Prior Covariance Structure</h3>
+<p><strong>Covariance matrix <span class="math inline">\(\mathbf{K}\)</span>:</strong></p>
+<ul>
+<li>Diagonal: <span class="math inline">\(K_{ii} = \sigma_f^2\)</span> is the prior variance at each point.</li>
+<li>Off-diagonal: <span class="math inline">\(K_{ij}\)</span> is the covariance between <span class="math inline">\(f(x_i)\)</span> and <span class="math inline">\(f(x_j)\)</span></li>
+</ul>
+<p>Kernel encodes our assumptions about function smoothness, periodicity, trends, etc.</p>
+<hr>
+</section>
+<section id="sampling-from-the-prior" class="level3">
+<h3 class="anchored" data-anchor-id="sampling-from-the-prior">Sampling from the Prior</h3>
+<p><img src="figures/gp_prior_trimmed.gif" class="center"></p>
+<hr>
+</section>
+<section id="sampling-from-the-prior-1" class="level3">
+<h3 class="anchored" data-anchor-id="sampling-from-the-prior-1">Sampling from the Prior</h3>
+<ol type="1">
+<li>Choose test locations <span class="math inline">\(\mathbf{x}_* = [x_1, \ldots, x_N]^\top\)</span></li>
+<li>Compute <span class="math inline">\(\mathbf{K}_* = k(\mathbf{x}_*, \mathbf{x}_*)\)</span></li>
+<li>Sample <span class="math inline">\(\mathbf{f}_* \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_*)\)</span></li>
+</ol>
+<p>Each sample is one plausible function from our prior</p>
+<p>Different kernels → different classes of functions</p>
+<hr>
+</section>
+<section id="adding-observations" class="level3">
+<h3 class="anchored" data-anchor-id="adding-observations">Adding Observations</h3>
+<p>So far we have only described a prior over functions. How does that prior relate to the observed data <span class="math inline">\(y_{i}\)</span>?</p>
+<p>We imagine <span class="math display">\[\begin{align*}
+y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2)
+\end{align*}\]</span> conditional on a draw <span class="math inline">\(f\)</span> from the GP prior.</p>
+<p>This results in the joint distribution, <span class="math display">\[\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} &amp; \mathbf{K}_{*\text{train}} \\ \mathbf{K}_{\text{train}*} &amp; \mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)\]</span></p>
+<hr>
+</section>
+<section id="gaussian-process-posterior" class="level3">
+<h3 class="anchored" data-anchor-id="gaussian-process-posterior">Gaussian Process Posterior</h3>
+<p>Now we condition on observed <span class="math inline">\(\mathbf{y}\)</span> to get a posterior for the actual <span class="math inline">\(f\)</span> that generated the data. The Gaussian conditioning formula gives</p>
+<p><span class="math display">\[p(\mathbf{f}_* | \mathbf{y}, \mathbf{X}, \mathbf{x}_*) = \mathcal{N}(\boldsymbol{\mu}_*, \boldsymbol{\Sigma}_*)\]</span> where</p>
+<p><span class="math display">\[\begin{align*}
+\boldsymbol{\mu}_* &amp;= \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}\\
+\boldsymbol{\Sigma}_* &amp;= \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
+\end{align*}\]</span></p>
+<p>The next few slides interpret this formula.</p>
+<hr>
+</section>
+<section id="posterior-mean" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-mean">Posterior Mean</h3>
+<p><span class="math display">\[\begin{align*}
+\boldsymbol{\mu}_*=\mathbf{K}_{* \text { train }}\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}
+\end{align*}\]</span></p>
+<ul>
+<li><span class="math inline">\(\mathbf{K}_{\text{train}}\)</span> -&gt; how much the test point <span class="math inline">\(x_{\ast}\)</span> correlates with the training data</li>
+<li><span class="math inline">\(\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}\)</span> -&gt; reweight the training data according to measurement precision</li>
+</ul>
+<hr>
+</section>
+<section id="posterior-mean-1" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-mean-1">Posterior Mean</h3>
+<p><img src="figures/gp_posterior_mean.gif" class="center"></p>
+<hr>
+</section>
+<section id="posterior-variance" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-variance">Posterior Variance</h3>
+<p><span class="math display">\[\begin{align*}
+\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
+\end{align*}\]</span></p>
+<ul>
+<li>We reduce uncertainty when we observe data</li>
+<li>If <span class="math inline">\(x_{\ast}\)</span> is far from the data, then <span class="math inline">\(K_{\ast \text{train}}\)</span> is small and we revert to the prior <span class="math inline">\(\Sigma_{\ast} \to \mathbf{K}_{\ast\ast}\)</span>.</li>
+</ul>
+<hr>
+</section>
+<section id="posterior-variance-1" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-variance-1">Posterior Variance</h3>
+<p><img src="figures/posterior_covariance.gif" class="center"></p>
+<hr>
+</section>
+<section id="implementation-preview" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-preview">Implementation Preview</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Periodic × Decay kernel</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>k_periodic <span class="ot">&lt;-</span> <span class="fu">periodic</span>(<span class="at">period =</span> <span class="fu">exp</span>(logperiod),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lengthscale =</span> <span class="dv">1</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">variance =</span> <span class="fu">exp</span>(logamp))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>k_decay <span class="ot">&lt;-</span> <span class="fu">mat52</span>(<span class="at">lengthscale =</span> <span class="fu">exp</span>(logdecay),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">variance =</span> <span class="dv">1</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>full_kernel <span class="ot">&lt;-</span> k_periodic <span class="sc">*</span> k_decay <span class="sc">+</span> <span class="fu">white</span>(<span class="fu">exp</span>(logs2))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define GP</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>gp_model <span class="ot">&lt;-</span> <span class="fu">gp</span>(data<span class="sc">$</span>time, full_kernel)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">distribution</span>(data<span class="sc">$</span>flux) <span class="ot">&lt;-</span> <span class="fu">normal</span>(gp_model <span class="sc">+</span> mean_flux, data<span class="sc">$</span>flux_err)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="exercise" class="level3">
+<h3 class="anchored" data-anchor-id="exercise">Exercise</h3>
+<p>[Posterior and prior predictive distributions].</p>
+<ol type="1">
+<li><p>Fix a point <span class="math inline">\(x_{\ast}\)</span> of interest. Before we observe any data <span class="math inline">\(y_{1}, \dots,
+y_{n}\)</span>, what would your best guess of <span class="math inline">\(y_{\ast}\)</span> be? How much uncertainty would you have? How does this differ from your best guess for <span class="math inline">\(f_{\ast}\)</span>?</p></li>
+<li><p>Suppose you have now observed data <span class="math inline">\(y_{1}, \dots, y_{n}\)</span> at <span class="math inline">\(x_{1}, \dots,
+x_{n}\)</span>. We again ask you for a guess of <span class="math inline">\(y_{\ast}\)</span> at <span class="math inline">\(x_{\ast}\)</span>. How has it changed?</p></li>
+<li><p>[Optional]. The quantity in the previous part has a Gaussian distribution. Can you derive formulas for <span class="math inline">\(\mu_{*}\)</span> and <span class="math inline">\(\sigma_{*}^2\)</span>?</p></li>
+</ol>
+<p><span class="math display">\[p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)\]</span></p>
+<hr>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

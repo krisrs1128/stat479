@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>interpreting_linear_models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="04-interpreting_linear_models_files/libs/clipboard/clipboard.min.js"></script>
+<script src="04-interpreting_linear_models_files/libs/quarto-html/quarto.js"></script>
+<script src="04-interpreting_linear_models_files/libs/quarto-html/popper.min.js"></script>
+<script src="04-interpreting_linear_models_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="04-interpreting_linear_models_files/libs/quarto-html/anchor.min.js"></script>
+<link href="04-interpreting_linear_models_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="04-interpreting_linear_models_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="04-interpreting_linear_models_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="04-interpreting_linear_models_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="04-interpreting_linear_models_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="04-interpreting_linear_models.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="linear-models" class="level1">
+<h1>4. Linear Models</h1>
+<ul>
+<li><p>interpreting sparse linear models</p></li>
+<li><p>application to case study</p></li>
+<li><p>interpretation challenges</p></li>
+</ul>
+<hr>
+<section id="learning-outcomes" class="level3">
+<h3 class="anchored" data-anchor-id="learning-outcomes">Learning outcomes</h3>
+<ol type="1">
+<li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
+<li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
+</ol>
+<hr>
+</section>
+<section id="reminder" class="level3">
+<h3 class="anchored" data-anchor-id="reminder">Reminder</h3>
+<p>These were the properties of intrinsically interpretable models we introduced earlier.</p>
+<ul>
+<li><strong>Sparsity</strong>: The model uses only a few of the many candidate features.</li>
+<li><strong>Simulatability</strong>: The ability to manually calculate the outcome from the inputs.</li>
+<li><strong>Modularity</strong>: Each component can be understood independently from the others.</li>
+</ul>
+<hr>
+</section>
+<section id="parsimony" class="level3">
+<h3 class="anchored" data-anchor-id="parsimony">Parsimony</h3>
+<ul>
+<li><p>The <span class="math inline">\(\ell^{1}\)</span>-penalized linear model focuses our attention on a small subset of selected features where <span class="math inline">\(\hat{\beta}_{j} = 0\)</span>.</p></li>
+<li><p>The larger the <span class="math inline">\(\lambda\)</span>, the more interpretable the model becomes, since the support set <span class="math inline">\(S = \{j : \hat{\beta}_{j} \neq 0\}\)</span> shrinks.</p></li>
+</ul>
+<hr>
+</section>
+<section id="simulatability" class="level3">
+<h3 class="anchored" data-anchor-id="simulatability">Simulatability</h3>
+<ul>
+<li><p>A linear model <span class="math inline">\(\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}\)</span> is reasonably simulatable when <span class="math inline">\(|S|\)</span> is small.</p></li>
+<li><p>But for even moderate to large <span class="math inline">\(|S|\)</span>, simulatability becomes a challenge even for linear regression <code>r Citep(bib, "slack2019")</code>!</p></li>
+</ul>
+<hr>
+</section>
+<section id="modularity" class="level3">
+<h3 class="anchored" data-anchor-id="modularity">Modularity</h3>
+<ul>
+<li><p>The model is additive: <span class="math inline">\(f(x) = \sum_{j = 1}^{J}f_j(x_j)\)</span>.</p></li>
+<li><p>We can inspect the influence of gene <span class="math inline">\(j\)</span> using a single coefficient <span class="math inline">\(\beta_{j}\)</span>.</p></li>
+<li><p>But even in linear regression, ceteris paribus means each coefficient has to be understood relative to all other features in the model.</p></li>
+</ul>
+<hr>
+</section>
+<section id="global-local-interpretations" class="level3">
+<h3 class="anchored" data-anchor-id="global-local-interpretations">Global &amp; local interpretations</h3>
+<ul>
+<li><p><strong>Global</strong>: <span class="math inline">\(\hat{\beta}\)</span> helps us identify the most influential genes across the study.</p></li>
+<li><p><strong>Local</strong>: For cell <span class="math inline">\(i\)</span>, the <span class="math inline">\(x_{ij}\hat{\beta}_{j}\)</span> terms help us understand its particular viability prediction.</p></li>
+</ul>
+<hr>
+</section>
+<section id="case-study-formulation" class="level3">
+<h3 class="anchored" data-anchor-id="case-study-formulation">Case study formulation</h3>
+<ul>
+<li><p><strong>Response</strong> (<span class="math inline">\(y\)</span>): Cell viability after drug treatment.</p></li>
+<li><p><strong>Predictors</strong> (<span class="math inline">\(X\)</span>): High-dimensional molecular profiles <span class="math inline">\(N = 121, J = 9553\)</span>.</p></li>
+<li><p><strong>Goal</strong>: Identify a sparse set of features that distinguish drug sensitive vs.&nbsp;resistant cells.</p></li>
+</ul>
+<hr>
+</section>
+<section id="model-fitting" class="level3">
+<h3 class="anchored" data-anchor-id="model-fitting">Model fitting</h3>
+<p>We use the <code>glmnet</code> package in R:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the lasso path and perform 10-fold CV</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cv_fit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(X, y, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">standardize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This solves the optimization problem for a sequence of <span class="math inline">\(\lambda\)</span> values using cyclical coordinate descent.</p>
+<hr>
+</section>
+<section id="evaluation-criteria" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-criteria">Evaluation criteria</h3>
+<p>These boxplots show the performance on the holdout folds across a range of <span class="math inline">\(\lambda\)</span> complexity parameters. For each <span class="math inline">\(k = 1, \dots, 10\)</span>, we compute</p>
+<p><span class="math display">\[\begin{align*}
+CV_{k}\left(\lambda\right) = \frac{1}{N} \sum_{i \in I_{k}} \left(y_{i} - \hat{y}_{i}^{-k}\left(\lambda\right)\right)^2
+\end{align*}\]</span> where <span class="math display">\[\begin{align*}
+y_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right)
+\end{align*}\]</span> and <span class="math inline">\(\hat{\beta}^{-k}\left(\lambda\right)\)</span> solves the lasso optimization at hyperparameter <span class="math inline">\(\lambda\)</span> using data from all folds except <span class="math inline">\(I_{k}\)</span>.</p>
+<hr>
+</section>
+<section id="evaluation-criteria-1" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-criteria-1">Evaluation criteria</h3>
+<ul>
+<li><p>The initial decrease is the phase where adding predictors rapidly improves performance. Usually the boxplots increase again for small values of <span class="math inline">\(\lambda\)</span>, at which point the model is overfitting.</p></li>
+<li><p>We use <span class="math inline">\(\lambda_{1\text{se}}\)</span> to choose the simplest model whose error is within one standard error of the minimum MSE. This is the point where adding new genes doesn’t significantly add to the holdout prediction accuracy.</p></li>
+</ul>
+<hr>
+</section>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">Data preparation</h3>
+<ul>
+<li><p>It’s important to transform <span class="math inline">\(x_{ij} \to \frac{x_{ij} - \bar{x}_j}{\hat{\sigma}_j}\)</span>.</p></li>
+<li><p>The penalty <span class="math inline">\(\lambda \sum |\beta_j|\)</span> treats all <span class="math inline">\(\beta_j\)</span> equally. If <span class="math inline">\(x_j\)</span> has a large scale, its <span class="math inline">\(\beta_j\)</span> will be small, making it “cheaper” for the penalty to keep it in the model.</p></li>
+</ul>
+<hr>
+</section>
+<section id="coefficient-paths" class="level3">
+<h3 class="anchored" data-anchor-id="coefficient-paths">Coefficient paths</h3>
+<ul>
+<li><p>We can visualize how <span class="math inline">\(\hat{\beta}_j\)</span> evolves as <span class="math inline">\(\lambda\)</span> decreases.</p></li>
+<li><p>Each line represents a gene (RNA or methylation feature). The order in which they “emerge” from zero indicates their relative importance in predicting drug response.</p></li>
+</ul>
+<hr>
+</section>
+<section id="coefficient-paths-1" class="level3">
+<h3 class="anchored" data-anchor-id="coefficient-paths-1">Coefficient paths</h3>
+<ul>
+<li><p>To make it easier to see the feature names, we can use a heatmap instead.</p></li>
+<li><p>In this problem, all the coefficients were positive, so we log-transformed to more clearly see differences in coefficient value.</p></li>
+<li><p>This helps us focus on a much more reasonable set of important genomic features. We can also find extenral evidence that these genes are involved in important oncogenic pathways.</p></li>
+</ul>
+<hr>
+</section>
+<section id="takeaways" class="level3">
+<h3 class="anchored" data-anchor-id="takeaways">Takeaways</h3>
+<ul>
+<li><p>Sparse linear models narrowed us down from 9K+ features to 37 that are enough to predict drug sensitivity with relatively high accuracy.</p></li>
+<li><p>In this problem, standardization was essential. We are lucky that it is the default in <code>glmnet</code>, but this isn’t always the case.</p></li>
+</ul>
+<hr>
+</section>
+<section id="possible-improvements" class="level3">
+<h3 class="anchored" data-anchor-id="possible-improvements">Possible Improvements</h3>
+<ul>
+<li><p>The original scale of the features might be informative. By standardizing features, we might be giving undue weight to noise features with low variability.</p></li>
+<li><p>Are there distinct gene pathway signatures for different drugs? In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.</p></li>
+</ul>
+<hr>
+</section>
+<section id="instability" class="level3">
+<h3 class="anchored" data-anchor-id="instability">Instability</h3>
+<ul>
+<li><p><strong>The Problem</strong>: When predictors are highly correlated, the <span class="math inline">\(\hat{\beta}\)</span> estimated by lasso becomes unstable.</p></li>
+<li><p>Small changes in the training data can cause the lasso to switch between two highly correlated genes, leading to conflicting interpretations of the same underlying signal.</p></li>
+</ul>
+<hr>
+<p>(todo)</p>
+</section>
+<section id="simulation-setup" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-setup">Simulation setup</h3>
+<ul>
+<li><p><strong>Design</strong>: Take two highly correlated genes (<span class="math inline">\(r &gt; 0.9\)</span>) and use them to predict viability.</p></li>
+<li><p><strong>Experiment</strong>: Generate 100 bootstrap resamples of the CLL data and fit a lasso model to each.</p></li>
+</ul>
+<hr>
+<p>(todo)</p>
+</section>
+<section id="simulation-results" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-results">Simulation results</h3>
+<ul>
+<li><p>Observe how often each gene is selected.</p></li>
+<li><p>In many cases, the lasso will pick Gene A in 50% of the trials and Gene B in the other 50%, even if both are equally important.</p></li>
+</ul>
+<hr>
+</section>
+<section id="takeaway" class="level3">
+<h3 class="anchored" data-anchor-id="takeaway">Takeaway</h3>
+<ul>
+<li><p>Selection <span class="math inline">\(\neq\)</span> Importance</p>
+<ul>
+<li>Just because a gene was not selected by the lasso does not mean it is not biologically relevant – it could be correlated with a gene that’s part of the true biological mechanism.</li>
+</ul></li>
+<li><p>More generally, we careful applying sparse models on correlated data. There may be many plausible, equally predictive explanations based on different subsets of features.</p></li>
+</ul>
+<hr>
+</section>
+<section id="interpretability-vs.-accuracy-trade-offs" class="level3">
+<h3 class="anchored" data-anchor-id="interpretability-vs.-accuracy-trade-offs">Interpretability vs.&nbsp;accuracy trade-offs</h3>
+<ul>
+<li><p>Often, people assume that to get higher accuracy, we need “black-box” models (like deep learning or Random Forests) and sacrifice interpretability.</p></li>
+<li><p>But in many scientific problems (like today’s case study, see also <code>r Citep(bib, "openproblemsBenchmarksOpen")</code>), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
