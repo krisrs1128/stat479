@@ -274,6 +274,10 @@ class LlamaAttention(nn.Module):
         # upcast attention to fp32
         attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
         attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)
+
+        # Hook for attention weights
+        attn_weights = self.hook_attn_weights(attn_weights)
+
         attn_output = torch.matmul(attn_weights, value_states)
 
         if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
@@ -283,6 +287,9 @@ class LlamaAttention(nn.Module):
             )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
+
+        # Hook for attention heads
+        attn_output = self.hook_attn_heads(attn_output)
 
         attn_output = attn_output.view(bsz, q_len, -1)
         attn_output = self.o_proj(attn_output)
@@ -550,11 +557,11 @@ class LlamaDecoderLayer(nn.Module):
         """
         residual = hidden_states
 
-        self.hook_initial_hs(hidden_states) #added
+        hidden_states = self.hook_initial_hs(hidden_states) #added
 
         hidden_states = self.input_layernorm(hidden_states)
 
-        self.hook_after_attn_normalization(hidden_states) #added
+        hidden_states = self.hook_after_attn_normalization(hidden_states) #added
 
         # Self Attention
         hidden_states, self_attn_weights, present_key_value = self.self_attn(
@@ -568,25 +575,25 @@ class LlamaDecoderLayer(nn.Module):
             **kwargs,
         )
 
-        self.hook_after_attn(hidden_states) #added
+        hidden_states = self.hook_after_attn(hidden_states) #added
 
         hidden_states = residual + hidden_states
 
-        self.hook_after_attn_hs(hidden_states) #added
+        hidden_states = self.hook_after_attn_hs(hidden_states) #added
 
         # Fully Connected
         residual = hidden_states
         hidden_states = self.post_attention_layernorm(hidden_states)
 
-        self.hook_after_mlp_normalization(hidden_states) #added
+        hidden_states = self.hook_after_mlp_normalization(hidden_states) #added
 
         hidden_states = self.mlp(hidden_states)
 
-        self.hook_after_mlp(hidden_states) #added
+        hidden_states = self.hook_after_mlp(hidden_states) #added
 
         hidden_states = residual + hidden_states
 
-        self.hook_after_mlp_hs(hidden_states) #added
+        hidden_states = self.hook_after_mlp_hs(hidden_states) #added
 
         outputs = (hidden_states,)
 
@@ -865,7 +872,7 @@ class LlamaModel(LlamaPreTrainedModel):
 
         hidden_states = self.norm(hidden_states)
 
-        self.final_hook(hidden_states) #added
+        hidden_states = self.final_hook(hidden_states) #added
 
         # add hidden states from the last decoder layer
         if output_hidden_states:
@@ -932,16 +939,12 @@ class LlamaModel(LlamaPreTrainedModel):
             )
 
         # In case the provided `attention` mask is 2D, we generate a causal mask here (4D).
-        from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask_with_cache_position
-        causal_mask = _prepare_4d_causal_attention_mask_with_cache_position(
+        from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask
+        causal_mask = _prepare_4d_causal_attention_mask(
             attention_mask,
-            sequence_length=sequence_length,
-            target_length=target_length,
-            dtype=dtype,
-            device=device,
-            min_dtype=min_dtype,
-            cache_position=cache_position,
-            batch_size=input_tensor.shape[0],
+            input_shape=(input_tensor.shape[0], sequence_length),
+            inputs_embeds=input_tensor,
+            past_key_values_length=past_seen_tokens,
         )
 
         if (
@@ -1489,7 +1492,7 @@ class TextDataset(Dataset):
         text = self.texts[idx]
         return text, label
 
-def extract_hidden_states(dataloader, tokenizer, model, logger,
+def extract_hidden_states(dataloader, tokenizer, model,
                           extraction_layers=[0, 1],
                           extraction_locs=[1, 7],
                           extraction_tokens=[-1],
