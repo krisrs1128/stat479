@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>sparse_autoencoder_method</title>
+<title>23. Sparse Autoencoder Design</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,11 +73,25 @@ window.Quarto = {
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="23-sparse_autoencoder_method.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></div>
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">23. Sparse Autoencoder Design</h1>
+</div>
 
 
 
-<section id="sparse-autoencoder-design" class="level1">
-<h1>23. Sparse Autoencoder Design</h1>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
 <ul>
 <li><p>motivating application</p></li>
 <li><p>optimization objective</p></li>
@@ -276,7 +290,6 @@ window.Quarto = {
 <p>Given <span class="math inline">\(x \in \mathbf{R}^D\)</span>, <span class="math inline">\(W^{dec} \in \mathbf{R}^{D \times F}\)</span>, <span class="math inline">\(\lambda &gt; 0\)</span>:</p>
 <p>Implement FISTA to solve: <span class="math display">\[\min_f \frac{1}{2}\|x - W^{dec}f\|_2^2 + \lambda\|f\|_1\]</span></p>
 <p>Compare convergence rate to standard ISTA.</p>
-</section>
 </section>
 </section>
 

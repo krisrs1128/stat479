@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Interpretable Machine Learning   STAT 479 - Spring 2025</title>
+<title>24. Interpreting and Applying SAEs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -112,7 +112,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Interpretable Machine Learning <br> STAT 479 - Spring 2025</h1>
+<h1 class="title">24. Interpreting and Applying SAEs</h1>
 <p class="subtitle lead">Lecture Slides</p>
 </div>
 
@@ -138,8 +138,6 @@ window.Quarto = {
     A bibentry of bibtype 'Article' has to specify the field: c("journaltitle", "journal")</code></pre>
 </div>
 </div>
-<section id="introduction" class="level1">
-<h1>1. Introduction</h1>
 <ul>
 <li><p>course logistics</p></li>
 <li><p>overall motivation</p></li>
@@ -354,23 +352,20 @@ window.Quarto = {
 <li><p>We will revisit this question periodically as we introduce new methods and study the contexts in which they are worth applying.</p></li>
 </ul>
 <hr>
-</section>
-</section>
-</section>
-<section id="definitions" class="level1">
-<h1>2. Definitions</h1>
 <ul>
 <li><p>intrinsic vs.&nbsp;post-hoc</p></li>
 <li><p>global vs.&nbsp;local explanation</p></li>
 <li><p>workflow</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes">Learning outcomes</h3>
 <ol type="1">
 <li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
 </ol>
 <hr>
+</section>
 </section>
 <section id="reading-1" class="level2">
 <h2 class="anchored" data-anchor-id="reading-1">Reading</h2>
@@ -590,11 +585,6 @@ graph LR
 <p><img src="figures/kim_iclr.png" class="center" width="700/"></p>
 <p>This bridge is especially important in collaborative work! Data science never exists in a vacuum.</p>
 <hr>
-</section>
-</section>
-</section>
-<section id="linear-models" class="level1">
-<h1>3. Linear Models</h1>
 <ul>
 <li><p>motivating case study</p></li>
 <li><p>linear models</p></li>
@@ -602,10 +592,12 @@ graph LR
 <li><p>bias variance trade-off</p></li>
 </ul>
 <hr>
+</section>
+</section>
 <section id="reading-2" class="level2">
 <h2 class="anchored" data-anchor-id="reading-2">Reading</h2>
 <ul>
-<li>Sections 10.4 - 10.6. Yu, B., &amp; Barter, R. L. (2024). Veridical data science. London, England: MIT Press. https://vdsbook.com/10-ls_continued</li>
+<li><strong>Sections 10.4 - 10.6.</strong>. Yu, B., &amp; Barter, R. L. (2024). Veridical data science. London, England: MIT Press. https://vdsbook.com/10-ls_continued</li>
 </ul>
 <hr>
 <section id="learning-outcomes-1" class="level3">
@@ -808,17 +800,13 @@ y_{i} &amp;= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
 <li><p><span class="math inline">\(\lambda_{\text{1se}}\)</span>: The simplest model, i.e., largest <span class="math inline">\(\lambda\)</span>, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.</p></li>
 </ul>
 <hr>
-</section>
-</section>
-</section>
-<section id="linear-models-1" class="level1">
-<h1>4. Linear Models</h1>
 <ul>
 <li><p>interpreting sparse linear models</p></li>
 <li><p>application to case study</p></li>
 <li><p>interpretation challenges</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-2" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-2">Learning outcomes</h3>
 <ol type="1">
@@ -990,10 +978,6 @@ y_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right
 <li><p>But in many scientific problems (like today’s case study, see also (, )), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.</p></li>
 </ul>
 <hr>
-</section>
-</section>
-<section id="nonlinear-models" class="level1">
-<h1>5. Nonlinear Models</h1>
 <ul>
 <li><p>motivating case study</p></li>
 <li><p>kernels</p></li>
@@ -1001,12 +985,14 @@ y_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right
 <li><p>tuning</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-3" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-3">Learning outcomes</h3>
 <ol type="1">
 <li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
 </ol>
 <hr>
+</section>
 </section>
 <section id="reading-3" class="level2">
 <h2 class="anchored" data-anchor-id="reading-3">Reading</h2>
@@ -1342,11 +1328,6 @@ x_{n}\)</span>. We again ask you for a guess of <span class="math inline">\(y_{\
 </ol>
 <p><span class="math display">\[p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)\]</span></p>
 <hr>
-</section>
-</section>
-</section>
-<section id="using-nonlinear-models" class="level1">
-<h1>6. Using Nonlinear Models</h1>
 <ul>
 <li>Hyperparameter tuning</li>
 <li>Application to case study</li>
@@ -1360,12 +1341,14 @@ x_{n}\)</span>. We again ask you for a guess of <span class="math inline">\(y_{\
 </div>
 </div>
 <hr>
+</section>
 <section id="learning-outcomes-4" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-4">Learning outcomes</h3>
 <ol type="1">
 <li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
 </ol>
 <hr>
+</section>
 </section>
 <section id="reading-4" class="level2">
 <h2 class="anchored" data-anchor-id="reading-4">Reading</h2>
@@ -1728,11 +1711,6 @@ y = f(x) + \epsilon
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">n</span>(), <span class="at">by =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <hr>
-</section>
-</section>
-</section>
-<section id="classification-and-regression-trees" class="level1">
-<h1>7. Classification and Regression Trees</h1>
 <ul>
 <li><p>motivating case study</p></li>
 <li><p>trees and partitions</p></li>
@@ -1740,6 +1718,7 @@ y = f(x) + \epsilon
 <li><p>tuning and stability</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-5" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-5">Learning outcomes</h3>
 <ol type="1">
@@ -1747,6 +1726,7 @@ y = f(x) + \epsilon
 <li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
 </ol>
 <hr>
+</section>
 </section>
 <section id="reading-5" class="level2">
 <h2 class="anchored" data-anchor-id="reading-5">Reading</h2>
@@ -1945,11 +1925,6 @@ y = f(x) + \epsilon
 <section id="exercise-split-choice-visual-explanation" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-split-choice-visual-explanation">Exercise: Split Choice Visual Explanation</h3>
 <p>Respond to [Split Choice Visual Explanation] in the exercise sheet.</p>
-</section>
-</section>
-</section>
-<section id="applying-cart" class="level1">
-<h1>8. Applying CART</h1>
 <ul>
 <li><p>application to case study</p></li>
 <li><p>data-driven basis interpretation</p></li>
@@ -1957,6 +1932,7 @@ y = f(x) + \epsilon
 <li><p>comparing importance measures</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-6" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-6">Learning outcomes</h3>
 <ol type="1">
@@ -1978,6 +1954,7 @@ y = f(x) + \epsilon
 </ul></li>
 </ul>
 <hr>
+</section>
 </section>
 <section id="cart-case-study" class="level2">
 <h2 class="anchored" data-anchor-id="cart-case-study">CART Case Study</h2>
@@ -2131,11 +2108,6 @@ y = f(x) + \epsilon
 <li>Regularizing high-dimensional basis</li>
 <li>Evaluating out-of-sample via LOO</li>
 </ol>
-</section>
-</section>
-</section>
-<section id="tree-ensembles" class="level1">
-<h1>9. Tree Ensembles</h1>
 <ul>
 <li><p>motivating case study</p></li>
 <li><p>random forest algorithm</p></li>
@@ -2143,6 +2115,7 @@ y = f(x) + \epsilon
 <li><p>critiques</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcome" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcome">Learning outcome</h3>
 <ol type="1">
@@ -2161,6 +2134,7 @@ y = f(x) + \epsilon
 <li><code>imodels</code> documentation.</li>
 </ul>
 <hr>
+</section>
 </section>
 <section id="motivating-case-study-1" class="level2">
 <h2 class="anchored" data-anchor-id="motivating-case-study-1">Motivating Case Study</h2>
@@ -2347,7 +2321,6 @@ y = f(x) + \epsilon
 <section id="exercise-3" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-3">Exercise</h2>
 <p><strong>Depth-1 Boosting</strong>. Prove that boosting with stumps (<span class="math inline">\(d=1\)</span>) produces an additive model <span class="math inline">\(f(X) = \sum_{j=1}^p f_j(X_j)\)</span>.</p>
-</section>
 </section>
 <section id="applying-tree-ensembles" class="level1">
 <h1>10. Applying Tree Ensembles</h1>
@@ -2672,17 +2645,13 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 <p>Compact visualization identifies samples with similar explanations.</p>
 <p><span style="font-size: 18px;"> <img width="900" src="figures/shapley_dataset_level.png" class="center"> </span></p>
 <hr>
-</section>
-</section>
-</section>
-<section id="shap-computation" class="level1">
-<h1>12. SHAP computation</h1>
 <ul>
 <li><p>KernelSHAP</p></li>
 <li><p>amortization</p></li>
 <li><p>application to case study</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-9" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-9">Learning outcomes</h3>
 <ol type="1">
@@ -2744,6 +2713,7 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 <section id="exercise-kernelshap-code" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-kernelshap-code">Exercise: KernelSHAP Code</h3>
 <hr>
+</section>
 </section>
 <section id="amortization" class="level2">
 <h2 class="anchored" data-anchor-id="amortization">Amortization</h2>
@@ -2823,17 +2793,13 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 </section>
 <section id="exercise-marginal-vs.-conditional" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-marginal-vs.-conditional">Exercise: Marginal vs.&nbsp;Conditional</h3>
-</section>
-</section>
-</section>
-<section id="alternative-views-of-shap" class="level1">
-<h1>12. Alternative Views of SHAP</h1>
 <ul>
 <li>the sensitivity paradox</li>
 <li>computing <span class="math inline">\(v_x(S)\)</span> two ways</li>
 <li>software implementations</li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-10" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-10">Learning outcomes</h3>
 <ol type="1">
@@ -2922,8 +2888,8 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 <p>Sketch the sampling regions in 2D feature space.</p>
 <hr>
 </section>
-<section id="linear-models-2" class="level3">
-<h3 class="anchored" data-anchor-id="linear-models-2">Linear Models</h3>
+<section id="linear-models" class="level3">
+<h3 class="anchored" data-anchor-id="linear-models">Linear Models</h3>
 <p>For <span class="math inline">\(f(x) = \alpha_0 + \sum_i \alpha_i x_i\)</span>:</p>
 <p><span class="math display">\[\varphi_i = \alpha_i(x_i - \mathbf{E}[X_i])\]</span></p>
 <p>This is the true attribution.</p>
@@ -3044,16 +3010,13 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 <span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="co"># v_marg_2 should equal E[X_1] = 0.5</span></span>
 <span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co"># v_cond_2 should equal E[X_1 | X_2=1] = 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-</section>
-<section id="shap-and-interventions" class="level1">
-<h1>13. SHAP and Interventions</h1>
 <ul>
 <li>causal graphs and the do-operator</li>
 <li>marginal SHAP as intervention</li>
 <li>code examples</li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-11" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-11">Learning outcomes</h3>
 <ol type="1">
@@ -3061,6 +3024,7 @@ v_{x}(S) = \mathbb{E}_{p(x'_{S^C} \mid x_{S})}[f(x_{S}, x'_{S^C})]
 <li>Describe the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and apply them to realistic case studies with appropriate validation checks</li>
 </ol>
 <hr>
+</section>
 </section>
 <section id="causal-view" class="level2">
 <h2 class="anchored" data-anchor-id="causal-view">Causal View</h2>
@@ -3468,17 +3432,13 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <section id="exercise-7" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-7">Exercise</h3>
 <hr>
-</section>
-</section>
-</section>
-<section id="composing-deep-models" class="level1">
-<h1>16. Composing Deep Models</h1>
 <ul>
 <li><p>common layers</p></li>
 <li><p>training</p></li>
 <li><p>application to case study</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-13" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-13">Learning outcomes</h3>
 <ul>
@@ -3529,6 +3489,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <p>Maps logits to probability simplex</p>
 <p>Temperature <span class="math inline">\(\tau\)</span>: <span class="math inline">\(\sigma_\tau(z)_i = \frac{\exp(z_i/\tau)}{\sum_j \exp(z_j/\tau)}\)</span> - <span class="math inline">\(\tau \to 0\)</span>: argmax - <span class="math inline">\(\tau \to \infty\)</span>: uniform</p>
 <hr>
+</section>
 </section>
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">Training</h2>
@@ -3645,11 +3606,6 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <p>Layer 50 features: Class-discriminative</p>
 <p>Nearest neighbors grouped by semantic category - Invariant to illumination, pose, scale - Different “Residential” images closer than “Residential” vs “Forest”</p>
 <p>Network has learned a metric on land-use types</p>
-</section>
-</section>
-</section>
-<section id="attention" class="level1">
-<h1>17. Attention</h1>
 <ul>
 <li><p>motivating case study</p></li>
 <li><p>data processing goals</p></li>
@@ -3657,6 +3613,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <li><p>multihead attention</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-14" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-14">Learning outcomes</h3>
 <ul>
@@ -3685,6 +3642,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <h3 class="anchored" data-anchor-id="statistical-formulation-3">Statistical Formulation</h3>
 <p><strong>Text</strong>. Token sequence <span class="math inline">\(x_1, \dots, x_n \in \{0,1\}^V\)</span> <strong>Labels</strong>. <span class="math inline">\(y \in \{0,1\}^{13}\)</span> <strong>Model</strong>. LLM <span class="math inline">\(f(x; \theta)\)</span> <strong>Task</strong>. Which phrases and which parts of <span class="math inline">\(\theta\)</span> recognize emotion?</p>
 <hr>
+</section>
 </section>
 <section id="attention-mechanism" class="level2">
 <h2 class="anchored" data-anchor-id="attention-mechanism">Attention Mechanism</h2>
@@ -3794,11 +3752,6 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <section id="exercise-9" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-9">Exercise</h3>
 <hr>
-</section>
-</section>
-</section>
-<section id="transformers" class="level1">
-<h1>18. Transformers</h1>
 <ul>
 <li><p>MLP component</p></li>
 <li><p>transformers</p></li>
@@ -3806,6 +3759,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <li><p>application to case study</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-15" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-15">Learning outcomes</h3>
 <ul>
@@ -3861,6 +3815,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>X_next <span class="op">=</span> block(X)  <span class="co"># X: (SeqLen, Batch, Dim)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
+</section>
 </section>
 <section id="variants" class="level2">
 <h2 class="anchored" data-anchor-id="variants">Variants</h2>
@@ -4284,11 +4239,6 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 </section>
 <section id="exercise-jargon-free-summary" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-jargon-free-summary">Exercise: Jargon-free Summary</h3>
-</section>
-</section>
-</section>
-<section id="linear-probes-and-concepts" class="level1">
-<h1>21. Linear Probes and Concepts</h1>
 <ul>
 <li><p>motivating application</p></li>
 <li><p>linear probes</p></li>
@@ -4296,6 +4246,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <li><p>probes vs.&nbsp;concepts</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-18" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-18">Learning Outcomes</h3>
 <ul>
@@ -4330,6 +4281,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <hr>
 <p><img src="figures/kim_iclr.png" class="center"></p>
 <hr>
+</section>
 </section>
 <section id="linear-probes" class="level2">
 <h2 class="anchored" data-anchor-id="linear-probes">Linear Probes</h2>
@@ -4446,11 +4398,6 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 </section>
 <section id="exercise-agency-vs.-automation" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-agency-vs.-automation">Exercise: Agency vs.&nbsp;Automation</h3>
-</section>
-</section>
-</section>
-<section id="applying-probes-and-concepts" class="level1">
-<h1>22. Applying Probes and Concepts</h1>
 <ul>
 <li><p>application to case study</p></li>
 <li><p>testing concept vectors</p></li>
@@ -4458,6 +4405,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <li><p>user study evaluation</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-19" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-19">Learning Outcomes</h3>
 <ul>
@@ -4487,6 +4435,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> torchvision.models.resnet50(pretrained<span class="op">=</span><span class="va">True</span>).<span class="bu">eval</span>()</span>
 <span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>model.layer3.register_forward_hook(activation_fun(<span class="st">'layer3'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
+</section>
 </section>
 <section id="testing-cavs" class="level2">
 <h2 class="anchored" data-anchor-id="testing-cavs">Testing CAVs</h2>
@@ -4613,11 +4562,6 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 </section>
 <section id="exercise-complementarity" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-complementarity">Exercise: Complementarity</h3>
-</section>
-</section>
-</section>
-<section id="sparse-autoencoder-design" class="level1">
-<h1>23. Sparse Autoencoder Design</h1>
 <ul>
 <li><p>motivating application</p></li>
 <li><p>optimization objective</p></li>
@@ -4625,6 +4569,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <li><p>interpreting outputs</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-20" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-20">Learning Outcomes</h3>
 <ul>
@@ -4679,6 +4624,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <p>Such that: <span class="math inline">\(x \approx \sum_{i=1}^F f_i(x) W_{\cdot,i}^{dec}\)</span></p>
 <p><strong>Constraint</strong>. <span class="math inline">\(\|f(x)\|_0 \ll F\)</span> (most coefficients are zero)</p>
 <hr>
+</section>
 </section>
 <section id="sparse-autoencoder-architecture" class="level2">
 <h2 class="anchored" data-anchor-id="sparse-autoencoder-architecture">Sparse Autoencoder Architecture</h2>
@@ -4816,17 +4762,13 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <p>Given <span class="math inline">\(x \in \mathbf{R}^D\)</span>, <span class="math inline">\(W^{dec} \in \mathbf{R}^{D \times F}\)</span>, <span class="math inline">\(\lambda &gt; 0\)</span>:</p>
 <p>Implement FISTA to solve: <span class="math display">\[\min_f \frac{1}{2}\|x - W^{dec}f\|_2^2 + \lambda\|f\|_1\]</span></p>
 <p>Compare convergence rate to standard ISTA.</p>
-</section>
-</section>
-</section>
-<section id="interpreting-and-applying-saes" class="level1">
-<h1>24. Interpreting and Applying SAEs</h1>
 <ul>
 <li><p>interpreting features</p></li>
 <li><p>application to case study</p></li>
 <li><p>model safety and control</p></li>
 </ul>
 <hr>
+</section>
 <section id="learning-outcomes-21" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcomes-21">Learning Outcomes</h3>
 <ul>
@@ -4881,6 +4823,7 @@ y &amp;= \text{softmax}(W_L h_{L-1} + b_L)
 <p>50% coverage threshold inversely proportional to number of “alive” features.</p>
 <p>Suggests <span class="math inline">\(F\)</span> should be comparable to inverse rarest concept frequency.</p>
 <hr>
+</section>
 </section>
 <section id="validation-methods" class="level2">
 <h2 class="anchored" data-anchor-id="validation-methods">Validation Methods</h2>
