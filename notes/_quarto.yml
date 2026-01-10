@@ -3,6 +3,7 @@ project:
 
 format:
   revealjs:
+    embed-resources: true
     theme: simple
     slide-number: true
     transition: fade
