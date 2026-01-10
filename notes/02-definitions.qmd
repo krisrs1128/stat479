@@ -1,4 +1,7 @@
-# 2. Definitions
+---
+title: 2. Definitions
+---
+
 
 * intrinsic vs. post-hoc
 

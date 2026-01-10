@@ -1,4 +1,7 @@
-# 12. SHAP computation
+---
+title: 12. SHAP computation
+---
+
 
 * KernelSHAP
 

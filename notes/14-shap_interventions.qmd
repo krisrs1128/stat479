@@ -1,4 +1,7 @@
-# 13. SHAP and Interventions
+---
+title: 13. SHAP and Interventions
+---
+
 
 * causal graphs and the do-operator
 * marginal SHAP as intervention

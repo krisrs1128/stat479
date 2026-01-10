@@ -1,4 +1,7 @@
-# 3. Linear Models
+---
+title: 3. Linear Models
+---
+
 
 * motivating case study
 
@@ -7,6 +10,12 @@
 * sparse linear models
 
 * bias variance trade-off
+
+---
+
+## Reading
+
+- **Sections 10.4 - 10.6.**. Yu, B., & Barter, R. L. (2024). Veridical data science. London, England: MIT Press. https://vdsbook.com/10-ls_continued
 
 ---
 

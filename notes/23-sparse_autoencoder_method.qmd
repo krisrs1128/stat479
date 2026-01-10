@@ -1,4 +1,7 @@
-# 23. Sparse Autoencoder Design
+---
+title: 23. Sparse Autoencoder Design
+---
+
 
 * motivating application
 

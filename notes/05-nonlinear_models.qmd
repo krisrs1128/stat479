@@ -1,4 +1,7 @@
-# 5. Nonlinear Models
+---
+title: 5. Gaussian Processes
+---
+
 
 * motivating case study
 

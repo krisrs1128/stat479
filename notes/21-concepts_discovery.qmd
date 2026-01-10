@@ -1,4 +1,7 @@
-# 21. Linear Probes and Concepts
+---
+title: 21. Linear Probes and Concepts
+---
+
 
 * motivating application
 

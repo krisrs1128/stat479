@@ -1,4 +1,7 @@
-# 24. Interpreting and Applying SAEs
+---
+title: 24. Interpreting and Applying SAEs
+---
+
 
 * interpreting features
 

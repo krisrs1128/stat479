@@ -1,4 +1,7 @@
-# 4. Linear Models
+---
+title: 4. Interpreting Linear Models
+---
+
 
 * interpreting sparse linear models
 

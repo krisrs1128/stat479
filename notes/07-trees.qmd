@@ -1,4 +1,6 @@
-# 7. Classification and Regression Trees
+---
+title: 7. Classification and Regression Trees
+---
 
 * motivating case study
 
@@ -21,7 +23,6 @@ motivations behind them, and metrics that can be used to quantify whether they
 have been met.
 
 ---
-
 
 ## Reading
 

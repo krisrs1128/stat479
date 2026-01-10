@@ -1,9 +1,18 @@
-# 6. Using Nonlinear Models
+---
+title: 6. Using Gaussian Proceses
+---
+
 
 -   Hyperparameter tuning
 -   Application to case study
 -   Posterior predictives
 -   Interpretability evaluation
+
+```{r}
+#| echo: false
+library(RefManageR)
+bib <- ReadBib("references.bib")
+```
 
 ---
 

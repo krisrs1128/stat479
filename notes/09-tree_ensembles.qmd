@@ -1,4 +1,7 @@
-# 9. Tree Ensembles
+---
+title: 9. Tree Ensembles
+---
+
 
 * motivating case study
 

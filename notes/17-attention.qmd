@@ -1,4 +1,7 @@
-# 17. Attention
+---
+title: 17. Attention
+---
+
 
 * motivating case study
 

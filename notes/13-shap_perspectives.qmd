@@ -1,4 +1,7 @@
-# 12. Alternative Views of SHAP
+---
+title: 12. Alternative Views of SHAP
+---
+
 
 * the sensitivity paradox
 * computing $v_x(S)$ two ways

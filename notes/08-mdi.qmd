@@ -1,4 +1,7 @@
-# 8. Applying CART
+---
+title: 8. Applying CART
+---
+
 
 * application to case study
 
