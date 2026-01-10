@@ -1,0 +1,61 @@
+---
+title: Visualizing LLM Attention Patterns
+format:
+  html:
+    code-fold: false
+---
+
+This notebook visualizes attention weights extracted from a LLaMA model processing emotion-related text. Run `17-emotion_attention_extract.ipynb` first to generate the data.
+
+```{r}
+library(tidyverse)
+library(glue)
+library(fs)
+theme_set(theme_classic())
+ddir  <- path("activities/outputs")
+```
+
+## Load Examples
+
+```{r}
+example_idx <- 5
+example_data <- read_csv(ddir / glue("attention_example_{example_idx}.csv"), show_col_types = FALSE)
+```
+
+## Visualize Attention Weights
+
+First order heads by a clustering.
+
+```{r}
+layer_idx <- 11
+filtered_attention <- example_data |>
+  filter(layer == layer_idx, token_position > 0, token_position < max(token_position))
+
+# order the heads using clustering
+attention_matrix <- filtered_attention |>
+  pivot_wider(names_from = head, values_from = attention_weight, id_cols = token_position)
+head_order <- hclust(dist(t(attention_matrix[, -1])))$order - 1
+
+# visualize attentions
+filtered_attention |>
+  mutate(
+    token_ = glue("{gsub('Ġ', '', token)}_{token_position}"),
+    head_ordered = factor(head, levels = head_order)
+  ) |>
+  ggplot(aes(
+    head_ordered,
+    reorder(token_, -token_position),
+    fill = attention_weight)
+  ) +
+  geom_tile() +
+  scale_fill_distiller(direction = 1) +
+  labs(
+    x = "Attention Head",
+    y = "Token",
+    fill = "Attention\nWeight"
+  ) +
+  theme(
+    axis.text.y = element_text(size = 8),
+    panel.grid = element_blank()
+  )
+```
