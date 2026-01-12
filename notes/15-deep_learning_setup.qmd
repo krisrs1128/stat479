@@ -206,5 +206,3 @@ Purpose: Increase effective dataset size, regularize
 ---
 
 ### Exercise
-
----

@@ -2,6 +2,12 @@
 title: 2. Definitions
 ---
 
+```{r}
+#| echo: false
+#| message: false
+library(RefManageR)
+bib <- ReadBib("references.bib")
+```
 
 * intrinsic vs. post-hoc
 
@@ -87,7 +93,7 @@ inference complexity factor in.
 
 ---
 
-### Exercise: Linear Model Interpretability
+### Discussion: Linear Model Interpretability
 
 ---
 
@@ -281,5 +287,3 @@ The talk `r Citep(bib, "kim_iclr")` describes how interpretability bridges human
 
 This bridge is especially important in collaborative work! Data science never
 exists in a vacuum.
-
----

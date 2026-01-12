@@ -2,6 +2,12 @@
 title: 1. Introduction
 ---
 
+```{r}
+#| echo: false
+#| message: false
+library(RefManageR)
+bib <- ReadBib("references.bib")
+```
 
 * course logistics
 
@@ -28,12 +34,12 @@ Thursday
 * Exercises [Technical]
 
 
-Friday (every ~ 3 weeks)
+Friday (every ~ 2 weeks)
 * Homework due
 
 ---
 
-### Learning outcommes
+### Learning outcomes
 
 - **Compare** the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.
 - Within a specific application context, **evaluate** the trade-offs associated with competing interpretable machine learning techniques.
@@ -41,7 +47,7 @@ Friday (every ~ 3 weeks)
 
 ---
 
-### Learning outcommes
+### Learning outcomes
 
 - **Describe** the theoretical foundation of post-hoc explanation methods like SHAP and linear probes values and **apply** them to realistic case studies with appropriate validation checks
 - **Analyze** large-scale foundation models using methods like sparse autoencoders and **describe** their relevance to problems of model control and AI-driven design.
@@ -248,5 +254,3 @@ Reference `r Citep(bib, "rigorous_interpretability")` notes that new interpretab
 - Each of these types fo evaluation will come with their own performance metrics.
 
 - We will revisit this question periodically as we introduce new methods and study the contexts in which they are worth applying.
-
----

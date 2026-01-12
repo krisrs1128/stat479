@@ -114,5 +114,3 @@ intrinsic interpretability
 ---
 
 ### Exercise: Implicit regularization
-
----

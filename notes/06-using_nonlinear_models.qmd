@@ -469,5 +469,3 @@ data_model <- data |>
   filter(time < 1210 | time > 1220) |>
   dplyr::slice(seq(1, n(), by = 10))
 ```
-
----

@@ -420,5 +420,3 @@ changed?
 1. [Optional]. The quantity in the previous part has a Gaussian distribution. Can you derive formulas for $\mu_{*}$ and $\sigma_{*}^2$?
 
 $$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
-
----

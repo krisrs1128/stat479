@@ -261,5 +261,3 @@ testing the model on that data.
 - $\lambda_{\text{min}}$: Minimizes the cross-validation error.
 
 - $\lambda_{\text{1se}}$: The simplest model, i.e., largest $\lambda$, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.
-
----

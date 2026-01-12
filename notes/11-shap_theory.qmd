@@ -215,5 +215,3 @@ Compact visualization identifies samples with similar explanations.
 <span style="font-size: 18px;">
 <img width="900" src="figures/shapley_dataset_level.png" class="center"/>
 </span>
-
----

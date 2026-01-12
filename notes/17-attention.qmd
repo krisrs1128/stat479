@@ -184,5 +184,3 @@ $$x_n^{(m)} = \text{MLP}_\theta(y_n^{(m)})$$
 ---
 
 ### Exercise
-
----

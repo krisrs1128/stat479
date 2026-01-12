@@ -201,5 +201,3 @@ and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hype
 - Often, people assume that to get higher accuracy, we need "black-box" models (like deep learning or Random Forests) and sacrifice interpretability.
 
 - But in many scientific problems (like today's case study, see also `r Citep(bib, "openproblemsBenchmarksOpen")`), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.
-
----
