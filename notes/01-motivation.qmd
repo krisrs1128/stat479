@@ -21,21 +21,29 @@ bib <- ReadBib("references.bib")
 
 ---
 
+### Office Hours
+
+_Instructor_
+
+* Kris Sankaran [ksankaran@wisc.edu]
+
+_TAs_
+
+* Jiaxin Ye [jye73@wisc.edu]
+
+We will announce in-person and virtual office hours depending on the results of
+the poll on the syllabus. Submit your preferences by **Sunday  at 6pm**.
+
+---
+
 ### Weekly rhythm
 
-Tuesday
-
-* New methods
-* Exercises [Conceptual]
-
-Thursday
-
-* Case study using method
-* Exercises [Technical]
-
+Tuesday: New methods
+Thursday: Case study
+Both: Short discussions/exercises
 
 Friday (every ~ 2 weeks)
-* Homework due
+* HW1 February 6
 
 ---
 
@@ -54,17 +62,42 @@ Friday (every ~ 2 weeks)
 
 ---
 
-## Materials
+## Class Resources
 
-materials
+- Slides and Readings
+
+- Assignments. Discussion, In-Class Exercises, HW.
+
+- Piazza
+
+- Canvas Page: https://canvas.wisc.edu/courses/499874/modules
+    - links to everything else
+
+---
+
+### Late Policy
+
+Late submissions are penalized 10% per day late, up to 5 days. No submissions
+accepted after that.
+
+- Two 24 hour grace periods for HW
+- Four 24 hour grace periods for in-class discussion and exercises
+
+---
+
+### Evaluation
+
+- In-Class Discussion and Exercises: 20%
+- Midterm (week 8) + Final Exam: 35%
+- Homeworks: 45%
 
 ---
 
 ### Expectations
 
----
-
-### Evaluation
+- In-class submissions are graded for completeness. These are designed to help you gauge your understanding and help the instructors with pacing.
+- Homeworks will be graded for correctness according to rubrics that are released on Canvas in advance.
+- Exams will only refer to concepts described in the reading. If you master the readings, you will do well.
 
 ---
 
@@ -192,7 +225,7 @@ See `r Citep(bib, "mitPredictiveModels")`.
 
 ---
 
-### Exercise: Past Experience
+### Discussion: Past Experience
 
 Introduce yourself to your neighbors. What is your name and degree program? What
 are your areas of interest? How might interpretability or explainability be

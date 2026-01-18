@@ -93,10 +93,6 @@ inference complexity factor in.
 
 ---
 
-### Discussion: Linear Model Interpretability
-
----
-
 ### Post-hoc interpretability
 
 Some common strategies for explaining black box models include,
@@ -193,10 +189,6 @@ argued that it can be misleading `r Citep(bib, "Rudin2019")`.
 </a>
 :::
 ::::
-
----
-
-### Exercise:
 
 ---
 

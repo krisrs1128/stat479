@@ -25,6 +25,7 @@ title: 3. Linear Models
 like sparse regression, gaussian processes, and classification and regression
 trees, and apply them to realistic case studies with appropriate validation
 checks.
+
 1. Compare the competing definitions of interpretable machine learning, the
 motivations behind them, and metrics that can be used to quantify whether they
 have been met.
@@ -78,7 +79,7 @@ _Outcome_
 
 ## Sparse Linear Regression
 
-- Viability can be viewed as a **response variable** $y \in \mathbb{R}^{N}$, and the molecular variables can be treated as **features** $X \in \mathbb{R}^{N  \times J}$. Here
+- Viability can be viewed as a **response variable** $y \in \mathbf{R}^{N}$, and the molecular variables can be treated as **features** $X \in \mathbf{R}^{N  \times J}$. Here
 
 - The setting is **high-dimensional** with few samples compared to features. Without some sort of regularization (like a sparsity assumption), the problem is underdetermined, since $N = 121, J = 9553$.
 
@@ -90,7 +91,7 @@ This was a real study! Linear models are not just for class work...they are a pr
 
 ### Single continuous predictor
 
-Imagine modeling viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbb{R}$:
+Imagine modeling viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbf{R}$:
 
 \begin{align*}
 y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
@@ -104,7 +105,7 @@ The least-squares estimate $\hat{\beta} := \left(\hat{\beta}_{0}, \hat{\beta}_{1
 
 ---
 
-### Visualization
+### Sketch
 
 ---
 
@@ -188,6 +189,12 @@ generates one line per category, and the lines are parallel.
 
 ---
 
+### Discussion: Linear Model Interpretability
+
+Respond to [Linear Model Interpretability] in the exercise sheet.
+
+---
+
 ### Irrelevant predictors?
 
 - If we had many noise features (unrelated to response), least squares will still try finding coefficients for each of them. This causes overfitting: our predictions would depend on variables that don't actually matter.
@@ -198,11 +205,17 @@ generates one line per category, and the lines are parallel.
 
 ---
 
+### Bias-Variance Tradeoff
+
+![](figures/Bias_and_variance_contributing_to_total_error.svg)
+
+---
+
 ## $\ell^{1}$ Regularization
 
 The Lasso objective is
 \begin{align*}
-\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}
 This is the same loss as linear regression, but with a new $\ell^{1}$ penalty
 
@@ -217,7 +230,7 @@ This is the same loss as linear regression, but with a new $\ell^{1}$ penalty
 It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exactly_ zero. The "selected" features are those where $\beta_{j} \neq 0$.
 
 \begin{align*}
-\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}
 
 ---
@@ -261,3 +274,15 @@ testing the model on that data.
 - $\lambda_{\text{min}}$: Minimizes the cross-validation error.
 
 - $\lambda_{\text{1se}}$: The simplest model, i.e., largest $\lambda$, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.
+
+---
+
+### Exercise
+
+Respond to the following T/F questions from this week's reading. Justify your choices.
+
+1. The magnitude of the LS coefficient of a predictive feature corresponds to how important the feature is for generating the prediction.
+
+1. Increasing the number of predictive features in a predictive fit will always improve the predictive performance.
+
+1. More regularization means that regularized coefficients will be closer to the original un-regularized LS coefficients.

@@ -407,16 +407,6 @@ distribution(data$flux) <- normal(gp_model + mean_flux, data$flux_err)
 
 ### Exercise
 
-[Posterior and prior predictive distributions].
+Respond to [Jargon-free summary] from the exercise sheet, where
 
-1. Fix a point $x_{\ast}$ of interest. Before we observe any data $y_{1}, \dots,
-y_{n}$, what would your best guess of $y_{\ast}$ be? How much uncertainty would
-you have? How does this differ from your best guess for $f_{\ast}$?
-
-1. Suppose you have now observed data $y_{1}, \dots, y_{n}$ at $x_{1}, \dots,
-x_{n}$. We again ask you for a guess of $y_{\ast}$ at $x_{\ast}$. How has it
-changed?
-
-1. [Optional]. The quantity in the previous part has a Gaussian distribution. Can you derive formulas for $\mu_{*}$ and $\sigma_{*}^2$?
-
-$$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
+{filled in during class} = {Kernels}
