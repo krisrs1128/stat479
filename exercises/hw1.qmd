@@ -1,9 +1,52 @@
-# Homework 1
+---
+title: Homework 1
+format: pdf
+---
 
-1. interpreting lasso CV  and coefficient path plots
+# Description
 
-1. implement CV from scratch
+Please solve the following problems from the exercise sheet.
 
-1. PCS - feature engineering and model comparison
+1. Interpreting Lasso Regularization Paths
 
-1. prediction stability plots
+1. Cross-Validation for Lasso
+
+1. Prediction Stability Plots
+
+1. Kernels and GP Samples
+
+# Submission Deatils
+
+Upload your solution to canvas as a PDF, HTML, or MS Word document. Include all
+relevant figures within your explanations. Include all relevant code. You may
+use either R or python.
+
+# Rubric
+
+## Evaluation Criteria
+
+**Technical accuracy**: Definitions used correctly, claims stated precisely.
+
+**Completeness**: Assertions grounded in readings, lectures, or original code.
+
+**Clarity**: Well-formatted, grammatically correct prose (not bullet fragments). No wordiness.
+
+**Code quality**: Modular functions, meaningful variable names.
+
+## Point Allocations
+
+**Problem 1** [Interpreting Lasso Regularization]: 4 points
+
+(a) 1, (b) 1, (c) 1, (d) 1
+
+**Problem 2** [Cross-Validation for the Lasso]: 4 points
+
+(a) 1.5, (b) 1.5, (c) 1
+
+**Problem 3** [Prediction Stability Plots]: 6 points
+
+(a) 1, (b) 1, (c) 2, (d) 2
+
+**Problem 4** [Kernels and GP Samples]: 6 points
+
+(a) 2, (b) 2, (c) 2

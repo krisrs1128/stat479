@@ -17,17 +17,17 @@ execute:
     - Introduce yourself to your neighbors. What is your name and degree program? What are your areas of interest? How might interpretability or explainability be helpful in the work that you do?
     - Have you encountered a situation in the past where you think interpretability or explainability would be useful? Describe the situation and your overall goals. How did you address them and are there any ways the approach could have been improved?
 
-1. [Jargon-free summary] Imagine you are working as a statistical consultant
-and have chosen to include a model explanation technique from this week. Your
-clients are familiar with the basics of machine learning (e.g., supervised vs.
-unsupervised learning) but not the interpretability literature. Give a
-jargon-free but precise description of {filled in during class}. What does it
-output and what is the correct interpretation?
+1. [Jargon-free summary] Imagine you are working as a statistical consultant and
+have chosen to include a model explanation technique from this week. Your
+clients are familiar with the basics of data analysis (e.g., linear regression)
+but not the interpretability literature. Give a jargon-free but precise
+description of {filled in during class}. What does it output and what is the
+correct interpretation?
 
 1. [Example Critique] Summarize example {given in class} from {this week's
 reading}. What kinds of real-world situations is that example supposed to
-reflect?  Do you think the proposed method would actually work in those
-situations, and what kinds of difficulties can you imagine arising in practice?
+reflect?  How well do you think the proposed method would work in these
+situations, and what kinds of difficulties do you imagine arising in practice?
 
 1. [Clear/Confusing] For this week's material, describe,
 
@@ -36,6 +36,18 @@ situations, and what kinds of difficulties can you imagine arising in practice?
     - A point that are not confident you could apply in practice.
 
     Be as specific as possible.
+
+1. [Concept Map] Prepare a concept map to summarize the last week of reading
+material. An effective submission will include a thorough coverage of both
+abstract concepts and practical examples, summarized concisely into short
+phrases. It will also include well-justified links between nodes, with text
+explanations for edges whose interpretation might not be obvious at first.
+
+1. [Code Analysis] For this week's in-class case study, a 3 - 4 sentence summary
+of the overall implementation strategy. Then, add comments after each main block
+of code describing what it is doing. What are the inputs/outputs and the
+underlying data structures used to store information about the data or model? If
+there are parts that you do not understand, add a ??? next to it.
 
 ## Intrinsically Interpretable Models
 
@@ -91,7 +103,7 @@ features using the lasso objective:
 
    d. Identify the limiting behavior. As $-\log \lambda \to \infty$ (equivalently $\lambda \to 0$), the coefficient paths converge. What estimator do they approach?
 
-1. [Cross-Validation for Lasso] Consider the lasso estimator
+1. [Cross-Validation for the Lasso] Consider the lasso estimator
 
     $$\min_{\beta_0, \beta} \left( \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \|\beta\|_1 \right)$$
 
@@ -152,7 +164,7 @@ features using the lasso objective:
 
 1. PCS - feature engineering and model comparison
 
-1. [Prediction stability plots] In this exercise, you will investigate
+1. [Prediction Stability Plots] In this exercise, you will investigate
 prediction stability for lasso regression under data perturbations. You will
 consider the `prostate` dataset, which reports prostate specific antigen levels
 along with other lab measurements among men about to undergo prostatectomy.  You
@@ -160,8 +172,8 @@ will compare predictive accuracy and stability across different modeling
 choices.
 
    a. Sketch (by hand) the prediction stability plot associated with a model
-   with low variance but high bias in its predcitions. Repeat the exercise for
-   a model with high variance but low bias.
+   with low variance but high bias in its predcitions. Explain your reasoning.
+   Repeat the exercise for a model with high variance but low bias.
 
    b. Is it possible for a model to have stable predictions but unstable
    coefficients? Explain why or why not.
@@ -195,6 +207,22 @@ choices.
 
    Compare the models with respect to prediction accuracy, prediction
    stability, and the sparsity interpretability criterion.
+
+1. [Posterior and prior predictive interpretation].
+
+   a. Fix a point $x_{\ast}$ of interest. Before we observe any data $y_{1},
+   \dots, y_{n}$, what would your best guess of $y_{\ast}$ be? How much
+   uncertainty would you have? How does this differ from your best guess for
+   $f_{\ast}$?
+
+   b. Suppose you have now observed data $y_{1}, \dots, y_{n}$ at $x_{1}, \dots,
+   x_{n}$. We again ask you for a guess of $y_{\ast}$ at $x_{\ast}$. How has it
+   changed?
+
+   c. The quantity in the previous part has a Gaussian distribution. Can you
+   derive formulas for $\mu_{*}$ and $\sigma_{*}^2$?
+
+$$p(y_* | \mathbf{y}, \mathbf{X}, x_*) = \mathcal{N}(\mu_*, \sigma_*^2 + \sigma_n^2)$$
 
 1. [Prior and Posterior Predictive Distributions] Study how observing data
 transforms the distribution over functions in a GP model. Consider a
@@ -334,14 +362,13 @@ of positive definite kernels remain positive definite, one builds complex priors
 compositionally.
 
    Investigate this compositional structure through explicit computation and
-   sampling. See @fig-gp_kernels-1 and @fig-gp_kernels-2 for reference—your
+   sampling. See @fig-gp_kernels-1 and @fig-gp_kernels-2 for reference -- your
    results will differ due to hyperparameter choices.
 
    a. Select two kernels from [Linear, RBF, Periodic].  State the formula for
-   each kernel $k(x, x')$ and interpret each hyperparameter geometrically or
-   analytically.  Fix hyperparameters and plot the function $x \mapsto k(x, 1)$
-   for each kernel.  Explain: what does this cross-section $k(\cdot, x_0)$
-   represent?
+   each kernel $k(x, x')$ and interpret each hyperparameter geometrically. Fix
+   hyperparameters and plot the function $x \mapsto k(x, 1)$ for each kernel.
+   Explain: what does this cross-section $k(\cdot, x_0)$ represent?
 
    b. Construct sum and product kernels from your choices in (a): $$k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x'), \quad k_{\text{prod}}(x, x') = k_1(x, x') \cdot k_2(x, x')$$ Plot $x \mapsto k_{\text{sum}}(x, 1)$ and $x \mapsto k_{\text{prod}}(x, 1)$.
 
