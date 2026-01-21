@@ -1,13 +1,12 @@
 ---
 title: 2. Definitions
+bibliography: references.bib
+citeproc: true
+execute:
+    message: false
+    warning: false
+    cache: false
 ---
-
-```{r}
-#| echo: false
-#| message: false
-library(RefManageR)
-bib <- ReadBib("references.bib")
-```
 
 * intrinsic vs. post-hoc
 
@@ -27,9 +26,9 @@ have been met.
 
 ## Reading
 
-- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340
+- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. [https://doi.org/10.1145/3236386.3241340](https://doi.org/10.1145/3236386.3241340)
 
-- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. https://doi.org/10.1073/pnas.1900654116
+- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. [https://doi.org/10.1073/pnas.1900654116](https://doi.org/10.1073/pnas.1900654116)
 
 ---
 
@@ -180,7 +179,7 @@ a concern.
 ::: {.column width="50%"}
 Unlike the bias-variance tradeoff, which has a precise mathematical foundation,
 the interpretability-accuracy tradeoff is more of a heuristic, and some have
-argued that it can be misleading `r Citep(bib, "Rudin2019")`.
+argued that it can be misleading [@Rudin2019].
 :::
 
 ::: {.column width="50%"}
@@ -196,7 +195,7 @@ argued that it can be misleading `r Citep(bib, "Rudin2019")`.
 
 If applied systematically, techniques from interpretability can be used to check
 assumptions, identify data and model quality issues, and uncover surprising
-relationships. The steps below expand on ideas in `r Citep(bib, "Murdoch2019")`.
+relationships. The steps below expand on ideas in [@Murdoch2019].
 
 ```{mermaid}
 %%{init: {'theme':'forest', 'themeVariables': {'fontSize':'36px', 'fontFamily':'arial'}, 'flowchart': {'padding': 80}}}%%
@@ -234,9 +233,9 @@ Next we can apply our interpretability technique. We should pay attention to
 
 - How many features do we need before the SHAP approximation matches the full model prediction (Week 6 - 7)?
 
-- How closely does the distilled model match the original model's predictions (Week 10)?
-
 - If using permutation importance, are the permuted data plausible, or do they lie outside the training data (Week 4)?
+
+- How closely does the distilled model match the original model's predictions?
 
 ---
 
@@ -273,9 +272,17 @@ interpretation claims feature $j$ is important, then can be checked by
 
 ### Explanations for Communication
 
-The talk `r Citep(bib, "kim_iclr")` describes how interpretability bridges human and machine "concepts."
+The talk [@kim_iclr] describes how interpretability bridges human and machine "concepts."
 
 <img src='figures/kim_iclr.png' class="center" width=700/>
 
 This bridge is especially important in collaborative work! Data science never
 exists in a vacuum.
+
+---
+
+<style>
+.reveal .references {
+  font-size: 0.6em;
+}
+</style>

@@ -1,12 +1,15 @@
 ---
 title: 1. Introduction
+bibliography: references.bib
+citeproc: true
+execute:
+    message: false
+    warning: false
+    cache: false
 ---
 
 ```{r}
-#| echo: false
-#| message: false
 library(RefManageR)
-bib <- ReadBib("references.bib")
 ```
 
 * course logistics
@@ -38,12 +41,15 @@ the poll on the syllabus. Submit your preferences by **Sunday  at 6pm**.
 
 ### Weekly rhythm
 
-Tuesday: New methods
-Thursday: Case study
-Both: Short discussions/exercises
+- Tuesday: New methods
 
-Friday (every ~ 2 weeks)
-* HW1 February 6
+- Thursday: Case study
+
+    - Both days: Short discussions/exercises
+
+- Friday (every ~ 2 weeks)
+    * HW1 February 6
+    * HW2 Feburuary 20
 
 ---
 
@@ -68,9 +74,9 @@ Friday (every ~ 2 weeks)
 
 - Assignments. Discussion, In-Class Exercises, HW.
 
-- [Piazza](https://piazza.com/wisc/spring2026/sp26stat479003/home)
+- [Piazza](https://piazza.com/wisc/spring2026/sp26stat479003/home): https://piazza.com/wisc/spring2026/sp26stat479003/home
 
-- Canvas Page: https://canvas.wisc.edu/courses/499874/modules
+- [Canvas Page](https://canvas.wisc.edu/courses/499874/modules): https://canvas.wisc.edu/courses/499874/modules
     - links to everything else
 
 ---
@@ -96,8 +102,8 @@ accepted after that.
 ### Expectations
 
 - In-class submissions are graded for completeness. These are designed to help you gauge your understanding and help the instructors with pacing.
-- Homeworks will be graded for correctness according to rubrics that are released on Canvas in advance.
-- Exams will only refer to concepts described in the reading. If you master the readings, you will do well.
+- Homeworks will be graded for correctness according to the provided rubric.
+- Exams will refer to concepts from the reading. If you master the readings, you will do well.
 
 ---
 
@@ -106,8 +112,11 @@ accepted after that.
 - I have curated materials to guide you through the subject. But only you can do
 the work to master the topic. Read, reflect, ask questions.
 
-- I think this topic is important in the real world. We need knowledgeable, wise
-data scientists who can build interpretable and explainable ML systems.
+- To learn deeply, it helps to study the same object from many angles. I hope to
+share learning techniques that you can use beyond this class.
+
+- I think this topic is important in the real world. We need knowledgeable and
+wise data scientists who can build interpretable ML systems.
 
 ---
 
@@ -117,9 +126,9 @@ data scientists who can build interpretable and explainable ML systems.
 
 ## Reading
 
-- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. https://doi.org/10.1145/3236386.3241340
+- Lipton, Z. C. (2018). The Mythos of Model Interpretability. ACM Queue: Tomorrow’s Computing Today, 16(3), 31–57. [https://doi.org/10.1145/3236386.3241340](https://doi.org/10.1145/3236386.3241340)
 
-- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. https://doi.org/10.1073/pnas.1900654116
+- Murdoch, W. J., Singh, C., Kumbier, K., Abbasi-Asl, R., & Yu, B. (2019). Definitions, methods, and applications in interpretable machine learning. Proceedings of the National Academy of Sciences of the United States of America, 116(44), 22071–22080. [https://doi.org/10.1073/pnas.1900654116](https://doi.org/10.1073/pnas.1900654116)
 
 ---
 
@@ -127,7 +136,7 @@ data scientists who can build interpretable and explainable ML systems.
 
 <img src="figures/asthma.png" width=1000 class="center"/>
 
-Example from `r Citep(bib, "Caruana2015IntelligibleMF")`.
+Example from [@Caruana2015IntelligibleMF].
 
 
 ---
@@ -136,7 +145,7 @@ Example from `r Citep(bib, "Caruana2015IntelligibleMF")`.
 
 <img src="figures/adversarial-stopsign.webp" width = 600 class="center"/>
 
-Example from `r Citep(bib, "Gu2017BadNetsIV")`.
+Example from [@Gu2019].
 
 
 ---
@@ -150,6 +159,8 @@ Example from `r Citep(bib, "Gu2017BadNetsIV")`.
 ### What can go wrong?
 
 <img src="figures/spurious_xray.png" width=700 class="center"/>
+
+Example from [@DeGrave2021].
 
 ---
 
@@ -204,7 +215,7 @@ encode in performance metrics is called a formulation gap.
 
 ::: {.column width="50%"}
 <img src="figures/zillow.png"/><br/>
-See `r Citep(bib, "mitPredictiveModels")`.
+See [@mitPredictiveModels].
 :::
 ::::
 
@@ -247,7 +258,7 @@ Then respond to [Past Experience] in the exercise sheet.
 
 ### PDR Framework
 
-- Reference `r Citep(bib, "Murdoch2019")` also breaks the vague concept of "interpretability" down into precise elements which can be more formally evaluated.
+- Reference [@Murdoch2019] also breaks the vague concept of "interpretability" down into precise elements which can be more formally evaluated.
 
 - Together, this helps establish trust in the reliability of the results, which is important in interdisciplinary work.
 
@@ -274,7 +285,7 @@ Then respond to [Past Experience] in the exercise sheet.
 
 ### Spectrum of evaluation
 
-Reference `r Citep(bib, "rigorous_interpretability")` notes that new interpretability techniques can be evaluated at several levels.
+Reference [@rigorous_interpretability] notes that new interpretability techniques can be evaluated at several levels.
 
 - Functionally-grounded: Define computational proxy tasks that can be measured without studying real users.
 
@@ -297,3 +308,12 @@ Reference `r Citep(bib, "rigorous_interpretability")` notes that new interpretab
 - Each of these types fo evaluation will come with their own performance metrics.
 
 - We will revisit this question periodically as we introduce new methods and study the contexts in which they are worth applying.
+
+
+---
+
+<style>
+.reveal .references {
+  font-size: 0.6em;
+}
+</style>
