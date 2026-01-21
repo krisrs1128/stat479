@@ -257,6 +257,12 @@ to the specific problem of interest.
 
 ---
 
+### Discussion
+
+Respond to [Interactive Kernel Choice] in the exercise sheet.
+
+---
+
 ## Gaussian Process Regression
 
 ---

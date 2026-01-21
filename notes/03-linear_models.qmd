@@ -279,7 +279,7 @@ testing the model on that data.
 
 ### Exercise
 
-Respond to the following T/F questions from this week's reading. Justify your choices.
+Respond to the following T/F questions from the reading on linear model extensions. Justify your choices.
 
 1. The magnitude of the LS coefficient of a predictive feature corresponds to how important the feature is for generating the prediction.
 

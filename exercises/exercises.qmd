@@ -64,6 +64,29 @@ selects 40 genes with non-zero coefficients.
     therefore highly correlated. How does this affect the modularity of the
     resulting model?
 
+1. [Linear Models T/F] Respond to the following T/F questions from this week's
+reading. Justify your choices.
+
+    a. The magnitude of the LS coefficient of a predictive feature corresponds to
+    how important the feature is for generating the prediction.
+
+    b. Increasing the number of predictive features in a predictive fit will always
+    improve the predictive performance.
+
+    c. More regularization means that regularized coefficients will be closer to the
+    original un-regularized LS coefficients.
+
+1. [Evaluation Critique] Population-level accuracy in classifying $y$ is only
+one way of evaluating model performance. Choose any of the following evaluation
+questions below and describe how they motivate additional checks for this week's
+case study.
+
+    - The model is accurate for whom?
+    - How much do we trust the labels?
+    - How well does the optimization proxy match the real-world objective?
+    - Which errors are irreversible or compounding?
+    - Does a more accurate model lead to higher-quality decisions later on?
+
 1. [Interpreting Lasso Regularization Paths] We will investigate how
 regularization strength affects model selection and prediction error in a
 concrete example. The code below predicts log ozone concentration from weather
@@ -161,8 +184,6 @@ features using the lasso objective:
    $\lambda_{1\text{se}}$? A new code implementation is not necessary, but
    explain your reasoning. How does using $\lambda_{1\text{se}}$ relate to the
    interpretability criteria of sparsity and simulatability?
-
-1. PCS - feature engineering and model comparison
 
 1. [Prediction Stability Plots] In this exercise, you will investigate
 prediction stability for lasso regression under data perturbations. You will
@@ -295,6 +316,17 @@ hierarchical GP prior where kernel hyperparameters are themselves random:
    #| echo: false
    knitr::include_graphics("figures/prior_posterior.svg")
    ```
+
+1. [Interactive Kernel Choice] Experiment with the final visualization from
+[``Visual Exploration of Gaussian Processes''](https://distill.pub/2019/visual-exploration-gaussian-processes/) by
+Görtler et al (2019).
+
+   a. What is the meaning of the solid purple line in the left-hand panel?
+
+   b. What is the meaning of the blue square in the right-hand panel? How does
+   it relate to the purple band on the left hand panel?
+
+   c. Compare and contrast two choices of kernels.
 
 1. [GPs Marginal Likelihood]. The marginal likelihood surface of a GP can
 exhibit multiple local maxima corresponding to qualitatively different fits.

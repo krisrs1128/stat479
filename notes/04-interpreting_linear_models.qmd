@@ -116,6 +116,12 @@ and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hype
 
 ---
 
+### Discussion
+
+Respond to [Evaluation Critique] in the exercise sheet.
+
+---
+
 ### Data preparation
 
 - It's important to transform $x_{ij} \to \frac{x_{ij} - \bar{x}_j}{\hat{\sigma}_j}$.

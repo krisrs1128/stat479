@@ -68,7 +68,7 @@ Friday (every ~ 2 weeks)
 
 - Assignments. Discussion, In-Class Exercises, HW.
 
-- Piazza
+- [Piazza](https://piazza.com/wisc/spring2026/sp26stat479003/home)
 
 - Canvas Page: https://canvas.wisc.edu/courses/499874/modules
     - links to everything else
@@ -98,6 +98,16 @@ accepted after that.
 - In-class submissions are graded for completeness. These are designed to help you gauge your understanding and help the instructors with pacing.
 - Homeworks will be graded for correctness according to rubrics that are released on Canvas in advance.
 - Exams will only refer to concepts described in the reading. If you master the readings, you will do well.
+
+---
+
+### Teaching Philosophy
+
+- I have curated materials to guide you through the subject. But only you can do
+the work to master the topic. Read, reflect, ask questions.
+
+- I think this topic is important in the real world. We need knowledgeable, wise
+data scientists who can build interpretable and explainable ML systems.
 
 ---
 
