@@ -175,7 +175,7 @@ Example from [@DeGrave2021].
 ### Formulation gaps
 
 - In machine learning, most effort is directed towards ensuring models have good
-performance performance metrics on external benchmark data sets.
+performance metrics on external benchmark data sets.
 
 - Models learning this way can be very accurate according to easily measured
 criteria like accuracy or computational efficiency but inappropriate with
@@ -279,7 +279,7 @@ Then respond to [Past Experience] in the exercise sheet.
 
 - For example, we might give three different explanations of the same model depending on whether we are communicating with biologists, clinicians, or statisticians.
 
-- Whether the outputs from interpretability outputs are relevant to their audience can be gauged by their adoption in specific scientific settings or how they are actually used by participants in user studies.
+- Whether the interpretability outputs are relevant to their audience can be gauged by their adoption in specific scientific settings or how they are actually used by participants in user studies.
 
 ---
 

@@ -34,11 +34,11 @@ have been met.
 
 ## Intrinsic Interpretability vs. Post-hoc Explanations
 
-- Intrinsically interpretable: Build a "glass box" from the start. The model is interpretable by design—its structure allows us to understand how it works.
+- Intrinsically interpretable: Build a "glass box" from the start. The model is interpretable by design — its structure allows us to understand how it works.
 
-- Post Hoc: Inspect an already trained "black box" model, which can be chosen simply to maximize accuracy without regard to interpretability. Post-hoc methods extract explanations from models that weren't designed to be understood
+- Post Hoc: Inspect an already trained "black box" model, which can be chosen simply to maximize accuracy without regard to interpretability. Post-hoc methods extract explanations from models that weren't designed to be understood.
 
-<img src="figures/black_box_flashlight.png" width=900 class="center"/>
+<img src="figures/black_box_flashlight.png" width=1200 class="center"/>
 
 ---
 
@@ -145,16 +145,6 @@ an image that are "most important" for particular predicted classes.
 
 ---
 
-### Example: SHAP attributions
-
-For this sample, the most "important" feature is `Capital Gain`. It is
-responsible for much of the negative prediction $f\left(x\right)$, in a sense
-that will be made precise when we discuss SHAP.
-
-<img src="figures/shap_waterfall.png" class="center"/>
-
----
-
 ### Interpretability-accuracy trade-offs
 
 - For many datasets, simple models (like decision trees) offer high descriptive accuracy but have lower predictive accuracy compared to more complex models (like random forests).
@@ -195,16 +185,19 @@ argued that it can be misleading [@Rudin2019].
 
 If applied systematically, techniques from interpretability can be used to check
 assumptions, identify data and model quality issues, and uncover surprising
-relationships. The steps below expand on ideas in [@Murdoch2019].
+relationships. The steps below are based off [@Murdoch2019].
 
 ```{mermaid}
-%%{init: {'theme':'forest', 'themeVariables': {'fontSize':'36px', 'fontFamily':'arial'}, 'flowchart': {'padding': 80}}}%%
+%%{init: {'theme':'forest', 'themeVariables': {'fontSize':'30px', 'fontFamily':'arial'}, 'flowchart': {'padding': 80}}}%%
 graph LR
     A[Design] --> B[Predictive <br/> Accuracy]
     B --> C[Stability]
     C --> D[Explanation <br/> Comparisons]
     D --> E[External <br/> Checks]
 ```
+
+
+::: {.content-hidden}
 
 ---
 
@@ -217,6 +210,7 @@ graph LR
 1. If it is from an experiment, which aspects were controlled? In what ways is the experimental system representative of the end-use?
 
 ---
+
 
 ### Predictive accuracy
 
@@ -267,6 +261,10 @@ interpretation claims feature $j$ is important, then can be checked by
 - comparing with existing scientific results
 - measuring performance when feature $j$ is removed or held constant
 - running new experiments that manipulate feature $j$.
+
+---
+
+:::
 
 ---
 
