@@ -7,6 +7,7 @@ execute:
     message: false
     warning: false
     echo: true
+    cache: true
 ---
 
 
@@ -93,9 +94,15 @@ concrete example. The code below predicts log ozone concentration from weather
 features using the lasso objective:
    $$\min_{\beta_0, \beta \in \mathbf{R}^{45}} \left\{ \frac{1}{2N} \sum_{n=1}^{N} (y_n - \beta_0 - x_n^T \beta)^2 + \lambda \|\beta\|_1 \right\}$$
 
-   where $N = 330$ samples, $y_n = \log(\text{ozone})_n$, and $x_n \in \mathbb{R}^{45}$ contains weather features and all pairwise interactions. Figure \ref{fig:lasso-plots} displays cross-validation error (left) and coefficient paths (right) as functions of $\lambda$.
+   where $N = 330$ samples, $y_n = \log(\text{ozone})_n$, and $x_n \in
+   \mathbb{R}^{45}$ contains weather features and all pairwise interactions.
+   @fig-lasso-plots displays cross-validation error (left) and coefficient paths
+   (right) as functions of $\lambda$.
 
-   ```{r lasso-plots, echo=TRUE}
+   ```{r}
+   #| label: fig-lasso-plots
+   #| fig-cap: Lasso cross validation error and coefficient paths, for [Interpreting Lasso Regularization Paths].
+   #| echo: true
    library(faraway)
    library(glmnet)
    data(ozone)
@@ -446,42 +453,34 @@ clearer.
     and we seek the value of j and s that minimize the equation
     $$\sum_{i: x_i \in R_1(j, s)}\left(y_i-\hat{y}_{R_1}\right)^2+\sum_{i: x_i \in R_2(j, s)}\left(y_i-\hat{y}_{R_2}\right)^2.$$
 
-1. [Intrinsic Interpretability Portfolio] The goal of this exercise is to give
-you a chance to experiment with two intrinsic interpretability techniques in a
-problem of your choice. The most important aspect of the exercise is that you
-have a chance to get hands-on experience with the topics discussed in this
-course, so that you can develop a more critical eye towards what does and does
-not work well in a topic that you care about.
+1. [Intrinsic Interpretability Portfolio] Apply two intrinsic interpretability
+methods to a problem of your choice. The essential task: develop critical
+judgment about what works through direct experience.
 
-    a. **Problem Formulation**. Describe the problem context, a representative dataset,
-    and why intrinsic interpretability is important. What types of people would be
-    the main beneficiaries of effective interpretation/explanation, and what exactly
-    would they be able to get out of it? Search for related literature applying
-    interpretable ML methods to this type of data and briefly summarize the main
-    approaches you identify.
+   a. **Problem Formulation.** Specify:
 
-    b. **Method 1 Application**. Train an intrinsically interpretable model to
-    the dataset you described above. Report the out-of-sample prediction
-    accuracy and an interpretability-related output (e.g., random forest
-    variable importance plot or GP posterior samples).
+        * The problem context and dataset
+        * Why interpretability matters here (not just: ``it would be nice'')
+        * Who needs the interpretation and what decisions it enables
+        * Existing interpretable ML approaches for this data type (brief overview)
 
-    c. **Method 2 Application**. Repeat the previous part with the a new
-    intrinsically interpretable model.
+   b. ⠀**Method 1 Application.** Train an intrinsically interpretable model. Report:
+        * Out-of-sample prediction accuracy
+        * Interpretability output (e.g., variable importance, posterior samples, tree decision rules)
 
-    d. **Discussion**. Compare the results from the two methods. Which
-    conclusions are stable and which are not, and can you offer potential
-    reasons for differences?  What would you share in a report to one of the
-    beneficiaries you identified above?  Include 1 - 2 figures resulting from
-    your analysis and summarize how to read them.
+   c. **Method 2 Application.** Repeat with a different intrinsically interpretable model.
 
-    e. **Sanity Check**. Prepare a follow-up check to evaluate the reliability
-    of one of the models. It is okay if the results raise potential problems,
-    just make sure to discuss how they affect the takeaways. For example, you
-    may:
+   d. **Comparison.** Which conclusions persist across methods? Which differ,
+   and why might this occur? Include 1 - 2 figures to justify your conclusions.
 
-        - Repeat the analysis with alternative hyperparameters to see that the key conclusions are robust.
-        - Permute labels in a labeled dataset to serve as a no-signal control.
-        - Repeat the analysis on bootstrap versions of the data, to check that conclusions are stable.
+   e. **Sanity Check.** Test the reliability of one model. Acceptable checks:
+
+        * Vary hyperparameters; verify key conclusions hold
+        * Permute labels (null control)
+        * Bootstrap data; check stability
+
+        If you want to try an alternative check, you may contact the
+        instructors.
 
 1. [Efron's Experiment] This exercise explores the phenomenon where, in a random
 forest model, a variable may be important without necessarily being
@@ -587,8 +586,10 @@ selection nontrivial.  Download: [MS features], [cancer status].
 
    d. Comment on interpretability across: (i) a single tree, (ii) the 3-iteration ensemble from (c), and (iii) a 100-iteration ensemble.
 
-   ::: {#fig-boosting-steps fig-cap="Example result for [Boosting Initial Steps]." out-width=40%}
+   ::: {#fig-boosting-steps fig-cap="Example result for [Boosting Initial Steps]." width="40%"}
+
    ![](figures/boosting_iterations.svg)
+
    :::
 
 ## Post-hoc Explanations

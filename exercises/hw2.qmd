@@ -1,3 +1,38 @@
-# Homework 2
+---
+title: Homework 1
+format: pdf
+---
 
-Intrinsic interpretability portfolio
+# Description
+
+Please solve [Intrinsic Interpretability Portfolio] in the exercise sheet.
+
+# Submission Deatils
+
+Upload your solution to canvas as a PDF, HTML, or MS Word document. Include all
+relevant figures within your explanations. Include all relevant code. You may
+use either R or python.
+
+# Rubric
+
+## Evaluation Criteria
+
+**Technical accuracy**: Definitions used correctly, claims stated precisely.
+
+**Completeness**: Assertions grounded in readings, lectures, or original code.
+
+**Clarity**: Well-formatted, grammatically correct prose (not bullet fragments). No wordiness.
+
+**Code quality**: Modular functions, meaningful variable names.
+
+## Point Allocations
+
+**Part (a)** [Problem Formulation]: 4 points
+
+**Part (b)** [Method 1 Application]: 4 points
+
+**Part (c)** [Method 2 Application]: 4 points
+
+**Part (d)** [Comparison]: 4 points
+
+**Part (e)** [Sanity Check]: 4 points
