@@ -1228,8 +1228,8 @@ margin-right: 0; }
 
 <h3 id="learning-outcomes">Learning outcomes</h3>
 <ol type="1">
-<li>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</li>
-<li>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</li>
+<li><p>Describe the theoretical foundation of intrinsically interpretable models like sparse regression, gaussian processes, and classification and regression trees, and apply them to realistic case studies with appropriate validation checks.</p></li>
+<li><p>Compare the competing definitions of interpretable machine learning, the motivations behind them, and metrics that can be used to quantify whether they have been met.</p></li>
 </ol>
 </section>
 <section class="slide level2">
@@ -1271,7 +1271,7 @@ margin-right: 0; }
 <section id="sparse-linear-regression" class="slide level2">
 <h2>Sparse Linear Regression</h2>
 <ul>
-<li><p>Viability can be viewed as a <strong>response variable</strong> <span class="math inline">\(y \in \mathbb{R}^{N}\)</span>, and the molecular variables can be treated as <strong>features</strong> <span class="math inline">\(X \in \mathbb{R}^{N  \times J}\)</span>. Here</p></li>
+<li><p>Viability can be viewed as a <strong>response variable</strong> <span class="math inline">\(y \in \mathbf{R}^{N}\)</span>, and the molecular variables can be treated as <strong>features</strong> <span class="math inline">\(X \in \mathbf{R}^{N  \times J}\)</span>. Here</p></li>
 <li><p>The setting is <strong>high-dimensional</strong> with few samples compared to features. Without some sort of regularization (like a sparsity assumption), the problem is underdetermined, since <span class="math inline">\(N = 121, J = 9553\)</span>.</p></li>
 <li><p><strong>Sparsity</strong> will help us focus on the most important pathways out of thousands of candidates.</p></li>
 </ul>
@@ -1280,7 +1280,7 @@ margin-right: 0; }
 <section class="slide level2">
 
 <h3 id="single-continuous-predictor">Single continuous predictor</h3>
-<p>Imagine modeling viability <span class="math inline">\(y_{i}\)</span>​ for sample <span class="math inline">\(i\)</span> as a linear function of a single gene’s expression level <span class="math inline">\(x_{i} \in \mathbb{R}\)</span>:</p>
+<p>Imagine modeling viability <span class="math inline">\(y_{i}\)</span>​ for sample <span class="math inline">\(i\)</span> as a linear function of a single gene’s expression level <span class="math inline">\(x_{i} \in \mathbf{R}\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
 \end{align*}\]</span></p>
@@ -1291,7 +1291,7 @@ y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
 </section>
 <section class="slide level2">
 
-<h3 id="visualization">Visualization</h3>
+<h3 id="sketch">Sketch</h3>
 </section>
 <section class="slide level2">
 
@@ -1304,7 +1304,7 @@ y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
 </section>
 <section class="slide level2">
 
-<h3 id="visualization-1">Visualization</h3>
+<h3 id="visualization">Visualization</h3>
 </section>
 <section id="multiple-linear-regression" class="slide level2">
 <h2>Multiple Linear Regression</h2>
@@ -1362,6 +1362,11 @@ y_{i} &amp;= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
 </section>
 <section class="slide level2">
 
+<h3 id="discussion-linear-model-interpretability">Discussion: Linear Model Interpretability</h3>
+<p>Respond to [Linear Model Interpretability] in the exercise sheet.</p>
+</section>
+<section class="slide level2">
+
 <h3 id="irrelevant-predictors">Irrelevant predictors?</h3>
 <ul>
 <li><p>If we had many noise features (unrelated to response), least squares will still try finding coefficients for each of them. This causes overfitting: our predictions would depend on variables that don’t actually matter.</p></li>
@@ -1369,10 +1374,71 @@ y_{i} &amp;= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
 <li><p><strong>Variable selection</strong>: If the noise variables do not reduce the SSE, then the Lasso sets their coefficients <span class="math inline">\(\beta_{j}\)</span> to exactly zero. The <span class="math inline">\(\ell^{1}\)</span> penalty “induces sparsity.”</p></li>
 </ul>
 </section>
+<section class="slide level2">
+
+<h3 id="bias-variance-tradeoff">Bias-Variance Tradeoff</h3>
+
+<svg id="svg8" class="r-stretch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" width="130.175mm" height="81.756248mm" viewBox="0 0 130.175 81.756248">
+  <defs id="svg8_defs2">
+    <marker style="overflow:visible" id="svg8_TriangleOutL" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(0.8)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1" d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z " id="svg8_path993" />
+    </marker>
+    <marker style="overflow:visible" id="svg8_TriangleInL" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(-0.8)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1" d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z " id="svg8_path984" />
+    </marker>
+    <marker style="overflow:visible;" id="svg8_marker2417" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) rotate(180) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1" id="svg8_path2415" />
+    </marker>
+    <marker style="overflow:visible" id="svg8_marker2407" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1" id="svg8_path2405" />
+    </marker>
+    <marker style="overflow:visible;" id="svg8_marker2279" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) rotate(180) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#930600;stroke-opacity:1;fill:#930600;fill-opacity:1" id="svg8_path2277" />
+    </marker>
+    <marker style="overflow:visible" id="svg8_marker2269" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#930600;stroke-opacity:1;fill:#930600;fill-opacity:1" id="svg8_path2267" />
+    </marker>
+    <marker style="overflow:visible;" id="svg8_Arrow2Lend" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) rotate(180) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#009293;stroke-opacity:1;fill:#009293;fill-opacity:1" id="svg8_path872" />
+    </marker>
+    <marker style="overflow:visible;" id="svg8_Arrow1Lend" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(0.8) rotate(180) translate(12.5,0)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1" d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z " id="svg8_path854" />
+    </marker>
+    <marker style="overflow:visible;" id="svg8_marker1847" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(0.8) rotate(180) translate(12.5,0)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1" d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z " id="svg8_path1845" />
+    </marker>
+    <marker style="overflow:visible" id="svg8_marker1837" refX="0.0" refY="0.0" orient="auto">
+      <path transform="scale(1.1) translate(1,0)" d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z " style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#009293;stroke-opacity:1;fill:#009293;fill-opacity:1" id="svg8_path1835" />
+    </marker>
+  </defs>
+  <metadata id="svg8_metadata5">
+    <rdf:RDF>
+      <cc:Work rdf:about>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type>
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g id="svg8_layer1" transform="translate(14.374002,-225.44955)">
+    <path id="svg8_path1151" style="fill:none;stroke:#000000;stroke-width:0.336506;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#TriangleInL);marker-end:url(#TriangleOutL)" d="M 108.91916,297.60579 H -1.136665 c 0,-22.79049 0,-45.58098 0,-68.37147" />
+    <path style="fill:none;stroke:#009293;stroke-width:0.165;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker1837);marker-end:url(#Arrow2Lend);fill-opacity:1" d="M 5.7269634,290.62312 C 70.28983,289.86375 83.102356,285.3456 103.41985,236.58186" id="svg8_path1833" />
+    <path style="fill:none;stroke:#930600;stroke-width:0.165;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker2269);marker-end:url(#marker2279);fill-opacity:1" d="M 105.09854,290.90638 C 41.291022,290.90236 20.358492,280.24699 3.8177441,239.41442" id="svg8_path2265" />
+    <path style="fill:none;stroke:#000000;stroke-width:0.165;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker2407);marker-end:url(#marker2417)" d="M 98.205975,229.81752 C 95.02046,256.8591 73.054609,273.75648 50.206294,273.67595 36.852086,273.8317 25.992983,265.31766 4.1954187,231.48325" id="svg8_path2403" />
+    <path style="fill:none;stroke:#000000;stroke-width:0.465;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.465, 0.93;stroke-dashoffset:0;stroke-opacity:1" d="M 49.830672,297.67981 V 228.65978" id="svg8_path2549" />
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:3.49188px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.087297" x="38.133411" y="304.12503" id="svg8_text2553"><tspan id="svg8_tspan2551" x="38.133411" y="304.12503" style="stroke-width:0.087297">Model Complexity</tspan></text>
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:3.49188px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.087297" x="75.523193" y="235.01059" id="svg8_text2557"><tspan id="svg8_tspan2555" x="75.523193" y="235.01059" style="stroke-width:0.087297">Total Error</tspan></text>
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:3.49188px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.087297" x="-269.99188" y="-8.4121351" id="svg8_text2561" transform="rotate(-90)"><tspan id="svg8_tspan2559" x="-269.99188" y="-8.4121351" style="stroke-width:0.087297">Error</tspan></text>
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:2.75151px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0687878" x="-267.67346" y="45.860558" id="svg8_text2565" transform="rotate(-90)"><tspan id="svg8_tspan2563" x="-267.67346" y="45.860558" style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:&#39;sans-serif Italic&#39;;stroke-width:0.0687878">Optimum Model Complexity</tspan></text>
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:3.88879px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#930600;fill-opacity:1;stroke:none;stroke-width:0.0972199;stroke-opacity:1" x="94.042931" y="287.87317" id="svg8_text2569"><tspan id="svg8_tspan2567" x="94.042931" y="287.87317" style="fill:#930600;fill-opacity:1;stroke:none;stroke-width:0.0972199;stroke-opacity:1">Bias²<tspan style="font-size:2.52772px;baseline-shift:super;fill:#930600;fill-opacity:1;stroke:none;stroke-width:0.0972199;stroke-opacity:1" id="svg8_tspan2571"></tspan></tspan></text>
+    <text xml:space="preserve" style="font-style:normal;font-weight:normal;font-size:3.37481px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#009293;fill-opacity:1;stroke:none;stroke-width:0.0843703;stroke-opacity:1;" x="94.44194" y="264.62772" id="svg8_text2577"><tspan id="svg8_tspan2575" x="94.44194" y="264.62772" style="stroke-width:0.0843703;fill:#009293;fill-opacity:1;stroke:none;stroke-opacity:1;">Variance</tspan></text>
+    <circle style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.265;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" id="svg8_path4000" cx="49.86187" cy="297.56503" r="1.0666015"></circle>
+  </g>
+</svg></section>
 <section id="ell1-regularization" class="slide level2">
 <h2><span class="math inline">\(\ell^{1}\)</span> Regularization</h2>
 <p>The Lasso objective is <span class="math display">\[\begin{align*}
-\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}\]</span> This is the same loss as linear regression, but with a new <span class="math inline">\(\ell^{1}\)</span> penalty</p>
 <p><span class="math display">\[\begin{align*}
 \|\beta\|_{1} := \sum_{j = 1}^{J} \left|\beta_{j}\right|
@@ -1382,12 +1448,12 @@ y_{i} &amp;= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
 <h2><span class="math inline">\(\ell^{1}\)</span> Regularization</h2>
 <p>It’s not obvious, but the minimizers often set coordinates <span class="math inline">\(\beta_{j}\)</span> to <em>exactly</em> zero. The “selected” features are those where <span class="math inline">\(\beta_{j} \neq 0\)</span>.</p>
 <p><span class="math display">\[\begin{align*}
-\min_{\beta \in \mathbb{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
+\min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}\]</span></p>
 </section>
 <section class="slide level2">
 
-<h3 id="visualization-2">Visualization</h3>
+<h3 id="visualization-1">Visualization</h3>
 </section>
 <section class="slide level2">
 
@@ -1420,6 +1486,16 @@ y_{i} &amp;= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
 <li><p><span class="math inline">\(\lambda_{\text{min}}\)</span>: Minimizes the cross-validation error.</p></li>
 <li><p><span class="math inline">\(\lambda_{\text{1se}}\)</span>: The simplest model, i.e., largest <span class="math inline">\(\lambda\)</span>, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.</p></li>
 </ul>
+</section>
+<section class="slide level2">
+
+<h3 id="exercise">Exercise</h3>
+<p>Respond to the following T/F questions from this week’s reading. Justify your choices.</p>
+<ol type="1">
+<li><p>The magnitude of the LS coefficient of a predictive feature corresponds to how important the feature is for generating the prediction.</p></li>
+<li><p>Increasing the number of predictive features in a predictive fit will always improve the predictive performance.</p></li>
+<li><p>More regularization means that regularized coefficients will be closer to the original un-regularized LS coefficients.</p></li>
+</ol>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
