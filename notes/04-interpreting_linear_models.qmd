@@ -1,13 +1,18 @@
 ---
-title: 4. Interpreting Linear Models
+title: 4. Applying Linear Models
+bibliography: references.bib
+citeproc: true
+execute:
+    message: false
+    warning: false
+    cache: false
 ---
 
+* model tuning and stability
 
-* interpreting sparse linear models
+* interpretability
 
 * application to case study
-
-* interpretation challenges
 
 ---
 
@@ -23,7 +28,98 @@ have been met.
 
 ---
 
-### Reminder
+## Tuning
+
+---
+
+### Lasso Paths
+
+- $\lambda$ is a hyperparameter that controls model complexity.
+
+- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
+
+- We can study the "order" that variables enter the model as we gradually decrease $\lambda$. We expect the most important predictors (e.g., drug response-related genes) to enter first.
+
+---
+
+### Choosing $\lambda$
+
+- What is an appropriate "budget" for model complexity?
+
+- Bias-Variance Trade-off: Decreasing $\lambda$ reduces bias but increases the variance of the predictions.
+
+- We need to tune $\lambda$ to balance these competing issues and achieve good performance on holdout samples.
+
+---
+
+
+### Cross-validation
+
+Split the data into $K$ folds (e.g., $K = 5$). Fit the model on $K−1$ folds and
+tested on the remaining fold. This mimics the setting of gathering new data and
+testing the model on that data.
+
+---
+
+### Hyperparameter Selection
+
+(show the glmnet curve)
+
+- $\lambda_{\text{min}}$: Minimizes the cross-validation error.
+
+- $\lambda_{\text{1se}}$: The simplest model, i.e., largest $\lambda$, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.
+
+---
+
+## Stability
+
+---
+
+### Bootstrap
+
+1. Any statistical analysis depends on the particular data observed. Different
+data would yield different results.
+
+1. The bootstrap estimates this variability without collecting new data.
+
+1. In regularized regression, we quantify uncertainty in both predictions
+$\hat{y}_i$ and coefficients $\beta_k$.
+
+---
+
+### Bootstrap Mechanism
+
+Simulate new datasets by resampling the original data with replacement.
+For each bootstrap iteration $b = 1, \dots, B$:
+
+1. Draw $n$ samples with replacement from $\{(y_i, x_i)\}_{i=1}^n$ to form
+
+\begin{align*}
+\mathbf{y}^{b} = \begin{pmatrix}y_{1}^{b} \\ \vdots \\ y_{n}^{b}\end{pmatrix}, \quad \mathbf{X}^{b} = \begin{pmatrix}x_{1}^{b} \\ \vdots \\ x_{n}^{b}\end{pmatrix}
+\end{align*}
+
+2. Refit the model on $(\mathbf{y}^{b}, \mathbf{X}^{b})$ to obtain $\hat{\beta}^{b}$ and $\hat{y}_i^{b}$.
+
+---
+
+### Boostrap Analysis
+
+* Distribution of $\{\hat{\beta}_{k}^{b}\}_{b=1}^B$ reveals stability of coefficient $k$
+* Distribution of $\{\hat{y}_{i}^{b}\}_{b=1}^B$ reveals stability of prediction for observation $i$
+
+---
+
+### Prediction Stability Plots
+
+<img src="figures/pcs_housing.png"/>
+
+---
+
+## Interpretation
+
+---
+
+### Intrinsic Interpretability
 
 These were the properties of intrinsically interpretable models we introduced
 earlier.
@@ -46,7 +142,7 @@ earlier.
 
 - A linear model $\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}$ is reasonably simulatable when $|S|$ is small.
 
-- But for even moderate to large $|S|$, simulatability becomes a challenge even for linear regression `r Citep(bib, "slack2019")`!
+ - But for even moderate to large $|S|$, simulatability becomes a challenge even for linear regression [@slack2019]!
 
 ---
 
@@ -65,6 +161,10 @@ earlier.
 - **Global**: $\hat{\beta}$ helps us identify the most influential genes across the study.
 
 - **Local**: For cell $i$, the $x_{ij}\hat{\beta}_{j}$ terms help us understand its particular viability prediction.
+
+---
+
+## Case Study
 
 ---
 
@@ -107,7 +207,6 @@ and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hype
 
 ---
 
-
 ### Evaluation criteria
 
 - The initial decrease is the phase where adding predictors rapidly improves performance. Usually the boxplots increase again for small values of $\lambda$, at which point the model is overfitting.
@@ -122,6 +221,10 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ---
 
+## Case Study
+
+---
+
 ### Data preparation
 
 - It's important to transform $x_{ij} \to \frac{x_{ij} - \bar{x}_j}{\hat{\sigma}_j}$.
@@ -130,7 +233,7 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ---
 
-### Coefficient paths
+### Coefficient Paths
 
 - We can visualize how $\hat{\beta}_j$ evolves as $\lambda$ decreases.
 
@@ -138,13 +241,15 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ---
 
-### Coefficient paths
+### Ridge Coefficient Paths
 
-- To make it easier to see the feature names, we can use a heatmap instead.
+---
 
-- In this problem, all the coefficients were positive, so we log-transformed to more clearly see differences in coefficient value.
+### Lasso Coefficient paths
 
-- This helps us focus on a much more reasonable set of important genomic features. We can also find extenral evidence that these genes are involved in important oncogenic pathways.
+---
+
+### Lasso vs. Ridge
 
 ---
 
@@ -205,7 +310,7 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 - Often, people assume that to get higher accuracy, we need "black-box" models (like deep learning or Random Forests) and sacrifice interpretability.
 
-- But in many scientific problems (like today's case study, see also `r Citep(bib, "openproblemsBenchmarksOpen")`), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.
+ - But in many scientific problems (like today's case study, see also [@openproblemsBenchmarksOpen]), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.
 
 ---
 

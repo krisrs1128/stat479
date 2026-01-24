@@ -1,7 +1,8 @@
 ---
 title: 3. Linear Models
+bibliography: references.bib
+citeproc: true
 ---
-
 
 * motivating case study
 
@@ -13,7 +14,7 @@ title: 3. Linear Models
 
 ---
 
-## Reading
+### Reading
 
 - **Sections 10.4 - 10.6.**. Yu, B., & Barter, R. L. (2024). Veridical data science. London, England: MIT Press. https://vdsbook.com/10-ls_continued
 
@@ -46,7 +47,7 @@ have been met.
 
 - To learn this relationship, previous studies used "immortalized" cancer cell lines. These doesn't fully represent the complexity of cancer in real populations.
 
-- The study `r Citep(bib, "Dietrich2017")` measured drug responses in samples from primary patients who were being treated for blood cancer (CLL). They simultaneously measured gene expression and DNA methylation activity (we will skip over some the biology, but happy to discuss this with anyone who's interested).
+- The study [@Dietrich2017] measured drug responses in samples from primary patients who were being treated for blood cancer (CLL). They simultaneously measured gene expression and DNA methylation activity (we will skip over some the biology, but happy to discuss this with anyone who's interested).
 
 ---
 
@@ -79,19 +80,21 @@ _Outcome_
 
 ## Sparse Linear Regression
 
-- Viability can be viewed as a **response variable** $y \in \mathbf{R}^{N}$, and the molecular variables can be treated as **features** $X \in \mathbf{R}^{N  \times J}$. Here
+- Viability can be viewed as a **response variable** $\mathbf{y} \in \mathbf{R}^{N}$, and the molecular variables can be treated as **features** $\mathbf{X} \in \mathbf{R}^{N  \times J}$. Here
 
-- The setting is **high-dimensional** with few samples compared to features. Without some sort of regularization (like a sparsity assumption), the problem is underdetermined, since $N = 121, J = 9553$.
+- The setting is high-dimensional with fewer samples ($N = 121$) than features ($J = 9553$). Without regularization, the problem is underdetermined.
 
 - **Sparsity** will help us focus on the most important pathways out of thousands of candidates.
 
-This was a real study! Linear models are not just for class work...they are a practical tool in science.
+This is a case where lasso regression was important in a real scientific study.
+
+---
+
+## Linear Regression Review
 
 ---
 
 ### Single continuous predictor
-
-Imagine modeling viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbf{R}$:
 
 \begin{align*}
 y_i=\beta_0+x_{i 1} \beta_1+\epsilon_i
@@ -105,14 +108,75 @@ The least-squares estimate $\hat{\beta} := \left(\hat{\beta}_{0}, \hat{\beta}_{1
 
 ---
 
+### Examples
+
+1. In the reading, model house price $y_{i}$ as a function of house area $x_{i}$.
+
+1. In the case study, model viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbf{R}$:
+
+---
+
 ### Sketch
+
+Each choice of $\beta_{0}, \beta_{1}$ is associated with a different straight
+line and a different loss value.
+
+---
+
+### Sketch
+
+Each choice of $\beta_{0}, \beta_{1}$ is associated with a different straight
+line and a different loss value.
+
+---
+
+### Empirical Loss Surface
+
+For a given dataset, loss value across all choices of $\beta_{0}, \beta_{1}$
+is a quadratic function. The minimizer is the least squares solution.
 
 ---
 
 ### Single categorical predictor
 
-That visualization considered $x_{i}$ to be continuous, but the same idea
-applies to categorical predictors. For example, $x_{i} \in \{0, 1\}$ could
+If a variable includes $K$ categories, it can be **one-hot encoded** into
+$K - 1$ binary columns,
+
+\begin{align*}
+x_{ik} = \mathbf{1}\{\text{sample } i \text{ belongs to level } k\}
+\end{align*}
+
+The left-out category is the reference level.
+
+---
+
+### Single categorical predictor
+
+If a variable includes $K$ categories, it can be **one-hot encoded** into
+$K - 1$ binary columns,
+
+
+The left-out category is the reference level.
+
+---
+
+### Examples
+
+In the reading, $x_{i} \in \{\text{Gilbert}, \text{North Ames}, \text{Edwards}, ...\}$ records the neighborhood for house $i$.
+
+- $\beta_0$​: The typical price in the reference "Somerset" neiehborhood.
+
+- $\beta_1$: The amount the predicted price changes when moving from "Somerset" to "Gilbert"
+
+- $\beta_{2}$: The amount the predicted price changes when moving from "Somerset" to "NAmes"
+
+and similarly for the remaining neighborhoods.
+
+---
+
+### Examples
+
+In the case study, $x_{i} \in \{\text{no mutation}, \text{mutated}\}$ could
 record whether the patient has a mutation in a particular gene.
 
 - $\beta_0$​: The expected viability for the reference group ($x_{i} = 0$).
@@ -121,28 +185,22 @@ record whether the patient has a mutation in a particular gene.
 
 ---
 
-### Visualization
-
----
-
 ## Multiple Linear Regression
 
 Assumed model form:
 
 \begin{align*}
-y_{i} &= \sum_{j = 1}^{n}x_{ij}\beta_{j} + \epsilon_{i} \\
+y_{i} &= \sum_{j = 1}^{J}x_{ij}\beta_{j} + \epsilon_{i} \\
 &:= \mathbf{x}_{i}^\top \beta_{j} + \epsilon_{i}
 \end{align*}
 
 - $\epsilon_{i}$ represents random variation due to unmeasured factors.
 
-- This model assumes the effect of feature $j$ on $y$ is constant regardless of the value of $x_{k}$ for any other feature $k$.
-
 ---
 
 ### Fitting Multiple Linear Regression
 
-- We can estimate $\hat{\beta} \in \mathbf{R}^{J}$ by minimizing the residual sum of squares (RSS) loss,
+- We can estimate $\hat{\beta} \in \mathbf{R}^{J}$ by minimizing the sum of squares loss,
 
 \begin{align*}
 \min_{\beta} \sum_{i=1}^N \left( y_i - \mathbf{x}_i^\top \beta \right)^2
@@ -156,36 +214,90 @@ We can imagine how viability changes when changing the expression levels for two
 
 ---
 
-### Visualization: One continuous + one categorical predictor
-
-If we include a continuous pathway measurement and a binary mutation, the model
-generates one line per category, and the lines are parallel.
+## Coefficient Interpretation
 
 ---
 
-### Ceteris paribus
+### Ceteris Paribus
 
 - "All other things being equal".
 
 - $\beta_j$​ gives the impact of changing $x_j$ while every other feature $k$ in the model is fixed.
 
-- Warning: In our application, genes are often highly correlated. Holding other genes "fixed" is not realistic. This should be kept in mind whenever working with correlated features.
+---
+
+### Example
+
+In the housing price example,
+
+\begin{align*}
+\text{predicted price} = &-871,630 + 88 \times \text{area} + 19,129 \times \text{quality} + \\
+&426 \times \text{year} - 12,667 \times \text{bedroom}
+\end{align*}
+
+For every additional square foot, the price increases by \$88.
 
 ---
 
-### Interaction terms
+### Caution: Extrapolation {.smaller-math}
 
-- If we had $J = 2$, we can consider two-way interactions,
+In the housing price example,
 
-    \begin{align*}
-    y_{i} = \beta_{0} + x_{1}\beta_{1} + x_{2}\beta_{2} + x_{1}x_{2}\beta_{3} + \epsilon_{i}
-    \end{align*}
+\begin{align*}
+\text{predicted price} = &-871,630 + 88 \times \text{area} + 19,129 \times \text{quality} + \\
+& 426 \times \text{year} - 12,667 \times \text{bedroom}
+\end{align*}
 
-    the coefficient $\beta_{3}$ represents the interaction.
+When all the covariates are 0, the predicted price is _negative_. This makes no
+sense. But there are also no 0 square foot homes for the model to have learned
+this.
 
-- The slope of for one gene now depends on the value of another (what does this mean algebraically?)
+---
 
-- In our example, a gene might be important only for a particular drug.
+### Caution: Context {.smaller-math}
+
+The coefficient values must be interpreted within the context of all other
+predictors.
+
+\begin{align*}
+\text{predicted price} = &-871,630 + 88 \times \text{area} + 19,129 \times \text{quality}+ \\
+&426 \text{year} - 12,667 \times \text{bedroom}
+\end{align*}
+
+
+\begin{align*}
+\text{predicted price} = &-750,097 + 37,765 \times \text{quality} + 335 \times \text{year} + \\
+& 13,935 \times \text{bedroom}
+\end{align*}
+
+This instability in coefficient interpretations is most severe when predictors
+are correlated with one another.
+
+---
+
+### Caution: Context
+
+In the case study, genes are correlated when they lie on the same pathway.
+Holding other genes "fixed" is not realistic. Estimates will change if any genes
+are dropped.
+
+::: {layout-ncol=2}
+
+![](figures/example_correlated_genes.png){fig-alt="Correlated genes example 1"}
+
+![](figures/example_correlated_genes2.png){fig-alt="Correlated genes example 2"}
+
+:::
+
+---
+
+### Caution: Standardization
+
+Large coefficient $\neq$ an important predictor.
+
+- The scale of the original features influences the size of the coefficients.
+- One solution is to standardize the input features.
+- Alternatively, use the bootstrap to estimate $\text{SD}\left(\beta_{j}\right)$. Large + stable coefficients are more relevant.
 
 ---
 
@@ -195,23 +307,59 @@ Respond to [Linear Model Interpretability] in the exercise sheet.
 
 ---
 
-### Irrelevant predictors?
+## Regularization
+
+---
+
+### Definition
+
+Regularizing a predictive model means forcing it towards a simpler solution.
+This is usually achieved by adding penalizers to the optimization objective that
+used in estimating the model parameters.
+
+---
+
+### Why Regularize? Improving Stability
+
+When features are correlated, the loss surface has long "valleys" where any of
+the solutions look equally good.
+
+
+This can lead to instability in the resulting fits.
+
+---
+
+### $\ell^{2}$ Regularization
+
+One way to address this is to add a an $\ell^{2}$-penalty to the least-squares
+objective.
+
+\begin{align*}
+\min_{\beta_0, \beta_1} \sum_{i = 1}^{N}\left(y_i-\beta_0-x_{i} \beta_1\right)^2 + \lambda \|\beta\|_{2}^{2}
+\end{align*}
+
+where $\lambda \geq 0$ is a tuning parameter controlling the regularization
+strength and $\|\beta|| = \sum_{j} \beta_{j}^{2}$ is the $\ell^{2}$ norm.
+
+---
+
+### $\ell^{2}$ Regularization
+
+Geometrically, this penalty encourages $\beta$ to be closer to the origin.
+
+---
+
+### Why Regularize? Removing Irrelevant Predictors
 
 - If we had many noise features (unrelated to response), least squares will still try finding coefficients for each of them. This causes overfitting: our predictions would depend on variables that don't actually matter.
 
 - We don't expect all genes to be relevant to cell viability in this experiment. It's more likely that a few key pathways are driving resistance.
 
-- **Variable selection**: If the noise variables do not reduce the SSE, then the Lasso sets their coefficients $\beta_{j}$ to exactly zero. The $\ell^{1}$ penalty "induces sparsity."
+- **Feature selection**: If the noise variables do not reduce the SSE, then the Lasso sets their coefficients $\beta_{j}$ to exactly zero. The $\ell^{1}$ penalty "induces sparsity."
 
 ---
 
-### Bias-Variance Tradeoff
-
-![](figures/Bias_and_variance_contributing_to_total_error.svg)
-
----
-
-## $\ell^{1}$ Regularization
+### $\ell^{1}$ Regularization
 
 The Lasso objective is
 \begin{align*}
@@ -225,55 +373,13 @@ This is the same loss as linear regression, but with a new $\ell^{1}$ penalty
 
 ---
 
-## $\ell^{1}$ Regularization
+### $\ell^{1}$ Regularization
 
 It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exactly_ zero. The "selected" features are those where $\beta_{j} \neq 0$.
 
 \begin{align*}
 \min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}
-
----
-
-### Visualization
-
----
-
-### Lasso Paths
-
-- $\lambda$ is a hyperparameter that controls model complexity.
-
-- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
-
-- We can study the "order" that variables enter the model as we gradually decrease $\lambda$. We expect the most important predictors (e.g., drug response-related genes) to enter first.
-
----
-
-### Choosing $\lambda$
-
-- What is an appropriate "budget" for model complexity?
-
-- Bias-Variance Trade-off: Decreasing $\lambda$ reduces bias but increases the variance of the predictions.
-
-- We need to tune $\lambda$ to balance these competing issues and achieve good performance on holdout samples.
-
----
-
-### Cross-validation
-
-Split the data into $K$ folds (e.g., $K = 5$). Fit the model on $K−1$ folds and
-tested on the remaining fold. This mimics the setting of gathering new data and
-testing the model on that data.
-
----
-
-### Hyperparameter Selection
-
-(show the glmnet curve)
-
-- $\lambda_{\text{min}}$: Minimizes the cross-validation error.
-
-- $\lambda_{\text{1se}}$: The simplest model, i.e., largest $\lambda$, whose error is within one standard error of the minimum. This is a sparser model with comparable performance to the best.
 
 ---
 
