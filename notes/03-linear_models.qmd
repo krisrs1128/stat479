@@ -2,6 +2,9 @@
 title: 3. Linear Models
 bibliography: references.bib
 citeproc: true
+format:
+  revealjs:
+    css: styles.css
 ---
 
 * motivating case study
@@ -45,7 +48,7 @@ have been met.
 
 ### Study design
 
-- To learn this relationship, previous studies used "immortalized" cancer cell lines. These doesn't fully represent the complexity of cancer in real populations.
+- To learn this relationship, previous studies used "immortalized" cancer cell lines. These don't fully represent the complexity of cancer in real populations.
 
 - The study [@Dietrich2017] measured drug responses in samples from primary patients who were being treated for blood cancer (CLL). They simultaneously measured gene expression and DNA methylation activity (we will skip over some the biology, but happy to discuss this with anyone who's interested).
 
@@ -121,6 +124,8 @@ The least-squares estimate $\hat{\beta} := \left(\hat{\beta}_{0}, \hat{\beta}_{1
 Each choice of $\beta_{0}, \beta_{1}$ is associated with a different straight
 line and a different loss value.
 
+![](figures/least_squares_slope.png){width=70% fig-align="center"}
+
 ---
 
 ### Sketch
@@ -128,12 +133,16 @@ line and a different loss value.
 Each choice of $\beta_{0}, \beta_{1}$ is associated with a different straight
 line and a different loss value.
 
+![](figures/least_squares_intercept.png){width=50% fig-align="center"}
+
 ---
 
 ### Empirical Loss Surface
 
 For a given dataset, loss value across all choices of $\beta_{0}, \beta_{1}$
 is a quadratic function. The minimizer is the least squares solution.
+
+![](figures/least_squares_ellipse.png){width=70% fig-align="center"}
 
 ---
 
@@ -155,6 +164,7 @@ The left-out category is the reference level.
 If a variable includes $K$ categories, it can be **one-hot encoded** into
 $K - 1$ binary columns,
 
+![](figures/dummy_var.png){width=80% fig-align="center"}
 
 The left-out category is the reference level.
 
@@ -164,7 +174,7 @@ The left-out category is the reference level.
 
 In the reading, $x_{i} \in \{\text{Gilbert}, \text{North Ames}, \text{Edwards}, ...\}$ records the neighborhood for house $i$.
 
-- $\beta_0$​: The typical price in the reference "Somerset" neiehborhood.
+- $\beta_0$​: The typical price in the reference "Somerset" neighborhood.
 
 - $\beta_1$: The amount the predicted price changes when moving from "Somerset" to "Gilbert"
 
@@ -191,7 +201,7 @@ Assumed model form:
 
 \begin{align*}
 y_{i} &= \sum_{j = 1}^{J}x_{ij}\beta_{j} + \epsilon_{i} \\
-&:= \mathbf{x}_{i}^\top \beta_{j} + \epsilon_{i}
+&:= \mathbf{x}_{i}^\top \beta + \epsilon_{i}
 \end{align*}
 
 - $\epsilon_{i}$ represents random variation due to unmeasured factors.
@@ -211,6 +221,8 @@ y_{i} &= \sum_{j = 1}^{J}x_{ij}\beta_{j} + \epsilon_{i} \\
 ### Visualization: Two continuous predictors
 
 We can imagine how viability changes when changing the expression levels for two genes simultaneously.
+
+![](figures/multivariate_least_squares.png){width=70% fig-align="center"}
 
 ---
 
@@ -263,7 +275,6 @@ predictors.
 \text{predicted price} = &-871,630 + 88 \times \text{area} + 19,129 \times \text{quality}+ \\
 &426 \text{year} - 12,667 \times \text{bedroom}
 \end{align*}
-
 
 \begin{align*}
 \text{predicted price} = &-750,097 + 37,765 \times \text{quality} + 335 \times \text{year} + \\
@@ -324,6 +335,7 @@ used in estimating the model parameters.
 When features are correlated, the loss surface has long "valleys" where any of
 the solutions look equally good.
 
+![](figures/instability_collinear.png){fig-align="center"}
 
 This can lead to instability in the resulting fits.
 
@@ -335,17 +347,29 @@ One way to address this is to add a an $\ell^{2}$-penalty to the least-squares
 objective.
 
 \begin{align*}
-\min_{\beta_0, \beta_1} \sum_{i = 1}^{N}\left(y_i-\beta_0-x_{i} \beta_1\right)^2 + \lambda \|\beta\|_{2}^{2}
+\min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_{2}^{2} \right].
 \end{align*}
-
-where $\lambda \geq 0$ is a tuning parameter controlling the regularization
-strength and $\|\beta|| = \sum_{j} \beta_{j}^{2}$ is the $\ell^{2}$ norm.
+This is the same loss as linear regression, but with a new $\ell^{2}$ penalty
+$\|\beta||_{2} = \sum_{j} \beta_{j}^{2}$ is the $\ell^{2}$ norm. $\lambda \geq
+0$ is a tuning parameter controlling model complexity.
 
 ---
 
 ### $\ell^{2}$ Regularization
 
-Geometrically, this penalty encourages $\beta$ to be closer to the origin.
+This method is called ridge regression. Geometrically, this penalty encourages
+$\beta$ to be closer to the origin.
+
+![](figures/l2_losses_lam0.5.png){width=100% fig-align="center"}
+
+---
+
+### $\ell^{2}$ Regularization
+
+This method is called ridge regression. Geometrically, this penalty encourages
+$\beta$ to be closer to the origin.
+
+![](figures/l2_losses_lam1.png){width=100% fig-align="center"}
 
 ---
 
@@ -365,7 +389,7 @@ The Lasso objective is
 \begin{align*}
 \min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}
-This is the same loss as linear regression, but with a new $\ell^{1}$ penalty
+This is like ridge regression but with a new $\ell^{1}$ penalty
 
 \begin{align*}
 \|\beta\|_{1} := \sum_{j = 1}^{J} \left|\beta_{j}\right|
@@ -383,6 +407,33 @@ It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exact
 
 ---
 
+### Loss Surface
+
+The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
+exactly zero.
+
+![](figures/l1_losses_lam0.5.png){width=100% fig-align="center"}
+
+---
+
+### Loss Surface
+
+The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
+exactly zero.
+
+![](figures/l1_losses_lam1.png){width=100% fig-align="center"}
+
+---
+
+### Loss Surface
+
+The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
+exactly zero.
+
+![](figures/lasso_3d_saved.png){width=100% fig-align="center"}
+
+---
+
 ### Exercise
 
 Respond to the following T/F questions from the reading on linear model extensions. Justify your choices.
@@ -392,3 +443,5 @@ Respond to the following T/F questions from the reading on linear model extensio
 1. Increasing the number of predictive features in a predictive fit will always improve the predictive performance.
 
 1. More regularization means that regularized coefficients will be closer to the original un-regularized LS coefficients.
+
+---
