@@ -5,7 +5,10 @@ citeproc: true
 execute:
     message: false
     warning: false
-    cache: false
+    cache: true
+format:
+  revealjs:
+    css: styles.css
 ---
 
 * model tuning and stability
@@ -32,13 +35,41 @@ have been met.
 
 ---
 
-### Lasso Paths
+### Coefficient Paths
 
+- $\lambda$ is a hyperparameter that controls model complexity.
+- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
+- We can study the order that variables enter the model as we gradually decrease
+$\lambda$. We expect that the most important features enter first.
+![](figures/l1_losses_lam1.png){width=80% fig-align="center"}
+
+---
+
+### Coefficient Paths
+
+:::: {.columns}
+::: {.column width="50%"}
 - $\lambda$ is a hyperparameter that controls model complexity.
 
 - As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
 
-- We can study the "order" that variables enter the model as we gradually decrease $\lambda$. We expect the most important predictors (e.g., drug response-related genes) to enter first.
+- We can study the order that variables enter the model as we gradually decrease
+$\lambda$. We expect that the most important features enter first.
+:::
+
+::: {.column width="50%"}
+![](figures/coef_paths_loss.png){width=200% fig-align="center"}
+:::
+::::
+
+---
+
+### Coefficient Paths
+
+Q: Can you tell if these coefficient paths
+$\hat{\beta}_{j}\left(\lambda\right)$ come from ridge vs. lasso regression?
+
+![](figures/coef_paths_loss.png){width=200% fig-align="center"}
 
 ---
 
@@ -46,7 +77,7 @@ have been met.
 
 - What is an appropriate "budget" for model complexity?
 
-- Bias-Variance Trade-off: Decreasing $\lambda$ reduces bias but increases the variance of the predictions.
+- Decreasing $\lambda$ allows too many noise features into the model. Increasing $\lambda$ misses true signals.
 
 - We need to tune $\lambda$ to balance these competing issues and achieve good performance on holdout samples.
 
@@ -59,9 +90,50 @@ Split the data into $K$ folds (e.g., $K = 5$). Fit the model on $K−1$ folds an
 tested on the remaining fold. This mimics the setting of gathering new data and
 testing the model on that data.
 
+![](figures/cv_setup.png){width=90% fig-align="center"}
+
+---
+
+### Evaluation criteria
+
+We can compute performance on the holdout folds across $\lambda$ complexity
+parameters. For each $k = 1, \dots, K$, we compute
+
+\begin{align*}
+CV_{k}\left(\lambda\right) = \frac{1}{\left|I_{k}\right|} \sum_{i \in I_{k}} \left(y_{i} - \hat{y}_{i}^{-k}\left(\lambda\right)\right)^2
+\end{align*}
+where
+\begin{align*}
+\hat{y}_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right)
+\end{align*}
+and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hyperparameter $\lambda$ using data from all folds except $I_{k}$.
+
+---
+
+### Evaluation criteria
+
+![](figures/cv_error_defn.png){width=200% fig-align="center"}
+
+---
+
+### Evaluation criteria
+
+:::: {.columns}
+::: {.column width="50%"}
+The initial decrease is the phase where removing noise features improves
+performance. The later increase happens when we start ignoring real signal
+features.
+:::
+
+::: {.column width="50%"}
+![](figures/cv_vs_sparsity_lambda.png){width=200% fig-align="center"}
+:::
+::::
+
 ---
 
 ### Hyperparameter Selection
+
 
 ![](figures/cv_curves.png)
 
@@ -104,14 +176,14 @@ For each bootstrap iteration $b = 1, \dots, B$:
 
 ### Bootstrap Analysis
 
-* Distribution of $\{\hat{\beta}_{k}^{b}\}_{b=1}^B$ reveals stability of coefficient $k$
+* Distribution of $\{\hat{\beta}_{j}^{b}\}_{b=1}^B$ reveals stability of coefficient $j$
 * Distribution of $\{\hat{y}_{i}^{b}\}_{b=1}^B$ reveals stability of prediction for observation $i$
 
 ---
 
 ### Prediction Stability Plots
 
-<img src="figures/pcs_housing.png"/>
+![](figures/pcs_housing.png){width=70% fig-align="center"}
 
 ---
 
@@ -140,7 +212,7 @@ earlier.
 
 ### Simulatability
 
-- A linear model $\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}$ is reasonably simulatable when $|S|$ is small.
+- A linear model $\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}$ is simulatable when $|S|$ is small.
 
  - But for even moderate to large $|S|$, simulatability becomes a challenge even for linear regression [@slack2019]!
 
@@ -150,7 +222,7 @@ earlier.
 
 - The model is additive: $f(x) = \sum_{j = 1}^{J}f_j(x_j)$.
 
-- We can inspect the influence of gene $j$ using a single coefficient $\beta_{j}$.
+- We can inspect the influence of feature $j$ using a single coefficient $\beta_{j}$.
 
 - But even in linear regression, ceteris paribus means each coefficient has to be understood relative to all other features in the model.
 
@@ -158,9 +230,9 @@ earlier.
 
 ### Global & local interpretations
 
-- **Global**: $\hat{\beta}$ helps us identify the most influential genes across the study.
+- **Global**: $\hat{\beta}$ helps us identify the most influential features across the study.
 
-- **Local**: For cell $i$, the $x_{ij}\hat{\beta}_{j}$ terms help us understand its particular viability prediction.
+- **Local**: For sample $i$, the $x_{ij}\hat{\beta}_{j}$ terms help us understand its particular prediction.
 
 ---
 
@@ -184,36 +256,16 @@ We use the `glmnet` package in R:
 
 ```r
 # Fit the lasso path and perform 10-fold CV
-cv_fit <- cv.glmnet(X, y, alpha = 1, standardize = TRUE)
+cv_fit <- cv.glmnet(X, y, alpha = 1, nfolds = 10, standardize = TRUE)
 ```
 
-This solves the optimization problem for a sequence of $\lambda$ values using cyclical coordinate descent.
+This solves the optimization problem for a sequence of $\lambda$ values and estimates cross-validation error across $K = 10$ folds.
+
+* `alpha = 1` is lasso
+* `alpha = 0` is ridge
 
 ---
 
-### Evaluation criteria
-
-These boxplots show the performance on the holdout folds across a range of
-$\lambda$ complexity parameters. For each $k = 1, \dots, 10$, we compute
-
-\begin{align*}
-CV_{k}\left(\lambda\right) = \frac{1}{N} \sum_{i \in I_{k}} \left(y_{i} - \hat{y}_{i}^{-k}\left(\lambda\right)\right)^2
-\end{align*}
-where
-\begin{align*}
-y_{i}^{-k}\left(\lambda\right) := x_{i}^\top \hat{\beta}^{-k}\left(\lambda\right)
-\end{align*}
-and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hyperparameter $\lambda$ using data from all folds except $I_{k}$.
-
----
-
-### Evaluation criteria
-
-- The initial decrease is the phase where adding predictors rapidly improves performance. Usually the boxplots increase again for small values of $\lambda$, at which point the model is overfitting.
-
-- We use $\lambda_{1\text{se}}$ to choose the simplest model whose error is within one standard error of the minimum MSE. This is the point where adding new genes doesn't significantly add to the holdout prediction accuracy.
-
----
 
 ### Discussion
 
@@ -278,11 +330,14 @@ exactly 0 for many $\lambda$.
 
 ### Simulation setup
 
-We simulated data where $Cor\left(x_{2}, x_{3}\right) > 0.95$. The true
-coefficients are $\beta_{1} = \beta_{2} = 2$, $\beta_{5} = 1.5$, and all other
-$\beta_{j} = 0$.
+We simulated data where $\text{Cor}\left(x_{2}, x_{3}\right) > 0.95$. The true
+coefficients are
 
-Code:  https://go.wisc.edu/m11v16
+- $\beta_{1} = \beta_{2} = 2$,
+- $\beta_{5} = 1.5$,
+- all other $\beta_{j} = 0$.
+
+Code:  [https://go.wisc.edu/m11v16](https://go.wisc.edu/m11v16)
 
 ---
 

@@ -2,6 +2,12 @@
 title: Drug-perturbation screens for blood cancer
 ---
 
+This notebook applies regularized linear regression (ridge and lasso) to the
+cell viability prediction problem studied in these papers: [1, 2]. You can
+download the primary source data from [this
+repository](https://git.embl.org/bvelten/graper_analyses/-/tree/master). We'll
+work with a simplified version available [here]().
+
 ```{r}
 library(fs)
 library(ggforce)
@@ -34,12 +40,6 @@ v1 <- colnames(X)[c(4772, 4723)]
 ggplot(X) +
     geom_point(aes(.data[[v1[1]]], .data[[v1[2]]])) +
     labs(title = "Example Correlated Genes")
-
-v1 <- colnames(X)[c(4599, 4738)]
-ggplot(X) +
-    geom_point(aes(.data[[v1[1]]], .data[[v1[2]]])) +
-    labs(title = "Example Correlated Genes")
-ggsave("notes/figures/example_correlated_genes2.png", dpi=400)
 ```
 
 ```{r}
