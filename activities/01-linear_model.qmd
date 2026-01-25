@@ -3,10 +3,13 @@ title: Drug-perturbation screens for blood cancer
 ---
 
 This notebook applies regularized linear regression (ridge and lasso) to the
-cell viability prediction problem studied in these papers: [1, 2]. You can
-download the primary source data from [this
+chronic lymphocytic leukaemia (CLL) cell viability prediction problem studied in
+these papers: [1, [2](https://arxiv.org/abs/1811.02962)]. You can download the primary source data from [this
 repository](https://git.embl.org/bvelten/graper_analyses/-/tree/master). We'll
 work with a simplified version available [here]().
+
+The block below includes some libraries that we'll work with. We set a seed so
+that cross-validation gives the same results each time.
 
 ```{r}
 library(fs)
@@ -17,11 +20,20 @@ theme_set(theme_classic())
 set.seed(20251223)
 ```
 
+Let's read in the data.
+
 ```{r}
 data_dir <- path("data")
 source("activities/01-helpers.R")
 cll_data <- readRDS(data_dir / "01-cll.rds")
 ```
+
+The data has three parts. The response $y$ gives the response to a drug,
+Ibrutinib. Small values means that the tumor cell would be killed by the drug.
+Large values means that the tumor cell survives. There are three types of
+predictors, all stored in $X$. The first two are assays about the internal
+molecular state (RNA expression and methylation status). The third is
+sensitivity to other drugs.
 
 ```{r}
 X <- cll_data$X
@@ -32,19 +44,8 @@ annotation <- tibble(
 )
 ```
 
-```{r}
-rho <- cor(X)
-diag(rho) <- 0
-corr_ix <- which(rho > 0.98 * max(rho), arr.ind = TRUE)
-v1 <- colnames(X)[c(4772, 4723)]
-ggplot(X) +
-    geom_point(aes(.data[[v1[1]]], .data[[v1[2]]])) +
-    labs(title = "Example Correlated Genes")
-```
-
-```{r}
-annotation
-```
+We have many more features than cells. There are also many more molecular
+features than drug screening features.
 
 ```{r}
 count(annotation, label)
@@ -52,11 +53,23 @@ count(annotation, label)
 
 ## Exploration
 
+Before fitting any models, let's build some intuition about how these data look.
+works. Don't worry about how the function `plot_viability` works (this is not a
+visualization class). First let's look at how Ibrutinib sensitivity is related
+to sensitivity to other drugs. It seems that some drugs have behavior similar to
+Ibrutinib.
+
 ```{r}
 xy <- bind_cols(viability = y, X)
 plot_viability("drug", 1, 6, 5)
 plot_viability("drug", 2, 6, 5)
 ```
+
+Let's look at the molecular features. These effects are more ambiguous. There
+_do_ seem to be some features that are related to Ibrutinib sensitivity, but
+we're going to need an automatic way to screen through all 9K+ features.
+Fortunately, the relationships seem roughly linear, so regularized linear
+regression is a good candidate for the analysis.
 
 ```{r}
 plot_viability("RNA", 1, 6, 5)
@@ -65,34 +78,53 @@ plot_viability("methylation", 1, 6, 5)
 
 ## Sparse Regression
 
+We can fit a lasso regression using glmnet. The hyperparameter `alpha = 1` means
+that we will use $\ell^{1}$ regularization; see below for $\ell^{2}$ regression.
+The labels on the top of the plot are the number of selected features. Compared
+to the plots in the reading/lecture notes, the $x$-axis is reversed -- larger
+penalty $\lambda on the left.
+
 ```{r}
 library(glmnet)
-fit <- cv.glmnet(X, y, standardize = FALSE, alpha = 1)
+fit <- cv.glmnet(X, y, alpha = 1)
 plot(fit)
 ```
+
+The output `fit` gives the CV selected model. Let's compare the true and
+predicted CLL viability scores across all samples. We seem to have slightly
+underfit (e.g., underestimate large $y_i$) but overall the correlation is good.
 
 ```{r}
 plot_predictions(fit, X, y)
 ```
+
+We can extract coefficients using the `coef` function. We could pass in the
+`s` argument to get the coefficients $\hat{\beta}\left(\lambda\right)$
+across choices of $\lambda$ other than $\lambda_{\text{1se}}$.
 
 ```{r}
 head(coef(fit))
 ```
 
+Here are coefficients that have nonzero effects in the $\lambda_{\text{min}}$
+model
+
 ```{r}
-plot_coef(fit)
+plot_coef(fit, s = "lambda.1se")
 ```
 
 ### Standardization
 
+`glmnet` standardizes by default. This is very important! If we ignore this, the
+predictions become much worse.
+
 ```{r}
-fit <- cv.glmnet(X, y, standardize = TRUE)
+fit <- cv.glmnet(X, y, standardize = FALSE)
 plot(fit)
 ```
 
 ```{r}
 plot_predictions(fit, X, y)
-plot_coef(fit)
 ```
 
 ### Coefficient Trajectories

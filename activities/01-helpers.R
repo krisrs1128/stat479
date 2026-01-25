@@ -21,12 +21,16 @@ plot_viability <- function(label, page = 1, nrow = 6, ncol = 5, keep_names = NUL
     facet_wrap_paginate(~name, nrow = nrow, ncol = ncol, page = page)
 }
 
-plot_coef <- function(fit) {
-    beta_hat <- tibble(beta_hat = coef(fit)[ -1,1]) |>
+plot_coef <- function(fit, ...) {
+    beta_hat <- tibble(beta_hat = coef(fit, ...)[ -1,1]) |>
         bind_cols(annotation)
 
-    ggplot(beta_hat) +
-        geom_jitter(aes(label, beta_hat))
+    beta_hat |>
+        filter(beta_hat != 0) |>
+        ggplot() +
+        geom_col(aes(beta_hat, variable)) +
+        facet_wrap(~ label, scales = "free")
+
 }
 
 plot_predictions <- function(fit, X, y) {
