@@ -1,5 +1,5 @@
 ---
-title: 4. Applying Linear Models
+title: 4. Interpreting Linear Models
 bibliography: references.bib
 citeproc: true
 execute:
@@ -63,7 +63,7 @@ testing the model on that data.
 
 ### Hyperparameter Selection
 
-(show the glmnet curve)
+![](figures/cv_curves.png)
 
 - $\lambda_{\text{min}}$: Minimizes the cross-validation error.
 
@@ -102,7 +102,7 @@ For each bootstrap iteration $b = 1, \dots, B$:
 
 ---
 
-### Boostrap Analysis
+### Bootstrap Analysis
 
 * Distribution of $\{\hat{\beta}_{k}^{b}\}_{b=1}^B$ reveals stability of coefficient $k$
 * Distribution of $\{\hat{y}_{i}^{b}\}_{b=1}^B$ reveals stability of prediction for observation $i$
@@ -235,17 +235,16 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ### Coefficient Paths
 
-- We can visualize how $\hat{\beta}_j$ evolves as $\lambda$ decreases.
+- We can visualize how the ridge coefficients $\hat{\beta}_j$ evolves as $\lambda$ decreases.
 
 - Each line represents a gene (RNA or methylation feature). The order in which they "emerge" from zero indicates their relative importance in predicting drug response.
 
 ---
 
-### Ridge Coefficient Paths
+### Coefficient Paths
 
----
-
-### Lasso Coefficient paths
+These are the equivalent results for the lasso. Notice that coefficients stay at
+exactly 0 for many $\lambda$.
 
 ---
 
@@ -266,6 +265,7 @@ Respond to [Evaluation Critique] in the exercise sheet.
 - The original scale of the features might be informative. By standardizing features, we might be giving undue weight to noise features with low variability.
 
 - Are there distinct gene pathway signatures for different drugs? In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.
+
 ---
 
 ### Instability
@@ -276,23 +276,22 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ---
 
-(todo)
-
 ### Simulation setup
 
-- **Design**: Take two highly correlated genes ($r > 0.9$) and use them to predict viability.
+We simulated data where $Cor\left(x_{2}, x_{3}\right) > 0.95$. The true
+coefficients are $\beta_{1} = \beta_{2} = 2$, $\beta_{5} = 1.5$, and all other
+$\beta_{j} = 0$.
 
-- **Experiment**: Generate 100 bootstrap resamples of the CLL data and fit a lasso model to each.
+Code:  https://go.wisc.edu/m11v16
 
 ---
 
-(todo)
-
 ### Simulation results
 
-- Observe how often each gene is selected.
+These are the feature selection frequencies across 1000 bootstrap iterations.
+Genes 1 and 2 compete for selection.
 
-- In many cases, the lasso will pick Gene A in 50% of the trials and Gene B in the other 50%, even if both are equally important.
+![](figures/upset_collinear_lasso.png){width=100% fig-align="center"}
 
 ---
 
@@ -302,7 +301,7 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
     - Just because a gene was not selected by the lasso does not mean it is not biologically relevant -- it could be correlated with a gene that's part of the true biological mechanism.
 
-- More generally, we careful applying sparse models on correlated data. There may be many plausible, equally predictive explanations based on different subsets of features.
+- More generally, we should be careful applying sparse models to correlated data. There may be many plausible, equally predictive explanations based on different subsets of features.
 
 ---
 
@@ -310,10 +309,12 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 - Often, people assume that to get higher accuracy, we need "black-box" models (like deep learning or Random Forests) and sacrifice interpretability.
 
- - But in many scientific problems (like today's case study, see also [@openproblemsBenchmarksOpen]), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predicators and response in the data.
+ - But in many scientific problems (like today's case study, see also [@openproblemsBenchmarksOpen]), sparse linear models are surprisingly competitive, while remaining more interpretable to more audiences. It depends on the true relationship between predictors and response in the data.
 
 ---
 
 ### Exercise
 
 Respond to [Code Analysis] in the exercise sheet.
+
+---

@@ -30,8 +30,11 @@ cat(sprintf("  Gene1: %d%%\n", round(100 * mean(selected[,1]))))
 cat(sprintf("  Gene2: %d%%\n", round(100 * mean(selected[,2]))))
 cat(sprintf("  Gene5: %d%%\n\n", round(100 * mean(selected[,5]))))
 
+#png("notes/figures/upset_collinear_lasso.png", width = 1500, height = 900, res=200)
 upset(as.data.frame(selected),
       nintersects = 10,
       order.by = "freq",
       mainbar.y.label = "Combination Frequency",
+      text.scale = 1.5,
       sets.x.label = "Selection Count")
+#dev.off()
