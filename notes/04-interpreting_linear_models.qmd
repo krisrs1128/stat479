@@ -9,6 +9,7 @@ execute:
 format:
   revealjs:
     css: styles.css
+    embed-resources: true
 ---
 
 * model tuning and stability
@@ -247,6 +248,13 @@ earlier.
 - **Predictors** ($X$): High-dimensional molecular profiles $N = 121, J = 9553$.
 
 - **Goal**: Identify a sparse set of features that distinguish drug sensitive vs. resistant cells.
+
+---
+
+### Review Code Example
+
+* Code: [https://go.wisc.edu/g6j065](https://go.wisc.edu/g6j065)
+* HTML: [https://go.wisc.edu/bbb91z](https://go.wisc.edu/bbb91z)
 
 ---
 

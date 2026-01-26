@@ -5,6 +5,7 @@ citeproc: true
 format:
   revealjs:
     css: styles.css
+    embed-resources: true
 ---
 
 * motivating case study
@@ -77,7 +78,8 @@ _Outcome_
 
 ### Review Code Example
 
-* `01-linear_model.qmd`: "Exploration"
+* Code: [https://go.wisc.edu/g6j065](https://go.wisc.edu/g6j065)
+* HTML: [https://go.wisc.edu/bbb91z](https://go.wisc.edu/bbb91z)
 
 ---
 
