@@ -12,9 +12,7 @@ format:
 
 * linear models
 
-* sparse linear models
-
-* bias variance trade-off
+* regularized linear models
 
 ---
 
@@ -41,29 +39,35 @@ have been met.
 
 - Patients with the same diagnosed cancer often respond very differently to the same drug. How can we figure out which drugs any particular patient will respond to?
 
-- If we imagine `drug effectiveness = f(gene activity)`, then one approach is to measure activity of genetic pathways in biopsies of that patient's cancer tissue.
+- If `drug effectiveness = f(gene activity)`, then one approach is to measure gene activity in the patient's cancer tissue samples.
 
-- The most important features in that model can be used to stratify patients into different responder/non-responder subtypes.
+- Features in that model can be used to stratify patients into responder/non-responder subtypes.
 
 ---
 
 ### Study design
 
-- To learn this relationship, previous studies used "immortalized" cancer cell lines. These don't fully represent the complexity of cancer in real populations.
+The study [@Dietrich2017] measured drug responses in samples from primary
+patients who were being treated for blood cancer (CLL). They simultaneously
+measured gene expression and DNA methylation activity, then saw whether the
+cells were killed by antitumor drugs.
 
-- The study [@Dietrich2017] measured drug responses in samples from primary patients who were being treated for blood cancer (CLL). They simultaneously measured gene expression and DNA methylation activity (we will skip over some the biology, but happy to discuss this with anyone who's interested).
+![](figures/drug_response_assay.jpg){width=100% fig-align="center"}
 
 ---
 
 ### Drug response data
 
 _Features_
+
 - 121 samples from CLL patients
 - 61 drugs, 5 dosages per drug
 - 9553 features total
 
 _Outcome_
-- Cell viability: Percentage of surviving cells after drug exposure
+
+- Drug sensitivity: Percentage of surviving cells after exposure to the
+drug Ibrutinib
 
 ---
 
@@ -72,7 +76,7 @@ _Outcome_
 <br/>
 <br/>
 
-**For a given drug treatment profile, which RNA or methylation features differentiate between drug sensitivity vs. resistance?**
+**Which genomic features differentiate between drug sensitivity vs. resistance?**
 
 ---
 
@@ -83,15 +87,13 @@ _Outcome_
 
 ---
 
-## Sparse Linear Regression
+## Lasso Regression
 
 - Viability can be viewed as a **response variable** $\mathbf{y} \in \mathbf{R}^{N}$, and the molecular variables can be treated as **features** $\mathbf{X} \in \mathbf{R}^{N  \times J}$. Here
 
 - The setting is high-dimensional with fewer samples ($N = 121$) than features ($J = 9553$). Without regularization, the problem is underdetermined.
 
 - **Sparsity** will help us focus on the most important pathways out of thousands of candidates.
-
-This is a case where lasso regression was important in a real scientific study.
 
 ---
 
@@ -115,9 +117,9 @@ The least-squares estimate $\hat{\beta} := \left(\hat{\beta}_{0}, \hat{\beta}_{1
 
 ### Examples
 
-1. In the reading, model house price $y_{i}$ as a function of house area $x_{i}$.
+1. In the reading, model house price $y_{i}$ as a function of house area $x_{i} \in \mathbf{R}$.
 
-1. In the case study, model viability $y_{i}$​ for sample $i$ as a linear function of a single gene's expression level $x_{i} \in \mathbf{R}$:
+1. In the case study, model viability $y_{i}$​ for sample $i$ is a linear function of a single gene's expression level $x_{i} \in \mathbf{R}$:
 
 ---
 
@@ -186,17 +188,6 @@ and similarly for the remaining neighborhoods.
 
 ---
 
-### Examples
-
-In the case study, $x_{i} \in \{\text{no mutation}, \text{mutated}\}$ could
-record whether the patient has a mutation in a particular gene.
-
-- $\beta_0$​: The expected viability for the reference group ($x_{i} = 0$).
-
-- $\beta_1$: The difference in expected viability between the mutated $x_{i} = 1$ and reference groups
-
----
-
 ## Multiple Linear Regression
 
 Assumed model form:
@@ -215,14 +206,14 @@ y_{i} &= \sum_{j = 1}^{J}x_{ij}\beta_{j} + \epsilon_{i} \\
 - We can estimate $\hat{\beta} \in \mathbf{R}^{J}$ by minimizing the sum of squares loss,
 
 \begin{align*}
-\min_{\beta} \sum_{i=1}^N \left( y_i - \mathbf{x}_i^\top \beta \right)^2
+\min_{\beta \in \mathbf{R}^{J}} \sum_{i=1}^N \left( y_i - \mathbf{x}_i^\top \beta \right)^2
 \end{align*}
 
 ---
 
 ### Visualization: Two continuous predictors
 
-We can imagine how viability changes when changing the expression levels for two genes simultaneously.
+We can imagine how $y$ changes when changing two features simultaneously.
 
 ![](figures/multivariate_least_squares.png){width=70% fig-align="center"}
 
@@ -249,7 +240,7 @@ In the housing price example,
 &426 \times \text{year} - 12,667 \times \text{bedroom}
 \end{align*}
 
-For every additional square foot, the price increases by \$88.
+For every additional square foot, the price increases by \$88, all else held equal.
 
 ---
 
@@ -262,7 +253,7 @@ In the housing price example,
 & 426 \times \text{year} - 12,667 \times \text{bedroom}
 \end{align*}
 
-When all the covariates are 0, the predicted price is _negative_. This makes no
+When all the features are 0, the predicted price is _negative_. This makes no
 sense. But there are also no 0 square foot homes for the model to have learned
 this.
 
@@ -310,7 +301,7 @@ Large coefficient $\neq$ an important predictor.
 
 - The scale of the original features influences the size of the coefficients.
 - One solution is to standardize the input features.
-- Alternatively, use the bootstrap to estimate $\text{SD}\left(\beta_{j}\right)$. Large + stable coefficients are more relevant.
+- Alternatively, consider $\frac{\hat{\beta}_{j}}{SD\left(\hat{\beta}_{j}\right)}$. Large + stable coefficients are more important.
 
 ---
 
@@ -352,14 +343,14 @@ objective.
 \min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_{2}^{2} \right].
 \end{align*}
 This is the same loss as linear regression, but with a new $\ell^{2}$ penalty
-$\|\beta||_{2} = \sum_{j} \beta_{j}^{2}$ is the $\ell^{2}$ norm. $\lambda \geq
+$\|\beta||_{2}^{2} = \sum_{j} \beta_{j}^{2}$ is the $\ell^{2}$ norm. $\lambda \geq
 0$ is a tuning parameter controlling model complexity.
 
 ---
 
 ### $\ell^{2}$ Regularization
 
-This method is called ridge regression. Geometrically, this penalty encourages
+This method is called **ridge regression**. Geometrically, this penalty encourages
 $\beta$ to be closer to the origin.
 
 ![](figures/l2_losses_lam0.5.png){width=100% fig-align="center"}
@@ -368,7 +359,7 @@ $\beta$ to be closer to the origin.
 
 ### $\ell^{2}$ Regularization
 
-This method is called ridge regression. Geometrically, this penalty encourages
+This method is called **ridge regression**. Geometrically, this penalty encourages
 $\beta$ to be closer to the origin.
 
 ![](figures/l2_losses_lam1.png){width=100% fig-align="center"}
@@ -377,17 +368,17 @@ $\beta$ to be closer to the origin.
 
 ### Why Regularize? Removing Irrelevant Predictors
 
-- If we had many noise features (unrelated to response), least squares will still try finding coefficients for each of them. This causes overfitting: our predictions would depend on variables that don't actually matter.
+- If we had many noise features (unrelated to response), least squares will still find coefficients for them. This causes overfitting: our predictions depend on irrelevant features.
 
-- We don't expect all genes to be relevant to cell viability in this experiment. It's more likely that a few key pathways are driving resistance.
+- In the case study, we don't expect all genes to matter. It's more likely that there are a few key genes.
 
-- **Feature selection**: If the noise variables do not reduce the SSE, then the Lasso sets their coefficients $\beta_{j}$ to exactly zero. The $\ell^{1}$ penalty "induces sparsity."
+- **Feature selection**: Lasso sets many coefficients $\beta_{j}$ to exactly zero. The $\ell^{1}$ penalty "induces sparsity."
 
 ---
 
 ### $\ell^{1}$ Regularization
 
-The Lasso objective is
+The **Lasso regression** objective is
 \begin{align*}
 \min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
 \end{align*}
@@ -401,7 +392,7 @@ This is like ridge regression but with a new $\ell^{1}$ penalty
 
 ### $\ell^{1}$ Regularization
 
-It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exactly_ zero. The "selected" features are those where $\beta_{j} \neq 0$.
+It's not obvious, but the minimizers often have coordinates $\beta_{j} = 0$. The "selected" features are those where $\beta_{j} \neq 0$.
 
 \begin{align*}
 \min_{\beta \in \mathbf{R}^J} \left[ \frac{1}{2N} \sum_{i=1}^N \left(y_i - \mathbf{x}_i^\top \beta\right)^2 + \lambda \lVert \beta \rVert_1 \right].
@@ -411,8 +402,7 @@ It's not obvious, but the minimizers often set coordinates $\beta_{j}$ to _exact
 
 ### Loss Surface
 
-The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
-exactly zero.
+The minimizers lie in the "creases" where some $\beta_{j}$ are exactly zero.
 
 ![](figures/l1_losses_lam0.5.png){width=100% fig-align="center"}
 
@@ -420,8 +410,8 @@ exactly zero.
 
 ### Loss Surface
 
-The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
-exactly zero.
+The minimizers lie in the "creases" where some $\beta_{j}$ are exactly zero.
+
 
 ![](figures/l1_losses_lam1.png){width=100% fig-align="center"}
 
@@ -429,8 +419,8 @@ exactly zero.
 
 ### Loss Surface
 
-The minimizers are encouraged to lie in the "creases" where some $\beta_{j}$ are
-exactly zero.
+
+The minimizers lie in the "creases" where some $\beta_{j}$ are exactly zero.
 
 ![](figures/lasso_3d_saved.png){width=100% fig-align="center"}
 

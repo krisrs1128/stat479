@@ -39,7 +39,7 @@ have been met.
 ### Coefficient Paths
 
 - $\lambda$ is a hyperparameter that controls model complexity.
-- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
+- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to linear regression.
 - We can study the order that variables enter the model as we gradually decrease
 $\lambda$. We expect that the most important features enter first.
 ![](figures/l1_losses_lam1.png){width=80% fig-align="center"}
@@ -52,7 +52,7 @@ $\lambda$. We expect that the most important features enter first.
 ::: {.column width="50%"}
 - $\lambda$ is a hyperparameter that controls model complexity.
 
-- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to OLS.
+- As $\lambda \uparrow \infty$, all coefficients shrink toward zero. As $\lambda \downarrow 0$, we return to linear regression.
 
 - We can study the order that variables enter the model as we gradually decrease
 $\lambda$. We expect that the most important features enter first.
@@ -78,9 +78,9 @@ $\hat{\beta}_{j}\left(\lambda\right)$ come from ridge vs. lasso regression?
 
 - What is an appropriate "budget" for model complexity?
 
-- Decreasing $\lambda$ allows too many noise features into the model. Increasing $\lambda$ misses true signals.
+- Decreasing $\lambda$ allows many noise features into the model. Increasing $\lambda$ misses true signals.
 
-- We need to tune $\lambda$ to balance these competing issues and achieve good performance on holdout samples.
+- We need to tune $\lambda$ to balance these competing issues and achieve good performance on new samples.
 
 ---
 
@@ -243,7 +243,7 @@ earlier.
 
 ### Case study formulation
 
-- **Response** ($y$): Cell viability after drug treatment.
+- **Response** ($y$): Cell viability after treatment with the drug Ibrutinib.
 
 - **Predictors** ($X$): High-dimensional molecular profiles $N = 121, J = 9553$.
 
@@ -295,42 +295,23 @@ Respond to [Evaluation Critique] in the exercise sheet.
 
 ### Coefficient Paths
 
-- We can visualize how the ridge coefficients $\hat{\beta}_j$ evolves as $\lambda$ decreases.
+- We can visualize how the lasso coefficients $\hat{\beta}_j$ evolve as $\lambda$ decreases.
 
 - Each line represents a gene (RNA or methylation feature). The order in which they "emerge" from zero indicates their relative importance in predicting drug response.
 
 ---
 
-### Coefficient Paths
+### In-Class
 
-These are the equivalent results for the lasso. Notice that coefficients stay at
-exactly 0 for many $\lambda$.
+1. Check that coefficients stay at exactly 0 for many $\lambda$.
 
----
-
-### Lasso vs. Ridge
-
----
-
-### Takeaways
-
-- Sparse linear models narrowed us down from 9K+ features to 37 that are enough to predict drug sensitivity with relatively high accuracy.
-
-- In this problem, standardization was essential. We are lucky that it is the default in `glmnet`, but this isn't always the case.
-
----
-
-### Possible Improvements
-
-- The original scale of the features might be informative. By standardizing features, we might be giving undue weight to noise features with low variability.
-
-- Are there distinct gene pathway signatures for different drugs? In this case, we should consider either drug-pathway interaction terms or drug-specific classifiers.
+1. Compare results from lasso vs. ridge regression.
 
 ---
 
 ### Instability
 
-- **The Problem**: When predictors are highly correlated, the $\hat{\beta}$ estimated by lasso becomes unstable.
+- When predictors are highly correlated, the $\hat{\beta}$ estimated by lasso becomes unstable.
 
 - Small changes in the training data can cause the lasso to switch between two highly correlated genes, leading to conflicting interpretations of the same underlying signal.
 
@@ -362,7 +343,7 @@ Genes 1 and 2 compete for selection.
 
 - Selection $\neq$ Importance
 
-    - Just because a gene was not selected by the lasso does not mean it is not biologically relevant -- it could be correlated with a gene that's part of the true biological mechanism.
+    - Just because a gene was not selected by the lasso does not mean it is not biologically irrelevant -- it could be correlated with a gene that's part of the true biological mechanism.
 
 - More generally, we should be careful applying sparse models to correlated data. There may be many plausible, equally predictive explanations based on different subsets of features.
 
