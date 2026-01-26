@@ -1,12 +1,11 @@
-
 tidy_xy <- function(label) {
-  cur_vars <- annotation |>
-    dplyr::filter(label == !!label) |>
-    pull(variable)
+    cur_vars <- annotation |>
+        dplyr::filter(label == !!label) |>
+        pull(variable)
 
-  xy |>
-    select(viability, all_of(cur_vars)) |>
-    pivot_longer(-viability)
+    xy |>
+        select(viability, all_of(cur_vars)) |>
+        pivot_longer(-viability)
 }
 
 plot_viability <- function(label, page = 1, nrow = 6, ncol = 5, keep_names = NULL) {
@@ -14,23 +13,22 @@ plot_viability <- function(label, page = 1, nrow = 6, ncol = 5, keep_names = NUL
         keep_names <- colnames(xy)
     }
 
-  xy_long <- tidy_xy(label) |>
-    filter(name %in% keep_names)
-  ggplot(xy_long) +
-    geom_point(aes(value, viability)) +
-    facet_wrap_paginate(~name, nrow = nrow, ncol = ncol, page = page)
+    xy_long <- tidy_xy(label) |>
+        filter(name %in% keep_names)
+    ggplot(xy_long) +
+        geom_point(aes(value, viability)) +
+        facet_wrap_paginate(~name, nrow = nrow, ncol = ncol, page = page)
 }
 
 plot_coef <- function(fit, ...) {
-    beta_hat <- tibble(beta_hat = coef(fit, ...)[ -1,1]) |>
+    beta_hat <- tibble(beta_hat = coef(fit, ...)[-1, 1]) |>
         bind_cols(annotation)
 
     beta_hat |>
         filter(beta_hat != 0) |>
         ggplot() +
         geom_col(aes(beta_hat, variable)) +
-        facet_wrap(~ label, scales = "free")
-
+        facet_wrap(~label, scales = "free")
 }
 
 plot_predictions <- function(fit, X, y) {

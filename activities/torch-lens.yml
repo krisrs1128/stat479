@@ -1,0 +1,29 @@
+name: torch-lens
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+
+  - pip:
+      # ---- Core numeric stack ----
+      - numpy==1.26.4
+
+      # ---- PyTorch (compatible with new Transformers) ----
+      - torch==2.2.2
+      - torchvision==0.17.2
+      - torchaudio==2.2.2
+
+      # ---- HuggingFace (SlidingWindowCache lives here) ----
+      - transformers==4.44.0
+
+      # ---- Interpretability ----
+      - transformer-lens
+      - typeguard==4.4.4
+
+      # ---- Utilities ----
+      - pandas
+      - tqdm
+      - einops
+      - accelerate
+      - datasets

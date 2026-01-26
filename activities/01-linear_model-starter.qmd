@@ -88,6 +88,9 @@ plot_viability("RNA", 1, 6, 5)
 plot_viability("methylation", 1, 6, 5)
 ```
 
+(Aside: Show how to render this notebook for sharing! Show terminal command and
+walk through YAML header).
+
 # Sparse Regression
 
 The lasso minimizes
@@ -98,8 +101,7 @@ where $\lambda$ controls sparsity. We fit using `glmnet` with `alpha = 1` for
 the $\ell^1$ penalty.
 
 ```{r}
-fit <- cv.glmnet(X, y, alpha = 1)
-plot(fit)
+fit <- # ???
 ```
 
 The plot shows cross-validation error across $\lambda$ values (decreasing left
@@ -112,7 +114,7 @@ large $y_i$ and overestimates low $y_i$, suggesting underfitting. Overall
 correlation is good.
 
 ```{r}
-plot_predictions(fit, X, y)
+# plot y vs. y hat
 ```
 
 Extract coefficients at $\lambda_{\text{1se}}$ using `coef`:
@@ -146,7 +148,7 @@ Which features have the largest $\beta_j(\lambda)$ across the regularization
 path? The default plot shows this.
 
 ```{r}
-plot(fit$glmnet.fit)
+# plot beta[j](lambda)
 ```
 
 Each line represents one feature's coefficient as $\lambda$ decreases. The plot
