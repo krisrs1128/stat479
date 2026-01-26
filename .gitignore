@@ -6,4 +6,7 @@ hw/hw*/*soln*
 hw/hw*/*.pdf
 notes/*.html
 notes/*files
+notes/figures/*.mov
 data/
+.DS_Store
+*cache*
