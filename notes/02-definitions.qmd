@@ -270,6 +270,7 @@ interpretation claims feature $j$ is important, then can be checked by
 
 ### Explanations for Communication
 
+
 The talk [@kim_iclr] describes how interpretability bridges human and machine "concepts."
 
 <img src='figures/kim_iclr.png' class="center" width=700/>

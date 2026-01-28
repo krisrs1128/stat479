@@ -113,7 +113,7 @@ and $\hat{\beta}^{-k}\left(\lambda\right)$ solves the lasso optimization at hype
 
 ### Evaluation criteria
 
-![](figures/cv_error_defn.png){width=200% fig-align="center"}
+![](figures/cv_components.png){width=200% fig-align="center"}
 
 ---
 
@@ -188,52 +188,18 @@ For each bootstrap iteration $b = 1, \dots, B$:
 
 ---
 
-## Interpretation
+### Prediction Stability Plots
 
----
+:::: {.columns}
+::: {.column width="50%"}
+![](figures/pcs_housing_trim.png){width=70% fig-align="left"}
+:::
 
-### Intrinsic Interpretability
-
-These were the properties of intrinsically interpretable models we introduced
-earlier.
-
-- **Sparsity**: The model uses only a few of the many candidate features.
-- **Simulatability**: The ability to manually calculate the outcome from the inputs.
-- **Modularity**: Each component can be understood independently from the others.
-
----
-
-### Parsimony
-
-- The $\ell^{1}$-penalized linear model focuses our attention on a small subset of selected features where $\hat{\beta}_{j} = 0$.
-
-- The larger the $\lambda$, the more interpretable the model becomes, since the support set $S = \{j : \hat{\beta}_{j} \neq 0\}$ shrinks.
-
----
-
-### Simulatability
-
-- A linear model $\hat{y} = \hat{\beta}_{0} + \sum_{j \in S} x_j \hat{\beta}_{j}$ is simulatable when $|S|$ is small.
-
- - But for even moderate to large $|S|$, simulatability becomes a challenge even for linear regression [@slack2019]!
-
----
-
-### Modularity
-
-- The model is additive: $f(x) = \sum_{j = 1}^{J}f_j(x_j)$.
-
-- We can inspect the influence of feature $j$ using a single coefficient $\beta_{j}$.
-
-- But even in linear regression, ceteris paribus means each coefficient has to be understood relative to all other features in the model.
-
----
-
-### Global & local interpretations
-
-- **Global**: $\hat{\beta}$ helps us identify the most influential features across the study.
-
-- **Local**: For sample $i$, the $x_{ij}\hat{\beta}_{j}$ terms help us understand its particular prediction.
+::: {.column width="50%"}
+- Centered on diagonal: Lower bias
+- Shorter segments: Lower variance
+:::
+::::
 
 ---
 
@@ -302,6 +268,8 @@ Respond to [Evaluation Critique] in the exercise sheet.
 ---
 
 ### In-Class
+
+1. Show how to render quarto files.
 
 1. Check that coefficients stay at exactly 0 for many $\lambda$.
 

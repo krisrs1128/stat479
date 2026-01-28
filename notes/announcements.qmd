@@ -1,0 +1,52 @@
+---
+title: Announcements
+format:
+  revealjs:
+    css: styles.css
+    embed-resources: true
+---
+
+### January 26, 2026
+
+1. Office hours are set. Canvas homepage includes hours and locations.
+
+1. Reading list was revised last Friday.
+
+1. If you just joined the class, we will excuse late penalties.
+
+1. Deadlines:
+    - **Jan. 26**: In-Class Discussion and Exercises 2 - 1
+    - **Jan 28**: In-Class Discussion and Exercises 2 - 2
+    - **Feb 6**: HW1
+
+---
+
+### January 28, 2026
+
+1. If you just joined the class, we will excuse late penalties.
+
+1. Part (b) in [Interpreting Lasso Regularization Paths] and part (c) in [Prediction Stability Plots] in HW1 are revised to be consistent with lecture.
+
+1. Deadlines:
+    - **Jan 28**: In-Class Discussion and Exercises 2 - 2
+    - **Feb 6**: HW1
+
+---
+
+### Exercise
+
+Respond to the following T/F questions from the reading on linear model extensions. Justify your choices.
+
+1. **F** The magnitude of the LS coefficient of a predictive feature corresponds to how important the feature is for generating the prediction.
+
+- Magnitude of $\beta_{j}$ depends on the scale of the data.
+
+1. **F** Increasing the number of predictive features in a predictive fit will always improve the predictive performance.
+
+- It reduces the training error, but may result in overfitting.
+
+1. **F** More regularization means that regularized coefficients will be closer to the original un-regularized LS coefficients.
+
+- More regularization brings solutions away from LS and towards the origin
+
+---
