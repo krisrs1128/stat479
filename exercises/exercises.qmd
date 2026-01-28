@@ -122,8 +122,8 @@ features using the lasso objective:
    a. Identify the two vertical dashed lines in the left panel. Which
    corresponds to $\lambda_{\min}$ and which to $\lambda_{1\text{se}}$? When should you prefer $\lambda_{1\text{se}}$ over $\lambda_{\min}$?
 
-   b. Explain the bias-variance tradeoff visible in these plots. As $-\log \lambda$ increases (i.e., $\lambda$ decreases), how do model bias and
-   variance change? Point to specific features in both panels that support your
+   b. Explain the performance and sparsity tradeoffs visible in these plots. As $-\log \lambda$ increases (i.e., $\lambda$ decreases), how do test error and
+   sparsity change? Point to specific features in both panels that support your
    answer.
 
    c. Explain the non-monotonic coefficient path.
@@ -218,10 +218,10 @@ choices.
    fit <- cv_fit$glmnet.model
    ```
 
-   Select 20 samples as a held-out test set. Repeat the following steps $B = 100$ times:
+   Select 20 samples as a held-out test set. Apply the bootstrap with $B = 100$ bootstrap samples. Specifically,
 
-   * Apply bootstrap resampling to the training data
-   * Refit the lasso on each bootstrap, using CV to tune $\lambda$ each time
+   * Sample the training indices with replacement. The associated $\mathbf{y}^{b}$ and $\mathbf{X}^{b}$ are the bootstrap sample.
+   * Refit the lasso to $\left(\mathbf{y}^{b}, \mathbf{X}^{b}\right)$, using CV to tune $\lambda$ each time
    * Make predictions on the 20 test points.
 
    Create the associated prediction stability plot.
