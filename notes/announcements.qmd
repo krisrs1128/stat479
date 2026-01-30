@@ -25,6 +25,8 @@ format:
 
 1. If you just joined the class, we will excuse late penalties.
 
+1. Final exam set to last day of class (**April 29, 4 - 5:15pm**)
+
 1. Part (b) in [Interpreting Lasso Regularization Paths] and part (c) in [Prediction Stability Plots] in HW1 are revised to be consistent with lecture.
 
 1. Deadlines:
@@ -44,6 +46,10 @@ Respond to the following T/F questions from the reading on linear model extensio
 1. **F** Increasing the number of predictive features in a predictive fit will always improve the predictive performance.
 
 - It reduces the training error, but may result in overfitting.
+
+---
+
+### Exercise
 
 1. **F** More regularization means that regularized coefficients will be closer to the original un-regularized LS coefficients.
 

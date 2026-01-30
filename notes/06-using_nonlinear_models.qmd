@@ -1,12 +1,23 @@
 ---
 title: 6. Using Gaussian Proceses
+bibliography: references.bib
+citeproc: true
+format:
+  revealjs:
+    css: styles.css
+    embed-resources: true
+execute:
+    message: false
+    warning: false
+    cache: true
 ---
 
 
--   Hyperparameter tuning
--   Application to case study
--   Posterior predictives
--   Interpretability evaluation
+- Hyperparameter tuning
+
+- Application to case study
+
+- Interpretability evaluation
 
 ```{r}
 #| echo: false
@@ -40,15 +51,15 @@ checks.
 
 ### Marginal Likelihood
 
-Q: How do we choose hyperparameters $\theta = \left(\ell, \sigma_f, \dots, \right)$
+Q: How do we choose kernel hyperparameters $\theta = \left(\ell, \sigma_f, \dots\right)$
 
-A: Find $\theta$ that makes the observed data $\mathbf{y}$ most probably:
+A: Find $\theta$ that makes the observed data $\mathbf{y}$ most probable:
 
 **Marginal likelihood**
 
 $$p(\mathbf{y} | \mathbf{X}, \theta) = \int p(\mathbf{y} | \mathbf{f}, \mathbf{X}) p(\mathbf{f} | \mathbf{X}, \theta) d\mathbf{f}$$
 
-This "marginalizes" over all possible functions $\mathbf{f}$.
+This "marginalizes" over all possible functions $\mathbf{f}$ with hyperparameter $\theta$.
 
 ---
 
@@ -182,8 +193,9 @@ $$k_{\text{rot}} = k_{\text{periodic}} \times k_{\text{decay}}$$
 - Decay component: timescale for spot changes
 - Product: spots appear/disappear as star rotates
 
-The original source `r Citep(bib, c("exoplanetGaussianProcess", "angus2017"))` used a slightly more involved periodoc kernel.
-It used a similar domain-informed kernel construction though.
+The original source ([@exoplanetGaussianProcess, @angus2017]) used a slightly
+more involved periodoc kernel. It used a similar domain-informed kernel
+construction though.
 
 ---
 
@@ -307,6 +319,8 @@ The GP is not just fitting curves, it's extracting astrophysics.
 
 ---
 
+::: {.content-hidden}
+
 ## Numerical Stability
 
 ---
@@ -393,6 +407,8 @@ We used this in the stellar variability study.
 
 See `03-prep.ipynb`.
 
+:::
+
 ---
 
 ## Interpretability
@@ -469,3 +485,5 @@ data_model <- data |>
   filter(time < 1210 | time > 1220) |>
   dplyr::slice(seq(1, n(), by = 10))
 ```
+
+---

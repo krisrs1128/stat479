@@ -1,15 +1,23 @@
 ---
 title: 5. Gaussian Processes
+bibliography: references.bib
+format:
+  revealjs:
+    css: styles.css
+    embed-resources: true
+citeproc: true
+execute:
+    message: false
+    warning: false
+    cache: true
 ---
 
 
 * motivating case study
 
-* kernels
-
 * GP regression
 
-* tuning
+* kernels
 
 ---
 
@@ -86,6 +94,177 @@ How does flux vary as the star rotates?
 
 - Allows for nonlinearity.
 - Allows interpretation of quantities like $P$.
+
+---
+
+## Gaussian Process Regression
+
+---
+
+### Gaussian Process Prior
+
+**Definition.** A Gaussian Process (GP) is a collection of random variables, any finite subset of which is jointly Gaussian
+
+$$f \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))$$
+
+This can be used to define a prior distribution over functions.
+$$\mathbf{f} = (f(x_1), \ldots, f(x_N))^\top \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{K})$$
+
+where $\mu_i = m(x_i)$ and $K_{ij} = k(x_i, x_j)$. We will set $m(\mathbf{x}) = 0$.
+
+---
+
+### Function space perspective
+
+**Classical statistics** Estimate fixed-dimensional parameters $\theta$ of a function.
+
+**GPs** Estimate the entire function $f$.
+
+**Observation** This seems impossible, since functions are infinite-dimensional. But we only observe $f$ at finitely many points,
+\begin{align*}
+\mathbf{f} = \left(f\left(x_1\right), \dots, f(x_M)\right)
+\end{align*}
+and a GP gives us a prior for any choice of $x_{1}, \dots, x_{M}$.
+
+This is what it means to define a "distribution over functions."
+
+---
+
+### Prior Covariance Structure
+
+**Covariance matrix $\mathbf{K}$:**
+
+- Diagonal: $K_{ii} = \sigma_f^2$ is the prior variance at each point.
+- Off-diagonal: $K_{ij}$ is the covariance between $f(x_i)$ and $f(x_j)$
+
+Kernel encodes our assumptions about function smoothness, periodicity, trends, etc.
+
+---
+
+### Sampling from the Prior
+
+<img src="figures/gp_prior_trimmed.gif" class="center"/>
+
+---
+
+### Sampling from the Prior
+
+1. Choose $M$ test locations $\mathbf{x}^* = (x_1, \ldots, x_M)^\top$
+2. Compute $\mathbf{K}_{**} = [k(x_i^*, x_j^*)]_{i,j=1}^M \in \mathbf{R}^{M \times M}$
+3. Sample $\mathbf{f}^* = (f(x_1^*), \ldots, f(x_M^*)) \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_*)$
+
+Each sample is one plausible function from our prior.
+
+Different kernels $\to$ different classes of functions.
+
+---
+
+### Adding Observations
+
+We have defined a prior over functions. Now: update beliefs given data $\{x_i, y_i\}_{i=1}^N$.
+
+&nbsp;
+
+**Prior**
+$$f \sim \mathcal{GP}(0, k(\mathbf{x}, \mathbf{x'}))$$
+
+**Observation model**
+$$y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2) \text{ independent}$$
+
+---
+
+### Joint Distribution
+
+Let $\mathbf{x} = (x_1, \ldots, x_N)$ denote training locations. Write $\mathbf{y} = (y_1, \ldots, y_N)$.
+
+**Claim:** The joint distribution is
+$$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_{*} \\ \mathbf{K}_{*}^\top & \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
+
+**Notation:** Kernel matrices are
+
+- $\mathbf{K} := [k(x_i, x_j)]_{i,j=1}^N \in \mathbf{R}^{N \times N}$
+- $\mathbf{K}_* := [k(x_i, x_j^*)]_{i=1,j=1}^{N,M} \in \mathbf{R}^{N \times M}$
+---
+
+### Justification
+
+By definition of GP:
+$$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{f} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_* \\ \mathbf{K}_*^\top & \mathbf{K}\end{bmatrix}\right)$$
+where $\mathbf{f} = (f(x_1), \ldots, f(x_N))$.
+
+Since $\mathbf{y} = \mathbf{f} + \boldsymbol{\epsilon}$ is a sum of independent Gaussians, it is Gaussian. Using independence of $\mathbf{f}$ and $\boldsymbol{\epsilon}$:
+
+$$\text{Cov}(\mathbf{f}_*, \mathbf{y}) = \text{Cov}(\mathbf{f}_*, \mathbf{f}) = \mathbf{K}_*$$
+
+$$\text{Cov}(\mathbf{y}, \mathbf{y}) = \text{Cov}(\mathbf{f} + \boldsymbol{\epsilon}, \mathbf{f} + \boldsymbol{\epsilon}) = \mathbf{K} + \sigma_n^2\mathbf{I}$$
+
+---
+
+### Gaussian Process Posterior
+
+Now we condition on observed $\mathbf{y}$ to get a posterior for the $f$ that
+generated the data. The Gaussian conditioning formula gives
+
+$$p(\mathbf{f}^* | \mathbf{y}, \mathbf{X}, \mathbf{x}^*) = \mathcal{N}(\boldsymbol{\mu}_*, \boldsymbol{\Sigma}_*)$$
+where
+
+\begin{align*}
+\boldsymbol{\mu}_* &= \mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}\\
+\boldsymbol{\Sigma}_* &= \mathbf{K}_{**} - \mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}
+\end{align*}
+
+The next few slides interpret this formula.
+
+---
+
+### Posterior Mean
+
+<img src="figures/gp_posterior_mean.gif" class="center"/>
+
+---
+
+### Posterior Mean
+
+\begin{align*}
+\boldsymbol{\mu}_*=\mathbf{K}_{*}\left(\mathbf{K}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}
+\end{align*}
+
+- $\mathbf{K}_{*}$ $\to$ how much the test point $x^{\ast}$ correlates with training data
+- $\left(\mathbf{K}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}$ $\to$ reweight the training data according to measurement precision
+
+---
+
+### Posterior Mean
+
+\begin{align*}
+\boldsymbol{\mu}_*=\mathbf{K}_{*}\left(\mathbf{K}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}
+\end{align*}
+
+If $f^\ast$ and $y$ were both scalars, this simplifies,
+\begin{align*}
+\mu_{f^\ast \vert y} = \frac{\operatorname{cov}\left(f^*, y\right)}{\sigma_y^{2}}y = \rho \frac{\sigma_{f^\ast}}{\sigma_y}y
+\end{align*}
+
+- $\rho = 1$ $\to$ copy $y$ and map to the scale of $f^*$.
+- $\rho = 0$ $\to$ ignore $f^*$ and stay at mean 0.
+- $\rho = -1$ $\to$ copy $y$, flip sign, map to the scale of $f^*$.
+
+---
+
+### Posterior Variance
+
+<img src="figures/posterior_covariance.gif" class="center"/>
+
+---
+
+### Posterior Variance
+
+\begin{align*}
+\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}
+\end{align*}
+
+- We reduce uncertainty when we observe data
+- If $x^{\ast}$ is far from the data, then $\mathbf{K}_{\ast }$ is small and we revert to the prior $\mathbf{K}_{\ast\ast}$.
 
 ---
 
@@ -203,7 +382,7 @@ $$k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} 
 
 ### Matérn Kernels
 
-We haven't yet explained how these samples are generated, but samples that use a Matérn kernel are often "rougher" are more realistic.
+Samples that use a Matérn kernel are often "rougher" are more realistic.
 
 :::: {.columns}
 ::: {.column width="50%"}
@@ -257,157 +436,13 @@ to the specific problem of interest.
 
 ---
 
+### Kernel Code
+
+---
+
 ### Discussion
 
 Respond to [Interactive Kernel Choice] in the exercise sheet.
-
----
-
-## Gaussian Process Regression
-
----
-
-### Gaussian Process Prior
-
-**Definition.** A Gaussian Process (GP) is a collection of random variables, any finite subset of which is jointly Gaussian
-
-$$f \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))$$
-
-This can be used to define a prior distribution over functions.
-$$\mathbf{f} = [f(x_1), \ldots, f(x_N)]^\top \sim \mathcal{N}(\boldsymbol{\mu}, \mathbf{K})$$
-
-where $\mu_i = m(x_i)$ and $K_{ij} = k(x_i, x_j)$ WE often set $m(\mathbf{x}) = 0$.
-
----
-
-### Function space perspective
-
-**Classical statistics** Estimate fixed-dimensional parameters $\theta$ of a function.
-
-**GPs** Estimate the entire function $f$.
-
-**Observation** This seems impossible, since functions are infinite-dimensional. But we only observe $f$ at finitely many points,
-\begin{align*}
-\mathbf{f}_{N} = \left(f\left(x_1\right), \dots, f(x_N)\right)
-\end{align*}
-and a GP can give us a prior for _any_ choice of $x_{1}, \dots, x_{N}$.
-
-This is what it means to define a "distribution over functions."
-
----
-
-### Prior Covariance Structure
-
-**Covariance matrix $\mathbf{K}$:**
-
-- Diagonal: $K_{ii} = \sigma_f^2$ is the prior variance at each point.
-- Off-diagonal: $K_{ij}$ is the covariance between $f(x_i)$ and $f(x_j)$
-
-Kernel encodes our assumptions about function smoothness, periodicity, trends, etc.
-
----
-
-### Sampling from the Prior
-
-<img src="figures/gp_prior_trimmed.gif" class="center"/>
-
----
-
-### Sampling from the Prior
-
-1. Choose test locations $\mathbf{x}_* = [x_1, \ldots, x_N]^\top$
-2. Compute $\mathbf{K}_* = k(\mathbf{x}_*, \mathbf{x}_*)$
-3. Sample $\mathbf{f}_* \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_*)$
-
-Each sample is one plausible function from our prior
-
-Different kernels → different classes of functions
-
----
-
-### Adding Observations
-
-So far we have only described a prior over functions. How does that prior relate to the observed data $y_{i}$?
-
-We imagine
-\begin{align*}
-y_i = f(x_i) + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma_n^2)
-\end{align*}
-conditional on a draw $f$ from the GP prior.
-
-This results in the joint distribution,
-$$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_{*\text{train}} \\ \mathbf{K}_{\text{train}*} & \mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
-
----
-
-### Gaussian Process Posterior
-
-Now we condition on observed $\mathbf{y}$ to get a posterior for the actual $f$
-that generated the data. The Gaussian conditioning formula gives
-
-$$p(\mathbf{f}_* | \mathbf{y}, \mathbf{X}, \mathbf{x}_*) = \mathcal{N}(\boldsymbol{\mu}_*, \boldsymbol{\Sigma}_*)$$
-where
-
-\begin{align*}
-\boldsymbol{\mu}_* &= \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}\\
-\boldsymbol{\Sigma}_* &= \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
-\end{align*}
-
-The next few slides interpret this formula.
-
----
-
-### Posterior Mean
-
-\begin{align*}
-\boldsymbol{\mu}_*=\mathbf{K}_{* \text { train }}\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}
-\end{align*}
-
-- $\mathbf{K}_{\text{train}}$ -> how much the test point $x_{\ast}$ correlates with the training data
-- $\left(\mathbf{K}_{\text {train }}+\sigma_n^2 \mathbf{I}\right)^{-1} \mathbf{y}$ -> reweight the training data according to measurement precision
-
----
-
-### Posterior Mean
-
-<img src="figures/gp_posterior_mean.gif" class="center"/>
-
----
-
-### Posterior Variance
-
-\begin{align*}
-\boldsymbol{\Sigma}_* = \mathbf{K}_{**} - \mathbf{K}_{*\text{train}}(\mathbf{K}_{\text{train}} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{\text{train}*}
-\end{align*}
-
-- We reduce uncertainty when we observe data
-- If $x_{\ast}$ is far from the data, then $K_{\ast \text{train}}$ is small and we revert to the prior $\Sigma_{\ast} \to \mathbf{K}_{\ast\ast}$.
-
----
-
-### Posterior Variance
-
-<img src="figures/posterior_covariance.gif" class="center"/>
-
----
-
-### Implementation Preview
-
-```{r}
-#| eval: false
-#| echo: true
-# Periodic × Decay kernel
-k_periodic <- periodic(period = exp(logperiod),
-                       lengthscale = 1,
-                       variance = exp(logamp))
-k_decay <- mat52(lengthscale = exp(logdecay),
-                 variance = 1)
-full_kernel <- k_periodic * k_decay + white(exp(logs2))
-
-# Define GP
-gp_model <- gp(data$time, full_kernel)
-distribution(data$flux) <- normal(gp_model + mean_flux, data$flux_err)
-```
 
 ---
 

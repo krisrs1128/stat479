@@ -2,6 +2,10 @@
 title: 1. Introduction
 bibliography: references.bib
 citeproc: true
+format:
+  revealjs:
+    css: styles.css
+    embed-resources: true
 execute:
     message: false
     warning: false
