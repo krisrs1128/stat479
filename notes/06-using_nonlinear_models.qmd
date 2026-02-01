@@ -10,20 +10,15 @@ execute:
     message: false
     warning: false
     cache: true
+    fig-align: center
 ---
 
 
-- Hyperparameter tuning
+- hyperparameter tuning
 
-- Application to case study
+- application to case study
 
-- Interpretability evaluation
-
-```{r}
-#| echo: false
-library(RefManageR)
-bib <- ReadBib("references.bib")
-```
+- interpretability evaluation
 
 ---
 

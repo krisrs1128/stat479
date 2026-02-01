@@ -7,11 +7,15 @@ format:
     embed-resources: true
 citeproc: true
 execute:
+    echo: true
     message: false
     warning: false
     cache: true
 ---
 
+$$
+\newcommand{\bs}[1]{\mathbf{#1}}
+$$
 
 * motivating case study
 
@@ -184,6 +188,18 @@ $$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left
 
 - $\mathbf{K} := [k(x_i, x_j)]_{i,j=1}^N \in \mathbf{R}^{N \times N}$
 - $\mathbf{K}_* := [k(x_i, x_j^*)]_{i=1,j=1}^{N,M} \in \mathbf{R}^{N \times M}$
+
+---
+
+### Joint Distribution
+
+Let $\mathbf{x} = (x_1, \ldots, x_N)$ denote training locations. Write $\mathbf{y} = (y_1, \ldots, y_N)$.
+
+**Claim:** The joint distribution is
+$$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_{*} \\ \mathbf{K}_{*}^\top & \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
+
+![](figures/kernel_matrix_partition.png){fig-align="center"}
+
 ---
 
 ### Justification
@@ -268,6 +284,18 @@ If $f^\ast$ and $y$ were both scalars, this simplifies,
 
 ---
 
+### Discussion
+
+Discuss [GP Conditioning] part (a) in the exercise sheet. Self-assign groups -- only one response per group needed.
+
+
+
+> Consider a GP with zero mean function and RBF kernel $k(x, x′) = \exp(−\|x − x′\|^2)$. You have two test points $x^* = [0, 2]^\top$ at which you want predictions, but no training data.
+>
+>   a. What is the mean vector and covariance matrix of the prior distribution $p(\mathbf{f}_{*})$ at the test points.
+
+---
+
 ## Kernels
 
 ---
@@ -304,13 +332,13 @@ The function $k$ is called a "kernel".
 
 ### Radial Basis Function (RBF) Kernel
 
-$$k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{\|x - x'\|^2}{2\ell^2}\right)$$
+$$k_{\text{RBF}}(\bs{x}, \bs{x}') = \sigma_f^2 \exp\left(-\frac{\|\bs{x} - \bs{x}'\|^2}{2\ell^2}\right)$$
 
 :::: {.columns}
 ::: {.column width="50%"}
-- At distance $|x - x'| = 0$: perfect correlation
-- At distance $|x - x'| = \ell$: decays to $\sigma_{f}e^{-\frac{1}{2}} \approx 0.6 \sigma_{f}$
-- At distance $|x - x'| = 3\ell$: nearly zero
+- At distance $\|\bs{x} - \bs{x}'\| = 0$: perfect correlation
+- At distance $\|\bs{x} - \bs{x}'\| = \ell$: decays to $\sigma_{f}e^{-\frac{1}{2}} \approx 0.6 \sigma_{f}$
+- At distance $\|\bs{x} - \bs{x}'\| = 3\ell$: nearly zero
 :::
 
 ::: {.column width="50%"}
@@ -322,7 +350,7 @@ $$k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{\|x - x'\|^2}{2\ell^2}\rig
 
 ### Lengthscale Interpretation
 
-$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|$$
+$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = \|\bs{x} - \bs{x}'\|$$
 
 **Small $\ell$ (relative to data range)**
 
@@ -338,7 +366,7 @@ $$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x
 
 ### Lengthscale Interpretation
 
-$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x - x'|$$
+$$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = \|\bs{x} - \bs{x}'\|$$
 
 <img src="figures/gp_length_scale_interpretation.gif" class="center" width=1000/>
 
@@ -346,7 +374,7 @@ $$\text{Correlation} = \exp\left(-\frac{\tau^2}{2\ell^2}\right), \quad \tau = |x
 
 ### Periodic Kernel
 
-$$k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2\sin^2(\pi|x-x'|/p)}{\ell^2}\right)$$
+$$k_{\text{per}}(\bs{x}, \bs{x}') = \sigma_f^2 \exp\left(-\frac{2\sin^2(\pi\|\bs{x}-\bs{x}'\|/p)}{\ell^2}\right)$$
 
 :::: {.columns}
 ::: {.column width="50%"}
@@ -367,9 +395,9 @@ This will help us model stellar rotation.
 
 ### Matérn Kernels
 
-$$k_{\text{Matérn-3/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{3}\tau}{\ell}\right)\exp\left(-\frac{\sqrt{3}\tau}{\ell}\right)$$
+$$k_{\text{Matérn-3/2}}(\bs{x}, \bs{x}') = \sigma_f^2\left(1 + \frac{\sqrt{3}\tau}{\ell}\right)\exp\left(-\frac{\sqrt{3}\tau}{\ell}\right)$$
 
-$$k_{\text{Matérn-5/2}}(x, x') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} + \frac{5\tau^2}{3\ell^2}\right)\exp\left(-\frac{\sqrt{5}\tau}{\ell}\right)$$
+$$k_{\text{Matérn-5/2}}(\bs{x}, \bs{x}') = \sigma_f^2\left(1 + \frac{\sqrt{5}\tau}{\ell} + \frac{5\tau^2}{3\ell^2}\right)\exp\left(-\frac{\sqrt{5}\tau}{\ell}\right)$$
 
 **Unlike RBF:** Finite differentiability
 
@@ -386,10 +414,10 @@ Samples that use a Matérn kernel are often "rougher" are more realistic.
 
 :::: {.columns}
 ::: {.column width="50%"}
-<img src="figures/gp_samples.png"/>
+![](figures/gp_samples.png)
 :::
 ::: {.column width="50%"}
-<img src="figures/matern_samples.png"/>
+![](figures/matern_samples.png)
 :::
 ::::
 
@@ -400,8 +428,8 @@ Samples that use a Matérn kernel are often "rougher" are more realistic.
 If $k_1$ and $k_2$ are valid kernels, so are
 
 \begin{align*}
-k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
-k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
+k_{\text{sum}}(\bs{x}, \bs{x}') = k_1(\bs{x}, \bs{x}') + k_2(\bs{x}, \bs{x}') (\text{   superposition})\\
+k_{\text{prod}}(\bs{x}, \bs{x}') = k_1(\bs{x}, \bs{x}') \times k_2(\bs{x}, \bs{x}') (\text{   modulation})
 \end{align*}
 
 Addition is like two independent phenomena occuring at once.
@@ -416,8 +444,8 @@ Addition is like two independent phenomena occuring at once.
 If $k_1$ and $k_2$ are valid kernels, so are
 
 \begin{align*}
-k_{\text{sum}}(x, x') = k_1(x, x') + k_2(x, x') (\text{   superposition})\\
-k_{\text{prod}}(x, x') = k_1(x, x') \times k_2(x, x') (\text{   modulation})
+k_{\text{sum}}(\bs{x}, \bs{x}') = k_1(\bs{x}, \bs{x}') + k_2(\bs{x}, \bs{x}') (\text{   superposition})\\
+k_{\text{prod}}(\bs{x}, \bs{x}') = k_1(\bs{x}, \bs{x}') \times k_2(\bs{x}, \bs{x}') (\text{   modulation})
 \end{align*}
 
 Multiplication is like where one pattern modulates another.
@@ -438,16 +466,39 @@ to the specific problem of interest.
 
 ### Kernel Code
 
+```{r}
+library(greta)
+library(greta.gp)
+
+x_test <- seq(1, 10, .5)
+k_per <- periodic(period = 2 * pi, lengthscale = 1, variance = 1)
+K <- calculate(k_per(x_test))
+
+image(K[[1]], asp = 1)
+```
+
 ---
 
-### Discussion
+### Visualize Samples
 
-Respond to [Interactive Kernel Choice] in the exercise sheet.
+```{r}
+f <- gp(x_test, kernel = k_per)
+draws <- calculate(f, nsim = 2)
+plot(x_test, draws[[1]][1, , 1])
+```
+
+---
+
+### Kernel Algebra
+
+Kernel objects can be added and multiplied.
+
+```{r}
+new_kernel <- k_per + rbf(lengthscales = 1, variance = 1)
+```
 
 ---
 
 ### Exercise
 
-Respond to [Jargon-free summary] from the exercise sheet, where
-
-{filled in during class} = {Kernels}
+Respond to [Interactive Kernel Choice] parts (a) and (b) in the exercise sheet.

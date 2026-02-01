@@ -324,6 +324,18 @@ hierarchical GP prior where kernel hyperparameters are themselves random:
    knitr::include_graphics("figures/prior_posterior.svg")
    ```
 
+1. [GP Conditioning] Consider a GP with zero mean function and RBF kernel $k(x, x′)
+= \exp(−\|x − x′\|^2)$. You have two test points $x^* = [0, 2]^\top$ at which
+you want predictions, but no training data.
+
+    a. What is the mean vector and covariance matrix of the prior distribution $p(\mathbf{f}_{*})$ at the test points.
+
+    b. Now suppose you observe one training point $(x_1, y_1) = (1, 0.5)$ with noise variance $\sigma^2_n = 0.01$. Describe qualitatively (without full calculation) how the posterior mean and variance at each test point will change compared to the prior.
+
+    c. If you instead had $\sigma^2_n$ = 100, how would your answer to part (b)
+    change?
+
+
 1. [Interactive Kernel Choice] Experiment with the final visualization from
 [``Visual Exploration of Gaussian Processes''](https://distill.pub/2019/visual-exploration-gaussian-processes/) by
 Görtler et al (2019).

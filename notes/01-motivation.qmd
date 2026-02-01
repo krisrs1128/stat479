@@ -12,10 +12,6 @@ execute:
     cache: false
 ---
 
-```{r}
-library(RefManageR)
-```
-
 * course logistics
 
 * overall motivation
