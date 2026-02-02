@@ -187,7 +187,7 @@ $$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left
 **Notation:** Kernel matrices are
 
 - $\mathbf{K} := [k(x_i, x_j)]_{i,j=1}^N \in \mathbf{R}^{N \times N}$
-- $\mathbf{K}_* := [k(x_i, x_j^*)]_{i=1,j=1}^{N,M} \in \mathbf{R}^{N \times M}$
+- $\mathbf{K}_* := [k(x_i, x_j^*)]_{i=1,j=1}^{N,M} \in \mathbf{R}^{M \times N}$
 
 ---
 
@@ -236,6 +236,12 @@ The next few slides interpret this formula.
 ### Posterior Mean
 
 <img src="figures/gp_posterior_mean.gif" class="center"/>
+
+---
+
+### Posterior Mean
+
+![](figures/conditioning_bivariate.png){fig-align="center"}
 
 ---
 
@@ -302,7 +308,7 @@ Discuss [GP Conditioning] part (a) in the exercise sheet. Self-assign groups -- 
 
 ### Linear Regression and Similarity
 
-**Linear regression** makes predictions using
+Linear regression makes predictions using
 
 \begin{align*}
 \mathbb{E}[y | \mathbf{x}] = \mathbf{x}^\top \boldsymbol{\beta}.
@@ -314,13 +320,28 @@ What does "nearby" mean? In linear regression,
 \begin{align*}
 \mathbf{x}^\top \mathbf{x}'
 \end{align*}
-measures closeness (show the covariance calculation).
+measures closeness.
+
+---
+
+### Justification
+
+Suppose $\beta \sim \mathcal{N}\left(0, \sigma^2 I\right)$. Then,
+
+\begin{align*}
+\text{Cov}(y, y') &= \mathbb{E}[\mathbf{x}^\top \beta \beta^\top \mathbf{x}'] \\
+&= \mathbf{x}^\top \mathbb{E}[\beta \beta^\top] \mathbf{x}' \\
+&= \mathbf{x}^\top (\sigma^2 \mathbf{I}) \mathbf{x}' \\
+&= \sigma^2 \mathbf{x}^\top \mathbf{x}'
+\end{align*}
+
+Covariance between predictions depends on $\mathbf{x}^\top \mathbf{x}'$.
 
 ---
 
 ### Linear Regression and Similarity
 
-**Kernel answer:** Define closeness explicitly.
+_Kernel answer_: Define closeness explicitly.
 
 \begin{align*}
 k(\mathbf{x}, \mathbf{x}') = \text{how much } f\left(\mathbf{x}\right) \text{ and } f\left(\mathbf{x'}\right) \text{should covary}

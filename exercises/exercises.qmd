@@ -335,6 +335,25 @@ you want predictions, but no training data.
     c. If you instead had $\sigma^2_n$ = 100, how would your answer to part (b)
     change?
 
+1. [GP True/False] Select all the TRUE statements about GPs below.
+
+    a. TRUE FALSE The posterior variance at a test point x* is always smaller than
+    the prior variance at that point, regardless of where the training data are
+    located.
+
+    b. TRUE  FALSE Multiplying two kernels $k^{\text{new}}(x, x') = k_{1}(x, x')k_{2}(x, x')$ always
+    results in a valid positive semi-definite kernel.
+
+    c. TRUE FALSE The posterior variance at a test point $x^*$ is always less than
+    or equal to the prior variance at that point, regardless of the distances to the
+    training data.
+
+    d. If $x$ and $x'$ are far apart relative to the lengthscale $\ell$, then
+    the corresponding function values $f(x)$ and $f(x')$ are necessarily
+    independent.
+
+    e. For a stationary kernel, the correlation between function values depends
+    only on $\|x − x'\|$, not on the absolute locations $x$ and $x'$.
 
 1. [Interactive Kernel Choice] Experiment with the final visualization from
 [``Visual Exploration of Gaussian Processes''](https://distill.pub/2019/visual-exploration-gaussian-processes/) by

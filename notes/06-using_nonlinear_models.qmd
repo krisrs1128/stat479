@@ -140,160 +140,25 @@ Lengthscale controls how far we travel before $f(x)$ and $f(x')$ decorrelate
 
 ---
 
-## Case Study: Steller Variability
+### Case Study
+
+* Code: [https://go.wisc.edu/09kpf2](https://go.wisc.edu/09kpf2)
+
+* Compiled: [https://go.wisc.edu/yiu322](https://go.wisc.edu/yiu322)
 
 ---
 
-### Data Characteristics
+### Discussion
 
-:::: {.columns}
-::: {.column width="50%"}
-```r
-> dim(data)
-[1] 3822    3
-```
-:::
-::: {.column width="50%"}
-<img src="figures/stellar_variability.png"/>
-:::
-::::
+Respond to [GP True/False] parts (a - c) in the exercise sheet.
 
----
-
-### Periodogram
-
-:::: {.columns}
-::: {.column width="50%"}
-``` r
-spec <- spectrum(data$flux, pad = 6, plot = FALSE)
-```
-:::
-::: {.column width="50%"}
-<img src="figures/stellar_periodogram.png"/>
-:::
-::::
-
-
-There seem to be two periodicities that dominate.
-
----
-
-### Rotation Kernel for Stellar Variability
-
-$$k_{\text{rot}} = k_{\text{periodic}} \times k_{\text{decay}}$$
-
-**Physical interpretation:**
-
-- Periodic component: rotation
-- Decay component: timescale for spot changes
-- Product: spots appear/disappear as star rotates
-
-The original source ([@exoplanetGaussianProcess, @angus2017]) used a slightly
-more involved periodoc kernel. It used a similar domain-informed kernel
-construction though.
-
----
-
-### Kernel Specification
-
-This is how we can implement the kernel in R.
-
-``` r
-k_periodic <- periodic(period = exp(logperiod),
-                       lengthscale = 1,
-                       variance = exp(logamp))
-k_decay <- mat52(lengthscale = exp(logdecay),
-                 variance = 1)
-full_kernel <- k_periodic * k_decay + white(exp(logs2))
-```
-
-Hyperparameters
-
-- `logperiod`: $\log p$ (rotation period)
-- `logdecay`: $\log \ell_{\text{decay}}$ (spot lifetime)
-- `logamp`: $\log \sigma_f^2$ (signal variance)
-- `logs2`: $\log \sigma_n^2$ (noise variance)
-
----
-
-### Prior Specification
-
-```{r}
-#| label: prior
-#| echo : true
-#| eval: false
-mean_flux <- normal(0, 1)
-logs2 <- normal(-1, 2)
-logamp <- normal(log(var(data$flux)), 2)
-logperiod <- normal(log(25), 2)
-logdecay <- normal(log(25 * 3), 2)
-```
-
-Rationale
-
-- `logperiod ~ N(log(25), 2)`: Centered at periodogram guess, but wide
-- `logdecay ~ N(log(75), 2)`: Lasts \~3 rotation periods
-- `logamp ~ N(log(Var[y]), 2)`: Signal variance \~ data variance
-- `logs2 ~ N(-1, 2)`: Relatively small noise
-
----
-
-### Maximum A Posteriori (MAP) Estimate
-
-```{r}
-#| label: model
-#| echo : true
-#| eval: false
-gp_model <- gp(data$time, full_kernel)
-distribution(data$flux) <- normal(gp_model + mean_flux,
-                                   data$flux_err)
-m <- model(logperiod, logdecay, logamp, logs2, mean_flux)
-
-map_soln <- opt(m, initial_values = start_vals)
-```
-
-This helps us find a mode of the posterior as starting point for MCMC.
-
----
-
-### Posterior Distribution: Rotation Period
-
-```{r}
-#| label: samples
-#| echo : true
-#| eval: false
-period_samples <- exp(draws[, "logperiod"])
-```
-
-<img src="figures/stellar_posterior_rotation.png" class="center"/>
-
----
-
-### Posterior Predictive Samples
-
-Each draw here is a plausible function $f(t)$ consistent with data and kernel
-
-```{r}
-#| label: project
-#| echo : true
-#| eval: false
-time_grid <- seq(min(data$time), max(data$time), length.out = 1000)
-gp_array <- project(gp_model, time_grid)
-gp_samples <- calculate(gp_array, values = draws)[[1]]
-```
-
-`project` evaluates the GP posterior distribution at the specified `time_grid`.
-
----
-
-### Posterior Predictive Visualization
-
-**Observations**
-
-- Periodic structure well-captured
-- Uncertainty narrow near data (compare with later excercise)
-
-<img src="figures/stellar_gp_posterior.png" class="center"/>
+> Select all the TRUE statements about GPs below.
+>
+> a. TRUE FALSE The posterior variance at a test point x* is always smaller than the prior variance at that point, regardless of where the training data are located.
+>
+> b. TRUE  FALSE Multiplying two kernels $k^{\text{new}}(x, x') = k_{1}(x, x')k_{2}(x, x')$ always results in a valid positive semi-definite kernel.
+>
+> c. TRUE FALSE The posterior variance at a test point $x^*$ is always less than or equal to the prior variance at that point, regardless of the distances to the training data.
 
 ---
 
@@ -301,18 +166,16 @@ gp_samples <- calculate(gp_array, values = draws)[[1]]
 
 The kernel is a hypothesis about the data generating process.
 
-- Quasiperiodicity -> rotating star with evolving spots
+- Quasiperiodicity $\to$ rotating star with evolving spots
 - Not an arbitrary computational choice
 
 What we learned
 
-- Rotation period
-- Spot evolution
-- Subtract fitted stellar variability -> potential exoplanet detection
+- Composing scientifically-informed kernels from elementary components
+- Defining hyperparameter priors and model likelihood in R
+- Visualize posterior samples of $\mathbf{f}$ and $\theta$
 
-The GP is not just fitting curves, it's extracting astrophysics.
-
----
+The GP is not just a curve fitting routine, it helps discover meaningful astrophysics.
 
 ::: {.content-hidden}
 
@@ -461,24 +324,4 @@ Both GPs and linear regression are interpertable, but in different senses.
 **Extensions:**
 
 - Non-Gaussian observations: Maybe we want a Student-t likelihood for robustness or softmax layer for classification.
-- Multidimensional inputs or outputs: We might have other relvant measurements for each star, and may want to model several stars at once.
-
----
-
-### Exercise
-
-[GP Missing Data] Rerun the case study notebook with a window of observations missing. How does it
-affect the posterior on the period? What do the posterior predictive samples
-look like?
-
-```{r}
-#| label: exercise
-#| echo : true
-#| eval: false
-data_model <- data |>
-  arrange(time) |>
-  filter(time < 1210 | time > 1220) |>
-  dplyr::slice(seq(1, n(), by = 10))
-```
-
----
+- Multidimensional inputs or outputs: We might have other relevant measurements for each star, and may want to model several stars at once.
