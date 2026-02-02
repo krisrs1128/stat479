@@ -44,6 +44,10 @@ checks.
 
 ## Motivating Case Study
 
+---
+
+### Scientific Goal
+
 **Question:** How quickly does a star rotate around its axis? This has to be answered accurately before we can search for exoplanets around the star.
 
 **Data:** Telescopes make it possible to measure the brightness of a star over time. We can look for periodic patterns in the brightness.
@@ -141,7 +145,7 @@ This is what it means to define a "distribution over functions."
 - Diagonal: $K_{ii} = \sigma_f^2$ is the prior variance at each point.
 - Off-diagonal: $K_{ij}$ is the covariance between $f(x_i)$ and $f(x_j)$
 
-Kernel encodes our assumptions about function smoothness, periodicity, trends, etc.
+The kernel encodes our assumptions about function smoothness, periodicity, trends, etc.
 
 ---
 
@@ -155,7 +159,7 @@ Kernel encodes our assumptions about function smoothness, periodicity, trends, e
 
 1. Choose $M$ test locations $\mathbf{x}^* = (x_1, \ldots, x_M)^\top$
 2. Compute $\mathbf{K}_{**} = [k(x_i^*, x_j^*)]_{i,j=1}^M \in \mathbf{R}^{M \times M}$
-3. Sample $\mathbf{f}^* = (f(x_1^*), \ldots, f(x_M^*)) \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_*)$
+3. Sample $\mathbf{f}^* = (f(x_1^*), \ldots, f(x_M^*)) \sim \mathcal{N}(\mathbf{0}, \mathbf{K}_{**})$
 
 Each sample is one plausible function from our prior.
 
