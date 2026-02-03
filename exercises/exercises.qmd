@@ -210,12 +210,13 @@ choices.
 
    ```{r, eval=FALSE}
    library(glmnet)
+   prostate <- read.csv("https://hastie.su.domains/ElemStatLearn/datasets/prostate.data", sep = "\t")
 
    x <- model.matrix(lpsa ~ ., data = prostate)[, -1]
    y <- prostate$lpsa
 
    cv_fit <- cv.glmnet(x, y, alpha = 1)
-   fit <- cv_fit$glmnet.model
+   fit <- cv_fit$glmnet.fit
    ```
 
    Select 20 samples as a held-out test set. Apply the bootstrap with $B = 100$ bootstrap samples. Specifically,
