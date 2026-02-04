@@ -1,0 +1,594 @@
+---
+title: "Gaussian Process Fundamentals"
+author: Kris Sankaran
+date: 2026-02-04
+format: html
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: true
+---
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #F4D4A8; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(MASS)
+theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
+set.seed(2026)
+```
+
+_Readings: [[1](https://distill.pub/2019/visual-exploration-gaussian-processes/), [2 (sections 1 - 4)](https://infallible-thompson-49de36.netlify.app/)]_
+
+## Setup
+
+**Goal.** Given data $\{\left({\color{#7B5FB8}x_i, y_i}\right)\}_{i = 1}^{N}$ following a nonlinear ${\color{#D97706}f}$,
+
+  - Predict ${\color{#2563EB}\hat{f}\left(x_{m}^{*}\right)}$ at test points ${\color{#D946A6}x_{1}^{\ast}, \dots, x_{M}^{\ast}}$.
+
+   - Quantify associated prediction ${\color{#22A456}\text{uncertainties}}$.
+
+![](figures/gp_motivation_overview.png){width="400px"}
+
+**Requirements.**
+
+   - Incorporate domain knowledge about the function (e.g., "the function is periodic").
+   - Use interpretable hyperparameters (e.g., "p is the period").
+
+**Approach.** Encode domain knowledge in a probability distribution over functions. Before seeing data, we specify a "prior" representing plausible functions. After observing data $\{(x_i, y_i)\}_{i=1}^N$, we update to a "posterior" that assigns high probability only to functions consistent with observations. This is an example of Bayesian inference.
+
+![](figures/prior_to_posterior.png){width="400px"}
+
+## Multivariate Normal
+
+1. **1D case**. $\mathcal{N}\left(\mu, \sigma^2\right)$ with mean $\mu$ and variance $\sigma^2$.
+
+   ```{r}
+   z <- rnorm(500, mean = 2, sd = 3)
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 3
+   #| fig-height: 2
+   df_points <- tibble(value = z) |> mutate(type = "Raw Points", y = 0)
+   df_hist <- tibble(value = z) |> mutate(type = "Histogram")
+
+   ggplot() +
+     geom_point(data = df_points, aes(x = value, y = y), alpha = 0.6, shape = 3) +
+     geom_histogram(data = df_hist, aes(x = value, y = ..count..), bins = 30, fill = "grey80", color = "black") +
+     facet_grid(~ type, scales = "free_y")
+   ```
+
+1. **2D case.** $\mathcal{N}(\boldsymbol{\mu}, \Sigma)$ where $\boldsymbol{\mu} \in \mathbb{R}^2$ and
+   $$\Sigma = \begin{bmatrix} \sigma_1^2 & \sigma_{12} \\ \sigma_{12} & \sigma_2^2 \end{bmatrix}$$
+
+   The diagonal controls spread in each direction and the covariance $\sigma_{12}$ controls correlation: $\rho = \sigma_{12}/(\sigma_1\sigma_2)$
+
+```{r}
+mu <- c(0, 0)
+Sigma <- matrix(c(1, 0.8, 0.8, 1), 2, 2)
+z <- mvrnorm(n = 500, mu = mu, Sigma = Sigma)
+```
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 3
+n <- 500
+mu <- c(0, 0)
+Sigmas <- list(
+  "Equal variances, no cov" = matrix(c(1, 0, 0, 1), 2, 2),
+  "Different variances, no cov" = matrix(c(4, 0, 0, 0.25), 2, 2),
+  "Correlated (rho = 0.8)" = matrix(c(1, 0.8, 0.8, 1), 2, 2)
+)
+
+df_list <- imap_dfr(Sigmas, ~{
+  sim <- mvrnorm(n, mu, .x)
+  tibble(x = sim[,1], y = sim[,2], scenario = .y) |>
+    mutate(sd1 = sqrt(.x[1,1]), sd2 = sqrt(.x[2,2]), cov12 = .x[1,2], rho = cov12/(sd1*sd2))
+}) |>
+  mutate(scenario = factor(scenario, levels = c("Equal variances, no cov", "Different variances, no cov", "Correlated (rho = 0.8)")))
+
+ann <- df_list |> distinct(scenario, sd1, sd2, cov12, rho) |>
+  mutate(label = paste0("sd1=", round(sd1,2), ", sd2=", round(sd2,2), "\n",
+                        "cov=", round(cov12,2), ", rho=", round(rho,2)))
+
+ggplot(df_list, aes(x = x, y = y)) +
+  geom_point(alpha = 0.4, size = 0.7) +
+  facet_wrap(~scenario) +
+  coord_fixed() +
+  labs(x = "Coordinate 1", y = "Coordinate 2", title = "Bivariate normal examples") +
+  geom_text(data = ann, aes(x = Inf, y = -Inf, label = label), hjust = 1.1, vjust = -0.1, inherit.aes = FALSE)
+```
+
+1. **2D Conditioning.** If $(X_1, X_2) \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma)$ and we observe $X_1 = x_1$, then $X_2 | X_1 = x_1$ is univariate normal with:
+
+   - Conditional mean: $\mu_{2|1} = \mu_2 + \rho\frac{\sigma_2}{\sigma_1}(x_1 - \mu_1)$. The adjustment is $\rho$ times $x_1$'s z-score, converted to $X_2$ units.
+   - Conditional variance: $\sigma_{2|1}^2 = \sigma_2^2(1 - \rho^2)$. Higher correlation means lower conditional variance (more certainty about $X_2$ after seeing $X_1$).
+
+![](figures/2d_conditioning.png){width="400px"}
+
+1. **D-dimensional case:** $\mathcal{N}(\boldsymbol{\mu}, \Sigma)$ where $\boldsymbol{\mu} \in \mathbb{R}^D$ and $\Sigma \in \mathbb{R}^{D \times D}$. Diagonal $\sigma_{ii}^{2}$ controls each dimension's spread. Correlation $\rho_{ij} = \frac{\sigma_{ij}}{\sigma_{ii}\sigma_{jj}}$ between dimensions $i$ and $j$.
+
+```{r}
+D <- 100
+mu <- rep(0, D)
+Sigma <- matrix(0.9, D, D)
+diag(Sigma) <- 1
+z <- mvrnorm(n = 20, mu = mu, Sigma = Sigma)
+```
+
+```{r}
+#| echo: false
+#| fig-width: 3
+#| fig-height: 3
+#| out-width: 40%
+ggplot(as_tibble(z), aes(V1, V2)) +
+    geom_point(alpha = 0.6, size = 2) +
+    geom_vline(xintercept = 0) +
+    geom_hline(yintercept = 0) +
+    labs(x = "First coordinate z[1]", y = "Second coordinate z[2]")
+```
+
+5. **General conditioning.** Partition variables into $\mathbf{X}_A$ (unobserved) and $\mathbf{X}_B$ (observed). Then $\mathbf{X}_A | \mathbf{X}_B = \mathbf{x}_B$ is multivariate normal with:
+   - Mean: $\boldsymbol{\mu}_{A|B} = \boldsymbol{\mu}_A + \Sigma_{AB}\Sigma_{BB}^{-1}(\mathbf{x}_B - \boldsymbol{\mu}_B)$.
+   - Covariance: $\Sigma_{A|B} = \Sigma_{AA} - \Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}$
+
+![](figures/mvrnorm_condition_setup.png){width="400px"}
+
+![](figures/mvrnorm_condition_result.png){width="600px"}
+
+![](figures/mvrnorm_condition_cov.png){width="600px"}
+
+## Structured Priors
+
+Suppose we want to simulate smooth random functions $f^*$ evaluated at $0, 0.01, \ldots, 0.99$. We represent the function as a 100-dimensional vector:
+$$\mathbf{f}^* = [f^*(0), f^*(0.01), f^*(0.02), \ldots, f^*(0.99)]^\top$$
+Each grid point corresponds to one dimension. So $f^*(0)$ is dimension 1, $f^*(0.01)$ is dimension 2, etc.
+
+1. **Idea 1: Constant Correlation**. Sample $\mathbf{f}^* \sim \mathcal{N}(0, \Sigma)$ with constant correlation $\rho_{ij} = \rho$ for all off-diagonal pairs.
+
+   ![](figures/equicorrelation.png){width="320px"}
+
+   - If $\rho = 0$: all points are independent, giving white noise.
+   - If $\rho = 0.99$: all points move together, giving nearly flat functions.
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 6
+   #| fig-height: 4
+   #| out-width: 60%
+    D <- 100
+    n <- 20
+    mu <- rep(0, D)
+
+    make_data <- function(rho) {
+    Sigma <- diag(1, D)
+    if (rho > 0) Sigma[] <- rho; diag(Sigma) <- 1
+
+    mvrnorm(n, mu, Sigma) %>%
+        as_tibble(.name_repair = ~paste0("d", seq_len(D))) %>%
+        mutate(sample_id = row_number()) %>%
+        pivot_longer(starts_with("d"),
+                    names_to = "dimension",
+                    names_transform = list(dimension = ~as.integer(str_remove(., "d"))),
+                    values_to = "value") %>%
+        mutate(scenario = paste0("rho[jk]==", rho))
+    }
+
+    bind_rows(make_data(0), make_data(0.99)) %>%
+    ggplot(aes(dimension, value, group = sample_id, color = sample_id == n)) +
+    geom_line() +
+    scale_color_manual(values = c("grey", "#e50d0d"), guide = "none") +
+    facet_wrap(~scenario, ncol = 1, labeller = label_parsed) +
+    labs(x = "Dimension (j)", y = "Value",
+        title = "Multivariate normal (D=100): independent vs highly correlated")
+   ```
+
+1. **Idea 2: Block Correlation.** Divide the grid into blocks. Within each block, set high correlation (e.g., $\rho = 0.99$). Between blocks, no correlation. Looks better but still not smooth.
+
+   ![](figures/block_correlation.png){width="200px"}
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 3.5
+   #| out-width: 60%
+    D_blk <- 100
+    n_blk <- 20
+    block_size <- 25
+    rho_within <- 0.99
+
+    # Create block-diagonal covariance matrix
+    Sigma_blk <- matrix(0, D_blk, D_blk)
+    for (start in seq(1, D_blk, by = block_size)) {
+    inds <- start:(start + block_size - 1)
+    Sigma_blk[inds, inds] <- rho_within
+    }
+    diag(Sigma_blk) <- 1
+
+    mvrnorm(n_blk, rep(0, D_blk), Sigma_blk) %>%
+    as_tibble(.name_repair = ~paste0("d", seq_len(D_blk))) %>%
+    mutate(sample_id = row_number()) %>%
+    pivot_longer(starts_with("d"),
+                names_to = "dimension",
+                names_transform = list(dimension = ~as.integer(str_remove(., "d"))),
+                values_to = "value") %>%
+    mutate(scenario = paste0("rho[blk]==", rho_within)) %>%
+    ggplot(aes(dimension, value, group = sample_id, color = sample_id == n_blk)) +
+    geom_line() +
+    scale_color_manual(values = c("grey", "#e50d0d"), guide = "none") +
+    scale_x_continuous(breaks = seq(1, D_blk, by = 10)) +
+    facet_wrap(~scenario, labeller = label_parsed) +
+    labs(x = "Dimension (j)", y = "Value",
+        title = "Multivariate normal (D=100): block-diagonal covariance")
+   ```
+
+   _Exercise: How would the plot change if we had not used the same correlation within each block?_
+
+1. **Idea 3: Distance-based correlation**: Let correlation decay with distance. For evaluation points $x, x'$ (at indices $i, j$ in $\mathbf{f}^{\ast}$), set:
+$$\sigma_{ij} = k(x, x') = \exp\left[-\frac{1}{2}(x - x')^2\right]$$
+
+   ![](figures/distance_decay_corr.png){width="200px"}
+
+   Nearby points have high correlation; distant points nearly independent.
+
+   ```{r}
+    x <- seq(0, 0.99, by = 0.01)
+    D <- length(x)
+
+    K <- matrix(0, nrow = D, ncol = D)
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+        }
+    }
+
+    z <- mvrnorm(n = 20, mu = rep(0, D), Sigma = K)
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df1 <- as_tibble(z) |>
+        mutate(sample_id = row_number()) |>
+        pivot_longer(cols = -sample_id, names_to = "dimension", values_to = "value") |>
+        mutate(dimension = as.integer(str_remove(dimension, "V")))
+
+    ggplot(df1, aes(x = dimension, y = value)) +
+        geom_line(aes(group = factor(sample_id), col = sample_id == n)) +
+        scale_color_manual(values = c("grey", "#e50d0d"), guide = FALSE) +
+        labs(x = "Dimension (j)", y = "Value",
+            title = "Multivariate normal w/ decaying covariance")
+   ```
+
+   We have simulated our first GP!
+
+## Kernel Functions
+
+1. The function $k(x, x')$ is called a **kernel** and encodes our domain knowledge about the function we want to learn.
+
+   - Smooth trends. The example above is an example of an RBF kernel with $\sigma_{f} = \ell = 1$.
+   $$k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{(x - x')^2}{2\ell^2}\right)$$
+
+   - Periodic behavior.
+   $$k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2}{\ell^2}\sin^2\left(\frac{\pi|x-x'|}{p}\right)\right)$$
+
+   ![](figures/periodic_correlation_mat.png){width="200px"}
+
+   Note that $k_{\text{per}}\left(x, x'\right)$ peaks at distances that are multiples of $p$. If we substitute this code into our earlier snippet, we get periodic curves.
+   ```{r}
+    K[i, j] <- exp(-2 * sin(pi * abs(x[i] - x[j]) / 0.2)^2)
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            K[i, j] <- exp(-2 * sin(pi * abs(x[i] - x[j]) / 0.25) ^ 2)
+        }
+    }
+
+    mu <- rep(0, D)
+    z <- mvrnorm(n = 20, mu = mu, Sigma = K) # draws 20 curves
+    df1 <- as_tibble(z) |>
+        mutate(sample_id = row_number()) |>
+        pivot_longer(cols = -sample_id, names_to = "dimension", values_to = "value") |>
+    mutate(dimension = as.integer(str_remove(dimension, "V")))
+
+    ggplot(df1, aes(x = dimension, y = value)) +
+    geom_line(aes(group = factor(sample_id), col = sample_id == n)) +
+    scale_color_manual(values = c("grey", "#e50d0d"), guide = FALSE) +
+    labs(x = "Dimension (j)", y = "Value",
+        title = "Multivariate normal w/ periodic kernel")
+   ```
+
+   - The reading gives formulas for other kernels that encode prior knowledge about linearity and non-differentiability.
+
+1. The kernel hyperparameters encode domain knowledge,
+    - $\ell$: lengthscale (controls smoothness)
+    - $\sigma_f^2$: overall function variance
+    - $p$: period
+
+4. We can define new kernels through addition and multiplication. For smooth + periodic behavior:
+   $$k_{\text{fancy}}(x, x') = k_{\text{RBF}}(x, x') + k_{\text{per}}(x, x')$$
+   The associated functions reflect both types of domain knowledge:
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    K <- matrix(0, nrow = D, ncol = D)
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            rbf <- 2 * exp(-(0.5 / .05) * (x[i] - x[j]) ^ 2)
+            periodic <- exp(-2 * sin(pi * (x[i] - x[j]) / 0.2) ^ 2)
+            K[i, j] <- rbf + periodic
+        }
+    }
+
+    mu <- rep(0, D)
+    z <- mvrnorm(n = 20, mu = mu, Sigma = K) # draws 20 curves
+
+    df1 <- as_tibble(z) %>% mutate(sample_id = row_number()) %>%
+    pivot_longer(cols = -sample_id, names_to = "dimension", values_to = "value") %>%
+    mutate(dimension = as.integer(str_remove(dimension, "V")))
+
+    ggplot(df1, aes(x = dimension, y = value)) +
+    geom_line(aes(group = factor(sample_id), col = sample_id == n)) +
+    scale_color_manual(values = c("grey", "#e50d0d"), guide = FALSE) +
+    labs(x = "Dimension (j)", y = "Value",
+        title = "RBF + Periodic Kernel")
+   ```
+
+    _Exercise: Change the length scale $\ell$ in the snippet above. Plot the resulting functions. How do they change?_
+
+1. To summarize, once we define a kernel, it specifies a **Gaussian Process** prior over functions consistent with that kernel:
+$$f \sim \mathcal{GP}(0, k(x, x'))$$
+
+## Updating from Data
+
+1. Suppose we want to predict $\hat{f}\left(x^*\right)$ at a specific $x^*$. We are given observations $y_1, \ldots, y_N$ at $x_1, \ldots, x_N$. We assume $y_{i}$ are noisy observations,
+$$\begin{align}
+y_i &= f(x_i) + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma_n^2)\\
+f &\sim \mathcal{GP}(0, k(x, x'))
+\end{align}$$
+
+1. The main idea is to use conditioning. Stack the unknown $f(x^*)$ with observations $\mathbf{y} = [y_1, \ldots, y_N]^\top$. It turns out that this has an $N + 1$-dimensional multivariate normal distribution,
+
+   $$\begin{bmatrix} f(x^*) \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} k(x^*, x^*) & \mathbf{K}_* \\ \mathbf{K}_*^\top & \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
+
+   where:
+
+   - $\mathbf{K}_*$: row vector with entries $k(x^*, x_i)$ (similarity of $x^*$ to training points)
+   - $\mathbf{K}$: $N \times N$ matrix with entries $K_{ij} = k(x_i, x_j)$ (training point similarities)
+   - $\sigma_n^2\mathbf{I}$: observation noise
+
+   ![](figures/single_pred_partition.png){width="500px"}
+
+1. We make predictions using the conditional mean of the first coordinate given the rest. Plugging in $\mathbf{X}_{A} = f\left(x^\ast\right)$ and $\mathbf{X}_{B} = \mathbf{y}$ into our earlier conditioning formula yields,
+   $$\mu_* = \mathbf{K}_*(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y}$$ {#eq-gp-mean}
+
+   This is a weighted average: training points similar to $x^*$ get higher weight.
+
+   ![](figures/single_pred_kernel_weights.png){width="800px"}
+
+4. For $M$ test points $\mathbf{f}_* = [f(x_1^*), \ldots, f(x_M^*)]^\top$, we apply the same conditioning approach but now need to track correlations among the test points with one another:
+
+   $$\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} & \mathbf{K}_* \\ \mathbf{K}_*^\top & \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)$$
+
+   where:
+   - $\mathbf{K}_{**}$: $M \times M$ matrix with entries $(\mathbf{K}_{**})_{ij} = k(x_i^*, x_j^*)$ (test point similarities)
+   - $\mathbf{K}_*$: $M \times N$ matrix with entries $(\mathbf{K}_*)_{ij} = k(x_i^*, x_j)$ (test-to-training similarities)
+
+   ![](figures/m_pred_partition.png){width="500px"}
+
+   ![](figures/m_pred_similarities.png){width="300px"}
+
+   Applying the conditioning formula gives @eq-gp-mean again, but now $\mathbf{K}_*$ is a matrix, so $\boldsymbol{\mu}_*$ is a vector with one entry for each of the test locations $x_{1}^{\ast}, \dots, x_{M}^{\ast}$.
+
+   _Exercise:_
+     - _TRUE FALSE If we increase $\sigma_n^2$, then the predictions $\mu_*$ will give more weight to the prior mean and less weight to the observations._
+     - _TRUE FALSE If two training points $x_1$ and $x_2$ are very close together, the entries $\left(\mathbf{K}\right)_{12}$ and $\left(\mathbf{K}\right)_{21}$ will both be close to 0._
+
+## Quantifying Uncertainty
+
+1. At the start, we mentioned that our goal wasn't just to make predictions at $x_{1}^{*}, \dots, x_{M}^{*}$ but also to report the associated uncertainties. Recall from the bivariate case that conditioning gave us both a mean _and a variance_. The variance tells us how much uncertainty remains after observing $X_1$. The same is true here: the conditioning formula also gives a covariance matrix that quantifies our uncertainty about $\mathbf{f}_*$ after observing $\mathbf{y}$.
+
+1. Specifically, the conditional covariance formula yields:
+   $$
+   \boldsymbol{\Sigma}_{*} = \mathbf{K}_{**} - \mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}^\top
+   $$
+   - $\mathbf{K}_{**}$ is the covariance before we collect any data.
+   - The subtracted term $\mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}^\top$ describes the uncertainty reduction from conditioning.
+   - The diagonal entries give the conditional variance at each test location: $\text{Var}(f(x_i^*) | \mathbf{y})$.
+
+   _Exercise: TRUE FALSE The uncertainty $\text{Var}(f(x^*) | \mathbf{y})$ will generally be smaller for test points $x^*$ that are near observed training points than for test points far from any training data._
+
+## Code Example
+
+1. Observe 10 noisy points from a quadratic:
+   ```{r}
+    x_obs <- runif(10)
+    sigma_n <- 0.1
+    y_obs <- 3 * (x_obs - 0.5)^2 - 0.5 + rnorm(10, 0, sigma_n)
+    N <- length(x_obs)
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
+   ```
+
+2. Define test grid and covariances:
+   ```{r}
+    x <- seq(0, 0.99, by = 0.01)
+    D <- length(x)
+
+    # K_{**}: test-test similarities
+    K <- matrix(0, nrow = D, ncol = D)
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+        }
+    }
+
+    # K_*: test-training similarities
+    K_star <- matrix(0, nrow = D, ncol = N)
+    for (i in seq_len(D)) {
+        for (j in seq_len(N)) {
+            K_star[i, j] <- exp(-0.5 * (x[i] - x_obs[j])^2)
+        }
+    }
+
+    # K: training-training similarities
+    K_obs <- matrix(0, nrow = N, ncol = N)
+    for (i in seq_len(N)) {
+        for (j in seq_len(N)) {
+            K_obs[i, j] <- exp(-0.5 * (x_obs[i] - x_obs[j])^2)
+        }
+    }
+   ```
+
+3. Apply conditioning formulas:
+
+   ```{r}
+    mu_cond <- K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% y_obs
+    Sigma_cond <- K - K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% t(K_star)
+    var_cond <- diag(Sigma_cond) # defines ribbon width
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df_mean <- tibble(
+        x = x,
+        mean = as.vector(mu_cond),
+        lower = mean - 2 * sqrt(var_cond),
+        upper = mean + 2 * sqrt(var_cond)
+    )
+
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
+            fill = "#36ae9eff", alpha = 0.5) +
+        geom_line(data = df_mean, aes(x = x, y = mean),
+            col = "#36ae9eff", linewidth = 1) +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
+   ```
+
+
+4. Sample posterior functions:
+
+   ```{r}
+    f_post <- mvrnorm(n = 20, mu = mu_cond, Sigma = Sigma_cond)
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df_post <- as_tibble(f_post, .name_repair = ~paste0("x", seq_len(ncol(f_post)))) |>
+        mutate(sample_id = row_number()) |>
+        pivot_longer(starts_with("x"),
+            names_to = "dimension",
+            names_transform = list(dimension = ~as.integer(str_remove(., "x"))),
+            values_to = "value") |>
+        mutate(x = x[dimension])
+
+    df_obs <- tibble(x = x_obs, value = y_obs)
+
+    ggplot() +
+        geom_line(data = df_post, aes(x = x, y = value, group = sample_id),
+            col = "#36ae9eff", alpha = 0.5, linewidth = 0.5) +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
+   ```
+
+
+5. The greta.gp package makes this much simpler. For example, we can evaluate the kernel along a grid of values.
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 3.5
+   #| out-width: 60%
+   library(greta.gp)
+   kernel <- rbf(lengthscales = .5, variance = 1)
+   kernel_values <- calculate(kernel(0, x))[[1]]
+   plot(x, kernel_values[1, ], type = "l")
+   ```
+
+   We can sample from the prior.
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 3.5
+   #| out-width: 60%
+   f <- gp(x, kernel)
+   f_proj <- project(f, x)
+   prior_samples <- calculate(f_proj, nsim = 5)$f_proj[,,1]
+   matplot(x, t(prior_samples), type = "l", lty = 1)
+   ```
+
+    We can also condition on observations `x_obs` and `y_obs`.
+
+   ```{r}
+    kernel <- rbf(lengthscales = 1, variance = 1)
+    f_obs <- gp(x_obs, kernel)
+    distribution(y_obs) <- normal(f_obs, sigma_n)
+
+    f_test <- project(f_obs, x)
+    m <- model(f_test)
+    draws <- mcmc(m, n_samples = 500)
+
+    mu_cond <- colMeans(draws[[1]])
+    Sigma_cond <- cov(draws[[1]])
+    var_cond <- diag(Sigma_cond) # defines ribbon width
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df_mean <- tibble(
+        x = x,
+        mean = as.vector(mu_cond),
+        lower = mean - 2 * sqrt(var_cond),
+        upper = mean + 2 * sqrt(var_cond)
+    )
+
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
+            fill = "#36ae9eff", alpha = 0.5) +
+        geom_line(data = df_mean, aes(x = x, y = mean),
+            col = "#36ae9eff", linewidth = 1) +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
+   ```
