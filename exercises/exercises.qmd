@@ -231,7 +231,7 @@ choices.
 
    ```{r, eval=FALSE}
    cv_fit <- cv.glmnet(x, y, alpha = 0)
-   fit <- cv_fit$glmnet.model
+   fit <- cv_fit$glmnet.fit
    ```
 
    Compare the models with respect to prediction accuracy, prediction
