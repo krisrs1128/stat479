@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Gaussian Process Fundamentals</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="02-gp_handout_files/libs/clipboard/clipboard.min.js"></script>
+<script src="02-gp_handout_files/libs/quarto-html/quarto.js"></script>
+<script src="02-gp_handout_files/libs/quarto-html/popper.min.js"></script>
+<script src="02-gp_handout_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="02-gp_handout_files/libs/quarto-html/anchor.min.js"></script>
+<link href="02-gp_handout_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="02-gp_handout_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="02-gp_handout_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="02-gp_handout_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="02-gp_handout_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Gaussian Process Fundamentals</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #F4D4A8; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p><strong>Goal.</strong> Given data <span class="math inline">\(\{\left({\color{#7B5FB8}x_i, y_i}\right)\}_{i = 1}^{N}\)</span> following a nonlinear <span class="math inline">\({\color{#D97706}f}\)</span>,</p>
+<ol type="1">
+<li>Predict <span class="math inline">\({\color{#2563EB}\hat{f}\left(x_{m}^{*}\right)}\)</span> at test points <span class="math inline">\({\color{#D946A6}x_{1}^{\ast}, \dots, x_{M}^{\ast}}\)</span>.</li>
+<li>Quantify associated prediction <span class="math inline">\({\color{#22A456}\text{uncertainties}}\)</span>.</li>
+</ol>
+<p><img src="figures/gp_motivation_overview.png" class="img-fluid" width="400"></p>
+<p><strong>Requirements.</strong></p>
+<ol type="1">
+<li>Incorporate domain knowledge about the function (e.g., “the function is periodic”).</li>
+<li>Use interpretable hyperparameters (e.g., “p is the period”).</li>
+</ol>
+<p><strong>Approach.</strong> Encode domain knowledge in a probability distribution over functions. Before seeing data, we specify a “prior” representing plausible functions. After observing data <span class="math inline">\(\{(x_i, y_i)\}_{i=1}^N\)</span>, we update to a “posterior” that assigns high probability only to functions consistent with observations. This is an example of Bayesian inference.</p>
+<p><img src="figures/prior_to_posterior.png" class="img-fluid" width="400"></p>
+</section>
+<section id="multivariate-normal" class="level2">
+<h2 class="anchored" data-anchor-id="multivariate-normal">Multivariate Normal</h2>
+<ol type="1">
+<li><strong>1D case</strong>. <span class="math inline">\(\mathcal{N}\left(\mu, \sigma^2\right)\)</span> with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">500</span>, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>2D case.</strong> <span class="math inline">\(\mathcal{N}(\boldsymbol{\mu}, \Sigma)\)</span> where <span class="math inline">\(\boldsymbol{\mu} \in \mathbb{R}^2\)</span> and <span class="math display">\[\Sigma = \begin{bmatrix} \sigma_1^2 &amp; \sigma_{12} \\ \sigma_{12} &amp; \sigma_2^2 \end{bmatrix}\]</span></li>
+</ol>
+<p>The diagonal controls spread in each direction and the covariance <span class="math inline">\(\sigma_{12}\)</span> controls correlation: <span class="math inline">\(\rho = \sigma_{12}/(\sigma_1\sigma_2)\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="dv">1</span>), <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">500</span>, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="3" type="1">
+<li><p><strong>2D Conditioning.</strong> If <span class="math inline">\((X_1, X_2) \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma)\)</span> and we observe <span class="math inline">\(X_1 = x_1\)</span>, then <span class="math inline">\(X_2 | X_1 = x_1\)</span> is univariate normal with:</p>
+<ul>
+<li>Conditional mean: <span class="math inline">\(\mu_{2|1} = \mu_2 + \rho\frac{\sigma_2}{\sigma_1}(x_1 - \mu_1)\)</span>. The adjustment is <span class="math inline">\(\rho\)</span> times <span class="math inline">\(x_1\)</span>’s z-score, converted to <span class="math inline">\(X_2\)</span> units.</li>
+<li>Conditional variance: <span class="math inline">\(\sigma_{2|1}^2 = \sigma_2^2(1 - \rho^2)\)</span>. Higher correlation means lower conditional variance (more certainty about <span class="math inline">\(X_2\)</span> after seeing <span class="math inline">\(X_1\)</span>).</li>
+</ul></li>
+<li><p><strong>D-dimensional case:</strong> <span class="math inline">\(\mathcal{N}(\boldsymbol{\mu}, \Sigma)\)</span> where <span class="math inline">\(\boldsymbol{\mu} \in \mathbb{R}^D\)</span> and <span class="math inline">\(\Sigma \in \mathbb{R}^{D \times D}\)</span>. Diagonal <span class="math inline">\(\sigma_{ii}^{2}\)</span> controls each dimension’s spread. Correlation <span class="math inline">\(\rho_{ij} = \frac{\sigma_{ij}}{\sigma_{ii}\sigma_{jj}}\)</span> between dimensions <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, D)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fl">0.9</span>, D, D)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(Sigma) <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" style="width:40.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="5" type="1">
+<li><strong>General conditioning.</strong> Partition variables into <span class="math inline">\(\mathbf{X}_A\)</span> (unobserved) and <span class="math inline">\(\mathbf{X}_B\)</span> (observed). Then <span class="math inline">\(\mathbf{X}_A | \mathbf{X}_B = \mathbf{x}_B\)</span> is multivariate normal with:
+<ul>
+<li>Mean: <span class="math inline">\(\boldsymbol{\mu}_{A|B} = \boldsymbol{\mu}_A + \Sigma_{AB}\Sigma_{BB}^{-1}(\mathbf{x}_B - \boldsymbol{\mu}_B)\)</span>.</li>
+<li>Covariance: <span class="math inline">\(\Sigma_{A|B} = \Sigma_{AA} - \Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}\)</span></li>
+</ul></li>
+</ol>
+<p><img src="figures/mvrnorm_condition_setup.png" class="img-fluid" width="400"></p>
+<p><img src="figures/mvrnorm_condition_result.png" class="img-fluid" width="600"></p>
+<p><img src="figures/mvrnorm_condition_cov.png" class="img-fluid" width="600"></p>
+</section>
+<section id="structured-priors" class="level2">
+<h2 class="anchored" data-anchor-id="structured-priors">Structured Priors</h2>
+<p>Suppose we want to simulate smooth random functions <span class="math inline">\(f^*\)</span> evaluated at <span class="math inline">\(0, 0.01, \ldots, 0.99\)</span>. We represent the function as a 100-dimensional vector: <span class="math display">\[\mathbf{f}^* = [f^*(0), f^*(0.01), f^*(0.02), \ldots, f^*(0.99)]^\top\]</span> Each grid point corresponds to one dimension. So <span class="math inline">\(f^*(0)\)</span> is dimension 1, <span class="math inline">\(f^*(0.01)\)</span> is dimension 2, etc.</p>
+<ol type="1">
+<li><p><strong>Idea 1: Constant Correlation</strong>. Sample <span class="math inline">\(\mathbf{f}^* \sim \mathcal{N}(0, \Sigma)\)</span> with constant correlation <span class="math inline">\(\rho_{ij} = \rho\)</span> for all off-diagonal pairs.</p>
+<p><img src="figures/equicorrelation.png" class="img-fluid" width="320"></p>
+<ul>
+<li>If <span class="math inline">\(\rho = 0\)</span>: all points are independent, giving white noise.</li>
+<li>If <span class="math inline">\(\rho = 0.99\)</span>: all points move together, giving nearly flat functions.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div></li>
+<li><p><strong>Idea 2: Block Correlation.</strong> Divide the grid into blocks. Within each block, set high correlation (e.g., <span class="math inline">\(\rho = 0.99\)</span>). Between blocks, no correlation. Looks better but still not smooth.</p>
+<p><img src="figures/block_correlation.png" class="img-fluid" width="200"></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Exercise: How would the plot change if we had not used the same correlation within each block?</em></p></li>
+<li><p><strong>Idea 3: Distance-based correlation</strong>: Let correlation decay with distance. For evaluation points <span class="math inline">\(x, x'\)</span> (at indices <span class="math inline">\(i, j\)</span> in <span class="math inline">\(\mathbf{f}^{\ast}\)</span>), set: <span class="math display">\[\sigma_{ij} = k(x, x') = \exp\left[-\frac{1}{2}(x - x')^2\right]\]</span></p>
+<p><img src="figures/distance_decay_corr.png" class="img-fluid" width="200"></p>
+<p>Nearby points have high correlation; distant points nearly independent.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a> x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fl">0.99</span>, <span class="at">by =</span> <span class="fl">0.01</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> D <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a> K <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> D, <span class="at">ncol =</span> D)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(D)) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>     <span class="cf">for</span> (j <span class="cf">in</span> <span class="fu">seq_len</span>(D)) {</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         K[i, j] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> (x[i] <span class="sc">-</span> x[j])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a> z <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, D), <span class="at">Sigma =</span> K)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We have simulated our first GP!</p></li>
+</ol>
+</section>
+<section id="kernel-functions" class="level2">
+<h2 class="anchored" data-anchor-id="kernel-functions">Kernel Functions</h2>
+<ol type="1">
+<li><p>The function <span class="math inline">\(k(x, x')\)</span> is called a <strong>kernel</strong> and encodes our domain knowledge about the function we want to learn.</p>
+<ul>
+<li><p>Smooth trends. The example above is an example of an RBF kernel with <span class="math inline">\(\sigma_{f} = \ell = 1\)</span>. <span class="math display">\[k_{\text{RBF}}(x, x') = \sigma_f^2 \exp\left(-\frac{(x - x')^2}{2\ell^2}\right)\]</span></p></li>
+<li><p>Periodic behavior. <span class="math display">\[k_{\text{per}}(x, x') = \sigma_f^2 \exp\left(-\frac{2}{\ell^2}\sin^2\left(\frac{\pi|x-x'|}{p}\right)\right)\]</span></p></li>
+</ul>
+<p><img src="figures/periodic_correlation_mat.png" class="img-fluid" width="200"></p>
+<p>Note that <span class="math inline">\(k_{\text{per}}\left(x, x'\right)\)</span> peaks at distances that are multiples of <span class="math inline">\(p\)</span>. If we substitute this code into our earlier snippet, we get periodic curves.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a> K[i, j] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">sin</span>(pi <span class="sc">*</span> <span class="fu">abs</span>(x[i] <span class="sc">-</span> x[j]) <span class="sc">/</span> <span class="fl">0.2</span>)<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The reading gives formulas for other kernels that encode prior knowledge about linearity and non-differentiability.</li>
+</ul></li>
+<li><p>The kernel hyperparameters encode domain knowledge,</p>
+<ul>
+<li><span class="math inline">\(\ell\)</span>: lengthscale (controls smoothness)</li>
+<li><span class="math inline">\(\sigma_f^2\)</span>: overall function variance</li>
+<li><span class="math inline">\(p\)</span>: period</li>
+</ul></li>
+<li><p>We can define new kernels through addition and multiplication. For smooth + periodic behavior: <span class="math display">\[k_{\text{fancy}}(x, x') = k_{\text{RBF}}(x, x') + k_{\text{per}}(x, x')\]</span> The associated functions reflect both types of domain knowledge:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Exercise: Change the length scale <span class="math inline">\(\ell\)</span> in the snippet above. Plot the resulting functions. How do they change?</em></p></li>
+<li><p>To summarize, once we define a kernel, it specifies a <strong>Gaussian Process</strong> prior over functions consistent with that kernel: <span class="math display">\[f \sim \mathcal{GP}(0, k(x, x'))\]</span></p></li>
+</ol>
+</section>
+<section id="updating-from-data" class="level2">
+<h2 class="anchored" data-anchor-id="updating-from-data">Updating from Data</h2>
+<ol type="1">
+<li><p>Suppose we want to predict <span class="math inline">\(\hat{f}\left(x^*\right)\)</span> at a specific <span class="math inline">\(x^*\)</span>. We are given observations <span class="math inline">\(y_1, \ldots, y_N\)</span> at <span class="math inline">\(x_1, \ldots, x_N\)</span>. We assume <span class="math inline">\(y_{i}\)</span> are noisy observations, <span class="math display">\[\begin{align}
+y_i &amp;= f(x_i) + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma_n^2)\\
+f &amp;\sim \mathcal{GP}(0, k(x, x'))
+\end{align}\]</span></p></li>
+<li><p>The main idea is to use conditioning. Stack the unknown <span class="math inline">\(f(x^*)\)</span> with observations <span class="math inline">\(\mathbf{y} = [y_1, \ldots, y_N]^\top\)</span>. It turns out that this has an <span class="math inline">\(N + 1\)</span>-dimensional multivariate normal distribution,</p>
+<p><span class="math display">\[\begin{bmatrix} f(x^*) \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} k(x^*, x^*) &amp; \mathbf{K}_* \\ \mathbf{K}_*^\top &amp; \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\mathbf{K}_*\)</span>: row vector with entries <span class="math inline">\(k(x^*, x_i)\)</span> (similarity of <span class="math inline">\(x^*\)</span> to training points)</li>
+<li><span class="math inline">\(\mathbf{K}\)</span>: <span class="math inline">\(N \times N\)</span> matrix with entries <span class="math inline">\(K_{ij} = k(x_i, x_j)\)</span> (training point similarities)</li>
+<li><span class="math inline">\(\sigma_n^2\mathbf{I}\)</span>: observation noise</li>
+</ul>
+<p><img src="figures/single_pred_partition.png" class="img-fluid" width="500"></p></li>
+<li><p>We make predictions using the conditional mean of the first coordinate given the rest. Plugging in <span class="math inline">\(\mathbf{X}_{A} = f\left(x^\ast\right)\)</span> and <span class="math inline">\(\mathbf{X}_{B} = \mathbf{y}\)</span> into our earlier conditioning formula yields, <span id="eq-gp-mean"><span class="math display">\[\mu_* = \mathbf{K}_*(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{y} \tag{1}\]</span></span></p>
+<p>This is a weighted average: training points similar to <span class="math inline">\(x^*\)</span> get higher weight.</p>
+<p><img src="figures/single_pred_kernel_weights.png" class="img-fluid" width="800"></p></li>
+<li><p>For <span class="math inline">\(M\)</span> test points <span class="math inline">\(\mathbf{f}_* = [f(x_1^*), \ldots, f(x_M^*)]^\top\)</span>, we apply the same conditioning approach but now need to track correlations among the test points with one another:</p>
+<p><span class="math display">\[\begin{bmatrix} \mathbf{f}_* \\ \mathbf{y} \end{bmatrix} \sim \mathcal{N}\left(\mathbf{0}, \begin{bmatrix} \mathbf{K}_{**} &amp; \mathbf{K}_* \\ \mathbf{K}_*^\top &amp; \mathbf{K} + \sigma_n^2\mathbf{I} \end{bmatrix}\right)\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\mathbf{K}_{**}\)</span>: <span class="math inline">\(M \times M\)</span> matrix with entries <span class="math inline">\((\mathbf{K}_{**})_{ij} = k(x_i^*, x_j^*)\)</span> (test point similarities)</li>
+<li><span class="math inline">\(\mathbf{K}_*\)</span>: <span class="math inline">\(M \times N\)</span> matrix with entries <span class="math inline">\((\mathbf{K}_*)_{ij} = k(x_i^*, x_j)\)</span> (test-to-training similarities)</li>
+</ul>
+<p><img src="figures/m_pred_partition.png" class="img-fluid" width="500"></p>
+<p><img src="figures/m_pred_similarities.png" class="img-fluid" width="300"></p>
+<p>Applying the conditioning formula gives <a href="#eq-gp-mean" class="quarto-xref">Equation&nbsp;1</a> again, but now <span class="math inline">\(\mathbf{K}_*\)</span> is a matrix, so <span class="math inline">\(\boldsymbol{\mu}_*\)</span> is a vector with one entry for each of the test locations <span class="math inline">\(x_{1}^{\ast}, \dots, x_{M}^{\ast}\)</span>.</p>
+<p><em>Exercise:</em></p>
+<ul>
+<li><em>TRUE FALSE If we increase <span class="math inline">\(\sigma_n^2\)</span>, then the predictions <span class="math inline">\(\mu_*\)</span> will give more weight to the prior mean and less weight to the observations.</em></li>
+<li><em>TRUE FALSE If two training points <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are very close together, the entries <span class="math inline">\(\left(\mathbf{K}\right)_{12}\)</span> and <span class="math inline">\(\left(\mathbf{K}\right)_{21}\)</span> will both be close to 0.</em></li>
+</ul></li>
+</ol>
+</section>
+<section id="quantifying-uncertainty" class="level2">
+<h2 class="anchored" data-anchor-id="quantifying-uncertainty">Quantifying Uncertainty</h2>
+<ol type="1">
+<li><p>At the start, we mentioned that our goal wasn’t just to make predictions at <span class="math inline">\(x_{1}^{*}, \dots, x_{M}^{*}\)</span> but also to report the associated uncertainties. Recall from the bivariate case that conditioning gave us both a mean <em>and a variance</em>. The variance tells us how much uncertainty remains after observing <span class="math inline">\(X_1\)</span>. The same is true here: the conditioning formula also gives a covariance matrix that quantifies our uncertainty about <span class="math inline">\(\mathbf{f}_*\)</span> after observing <span class="math inline">\(\mathbf{y}\)</span>.</p></li>
+<li><p>Specifically, the conditional covariance formula yields: <span class="math display">\[
+\boldsymbol{\Sigma}_{*} = \mathbf{K}_{**} - \mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}^\top
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\mathbf{K}_{**}\)</span> is the covariance before we collect any data.</li>
+<li>The subtracted term <span class="math inline">\(\mathbf{K}_{*}(\mathbf{K} + \sigma_n^2\mathbf{I})^{-1}\mathbf{K}_{*}^\top\)</span> describes the uncertainty reduction from conditioning.</li>
+<li>The diagonal entries give the conditional variance at each test location: <span class="math inline">\(\text{Var}(f(x_i^*) | \mathbf{y})\)</span>.</li>
+</ul>
+<p><em>Exercise: TRUE FALSE The uncertainty <span class="math inline">\(\text{Var}(f(x^*) | \mathbf{y})\)</span> will generally be smaller for test points <span class="math inline">\(x^*\)</span> that are near observed training points than for test points far from any training data.</em></p></li>
+</ol>
+</section>
+<section id="code-example" class="level2">
+<h2 class="anchored" data-anchor-id="code-example">Code Example</h2>
+<ol type="1">
+<li><p>Observe 10 noisy points from a quadratic:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a> x_obs <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a> sigma_n <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a> y_obs <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> (x_obs <span class="sc">-</span> <span class="fl">0.5</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="dv">0</span>, sigma_n)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> N <span class="ot">&lt;-</span> <span class="fu">length</span>(x_obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div></li>
+<li><p>Define test grid and covariances:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fl">0.99</span>, <span class="at">by =</span> <span class="fl">0.01</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> D <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> <span class="co"># K_{**}: test-test similarities</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> K <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> D, <span class="at">ncol =</span> D)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(D)) {</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>     <span class="cf">for</span> (j <span class="cf">in</span> <span class="fu">seq_len</span>(D)) {</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>         K[i, j] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> (x[i] <span class="sc">-</span> x[j])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a> <span class="co"># K_*: test-training similarities</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a> K_star <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> D, <span class="at">ncol =</span> N)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(D)) {</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>     <span class="cf">for</span> (j <span class="cf">in</span> <span class="fu">seq_len</span>(N)) {</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>         K_star[i, j] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> (x[i] <span class="sc">-</span> x_obs[j])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a> <span class="co"># K: training-training similarities</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a> K_obs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> N)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(N)) {</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>     <span class="cf">for</span> (j <span class="cf">in</span> <span class="fu">seq_len</span>(N)) {</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>         K_obs[i, j] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> (x_obs[i] <span class="sc">-</span> x_obs[j])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Apply conditioning formulas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a> mu_cond <span class="ot">&lt;-</span> K_star <span class="sc">%*%</span> <span class="fu">solve</span>(K_obs <span class="sc">+</span> sigma_n<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">diag</span>(N)) <span class="sc">%*%</span> y_obs</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> Sigma_cond <span class="ot">&lt;-</span> K <span class="sc">-</span> K_star <span class="sc">%*%</span> <span class="fu">solve</span>(K_obs <span class="sc">+</span> sigma_n<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">diag</span>(N)) <span class="sc">%*%</span> <span class="fu">t</span>(K_star)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> var_cond <span class="ot">&lt;-</span> <span class="fu">diag</span>(Sigma_cond) <span class="co"># defines ribbon width</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div></li>
+<li><p>Sample posterior functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a> f_post <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> mu_cond, <span class="at">Sigma =</span> Sigma_cond)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div></li>
+<li><p>The greta.gp package makes this much simpler.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">library</span>(greta.gp)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> kernel <span class="ot">&lt;-</span> <span class="fu">rbf</span>(<span class="at">lengthscales =</span> <span class="dv">1</span>, <span class="at">variance =</span> <span class="dv">1</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a> f_obs <span class="ot">&lt;-</span> <span class="fu">gp</span>(x_obs, kernel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">distribution</span>(y_obs) <span class="ot">&lt;-</span> <span class="fu">normal</span>(f_obs, sigma_n)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a> f_test <span class="ot">&lt;-</span> <span class="fu">project</span>(f_obs, x)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a> m <span class="ot">&lt;-</span> <span class="fu">model</span>(f_test)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a> draws <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(m, <span class="at">n_samples =</span> <span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a> mu_cond <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(draws[[<span class="dv">1</span>]])</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a> Sigma_cond <span class="ot">&lt;-</span> <span class="fu">cov</span>(draws[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-gp_handout_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div></li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
