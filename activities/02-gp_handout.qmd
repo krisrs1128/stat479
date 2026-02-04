@@ -1,5 +1,5 @@
 ---
-title: "GP Code Snippets"
+title: "Gaussian Process Fundamentals"
 format: html
 execute:
     echo: true
@@ -38,7 +38,7 @@ set.seed(2026)
    1. Incorporate domain knowledge about the function (e.g., "the function is periodic").
    2. Use interpretable hyperparameters (e.g., "p is the period").
 
-**Approach:** Encode domain knowledge in a probability distribution over functions. Before seeing data, we specify a "prior" representing plausible functions. After observing data $\{(x_i, y_i)\}_{i=1}^N$, we update to a "posterior" that assigns high probability only to functions consistent with observations. This is an example of Bayesian inference.
+**Approach.** Encode domain knowledge in a probability distribution over functions. Before seeing data, we specify a "prior" representing plausible functions. After observing data $\{(x_i, y_i)\}_{i=1}^N$, we update to a "posterior" that assigns high probability only to functions consistent with observations. This is an example of Bayesian inference.
 
 ![](figures/prior_to_posterior.png){width="400px"}
 
@@ -236,34 +236,34 @@ $$\sigma_{ij} = k(x, x') = \exp\left[-\frac{1}{2}(x - x')^2\right]$$
    Nearby points have high correlation; distant points nearly independent.
 
    ```{r}
-x <- seq(0, 0.99, by = 0.01)
-D <- length(x)
+    x <- seq(0, 0.99, by = 0.01)
+    D <- length(x)
 
-K <- matrix(0, nrow = D, ncol = D)
-for (i in seq_len(D)) {
-    for (j in seq_len(D)) {
-        K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+    K <- matrix(0, nrow = D, ncol = D)
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+        }
     }
-}
 
-z <- mvrnorm(n = 20, mu = rep(0, D), Sigma = K)
+    z <- mvrnorm(n = 20, mu = rep(0, D), Sigma = K)
    ```
 
    ```{r}
-#| echo: false
-#| fig-width: 5
-#| fig-height: 2.5
-#| out-width: 60%
-df1 <- as_tibble(z) |>
-    mutate(sample_id = row_number()) |>
-    pivot_longer(cols = -sample_id, names_to = "dimension", values_to = "value") |>
-  mutate(dimension = as.integer(str_remove(dimension, "V")))
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df1 <- as_tibble(z) |>
+        mutate(sample_id = row_number()) |>
+        pivot_longer(cols = -sample_id, names_to = "dimension", values_to = "value") |>
+        mutate(dimension = as.integer(str_remove(dimension, "V")))
 
-ggplot(df1, aes(x = dimension, y = value)) +
-  geom_line(aes(group = factor(sample_id), col = sample_id == n)) +
-  scale_color_manual(values = c("grey", "#e50d0d"), guide = FALSE) +
-  labs(x = "Dimension (j)", y = "Value",
-    title = "Multivariate normal w/ decaying covariance")
+    ggplot(df1, aes(x = dimension, y = value)) +
+        geom_line(aes(group = factor(sample_id), col = sample_id == n)) +
+        scale_color_manual(values = c("grey", "#e50d0d"), guide = FALSE) +
+        labs(x = "Dimension (j)", y = "Value",
+            title = "Multivariate normal w/ decaying covariance")
    ```
 
    We have simulated our first GP!
@@ -282,7 +282,7 @@ ggplot(df1, aes(x = dimension, y = value)) +
 
    Note that $k_{\text{per}}\left(x, x'\right)$ peaks at distances that are multiples of $p$. If we substitute this code into our earlier snippet, we get periodic curves.
    ```{r}
-   K[i, j] <- exp(-2 * sin(pi * abs(x[i] - x[j]) / 0.2)^2)
+    K[i, j] <- exp(-2 * sin(pi * abs(x[i] - x[j]) / 0.2)^2)
    ```
 
    ```{r}
@@ -417,10 +417,10 @@ f &\sim \mathcal{GP}(0, k(x, x'))
 
 1. Observe 10 noisy points from a quadratic:
    ```{r}
-   x_obs <- runif(10)
-   sigma_n <- 0.1
-   y_obs <- 3 * (x_obs - 0.5)^2 - 0.5 + rnorm(10, 0, sigma_n)
-   N <- length(x_obs)
+    x_obs <- runif(10)
+    sigma_n <- 0.1
+    y_obs <- 3 * (x_obs - 0.5)^2 - 0.5 + rnorm(10, 0, sigma_n)
+    N <- length(x_obs)
    ```
 
    ```{r}
@@ -428,48 +428,48 @@ f &\sim \mathcal{GP}(0, k(x, x'))
    #| fig-width: 5
    #| fig-height: 2.5
    #| out-width: 60%
-df_obs <- tibble(x = x_obs, value = y_obs)
-ggplot() +
-  geom_point(data = df_obs, aes(x = x, y = value),
-             col = "#a80de5ff", size = 3)
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
    ```
 
 2. Define test grid and covariances:
    ```{r}
-x <- seq(0, 0.99, by = 0.01)
-D <- length(x)
+    x <- seq(0, 0.99, by = 0.01)
+    D <- length(x)
 
-# K_{**}: test-test similarities
-K <- matrix(0, nrow = D, ncol = D)
-for (i in seq_len(D)) {
-    for (j in seq_len(D)) {
-        K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+    # K_{**}: test-test similarities
+    K <- matrix(0, nrow = D, ncol = D)
+    for (i in seq_len(D)) {
+        for (j in seq_len(D)) {
+            K[i, j] <- exp(-0.5 * (x[i] - x[j])^2)
+        }
     }
-}
 
-# K_*: test-training similarities
-K_star <- matrix(0, nrow = D, ncol = N)
-for (i in seq_len(D)) {
-    for (j in seq_len(N)) {
-        K_star[i, j] <- exp(-0.5 * (x[i] - x_obs[j])^2)
+    # K_*: test-training similarities
+    K_star <- matrix(0, nrow = D, ncol = N)
+    for (i in seq_len(D)) {
+        for (j in seq_len(N)) {
+            K_star[i, j] <- exp(-0.5 * (x[i] - x_obs[j])^2)
+        }
     }
-}
 
-# K: training-training similarities
-K_obs <- matrix(0, nrow = N, ncol = N)
-for (i in seq_len(N)) {
-    for (j in seq_len(N)) {
-        K_obs[i, j] <- exp(-0.5 * (x_obs[i] - x_obs[j])^2)
+    # K: training-training similarities
+    K_obs <- matrix(0, nrow = N, ncol = N)
+    for (i in seq_len(N)) {
+        for (j in seq_len(N)) {
+            K_obs[i, j] <- exp(-0.5 * (x_obs[i] - x_obs[j])^2)
+        }
     }
-}
    ```
 
 3. Apply conditioning formulas:
 
    ```{r}
-mu_cond <- K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% y_obs
-Sigma_cond <- K - K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% t(K_star)
-var_cond <- diag(Sigma_cond) # defines ribbon width
+    mu_cond <- K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% y_obs
+    Sigma_cond <- K - K_star %*% solve(K_obs + sigma_n^2 * diag(N)) %*% t(K_star)
+    var_cond <- diag(Sigma_cond) # defines ribbon width
    ```
 
    ```{r}
@@ -477,67 +477,28 @@ var_cond <- diag(Sigma_cond) # defines ribbon width
    #| fig-width: 5
    #| fig-height: 2.5
    #| out-width: 60%
-df_mean <- tibble(
-  x = x,
-  mean = as.vector(mu_cond),
-  lower = mean - 2 * sqrt(var_cond),
-  upper = mean + 2 * sqrt(var_cond)
-)
+    df_mean <- tibble(
+        x = x,
+        mean = as.vector(mu_cond),
+        lower = mean - 2 * sqrt(var_cond),
+        upper = mean + 2 * sqrt(var_cond)
+    )
 
-df_obs <- tibble(x = x_obs, value = y_obs)
-ggplot() +
-  geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
-              fill = "#36ae9eff", alpha = 0.5) +
-  geom_line(data = df_mean, aes(x = x, y = mean),
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
+            fill = "#36ae9eff", alpha = 0.5) +
+        geom_line(data = df_mean, aes(x = x, y = mean),
             col = "#36ae9eff", linewidth = 1) +
-  geom_point(data = df_obs, aes(x = x, y = value),
-             col = "#a80de5ff", size = 3)
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
    ```
 
 
 4. Sample posterior functions:
 
-```{r}
-f_post <- mvrnorm(n = 20, mu = mu_cond, Sigma = Sigma_cond)
-```
-
-```{r}
-#| echo: false
-#| fig-width: 5
-#| fig-height: 2.5
-#| out-width: 60%
-df_post <- as_tibble(f_post, .name_repair = ~paste0("x", seq_len(ncol(f_post)))) %>%
-  mutate(sample_id = row_number()) %>%
-  pivot_longer(starts_with("x"),
-               names_to = "dimension",
-               names_transform = list(dimension = ~as.integer(str_remove(., "x"))),
-               values_to = "value") %>%
-  mutate(x = x[dimension])
-
-df_obs <- tibble(x = x_obs, value = y_obs)
-
-ggplot() +
-  geom_line(data = df_post, aes(x = x, y = value, group = sample_id),
-            col = "#36ae9eff", alpha = 0.5, linewidth = 0.5) +
-  geom_point(data = df_obs, aes(x = x, y = value),
-             col = "#a80de5ff", size = 3)
-```
-
-
-1. The greta.gp package makes this much simpler.
-
    ```{r}
-library(greta.gp)
-kernel <- rbf(lengthscales = 1, variance = 1)
-f_obs <- gp(x_obs, kernel)
-distribution(y_obs) <- normal(f_obs, sigma_n)
-
-f_test <- project(f_obs, x)
-m <- model(f_test)
-draws <- mcmc(m, n_samples = 500)
-
-mu_cond <- colMeans(draws[[1]])
-Sigma_cond <- cov(draws[[1]])
+    f_post <- mvrnorm(n = 20, mu = mu_cond, Sigma = Sigma_cond)
    ```
 
    ```{r}
@@ -545,19 +506,82 @@ Sigma_cond <- cov(draws[[1]])
    #| fig-width: 5
    #| fig-height: 2.5
    #| out-width: 60%
-df_mean <- tibble(
-  x = x,
-  mean = as.vector(mu_cond),
-  lower = mean - 2 * sqrt(var_cond),
-  upper = mean + 2 * sqrt(var_cond)
-)
+    df_post <- as_tibble(f_post, .name_repair = ~paste0("x", seq_len(ncol(f_post)))) |>
+        mutate(sample_id = row_number()) |>
+        pivot_longer(starts_with("x"),
+            names_to = "dimension",
+            names_transform = list(dimension = ~as.integer(str_remove(., "x"))),
+            values_to = "value") |>
+        mutate(x = x[dimension])
 
-df_obs <- tibble(x = x_obs, value = y_obs)
-ggplot() +
-  geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
-              fill = "#36ae9eff", alpha = 0.5) +
-  geom_line(data = df_mean, aes(x = x, y = mean),
+    df_obs <- tibble(x = x_obs, value = y_obs)
+
+    ggplot() +
+        geom_line(data = df_post, aes(x = x, y = value, group = sample_id),
+            col = "#36ae9eff", alpha = 0.5, linewidth = 0.5) +
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
+   ```
+
+
+5. The greta.gp package makes this much simpler. For example, we can evaluate the kernel along a grid of values.
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 3.5
+   #| out-width: 60%
+   library(greta.gp)
+   kernel <- rbf(lengthscales = .5, variance = 1)
+   kernel_values <- calculate(kernel(0, x))[[1]]
+   plot(x, kernel_values[1, ], type = "l")
+   ```
+
+   We can sample from the prior.
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 3.5
+   #| out-width: 60%
+   f <- gp(x, kernel)
+   f_proj <- project(f, x)
+   prior_samples <- calculate(f_proj, nsim = 5)$f_proj[,,1]
+   matplot(x, t(prior_samples), type = "l", lty = 1)
+   ```
+
+    We can also condition on observations `x_obs` and `y_obs`.
+
+   ```{r}
+    kernel <- rbf(lengthscales = 1, variance = 1)
+    f_obs <- gp(x_obs, kernel)
+    distribution(y_obs) <- normal(f_obs, sigma_n)
+
+    f_test <- project(f_obs, x)
+    m <- model(f_test)
+    draws <- mcmc(m, n_samples = 500)
+
+    mu_cond <- colMeans(draws[[1]])
+    Sigma_cond <- cov(draws[[1]])
+    var_cond <- diag(Sigma_cond) # defines ribbon width
+   ```
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 2.5
+   #| out-width: 60%
+    df_mean <- tibble(
+        x = x,
+        mean = as.vector(mu_cond),
+        lower = mean - 2 * sqrt(var_cond),
+        upper = mean + 2 * sqrt(var_cond)
+    )
+
+    df_obs <- tibble(x = x_obs, value = y_obs)
+    ggplot() +
+        geom_ribbon(data = df_mean, aes(x = x, ymin = lower, ymax = upper),
+            fill = "#36ae9eff", alpha = 0.5) +
+        geom_line(data = df_mean, aes(x = x, y = mean),
             col = "#36ae9eff", linewidth = 1) +
-  geom_point(data = df_obs, aes(x = x, y = value),
-             col = "#a80de5ff", size = 3)
+        geom_point(data = df_obs, aes(x = x, y = value),
+            col = "#a80de5ff", size = 3)
    ```
