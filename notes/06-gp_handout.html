@@ -146,7 +146,7 @@ window.Quarto = {
 .darkblue { color: #4a9ceaff; } /* pastel dark blue */
 .pink { color: #ee6ec3ff; } /* pastel pink */
 </style>
-<p><em>Readings: [<a href="https://distill.pub/2019/visual-exploration-gaussian-processes/">1</a>, <a href="https://infallible-thompson-49de36.netlify.app/">2 (sections 1 - 4)</a>]</em></p>
+<p><em>Readings: [<a href="https://distill.pub/2019/visual-exploration-gaussian-processes/">1</a>, <a href="https://infallible-thompson-49de36.netlify.app/">2 (sections 1 - 4)</a>]</em>, <em><a href="https://github.com/krisrs1128/stat479_notes/blob/master/notes/06-gp_handout.qmd">Code</a></em></p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <p><strong>Goal.</strong> Given data <span class="math inline">\(\{\left({\color{#7B5FB8}x_i, y_i}\right)\}_{i = 1}^{N}\)</span> following a nonlinear <span class="math inline">\({\color{#D97706}f}\)</span>,</p>
@@ -183,9 +183,11 @@ window.Quarto = {
 <p>The diagonal controls spread in each direction and the covariance <span class="math inline">\(\sigma_{12}\)</span> controls correlation: <span class="math inline">\(\rho = \sigma_{12}/(\sigma_1\sigma_2)\)</span></p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="dv">1</span>), <span class="dv">2</span>, <span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">500</span>, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="dv">1</span>), <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="dv">500</span>, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -203,7 +205,7 @@ window.Quarto = {
 <li>Conditional variance: <span class="math inline">\(\sigma_{2|1}^2 = \sigma_2^2(1 - \rho^2)\)</span>. Higher correlation means lower conditional variance (more certainty about <span class="math inline">\(X_2\)</span> after seeing <span class="math inline">\(X_1\)</span>).</li>
 </ul></li>
 </ol>
-<p><img src="figures/2d_conditioning.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2d_conditioning.png" class="img-fluid" width="300"></p>
 <ol type="1">
 <li><strong>D-dimensional case:</strong> <span class="math inline">\(\mathcal{N}(\boldsymbol{\mu}, \Sigma)\)</span> where <span class="math inline">\(\boldsymbol{\mu} \in \mathbb{R}^D\)</span> and <span class="math inline">\(\Sigma \in \mathbb{R}^{D \times D}\)</span>. Diagonal <span class="math inline">\(\sigma_{ii}^{2}\)</span> controls each dimension’s spread. Correlation <span class="math inline">\(\rho_{ij} = \frac{\sigma_{ij}}{\sigma_{ii}\sigma_{jj}}\)</span> between dimensions <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</li>
 </ol>

@@ -21,12 +21,11 @@ execute:
 ```{r}
 #| echo: false
 library(tidyverse)
-library(MASS)
 theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
 set.seed(2026)
 ```
 
-_Readings: [[1](https://distill.pub/2019/visual-exploration-gaussian-processes/), [2 (sections 1 - 4)](https://infallible-thompson-49de36.netlify.app/)]_
+_Readings: [[1](https://distill.pub/2019/visual-exploration-gaussian-processes/), [2 (sections 1 - 4)](https://infallible-thompson-49de36.netlify.app/)]_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/06-gp_handout.qmd)_
 
 ## Setup
 
@@ -74,6 +73,8 @@ _Readings: [[1](https://distill.pub/2019/visual-exploration-gaussian-processes/)
    The diagonal controls spread in each direction and the covariance $\sigma_{12}$ controls correlation: $\rho = \sigma_{12}/(\sigma_1\sigma_2)$
 
 ```{r}
+library(MASS)
+
 mu <- c(0, 0)
 Sigma <- matrix(c(1, 0.8, 0.8, 1), 2, 2)
 z <- mvrnorm(n = 500, mu = mu, Sigma = Sigma)
@@ -115,7 +116,7 @@ ggplot(df_list, aes(x = x, y = y)) +
    - Conditional mean: $\mu_{2|1} = \mu_2 + \rho\frac{\sigma_2}{\sigma_1}(x_1 - \mu_1)$. The adjustment is $\rho$ times $x_1$'s z-score, converted to $X_2$ units.
    - Conditional variance: $\sigma_{2|1}^2 = \sigma_2^2(1 - \rho^2)$. Higher correlation means lower conditional variance (more certainty about $X_2$ after seeing $X_1$).
 
-![](figures/2d_conditioning.png){width="400px"}
+![](figures/2d_conditioning.png){width="300px"}
 
 1. **D-dimensional case:** $\mathcal{N}(\boldsymbol{\mu}, \Sigma)$ where $\boldsymbol{\mu} \in \mathbb{R}^D$ and $\Sigma \in \mathbb{R}^{D \times D}$. Diagonal $\sigma_{ii}^{2}$ controls each dimension's spread. Correlation $\rho_{ij} = \frac{\sigma_{ij}}{\sigma_{ii}\sigma_{jj}}$ between dimensions $i$ and $j$.
 
