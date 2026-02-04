@@ -3,8 +3,9 @@ title: "Gaussian Process Fundamentals"
 author: Kris Sankaran
 date: 2026-02-04
 format:
-    html:
-        embed-resources: true
+  html:
+    embed-resources: true
+    html-math-method: katex
 execute:
     echo: true
     message: false
