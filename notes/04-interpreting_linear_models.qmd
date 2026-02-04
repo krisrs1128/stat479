@@ -10,6 +10,7 @@ format:
   revealjs:
     css: styles.css
     embed-resources: true
+    html-math-method: katex
 ---
 
 * model tuning and stability

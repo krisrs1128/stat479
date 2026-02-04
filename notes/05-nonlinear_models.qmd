@@ -5,6 +5,7 @@ format:
   revealjs:
     css: styles.css
     embed-resources: true
+    html-math-method: katex
 citeproc: true
 execute:
     echo: true
