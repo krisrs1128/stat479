@@ -1,7 +1,7 @@
 ---
-title: "Gaussian Process Fundamentals"
+title: "Classification and Regression Trees"
 author: Kris Sankaran
-date: 2026-02-04
+date: 2026-02-09
 format:
   html:
     embed-resources: true
@@ -13,10 +13,12 @@ execute:
     cache: true
 ---
 
+::: {style="display: none;"}
 $$
 \newcommand{\bs}[1]{\mathbf{#1}}
 \newcommand{\reals}[1]{\mathbb{R}}
 $$
+:::
 
 <style>
 .purple { color: #7458d1ff; } /* pastel purple */
@@ -33,7 +35,9 @@ theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidt
 set.seed(2026)
 ```
 
-_Readings: [ISLR Section 8.1](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html), _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/07-CART_handout.qmd)_
+_Readings: [ISLR Section 8.1](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/07-CART_handout.qmd)_
+
+Bullet items with $^{\dagger}$ are not in the reading, so not tested.
 
 ## Setup
 
@@ -88,28 +92,28 @@ and are only allowed one split, then it's natural to pick $s$ to minimize
 
    $$
 \begin{align*}
-\sum_{i: x_i \in R^{\text{left}}(s)} (y_i - \hat{y}_{R}^{\text{left}})^2 + \sum_{i: x_i \in R^{\text{right}}(s)} (y_i - \hat{y}_{R^{\text{right}}})^2
+\sum_{i: x_i \in R^{\text{left}}(s)} (y_i - \bar{y}_{R}^{\text{left}})^2 + \sum_{i: x_i \in R^{\text{right}}(s)} (y_i - \bar{y}_{R^{\text{right}}})^2
 \end{align*}
    $$
 
-   where $\hat{y}_{R} = \frac{1}{|R|}\sum_{i: x_i \in R} y_i$ is the mean
+   where $\bar{y}_{R} = \frac{1}{|R|}\sum_{i: x_i \in R} y_i$ is the mean
 training response in region $R_{l}$.
 
 1. **Inductive step**. Suppose we have already made $\ell$ splits, so we have
 $\ell + 1$ disjoint intervals $R_{1}, \dots, R_{\ell + 1}$ with current total
 residual sum of squares (RSS):
 $$
-\sum_{l=1}^{\ell+1} \sum_{i: x_i \in R_l} (y_i - \hat{y}_{R_l})^2
+\sum_{l=1}^{\ell+1} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2
 $$
 To make the next split, consider the RSS reduction when splitting region $l$ at threshold $s$:
 $$
-\Delta \text{RSS}(l, s) = \sum_{i: x_i \in R_l} (y_i - \hat{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^\text{left}(s)} (y_i - \hat{y}_{R_l^\text{left}})^2 + \sum_{i: x_i \in R_l^\text{right}(s)} (y_i - \hat{y}_{R_l^\text{right}})^2\right]
+\Delta(l, s) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^\text{left}(s)} (y_i - \bar{y}_{R_l^\text{left}})^2 + \sum_{i: x_i \in R_l^\text{right}(s)} (y_i - \bar{y}_{R_l^\text{right}})^2\right]
 $$
 Here, $R_l^\text{left}(s)$ and $R_l^\text{right}(s)$ denotes the left and right
 intervals made when splitting $R_l$ at $s$. We can test all regions $l \in \{1,
 \dots, \ell + 1\}$ and a fine grid of $s$ within each $R_{l}$. The best split is:
 $$
-\left(l^*, s^*\right) := \arg \max_{l = 1, \dots, \ell + 1} \Delta \text{RSS}\left(l, s\right)
+\left(l^*, s^*\right) := \arg \max_{l = 1, \dots, \ell + 1} \Delta\left(l, s\right)
 $$
 
 1. We stop growing the tree when we've reached a stopping criterion. For
@@ -117,29 +121,147 @@ example, the best possible improvement in RSS might be too small, or all the
 leaves might have too few samples for it to be worth considering any more
 splits.
 
-1. A similar approach works in higher dimensions. For the first split, we search over all dimensions $j$ and split points $s$ hat minimize
-$$
-\begin{align*}
-\sum_{i: x_i \in R_{j}^{\text{left}}(s)} (y_i - \hat{y}_{R_{j}^{\text{left}}})^2 + \sum_{i: x_i \in R_{j}^{\text{right}}(s)} (y_i - \hat{y}_{R_{j}^{\text{right}}})^2
-\end{align*}
-$$
-
 1. A similar approach works in higher dimensions -- we just need to also
 optimize over which feature to split on in each inductive step. Specifically,
 consider splitting leaf $l$ along feature $j$ at threshold $s$. The associated
 RSS reduction is:
    $$
-\Delta \text{RSS}(l, j, s) = \sum_{i: x_i \in R_l} (y_i - \hat{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^{\text{left}}(j,s)} (y_i - \hat{y}_{R_l^{\text{left}}})^2 + \sum_{i: x_i \in R_l^{\text{right}}(j,s)} (y_i - \hat{y}_{R_l^{\text{right}}})^2\right]
+\Delta(l, j, s) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^{\text{left}}(j,s)} (y_i - \bar{y}_{R_l^{\text{left}}})^2 + \sum_{i: x_i \in R_l^{\text{right}}(j,s)} (y_i - \bar{y}_{R_l^{\text{right}}})^2\right]
    $$
    where $R_l^{\text{left}}(j,s) = \{x \in R_l : x_j \leq s\}$ and
 $R_l^{\text{right}}(j,s) = \{x \in R_l : x_j > s\}$. We search over all
 candidate regions $l$, features $j$, and thresholds $s$ to find:
    $$
-(l^*, j^*, s^*) := \arg\max_{l, j, s} \Delta \text{RSS}(l, j, s)
+(l^*, j^*, s^*) := \arg\max_{l, j, s} \Delta(l, j, s)
 $$
 
 ## Classification
 
-## Pruning
+1. So far we've focused on regression. For classification, we will still apply a
+recursive splitting strategy, but we can't use $\Delta\left(l, j,
+s\right)$ as our objective function.
+
+1. Our first thought might be to use classification error rate instead of RSS.
+This is not a good idea, because we might want to split a region $R_{l}$ to
+improve "node purity," even if it doesn't improve the overall training error
+rate. For example, the split below is still worth making, because the region
+$R_{3}$ is likely to be generalize well.
+
+1. To measure node purity, we can use either the Gini Index or the Entropy. If
+$y$ belongs to one of $K$ classes and if $\hat{p}_{lk}$ denotes the proportion
+of class $k$ samples in region $R_{l}$, these are defined as,
+
+   $$
+   \begin{align*}
+\text{Gini}\left(R_{l}\right) &= \sum_{k= 1}^{K} \hat{p}_{lk}\left(1 - \hat{p}_{lk}\right)^{2}\\
+\text{Entropy}\left(R_{l}\right) &= -\sum_{k= 1}^{K} \hat{p}_{lk}\log\left(\hat{p}_{lk}\right)
+   \end{align*}
+   $$
+
+1. Geometrically, these two functions have similar forms. The corners of the
+simplex below correspond to cases where most samples come from one of the $K =
+3$ classes. A good classification tree will have learned regions $R_{l}$ whose
+class distributions are close to one of the $K$ corners of the simplex
+(similarly to how a good regression tree learns regions $R_{l}$ with low RSS).
+
+1. Given this new objective, we can define the tree growing induction as before:
+   $$
+\Delta(l, j, s) = F\left(R_l\right) - \left[F\left(R_{l}^{\text{left}}(j, s)\right) + F\left(R_{l}^{\text{right}(j, s)}\right) \right]
+   $$
+   where $F$ denotes either the Gini index or Entropy. As before, we search over candidate leaves, directions, and thresholds to select the best possible split,
+   $$
+(l^*, j^*, s^*) := \arg\max_{l, j, s} \Delta(l, j, s)
+   $$
+
+## Categorical Predictors
+
+1. So far we've only considered continuous features $x \in \reals^{D}$.  When
+feature $j$ is categorical with $Q$ levels, say $x_{j} \in \{1, \dots, Q\}$, we
+can't split at a threshold. Instead, we split levels into two groups.  Choose a
+subset $A \subset \{1, \dots, Q\}$ and split depending on $x_{j} \in A$ or
+$x_{j} \notin A$.
+
+1. The RSS reduction for a categorical split becomes,
+
+   $$
+   \Delta(l, j, A) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l, \, x_{ij} \in A} (y_i - \bar{y}_{A})^2 + \sum_{i: x_i \in R_l, \, x_{ij} \in A^C} (y_i - \bar{y}_{A^C})^2\right]
+   $$
+   where $R_l^{A}(j) = \{x \in R_l : x_j \in A\}$ and similarly for $A^{C}$. We
+   search over all candidate $l, j$, and subsets $A$ to find a choice that
+   optimizes the RSS.
+
+1. $^{\dagger}$ When $Q$ is large, there are $2^{Q - 1}$
+possible subsets of $A$ to consider.  For regression, we can reduce this to just
+$Q - 1$ splits.
+
+   - For each level $q \in \{1, \ldots, Q\}$, compute the average $y_i$ among training points in $R_l$ with that level:
+     $$
+     \bar{y}_{q} = \frac{1}{|\{i : x_i \in R_l, \, x_{ij} = q\}|} \sum_{i : x_i \in R_l, \, x_{ij} = q} y_{i}
+     $$
+   - Sort the levels by these averages: $\bar{y}_{q_1} \leq \bar{y}_{q_2} \leq \cdots \leq \bar{y}_{q_Q}$
+   - Only consider splits that respect this ordering: $A = \{q_1, \ldots, q_s\}$ for $s = 1, \ldots, Q-1$
+
+   Intuitively, levels with similar average responses are grouped together in
+   candidate splits.
+
+1. Similar ordering strategies are possible for classification trees, but they
+are beyond the scope of this class.
+
+## Cost Complexity Pruning
+
+1. The tree growing algorithm we've defined might overfit to training data,
+leading to poor test performance and reduced interpretability (the trees will be
+quite large).
+
+1. We could consider requiring larger improvements in $\Delta\left(l, j,
+s\right)$ before making a split. However, this is not a good idea, -- splits
+that don't seem promising at first might enable valuable splits later,
+especially when features interact:
+
+1. Let $T_0$ be the full tree from our greedy search. For a penalty $\alpha \geq
+0$, we can look for a subtree $T \subset T_0$ (formed by collapsing internal
+nodes) that minimizes:
+   $$\mathcal{L}_{\alpha} = \sum_{l=1}^{|T|} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 + \alpha |T|$$
+   where $|T|$ is the number of leaves in $T$. The first term is the training
+   error, while $\alpha \left|T\right|$ penalizes tree complexity.  When $\alpha
+   = 0$, we keep the original tree. When $\alpha$ increases, the optimal subtree
+   gets smaller. We tune $\alpha$ with cross-validation.
+
+1. $^{\dagger}$ For an internal node $t$ in the tree, define,
+      - $T_t$: The subtree rooted at $t$. I.e., the tree with root $t$ and all its
+   descendants.
+      - $\text{RSS}\left(t\right)$: The RSS if we collapse $T_t$ into a single leaf $t$,
+     $$
+   \begin{align*}
+   \text{RSS}\left(t\right) &= \sum_{i \in T_{t}} \left(y_i - \bar{y}_{T_t}\right)^{2}
+   \end{align*}
+     $$
+     where $\bar{y}_{T_{t}}$ is the average response among training samples in $T_{t}$.
+     - $\text{RSS}\left(T_t\right)$: The RSS from keeping all leaves in $T_t$,
+     $$
+   \begin{align*}
+   \text{RSS}\left(T_t\right) &= \sum_{l \in T_t}\sum_{i \in R_{l}} \left(y_i - \bar{y}_{R_{l}}\right)^{2}.
+   \end{align*}
+     $$
+
+1. $^{\dagger}$ The improvement from keeping $T_t$ vs.
+collapsing it is $\text{RSS}(t) - \text{RSS}(T_t)$. Since $T_t$ has $|T_t|$
+leaves, the cost of keeping the subtree is $|T_t| - 1$ extra leaves. The
+cost-benefit ratio is:
+   $$
+   \alpha_t := \frac{\text{RSS}(t) - \text{RSS}(T_t)}{|T_t| - 1}
+   $$
+   This is the RSS reduction per additional leaf. Nodes with small $\alpha_t$
+   provide little benefit relative ot their complexity.
+
+1. $^{\dagger}$ This suggests the final pruning algorithm.
+   - Compute $\alpha_t$ for each internal node $t$ in the current tree
+   - Collapse the subtree $T_t$ with the smallest $\alpha_t$ (the "weakest link")
+   - Repeat until only the root remains
+
+   The result is a sequence of nested subtrees $T_0 \supset T_1 \supset \cdots
+   \supset T_M$ with thresholds $0 = \alpha_0 < \alpha_1 < \cdots < \alpha_M$.
+   For any penalty $\alpha \in [\alpha_m, \alpha_{m+1})$, the optimal subtree
+   minimizing $\mathcal{L}_{\alpha}(T)$ is $T_m$.
 
 ## Code Example
