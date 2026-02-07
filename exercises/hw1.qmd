@@ -15,7 +15,7 @@ Please solve the following problems from the exercise sheet.
 
 1. Kernels and GP Samples
 
-# Submission Deatils
+# Submission Details
 
 Upload your solution to canvas as a PDF, HTML, or MS Word document. Include all
 relevant figures within your explanations. Include all relevant code. You may

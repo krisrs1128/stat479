@@ -56,3 +56,17 @@ Respond to the following T/F questions from the reading on linear model extensio
 - More regularization brings solutions away from LS and towards the origin
 
 ---
+
+### February 4, 2026
+
+1. If you just joined the class, we will excuse late penalties.
+
+1. Extra Credit Opportunity
+    - "Statistics & Data Science at work"
+    - Morgridge Hall, March 10th (6-7:30PM)
+    - Submission Format Forthcoming
+
+1. Deadlines:
+    - **Feb 6**: HW1
+
+---
