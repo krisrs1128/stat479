@@ -10,7 +10,7 @@ execute:
     echo: true
     message: false
     warning: false
-    cache: true
+    cache: false
 ---
 
 ::: {style="display: none;"}
@@ -105,9 +105,8 @@ entire input space: $\mathcal{X} = R_{1} \cup R_{2} \cup \dots \cup R_{L}$.
 1. **1D case**. How should we learn the partition from data $\{\left({x_i,
 y_i}\right)\}_{i = 1}^{N}$? First suppose we have only one feature and are only
 allowed one split. The resulting partition has only two elements
-$R^{\text{left}}$ and $R^{\text{right}}$, divided at a threshold $s$. A natural
-split point is the $s$ that minimizes:
-
+$R^{\text{left}}$ and $R^{\text{right}}$, divided at a threshold $s$. We choose
+the $s$ that minimizes
    $$
 \begin{align*}
 \sum_{i: x_i \in R^{\text{left}}(s)} (y_i - \bar{y}_{R^{\text{left}}})^2 + \sum_{i: x_i \in R^{\text{right}}(s)} (y_i - \bar{y}_{R^{\text{right}}})^2
@@ -126,7 +125,7 @@ residual sum of squares (RSS):
    $$
 \sum_{l=1}^{L +1} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2
    $$
-   To make the next split, consider the RSS reduction when splitting region $l$ at threshold $s$:
+   To make the next split, consider the RSS reduction from splitting region $l$ at threshold $s$
    $$
 \Delta(l, s) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^\text{left}(s)} (y_i - \bar{y}_{R_l^\text{left}})^2 + \sum_{i: x_i \in R_l^\text{right}(s)} (y_i - \bar{y}_{R_l^\text{right}})^2\right]
    $$
@@ -146,10 +145,9 @@ $$
    :::
    ::::
 
-1. We stop growing the tree when we've reached a stopping criterion. For
-example, the best possible improvement in RSS might be too small, or all the
-leaves might have too few samples for it to be worth considering any more
-splits.
+1. We stop growing the tree when we've reached a stopping criterion; e.g., when
+the best RSS improvement is too small or the leaves have too few samples to
+split further.
 
 1. A similar approach works in higher dimensions -- we just need to also
 optimize over which feature to split on in each inductive step.
@@ -177,9 +175,8 @@ $$
 
 ## Classification
 
-1. So far we've focused on regression. For classification, we will still apply a
-recursive splitting strategy, but we can't use $\Delta\left(l, j,
-s\right)$ as our objective function.
+1. So far we've focused on regression. For classification, we still split
+recursively but can't use $\Delta\left(l, j, s\right)$ as our objective.
 
 1. Our first thought might be to use classification error rate instead of RSS.
 This is not a good idea, because we might want to split a region $R_{l}$ to
@@ -250,11 +247,7 @@ class distributions are close to one of the $K$ corners of the simplex
 
 ## Categorical Predictors
 
-1. So far we've only considered continuous features $x \in \reals^{J}$.  When
-feature $j$ is categorical with $Q$ levels, say $x_{j} \in \{1, \dots, Q\}$, we
-can't split at a threshold. Instead, we split levels into two groups.  Choose a
-subset $A \subset \{1, \dots, Q\}$ and split depending on $x_{j} \in A$ or
-$x_{j} \notin A$.
+1. So far we've only considered continuous features $x \in \reals^{J}$. For categorical feature $x_j$ with $Q$ levels, we split by choosing a subset $A \subset \{1, \dots, Q\}$ and splitting on whether $x_{j} \in A$.
 
    ![](figures/candidate_splits_categorical.png){width="400px"}
 
@@ -268,7 +261,7 @@ $x_{j} \notin A$.
    optimizes the RSS.
 
 1. $^{\dagger}$ When $Q$ is large, there are $2^{Q - 1}$
-possible subsets of $A$ to consider.  For regression, we can reduce this to just
+possible subsets of $A$.  For regression, we can reduce this to just
 $Q - 1$ splits.
 
    - For each level $q \in \{1, \ldots, Q\}$, compute the average $y_i$ among training points in $R_l$ with that level:
@@ -288,9 +281,7 @@ are beyond the scope of this class.
 
 ## Cost Complexity Pruning
 
-1. The tree growing algorithm we've defined might overfit to training data,
-leading to poor test performance and reduced interpretability (the trees will be
-quite large).
+1. The tree growing algorithm may overfit, producing large trees with poor test performance and interpretability.
 
 1. We could consider requiring larger improvements in $\Delta\left(l, j,
 s\right)$ before making a split. However, this is not a good idea, -- splits
@@ -304,6 +295,7 @@ conservative rule that rejects the first split would miss this signal entirely.
    #| echo: false
    #| fig-width: 5
    #| fig-height: 4
+   #| cache: false
    n <- 200
    and_data <- tibble(
      x1 = runif(n),
@@ -316,12 +308,11 @@ conservative rule that rejects the first split would miss this signal entirely.
      geom_vline(xintercept = 0.5, linetype = "dashed", linewidth = 0.5) +
      geom_hline(yintercept = 0.5, linetype = "dashed", linewidth = 0.5) +
      scale_color_scico(palette = "glasgow", direction = -1) +
+     theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)) +
      labs(x = expression(x[1]), y = expression(x[2]), col = "y")
    ```
 
-1. Let $T_0$ be the full tree from our greedy search. For a penalty $\alpha \geq
-0$, we can look for a subtree $T \subset T_0$ (formed by collapsing internal
-nodes) that minimizes:
+1. Let $T_0$ be the full tree. For penalty $\alpha \geq 0$, we find a subtree $T \subset T_0$ (formed by collapsing internal nodes) that minimizes:
    $$\mathcal{L}_{\alpha} = \sum_{l=1}^{|T|} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 + \alpha |T|$$
    where $|T|$ is the number of leaves in $T$. The first term is the training
    error, while $\alpha \left|T\right|$ penalizes tree complexity.  When $\alpha
@@ -347,9 +338,7 @@ nodes) that minimizes:
    \end{align*}
      $$
 
-1. $^{\dagger}$ The improvement when keeping $T_t$ vs.  collapsing it is
-$\text{RSS}(t) - \text{RSS}(T_t)$. Since $T_t$ has $|T_t|$ leaves, the cost of
-keeping the subtree is $|T_t| - 1$ extra leaves. The cost-benefit ratio is:
+1. $^{\dagger}$ Keeping $T_t$ vs. collapsing it improves the RSS by $\text{RSS}(t) - \text{RSS}(T_t)$ at a cost of $|T_t| - 1$ extra leaves. The cost-benefit ratio is:
    $$
    \alpha_t := \frac{\text{RSS}(t) - \text{RSS}(T_t)}{|T_t| - 1}
    $$
@@ -369,10 +358,9 @@ keeping the subtree is $|T_t| - 1$ extra leaves. The cost-benefit ratio is:
 
 ## Code Example
 
-1. Let's see how to use the `rpart` package to create regression trees. We'll
-work with the 2D simulated dataset below. Notice that it isn't a simple
-piecewise constant surface. There are also strong interactions between $x_1$ and
-$x_2$.
+1. We'll use `rpart` to fit regression trees to the 2D dataset below, which has
+strong interactions between $x_1$ and $x_2$ and isn't a simple piecewise
+constant surface.
 
    ```{r}
 library(rpart)
@@ -406,8 +394,7 @@ ggplot(grid, aes(x1, x2)) +
   labs(fill = "f(x)")
    ```
 
-1. Let's fit a regression tree with the default $\alpha$ penalty. Each leaf is a
-region $R_{l}$ with constant prediction $\bar{y}_{R_{l}}$.
+1. We fit a regression tree with default $\alpha$. Each leaf region $R_{l}$ predicts $\bar{y}_{R_{l}}$.
 
    ```{r}
 fit <- rpart(y ~ x1 + x2, data = sim_data)
@@ -471,19 +458,15 @@ ggplot(cp_preds, aes(x1, x2, fill = pred)) +
   labs(fill = expression(hat(f)(x)))
    ```
 
-1. Sometimes we want to inspect individual nodes in our tree. Two helpful
-objects are `fit$frame` and `fit$where`.  `fit$frame` gives summary statistics
-about each node $R_{l}$, like the number of samples that descend from it, the
-average value $\bar{y}_{R_{l}}$, and the $\alpha_{m}$ threshold that needs to be
-reached before the node is pruned.
+1. `fit$frame` and `fit$where` help inspect individual nodes. `fit$frame` gives node statistics: sample counts, average values $\bar{y}_{R_{l}}$, and pruning thresholds $\alpha_{m}$.
 
    ```{r}
 fit$frame
    ```
 
-   `fit$where` tells which leaf each point belongs to; i.e., it groups similar"
-points from the tree's point of view. The vector names are the data.frame row
-numbers from the frame object above.
+   `fit$where` tells which leaf each point belongs to; i.e., it groups similar
+   points from the tree's point of view. The vector names are the data.frame row
+   numbers from the frame object above.
 
    ```{r}
 table(fit$where)
