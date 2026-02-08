@@ -31,6 +31,7 @@ $$
 ```{r}
 #| echo: false
 library(tidyverse)
+library(scico)
 theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
 set.seed(2026)
 ```
@@ -42,8 +43,6 @@ Bullet items with $^{\dagger}$ are not in the reading, so not tested.
 ## Setup
 
 **Goal.** Given data $\{\left({x_i, y_i}\right)\}_{i = 1}^{N}$, develop a predictor for $y_{i}$ that handles both regression (when $y_i$ is continuous) and classification (when $y_i$ is categorical).
-
-![](figures/tree_motivation_diagram.png){width="400px"}
 
 **Requirements.**
 
@@ -58,15 +57,17 @@ Bullet items with $^{\dagger}$ are not in the reading, so not tested.
   of $x_{k}$ (e.g., $y_{i}$ is in class A if and only if _both_ $x_{i1}$ and
   $x_{i2}$ are positive).
 
+![An ad-hoc decision tree used by the San Diego Medical Center for assessing heart attack patients, part of the [inspiration](https://rafalab.dfci.harvard.edu/pages/649/section-11.pdf) behind CART.](figures/heart_attack_cart.gif){width="300px"}
+
 **Approach.**
 
-- Partition representation. Observe a correspondence between the $L$ leaves of a
+- _Partition representation_. Observe a correspondence between the $L$ leaves of a
 tree diagram and size $L$ partitions of the input space $\mathcal{X} = R_{1}
 \cup R_{2} \cup \dots \cup R_{L}$.
-- Prediction rule. For a test point $x^* \in R_{l}$, predict using the training
+- _Prediction rule_. For a test point $x^* \in R_{l}$, predict using the training
 samples in $R_{l}$: average $y_{i}$ for regression or majority class for
 classification.
-- Tree construction. Grow the tree recursively using a greedy algorithm that
+- _Tree construction_. Grow the tree recursively using a greedy algorithm that
 optimizes locally for good prediction performance. Prune the tree using a
 validation set to ensure generalization ability.
 
@@ -75,7 +76,7 @@ validation set to ensure generalization ability.
 1. For now, let's consider $x = \left(x_{1}, \dots, x_{J}\right)$ with only
 continuous features. Each node in a decision tree tests whether a feature $x_{j}
 \geq s$ or $x_{j} < s$ for some threshold $s$. We proceed down the right branch
-iff $x \geq s$.
+if and only if $x_j \geq s$.
 
 1. A leaf node is a node without any descendants. Following the path from the
 root to a leaf, we impose a series of constraints on $x$ corresponding to
@@ -87,12 +88,13 @@ entire input space: $\mathcal{X} = R_{1} \cup R_{2} \cup \dots \cup R_{L}$.
 
 ## Growing Algorithm
 
-1. **1D case**. How should we learn the partition? If we have only one feature
-and are only allowed one split, then it's natural to pick $s$ to minimize
+1. **1D case**. How should we learn the partition from data $\{\left({x_i,
+y_i}\right)\}_{i = 1}^{N}$? If we have only one feature and are only allowed one
+split, then it's natural to pick $s$ to minimize
 
    $$
 \begin{align*}
-\sum_{i: x_i \in R^{\text{left}}(s)} (y_i - \bar{y}_{R}^{\text{left}})^2 + \sum_{i: x_i \in R^{\text{right}}(s)} (y_i - \bar{y}_{R^{\text{right}}})^2
+\sum_{i: x_i \in R^{\text{left}}(s)} (y_i - \bar{y}_{R^{\text{left}}})^2 + \sum_{i: x_i \in R^{\text{right}}(s)} (y_i - \bar{y}_{R^{\text{right}}})^2
 \end{align*}
    $$
 
@@ -144,8 +146,17 @@ s\right)$ as our objective function.
 1. Our first thought might be to use classification error rate instead of RSS.
 This is not a good idea, because we might want to split a region $R_{l}$ to
 improve "node purity," even if it doesn't improve the overall training error
-rate. For example, the split below is still worth making, because the region
-$R_{3}$ is likely to be generalize well.
+rate. For example, the split below is still worth making, even though the
+overall error rate is 40\% in both cases. This is because the error rate in
+$R_3$ is now $\approx 27\%$ and is likely to generalize well.
+
+   ```
+   R_init (100 points): [●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● ○○○○○○○○○○○○○○○○○○○○] 60:40 ratio
+
+   After:
+   R_2 (70 pts): [●●●●●●●●●●●●●●●●●●● ○○○○○○○○○○○○○○○○] 38:32
+   R_3 (30 pts): [●●●●●●●●●●● ○○○○] 22:8
+   ```
 
 1. To measure node purity, we can use either the Gini Index or the Entropy. If
 $y$ belongs to one of $K$ classes and if $\hat{p}_{lk}$ denotes the proportion
@@ -164,6 +175,32 @@ simplex below correspond to cases where most samples come from one of the $K =
 class distributions are close to one of the $K$ corners of the simplex
 (similarly to how a good regression tree learns regions $R_{l}$ with low RSS).
 
+   ```{r}
+   #| echo: false
+   #| fig-width: 8
+   #| fig-height: 4
+   library(ggtern)
+   grid <- expand_grid(p1 = seq(0.01, 0.98, length.out = 80),
+                       p2 = seq(0.01, 0.98, length.out = 80)) |>
+     mutate(p3 = 1 - p1 - p2) |>
+     filter(p3 > 0.01) |>
+     mutate(
+       Gini = p1 * (1 - p1) + p2 * (1 - p2) + p3 * (1 - p3),
+       Entropy = -(p1 * log(p1) + p2 * log(p2) + p3 * log(p3))
+     ) |>
+     pivot_longer(c(Gini, Entropy), names_to = "measure", values_to = "value")
+
+   ggtern(grid, aes(x = p1, y = p2, z = p3, fill = value)) +
+     geom_point(shape = 21, size = 0.8, stroke = 0) +
+     scale_fill_distiller(palette = "RdYlBu", direction = -1) +
+     facet_wrap(~ measure) +
+     labs(fill = "Value",
+          x = expression(hat(p)[1]),
+          y = expression(hat(p)[2]),
+          z = expression(hat(p)[3])) +
+     theme_minimal()
+   ```
+
 1. Given this new objective, we can define the tree growing induction as before:
    $$
 \Delta(l, j, s) = F\left(R_l\right) - \left[F\left(R_{l}^{\text{left}}(j, s)\right) + F\left(R_{l}^{\text{right}(j, s)}\right) \right]
@@ -175,7 +212,7 @@ class distributions are close to one of the $K$ corners of the simplex
 
 ## Categorical Predictors
 
-1. So far we've only considered continuous features $x \in \reals^{D}$.  When
+1. So far we've only considered continuous features $x \in \reals^{J}$.  When
 feature $j$ is categorical with $Q$ levels, say $x_{j} \in \{1, \dots, Q\}$, we
 can't split at a threshold. Instead, we split levels into two groups.  Choose a
 subset $A \subset \{1, \dots, Q\}$ and split depending on $x_{j} \in A$ or
@@ -204,6 +241,8 @@ $Q - 1$ splits.
    Intuitively, levels with similar average responses are grouped together in
    candidate splits.
 
+   _Exercise: In the figure above, why don't we consider $A = \{1\}$ as a candidate split?_
+
 1. Similar ordering strategies are possible for classification trees, but they
 are beyond the scope of this class.
 
@@ -216,7 +255,29 @@ quite large).
 1. We could consider requiring larger improvements in $\Delta\left(l, j,
 s\right)$ before making a split. However, this is not a good idea, -- splits
 that don't seem promising at first might enable valuable splits later,
-especially when features interact:
+especially when features interact. For example, the initial split for $x_{1}$
+below only gives a modest $\Delta$, since there is a mix of high and low $y$
+values. After the split on $x_{2}$, though, the prediction is nearly perfect. A
+conservative rule that rejects the first split would miss this signal entirely.
+
+   ```{r}
+   #| echo: false
+   #| fig-width: 5
+   #| fig-height: 4
+   n <- 200
+   and_data <- tibble(
+     x1 = runif(n),
+     x2 = runif(n),
+     y = 3 * (x1 > 0.5 & x2 > 0.5) + rnorm(n, sd = 0.5)
+   )
+
+   ggplot(and_data, aes(x1, x2, col = y)) +
+     geom_point(size = 1.2) +
+     geom_vline(xintercept = 0.5, linetype = "dashed", linewidth = 0.5) +
+     geom_hline(yintercept = 0.5, linetype = "dashed", linewidth = 0.5) +
+     scale_color_scico(palette = "glasgow", direction = -1) +
+     labs(x = expression(x[1]), y = expression(x[2]), col = "y")
+   ```
 
 1. Let $T_0$ be the full tree from our greedy search. For a penalty $\alpha \geq
 0$, we can look for a subtree $T \subset T_0$ (formed by collapsing internal
@@ -237,31 +298,31 @@ nodes) that minimizes:
    \end{align*}
      $$
      where $\bar{y}_{T_{t}}$ is the average response among training samples in $T_{t}$.
-     - $\text{RSS}\left(T_t\right)$: The RSS from keeping all leaves in $T_t$,
+     - $\text{RSS}\left(T_t\right)$: The RSS when keeping all leaves in $T_t$,
      $$
    \begin{align*}
    \text{RSS}\left(T_t\right) &= \sum_{l \in T_t}\sum_{i \in R_{l}} \left(y_i - \bar{y}_{R_{l}}\right)^{2}.
    \end{align*}
      $$
 
-1. $^{\dagger}$ The improvement from keeping $T_t$ vs.
-collapsing it is $\text{RSS}(t) - \text{RSS}(T_t)$. Since $T_t$ has $|T_t|$
-leaves, the cost of keeping the subtree is $|T_t| - 1$ extra leaves. The
-cost-benefit ratio is:
+1. $^{\dagger}$ The improvement when keeping $T_t$ vs.  collapsing it is
+$\text{RSS}(t) - \text{RSS}(T_t)$. Since $T_t$ has $|T_t|$ leaves, the cost of
+keeping the subtree is $|T_t| - 1$ extra leaves. The cost-benefit ratio is:
    $$
    \alpha_t := \frac{\text{RSS}(t) - \text{RSS}(T_t)}{|T_t| - 1}
    $$
    This is the RSS reduction per additional leaf. Nodes with small $\alpha_t$
-   provide little benefit relative ot their complexity.
+   provide little benefit relative to their complexity.
 
 1. $^{\dagger}$ This suggests the final pruning algorithm.
    - Compute $\alpha_t$ for each internal node $t$ in the current tree
    - Collapse the subtree $T_t$ with the smallest $\alpha_t$ (the "weakest link")
    - Repeat until only the root remains
 
-   The result is a sequence of nested subtrees $T_0 \supset T_1 \supset \cdots
-   \supset T_M$ with thresholds $0 = \alpha_0 < \alpha_1 < \cdots < \alpha_M$.
-   For any penalty $\alpha \in [\alpha_m, \alpha_{m+1})$, the optimal subtree
-   minimizing $\mathcal{L}_{\alpha}(T)$ is $T_m$.
+   This yields a sequence of subtrees $T_0 \supset T_1 \supset \cdots \supset
+   T_M$. The $m$-th pruning step removes a node with cost-benefit ratio
+   $\alpha_{(m)}$, giving thresholds $0 = \alpha_{(0)} < \alpha_{(1)} < \cdots <
+   \alpha_{(M)}$. For any penalty $\alpha \in [\alpha_{(m)}, \alpha_{(m+1)})$,
+   the optimal subtree minimizing $\mathcal{L}_{\alpha}(T)$ is $T_m$.
 
 ## Code Example
