@@ -77,7 +77,10 @@ treatment_vars <- c("civic_duty", "hawthorne", "household", "neighbor")
 
 ## Classification Tree
 
-The variable $y$ shows whether the study participant voted.
+The mailer was sent to $\approx 340,000$ households. The outcome y indicates whether
+anyone in the household voted in the referenced primary: 32\% did and 68\% did
+not. The first split is whether the targeted individual had previously voted in
+a primary.
 
 ```{r}
 #| label: initial-fit
@@ -91,7 +94,7 @@ fit
 The fit above uses the default complexity penalty $\alpha$. It's better to tune
 this hyperparameter using holdout samples. Rather than implementing cross
 validation ourselves, let's use the `mlr3tuning` package. There are a few new
-functiosn here,
+functions here,
 
 - `as_task_classif`: Wraps the data and specifies the response $y$. This allows us to handle $\{x_n, y_n\}$ in a unified object.
 - `lrn`: Defines an `rpart` classifier and marks `cp` as a hyperparameter that we want to tune.

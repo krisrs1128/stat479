@@ -3218,7 +3218,7 @@ window.Quarto = {
 </section>
 <section id="classification-tree" class="level2">
 <h2 class="anchored" data-anchor-id="classification-tree">Classification Tree</h2>
-<p>The variable <span class="math inline">y</span> shows whether the study participant voted.</p>
+<p>The mailer was sent to <span class="math inline">\approx 340,000</span> households. The outcome y indicates whether anyone in the household voted in the referenced primary: 32% did and 68% did not. The first split is whether the targeted individual had previously voted in a primary.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">rpart</span>(y <span class="sc">~</span> ., <span class="at">data =</span> social)</span>
@@ -3238,7 +3238,7 @@ node), split, n, loss, yval, (yprob)
 </div>
 <section id="hyperparameter-tuning" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
-<p>The fit above uses the default complexity penalty <span class="math inline">\alpha</span>. It’s better to tune this hyperparameter using holdout samples. Rather than implementing cross validation ourselves, let’s use the <code>mlr3tuning</code> package. There are a few new functiosn here,</p>
+<p>The fit above uses the default complexity penalty <span class="math inline">\alpha</span>. It’s better to tune this hyperparameter using holdout samples. Rather than implementing cross validation ourselves, let’s use the <code>mlr3tuning</code> package. There are a few new functions here,</p>
 <ul>
 <li><code>as_task_classif</code>: Wraps the data and specifies the response <span class="math inline">y</span>. This allows us to handle <span class="math inline">\{x_n, y_n\}</span> in a unified object.</li>
 <li><code>lrn</code>: Defines an <code>rpart</code> classifier and marks <code>cp</code> as a hyperparameter that we want to tune.</li>
