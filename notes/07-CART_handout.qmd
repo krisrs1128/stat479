@@ -345,7 +345,7 @@ conservative rule that rejects the first split would miss this signal entirely.
    This is the RSS reduction per additional leaf. Nodes with small $\alpha_t$
    provide little benefit relative to their complexity.
 
-1. $^{\dagger}$ This suggests the final pruning algorithm.
+1. $^{\dagger}$ This suggests the weakest-link pruning algorithm.
    - Compute $\alpha_t$ for each internal node $t$ in the current tree
    - Collapse the subtree $T_t$ with the smallest $\alpha_t$ (the "weakest link")
    - Repeat until only the root remains
