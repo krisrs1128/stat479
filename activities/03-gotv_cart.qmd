@@ -1,40 +1,109 @@
 ---
-title: "Analyzing a Get-out-the-Vote Study with Trees"
-format: html
+title: "CART Get-out-the-Vote Analysis"
+author: Kris Sankaran
+date: 2026-02-11
+bibliography: references.bib
+format:
+  html:
+    embed-resources: true
+    html-math-method: katex
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: false
 ---
 
-This case study is based off, but uses basic CART instead of linear aggregation CART.
+_[Code](https://github.com/krisrs1128/stat479_notes/blob/master/activities/03-gotv_cart.qmd)_
 
-Künzel, S. R., Saarinen, T. F., Liu, E. W., & Sekhon, J. S. (2022). Linear aggregation in tree-based estimators. Journal of Computational and Graphical Statistics: A Joint Publication of American Statistical Association, Institute of Mathematical Statistics, Interface Foundation of North America, 31(3), 917–934. doi:10.1080/10618600.2022.2026780
+## Motivation
+
+Campaigns spend significant effort trying to get their voter base to turn out
+during elections, and they often run randomized trials to see which
+interventions work (e.g., online ads? phone banks?). The authors of
+[@GERBER2008] were interested in how social pressure influences voter turnout.
+They defined four types of mailers and sent them randomly to potential voters in
+the Michigan 2006 general election.
+
+
+::::{.columns}
+:::{.column width="50%"}
+![](figures/mailer-1.png)
+![](figures/mailer-2.png)
+:::
+:::{.column width="50%"}
+![](figures/mailer-3.png)
+![](figures/mailer-4.png)
+:::
+::::
+
+The neighbor intervention increased voter turnout on average.  But the
+researchers thought that some groups were more strongly influenced than others.
+Intuitively, there are some people who are already so motivated (or jaded) that
+the intervention is unlikely to change their behavior. Statistically, this
+variation is called "treatment effect heterogeneity." The goal is to find
+subgropus where the treatment works especially especially well (or poorly).
+
+Tree methods are well-suited to this task because of their interpretability.
+When a leaf shows a strong treatment effect, we can describe that subgroup with
+simple rules, like "age < A", "voted in last N elections," etc. This makes voter
+outreach straightforward.
+
+## Dataset
+
+We'll follow the overall approach in [@Knzel2022], but instead of using linear
+aggregation CART (a method proposed in that paper), we'll use plain CART (they
+also have a more slightly more nuanced causal analysis). Let's load some
+libraries had helper functions.
 
 ```{r}
+#| label: setup
 library(tidyverse)
-library(mlr3)
-library(mlr3tuning)
-library(rpart.plot)
-source("activities/05-helpers.R")
+source("https://github.com/krisrs1128/stat479_notes/raw/refs/heads/master/activities/03-helpers.R")
 set.seed(20251226)
 ```
 
+The blow below reads in the data and renames the columns. The vector
+`treatment_vars` refers to the four mailers.
+
 ```{r}
-social <- readRDS("data/gotv_processed.rds")
+#| label: read-data
+f <- tempfile()
+download.file("https://zenodo.org/records/18371236/files/gotv_processed.rds?download=1", f)
+social <- readRDS(f)
+
 treatment_vars <- c("civic_duty", "hawthorne", "household", "neighbor")
-social_ <- social |>
-    select(-any_of(treatment_vars))
 ```
 
-## Default CART fit
+## Classification Tree
+
+The variable $y$ shows whether the study participant voted.
 
 ```{r}
-fit <- rpart(y ~ ., data = social_)
+#| label: initial-fit
+library(rpart)
+fit <- rpart(y ~ ., data = social)
 fit
 ```
 
-### With Hyperparameter Tuning
+### Hyperparameter Tuning
+
+The fit above uses the default complexity penalty $\alpha$. It's better to tune
+this hyperparameter using holdout samples. Rather than implementing cross
+validation ourselves, let's use the `mlr3tuning` package. There are a few new
+functiosn here,
+
+- `as_task_classif`: Wraps the data and specifies the response $y$. This allows us to handle $\{x_n, y_n\}$ in a unified object.
+- `lrn`: Defines an `rpart` classifier and marks `cp` as a hyperparameter that we want to tune.
+- `ti`: Defines the approch to hyperparameter tuning. Here, we're using 3-fold cross validation and measuring the classification cross-entropy.
 
 ```{r}
-task <- as_task_classif(social_, target = "y", id = "social")
-learner <- lrn("classif.rpart",  cp  = to_tune(0.0001, 0.1))
+#| label: tuning-setup
+library(mlr3)
+library(mlr3tuning)
+
+task <- as_task_classif(social, target = "y", id = "social")
+learner <- lrn("classif.rpart",  cp  = to_tune(0.0005, 0.5))
 
 instance <- ti(
   task = task,
@@ -45,45 +114,117 @@ instance <- ti(
 )
 ```
 
+Now that we've specified the hyperparameter tuning approach, we can execute it.
+`resolution = 5` means we'll test out 5 candidate values of `cp`.
+
 ```{r}
-tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
+#| label: grid-search
+tuner <- tnr("grid_search", resolution = 5)
 tuner$optimize(instance)
 ```
 
+The previous step internally modifies the `instance` object so that it includes
+the tuned `cp` value. Let's refit the regression tree with this choice.
+
 ```{r}
-fit <- rpart(y ~ ., data = social_, cp=instance$result$cp)
+#| label: tuned-fit
+fit <- rpart(y ~ ., data = social, cp=instance$result$cp)
 fit
 ```
 
-### Interpretation
+## Interpretation
+
+### Visualization
+
+First let's orient ourselves to the visualization. In each node,
+
+- Color and `Yes/No` is the prediction of whether descending samples will vote.
+- The fraction (like 0.32 in the root) gives the proportion of descendants who vote.
+- The percentage (like 100% in the root) gives the proportion of the dataset that descends from that node.
+- The split rule appears just below a node. If the condition is true, we
+proceed down the right branch.
 
 ```{r}
-rpart.plot(fit, cex=0.5, type = 0, extra=0)
+#| label: tree-plot
+#| fig-width: 11
+#| fig-height: 7.5
+library(rpart.plot)
+rpart.plot(fit, type = 2, extra = 106, cex=.8, left = FALSE)
 ```
+
+There are two questions we can answer by looking at the resulting tree:
+
+- Who is most likely to vote? For example, the first split suggests that study
+participants who had voted in at least two primary elections were more likely to
+vote in this one.
+- How did the treatment effect different subgroups? For example, in the bottom
+left, it looks like there is a split where `neighbor = 1` changed the voting
+probability from 0.44 to 0.56.
+
+Even if a leaf doesn't have any of the treatment types as an ancestor node, we
+can still test whether there is an association between treatment status and
+voting within the subgroup defined by the leaf. To do this, we first divide the
+full dataset into subsets depending on the leaf it belongs to. This is a bit
+tricky, so let's look at the full set of nodes.
 
 ### Subgroup Analysis
 
 ```{r}
-nodes_df <- fit$frame |>
-    mutate(id = as.character(row_number()))
+#| label: node-frame
+fit$frame[, 1:4]
 ```
 
-treatment effects in each leaf node
+We only need the leaf nodes from this set. A trick is to use `fit$where` to
+isolate the appropriate IDs.
 
 ```{r}
-# 1. Map data to their leaf indices and test associations with treatment
-leaf_groups <- split(social, fit$where)
+#| label: leaf-nodes
+fit$frame[unique(fit$where), 1:4]
+```
+
+Now we divide the original dataset according to these leaf IDs.
+
+```{r}
+#| label: leaf-groups
+leaf_groups <- split(social, rownames(fit$frame)[fit$where])
+head(leaf_groups, 3)
+```
+
+In each of those leaves, we can test for an association between treatment status
+and voting. The `leaf_pvalue` helper function is defined in the `.R` file
+sourced at the start of this notebook (it's just a chi-square test).
+
+```{r}
+#| label: leaf-pvalues
 p_values <- map_dbl(leaf_groups, leaf_pvalue) |> sort()
 p_values
 ```
 
-# 3. Extract specific leaf details (e.g., node "14")
+There's a strong association for the leaf with ID = 2. In this subgroup, it
+looks like the treatment is associated with an increase in voting probability
+from 0.25 to 0.32.
+
 ```{r}
-target_node <- "14"
+#| label: top-subgroup
+target_node <- "2"
 leaf_props(leaf_groups[[target_node]])
 ```
 
+What were the characteristics of participants in this leaf? Apparently, these
+were the participants who had never voted before.
+
 ```{r}
-fit$frame[as.integer(target_node), ] # identify relevant row
-path.rpart(fit, nodes = "102")
+#| label: top-path
+path.rpart(fit, nodes = as.integer(target_node))
+```
+
+Here is the next most significant group. The voting probability increased from
+0.36 to 0.42 among participants younger than 55.5 with some prior political
+engagement.
+
+```{r}
+#| label: second-subgroup
+target_node <- "24"
+print(leaf_props(leaf_groups[[target_node]]))
+path.rpart(fit, nodes = as.integer(target_node))
 ```
