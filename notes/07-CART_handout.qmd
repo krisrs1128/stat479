@@ -273,6 +273,7 @@ $Q - 1$ splits.
 
    Intuitively, levels with similar average responses are grouped together in
    candidate splits.
+   ![](figures/sorted_1d_categories.png){width="450px"}
 
    _Exercise: In the figure above, why don't we consider $A = \{1\}$ as a candidate split?_
 
