@@ -49,8 +49,8 @@ Bullet items with $^{\dagger}$ are not in the reading, so not tested.
   - _Tree structure_. The decision function $\hat{f}\left(x\right)$ must be
   representable as a tree. Each prediction can be traced through a sequence of
   decision nodes. This supports interpretability.
-  - _Flexible inputs_. The features $x_{i}$ may contain continuous, categorical,
-  or mixed-type components.
+  - _Flexible inputs_. The features $x_{i}$ may be continuous or categorical
+  types.
   - _Feature interactions_. The model must have the flexibility to learn
   feature interactions. That is, $\hat{f}\left(x\right)$ can represent
   relationships where the effect of feature $x_{j}$ on $y$ depends on the value
@@ -78,7 +78,6 @@ continuous features. Each node in a decision tree tests whether a feature $x_{j}
 \geq s$ or $x_{j} < s$ for some threshold $s$. We proceed down the right branch
 if and only if $x_j \geq s$.
 
-
 1. A leaf node is a node without any descendants. Following the path from the
 root to a leaf, we impose a series of constraints on $x$ corresponding to
 axis-aligned rectangles.
@@ -98,7 +97,7 @@ entire input space: $\mathcal{X} = R_{1} \cup R_{2} \cup \dots \cup R_{L}$.
 
    ![](figures/two_dimensional_split_further.png){width="300px"}
 
-   _Exercise: What tree does this partition correspond to?_
+   _Exercise: What tree does this partition correspond to? Make sure to annotate the regions $R_{l}$ and split rules._
 
 ## Growing Algorithm
 
@@ -118,6 +117,7 @@ training response in region $R_{l}$.
 
    ![](figures/one_dimensional_fit_Rs.png){width="300px"}
 
+   _Exercise: The formula above has squared error terms like $\left(y_i - \bar{y}_{R^{\text{left}}}\right)^2$. How would you modify the figure to represent these quantities?_
 
 1. **Inductive step**. Suppose we have already made $L$ splits, so we have
 $L + 1$ disjoint intervals $R_{1}, \dots, R_{L + 1}$ with current total
@@ -128,12 +128,12 @@ residual sum of squares (RSS):
    To make the next split, consider the RSS reduction from splitting region $l$ at threshold $s$
    $$
 \Delta(l, s) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^\text{left}(s)} (y_i - \bar{y}_{R_l^\text{left}})^2 + \sum_{i: x_i \in R_l^\text{right}(s)} (y_i - \bar{y}_{R_l^\text{right}})^2\right]
-   $$
+   $$ {#eq-interval_delta}
    Here, $R_l^\text{left}(s)$ and $R_l^\text{right}(s)$ denotes the left and right
 intervals made when splitting $R_l$ at $s$. We can test all regions $l \in \{1,
 \dots, L + 1\}$ and a fine grid of $s$ within each $R_{l}$. The best split is:
    $$
-\left(l^*, s^*\right) := \arg \max_{l = 1, \dots, L + 1} \Delta\left(l, s\right)
+\left(l^*, s^*\right) := \arg \max_{l, s} \Delta\left(l, s\right)
 $$
 
    :::: {.columns}
@@ -165,13 +165,15 @@ optimize over which feature to split on in each inductive step.
 The associated RSS reduction is:
    $$
 \Delta(l, j, s) = \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 - \left[\sum_{i: x_i \in R_l^{\text{left}}(j,s)} (y_i - \bar{y}_{R_l^{\text{left}}})^2 + \sum_{i: x_i \in R_l^{\text{right}}(j,s)} (y_i - \bar{y}_{R_l^{\text{right}}})^2\right]
-   $$
+   $$ {#eq-high_dim}
    where $R_l^{\text{left}}(j,s) = \{x \in R_l : x_j \leq s\}$ and
 $R_l^{\text{right}}(j,s) = \{x \in R_l : x_j > s\}$. We search over all
 candidate regions $l$, features $j$, and thresholds $s$ to find:
    $$
 (l^*, j^*, s^*) := \arg\max_{l, j, s} \Delta(l, j, s)
-$$
+   $$
+
+   _Exercise: Compare and contrast the formulas in @eq-interval_delta and @eq-high_dim ._
 
 ## Classification
 
@@ -199,7 +201,7 @@ of class $k$ samples in region $R_{l}$, these are defined as,
 
    $$
    \begin{align*}
-\text{Gini}\left(R_{l}\right) &= \sum_{k= 1}^{K} \hat{p}_{lk}\left(1 - \hat{p}_{lk}\right)^{2}\\
+\text{Gini}\left(R_{l}\right) &= \sum_{k= 1}^{K} \hat{p}_{lk}\left(1 - \hat{p}_{lk}\right)\\
 \text{Entropy}\left(R_{l}\right) &= -\sum_{k= 1}^{K} \hat{p}_{lk}\log\left(\hat{p}_{lk}\right)
    \end{align*}
    $$
@@ -235,6 +237,8 @@ class distributions are close to one of the $K$ corners of the simplex
           z = expression(hat(p)[3])) +
      theme_minimal()
    ```
+
+   _Exercise: What is the analogous figure when there are $K = 2$ classes?_
 
 1. Given this new objective, we can define the tree growing induction as before:
    $$
@@ -285,7 +289,7 @@ are beyond the scope of this class.
 1. The tree growing algorithm may overfit, producing large trees with poor test performance and interpretability.
 
 1. We could consider requiring larger improvements in $\Delta\left(l, j,
-s\right)$ before making a split. However, this is not a good idea, -- splits
+s\right)$ before making a split. However, this is not a good idea -- splits
 that don't seem promising at first might enable valuable splits later,
 especially when features interact. For example, the initial split for $x_{1}$
 below only gives a modest $\Delta$, since there is a mix of high and low $y$
@@ -313,6 +317,8 @@ conservative rule that rejects the first split would miss this signal entirely.
      labs(x = expression(x[1]), y = expression(x[2]), col = "y")
    ```
 
+   _Exercise: Recall the definition of a feature interaction given at the start of these notes. How does this figure give an example of such an interaction?_
+
 1. Let $T_0$ be the full tree. For penalty $\alpha \geq 0$, we find a subtree $T \subset T_0$ (formed by collapsing internal nodes) that minimizes:
    $$\mathcal{L}_{\alpha} = \sum_{l=1}^{|T|} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2 + \alpha |T|$$
    where $|T|$ is the number of leaves in $T$. The first term is the training
@@ -338,6 +344,8 @@ conservative rule that rejects the first split would miss this signal entirely.
    \text{RSS}\left(T_t\right) &= \sum_{l \in T_t}\sum_{i \in R_{l}} \left(y_i - \bar{y}_{R_{l}}\right)^{2}.
    \end{align*}
      $$
+
+   _Exercise: For any given $t$, is $RSS\left(t\right) \geq RSS\left(T_t\right)$, $RSS\left(t\right) < RSS\left(T_t\right)$, or "it depends on $t$"?_
 
 1. $^{\dagger}$ Keeping $T_t$ vs. collapsing it improves the RSS by $\text{RSS}(t) - \text{RSS}(T_t)$ at a cost of $|T_t| - 1$ extra leaves. The cost-benefit ratio is:
    $$
