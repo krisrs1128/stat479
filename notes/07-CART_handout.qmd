@@ -396,7 +396,7 @@ ggplot(grid, aes(x1, x2)) +
   geom_tile(aes(fill = y_true)) +
   geom_point(data = sim_data, col = "black", size = 1.5) +
   geom_point(data = sim_data, aes(col = y), size = 1) +
-  scale_color_scico(palette = "glasgow", guide = FALSE) +
+  scale_color_scico(palette = "glasgow", guide = "none") +
   scale_fill_scico(palette = "glasgow") +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -406,15 +406,16 @@ ggplot(grid, aes(x1, x2)) +
 1. We fit a regression tree with default $\alpha$. Each leaf region $R_{l}$ predicts $\bar{y}_{R_{l}}$.
 
    ```{r}
-fit <- rpart(y ~ x1 + x2, data = sim_data)
-rpart.plot(fit)
+   #| label: rpart fit
+   fit <- rpart(y ~ x1 + x2, data = sim_data)
+   rpart.plot(fit)
    ```
 
-   This is the associated partition of the feature space $\mathcal{X} = \left[0,
-1\right]^{2}$. Each leaf in the tree is one axis-aligned rectangle.
+   This is the associated partition of the feature space $\mathcal{X} = \left[0, 1\right]^{2}$. Each leaf in the tree is one axis-aligned rectangle.
 
    ```{r}
-grid$pred <- predict(fit, newdata = grid)
+   #| label: rpart-pred
+   grid$pred <- predict(fit, newdata = grid)
    ```
 
    ```{r}
@@ -429,23 +430,20 @@ ggplot(grid, aes(x1, x2, fill = pred)) +
   labs(fill = expression(hat(f)(x)))
    ```
 
-1. Let's study the influence of $\alpha$.  The `cp` hyperparameter in rpart is
-$\alpha$ normalized by the root node's RSS; the normalization makes `cp`
-comparable across datasets. We can see that when cp is small, we are left with a
-large tree (fine partition), while when cp is large, we have a simpler tree
-(coarse partition).
+1. Let's study the influence of $\alpha$.  The `cp` hyperparameter in rpart is $\alpha$ normalized by the root node's RSS; the normalization makes `cp` comparable across datasets. We can see that when cp is small, we are left with a large tree (fine partition), while when cp is large, we have a simpler tree (coarse partition).
 
-   ```{r}
+```{r}
+#| label: cp-eval
 #| fig-width: 9
 #| fig-height: 3
 par(mfrow = c(1, 3), mar = c(2, 2, 3, 1))
 for (cp_val in c(0.1, 0.01, 0.001)) {
-  rpart.plot(
+    rpart.plot(
     rpart(y ~ x1 + x2, data = sim_data, cp = cp_val),
     main = paste("cp =", cp_val)
-  )
+    )
 }
-   ```
+```
 
    ```{r}
 #| echo: false
