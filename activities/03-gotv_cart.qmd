@@ -73,19 +73,27 @@ download.file("https://zenodo.org/records/18371236/files/gotv_processed.rds?down
 social <- readRDS(f)
 
 treatment_vars <- c("civic_duty", "hawthorne", "household", "neighbor")
+social
 ```
 
 ## Classification Tree
 
-The mailer was sent to $\approx 340,000$ households. The outcome y indicates whether
+The mailer was sent to $\approx 340,000$ households. The outcome `y` indicates whether
 anyone in the household voted in the referenced primary: 32\% did and 68\% did
 not. The first split is whether the targeted individual had previously voted in
 a primary.
 
+Later on, we'll test for associations between the treatment assignments and `y`.
+We want to avoid "double dipping," which uses the same data both for modeling
+and testing and can lead to overoptimistic $p$-values. This is why the model
+only uses the samples in `ix`.
+
 ```{r}
 #| label: initial-fit
 library(rpart)
-fit <- rpart(y ~ ., data = social)
+
+ix <-  sample(nrow(social), 0.75 * nrow(social))
+fit <- rpart(y ~ ., data = social[ix, ])
 fit
 ```
 
@@ -105,7 +113,7 @@ functions here,
 library(mlr3)
 library(mlr3tuning)
 
-task <- as_task_classif(social, target = "y", id = "social")
+task <- as_task_classif(social[ix, ], target = "y", id = "social")
 learner <- lrn("classif.rpart",  cp  = to_tune(0.0005, 0.5))
 
 instance <- ti(
@@ -131,7 +139,7 @@ the tuned `cp` value. Let's refit the regression tree with this choice.
 
 ```{r}
 #| label: tuned-fit
-fit <- rpart(y ~ ., data = social, cp=instance$result$cp)
+fit <- rpart(y ~ ., data = social[ix, ], cp=instance$result$cp)
 fit
 ```
 
@@ -172,6 +180,15 @@ tricky, so let's look at the full set of nodes.
 
 ### Subgroup Analysis
 
+In this last section, we'll test whether there is an association between the
+treatment (mailer) assignment and the response (voting in the primary). Rather
+than testing an overall association, we're going to test within each of the
+partition elements induced by the optimized classification tree. This allows us
+to see whether there are treatment effects that are stronger/weaker within
+particular subpopulations.
+
+Let's revisit the learned tree structure.
+
 ```{r}
 #| label: node-frame
 fit$frame[, 1:4]
@@ -185,11 +202,13 @@ isolate the appropriate IDs.
 fit$frame[unique(fit$where), 1:4]
 ```
 
-Now we divide the original dataset according to these leaf IDs.
+Now we divide samples according to these leaf IDs. Notice we're only using
+samples that hadn't been used during model fitting, to avoid the double dipping
+problem.
 
 ```{r}
 #| label: leaf-groups
-leaf_groups <- split(social, rownames(fit$frame)[fit$where])
+leaf_groups <- split(social[-ix, ], rownames(fit$frame)[fit$where])
 head(leaf_groups, 3)
 ```
 
@@ -205,7 +224,8 @@ p_values
 
 There's a strong association for the leaf with ID = 2. In this subgroup, it
 looks like the treatment is associated with an increase in voting probability
-from 0.25 to 0.32.
+from 0.31 to 0.37 (of course, these are just estimates -- can you think of how
+to add error bars?).
 
 ```{r}
 #| label: top-subgroup
@@ -214,7 +234,7 @@ leaf_props(leaf_groups[[target_node]])
 ```
 
 What were the characteristics of participants in this leaf? Apparently, these
-were the participants who had never voted before.
+were the participants who had never voted in a primary before.
 
 ```{r}
 #| label: top-path

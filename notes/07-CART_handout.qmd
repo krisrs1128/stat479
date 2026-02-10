@@ -328,6 +328,10 @@ conservative rule that rejects the first split would miss this signal entirely.
 
    ![](figures/leaf_pruning.png){width="400px"}
 
+   _Exercise: The figure above shows the tree $T_0$ from the original growing process and a version formed by collapsing at the internal node $t$._
+    - _Which of the two trees has larger training error $\sum_{l=1}^{|T|} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2$? If it cannot be determined, explain why._
+    - _Which has larger $\left| T\right|$? If it cannot be determined, explain why._
+
 1. $^{\dagger}$ For an internal node $t$ in the tree, define,
       - $T_t$: The subtree rooted at $t$. I.e., the tree with root $t$ and all its
    descendants.
@@ -337,8 +341,8 @@ conservative rule that rejects the first split would miss this signal entirely.
    \text{RSS}\left(t\right) &= \sum_{i \in T_{t}} \left(y_i - \bar{y}_{T_t}\right)^{2}
    \end{align*}
      $$
-     where $\bar{y}_{T_{t}}$ is the average response among training samples in $T_{t}$.
-     - $\text{RSS}\left(T_t\right)$: The RSS when keeping all leaves in $T_t$,
+     where $\bar{y}_{T_{t}}$ is the average response among training samples in the subtree $T_{t}$.
+     - $\text{RSS}\left(T_t\right)$: The RSS when summing over leaves in the subtree $T_t$,
      $$
    \begin{align*}
    \text{RSS}\left(T_t\right) &= \sum_{l \in T_t}\sum_{i \in R_{l}} \left(y_i - \bar{y}_{R_{l}}\right)^{2}.
