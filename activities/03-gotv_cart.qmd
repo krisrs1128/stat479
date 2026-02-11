@@ -60,7 +60,7 @@ libraries and helper functions.
 #| label: setup
 library(tidyverse)
 source("https://github.com/krisrs1128/stat479_notes/raw/refs/heads/master/activities/03-helpers.R")
-set.seed(20251226)
+set.seed(20251227)
 ```
 
 The blow below reads in the data and renames the columns. The vector
@@ -170,7 +170,7 @@ participants who had voted in at least two primary elections were more likely to
 vote in this one.
 - How did the treatment effect different subgroups? For example, in the bottom
 left, it looks like there is a split where `neighbor = 1` changed the voting
-probability from 0.44 to 0.56.
+probability from 0.43 to 0.54.
 
 Even if a leaf doesn't have any of the treatment types as an ancestor node, we
 can still test whether there is an association between treatment status and
@@ -224,7 +224,7 @@ p_values
 
 There's a strong association for the leaf with ID = 2. In this subgroup, it
 looks like the treatment is associated with an increase in voting probability
-from 0.31 to 0.37 (of course, these are just estimates -- can you think of how
+from 0.31 to 0.38 (of course, these are just estimates -- can you think of how
 to add error bars?).
 
 ```{r}
@@ -242,12 +242,11 @@ path.rpart(fit, nodes = as.integer(target_node))
 ```
 
 Here is the next most significant group. The voting probability increased from
-0.36 to 0.42 among participants younger than 55.5 with some prior political
-engagement.
+0.29 to 0.36 among participants with some prior political engagement.
 
 ```{r}
 #| label: second-subgroup
-target_node <- "24"
+target_node <- "12"
 print(leaf_props(leaf_groups[[target_node]]))
 path.rpart(fit, nodes = as.integer(target_node))
 ```
