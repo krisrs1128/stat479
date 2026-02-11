@@ -293,7 +293,7 @@ diagram (top) and finer partitions in the function plot (bottom, pink line). The
 last two splits add little value since the function is relatively flat in that
 region.
 
-   ![](figures/iterative_growing_tree.png){width="450px"}
+   ![](figures/iterative_growing_tree.png){width="550px"}
 
 1. We could consider requiring larger improvements in $\Delta\left(l, j,
 s\right)$ before making a split. However, this is not a good idea -- splits

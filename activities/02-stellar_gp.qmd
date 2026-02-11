@@ -1,5 +1,8 @@
 ---
 title: "Modeling Stellar Variability with GPs"
+bibliography: references.bib
+author: Kris Sankaran
+date: 2026-02-04
 format:
   html:
     css: styles.css
@@ -9,13 +12,22 @@ execute:
     echo: true
     message: false
     warning: false
-    cache: true
+    cache: false
 ---
 
-# Gaussian process models for stellar variability
+```{r}
+#| label: greta-setup
+#| echo: false
+library(reticulate)
+use_condaenv("greta-env-tf2")
+msg <- py_module_available("setuptools")
+```
 
-Stellar light curves exhibit quasi-periodic variability [reference]((https://arxiv.org/abs/1706.05459/)). Periodicity comes from stellar rotation, and departures can be due to unevenness on the star surface (e.g., spots). We model an example light curve using
-Gaussian processes.
+Stellar light curves exhibit what astronomers call quasi-periodic variability
+[@angus2017].  Periodicity comes from stellar rotation, and departures can be
+due to unevenness on the star surface (e.g., spots). We model an example light
+curve using Gaussian Processes. The associated kernel characterizes
+quasiperiodicity, which is of central scientific interest.
 
 ```{r}
 #| label: load-packages
@@ -32,7 +44,7 @@ First, let's download and plot the data.
 ```{r}
 #| label: load-data
 # Create a data frame
-data <- read_csv("data/kplr005809890-2012179063303_llc.csv")
+data <- read_csv("https://zenodo.org/records/18371236/files/kplr005809890-2012179063303_llc.csv?download=1")
 ggplot(data, aes(x = time, y = flux)) +
   geom_line(color = "black", linewidth = 0.3) +
   labs(
@@ -42,7 +54,8 @@ ggplot(data, aes(x = time, y = flux)) +
   )
 ```
 
-Before fitting a Gaussian Process, we use a periodogram to identify dominant frequencies. Note that it doesn't give any uncertainty estimate or
+Before fitting a Gaussian Process, we use a periodogram to identify some
+dominant frequencies. Note that it doesn't give any uncertainty estimate or
 allow for any goodness-of-fit analysis, like a GP model.
 
 ```{r}
@@ -64,9 +77,11 @@ period_max <- periodogram_data |>
   pull(period)
 ```
 
-Peaks appear near 13 and 30 days. These are candidate rotation periods.
+Peaks appear near 13 and 30 days. These are candidate rotation periods, and
+we'll use them when initializing our model later on.
 
 ```{r}
+#| label: plot-periodogram
 ggplot(periodogram_data, aes(x = period, y = power)) +
   geom_line() +
   scale_x_log10() +
@@ -78,9 +93,10 @@ ggplot(periodogram_data, aes(x = period, y = power)) +
 
 # Model Definition
 
-We subsample for computational efficiency.
+We subsample to reduce our later runtimes.
 
 ```{r}
+#| label: subsample
 data_model <- data |>
   arrange(time) |>
   slice(seq(1, n(), by = 10))
@@ -90,22 +106,29 @@ ggplot(data_model) +
 
 The quasi-periodic kernel combines periodic structure with exponential decay:
 
-$$k(t_i, t_j) = \sigma^2 \exp\left[-\frac{(t_i - t_j)^2}{2\ell^2} - \frac{2\sin^2(\pi|t_i - t_j|/P)}{\ell_p^2}\right] + \sigma_n^2\delta_{ij}$$
+$$k(t_i, t_j) = \sigma^2 \exp\left[-\frac{(t_i - t_j)^2}{2\ell^2} - \frac{2\sin^2(\pi|t_i - t_j|/P)}{\ell_p^2}\right] + \sigma_k^2\delta_{ij}$$
 
-This decomposes as $k = k_{\text{per}} \times k_{\text{rbf}} + k_{\text{noise}}$. The RBF component allows correlation strength to decay over time; the white noise term captures extra variance.
+This decomposes as $k = k_{\text{per}} \times k_{\text{rbf}} +
+k_{\text{noise}}$. The RBF component allows correlation strength across periods
+-- it's what makes the kernel **quasi**periodic rather than just periodic.
 
-Priors on hyperparameters (log scale for positivity):
+We'll put priors on hyperparameters. This provides an efficient alternative to
+cross validation that works nicely when the model is fully probabilistic, like
+in the case of GPs.
 
 ```{r}
+#| label: hyperprior
+library(greta.gp)
 logs2 <- normal(-1, 2)
 logamp <- normal(log(var(data_model$flux)), 2)
 logperiod <- normal(log(25), 2)         # Wide prior for period
 logdecay <- normal(log(25 * 3), 2)      # How long spots last (days)
 ```
 
-Kernel construction:
+The code below constructs the kernel above using `greta.gp`.
 
 ```{r}
+#| label: kernel-defn
 k_periodic <- periodic(exp(logperiod), 1, exp(logamp))
 k_decay <- rbf(exp(logdecay), 1)
 full_kernel <- k_periodic * k_decay + white(exp(logs2))
@@ -113,59 +136,57 @@ full_kernel <- k_periodic * k_decay + white(exp(logs2))
 
 # Estimation
 
-Model specification:
-
-$$p(y \mid \theta) = \mathcal{N}(y \mid \mathbf{f}_\theta + \mu, \sigma_{\text{obs}}^2)$$
-
-where $\mathbf{f}_\theta \sim \mathcal{GP}(0, k_\theta)$ and $\theta = \{\text{logperiod}, \text{logdecay}, \text{logamp}, \text{logs2}, \mu\}$.
+With our kernel, we can now specify our Gaussian process model.
 
 ```{r}
+#| label: gp-defn
 gp_model <- gp(data_model$time, full_kernel)
 distribution(data_model$flux) <- normal(gp_model, data_model$flux_err)
 m <- model(logperiod, logdecay, logamp, logs2)
 ```
 
-The readings discuss that the marginal likelihood may have multiple local maxima. To find a good optimum, run MAP initialized with the periodogram result.
+The readings discuss that the marginal likelihood may have multiple local
+maxima. To find a good optimum, it helps to run initialize with the periodogram
+result.
 
 ```{r}
+#| label: optimize-kernel
 start_vals <- initials(logperiod = log(25))
 ml_soln <- opt(m, initial_values = start_vals)
 optimized_period <- exp(ml_soln$par$logperiod)
 print(paste("Optimized rotation period:", round(optimized_period, 2), "days"))
 ```
 
-MCMC sampling explores the full posterior $p(\theta \mid y)$.
+We use MCMC to explore the full posterior.
 
 ```{r}
+#| label: posterior-sampling
 draws <- mcmc(m, initial_values = do.call(initials, ml_soln$par), n_samples = 500, warmup = 1000, chains = 1)
 ```
 
 # Posterior Analysis
 
-Project GP to dense grid and extract posterior samples.
-
-```{r}
-time_grid <- seq(min(data_model$time), max(data_model$time), length.out = 1000)
-```
-
-`project` realizes the function $\mathbf{f}$ at a finite collection of points `time_grid`. `calculate` to average over the posterior samples:
+The function `project` realizes the function $\mathbf{f}$ at a finite collection
+of points `time_grid`. Our posterior mean is defined as the average
 
 $$\mathbb{E}[\mathbf{f}_* \mid y] \approx \frac{1}{N}\sum_{i=1}^N \mathbf{f}_*^{(i)}$$
 
 where each $\mathbf{f}_*^{(i)}$ is the GP realization at the grid points for the $i$-th posterior sample of hyperparameters.
 
 ```{r}
+time_grid <- seq(min(data_model$time), max(data_model$time), length.out = 1000)
 f_posterior <- project(gp_model, time_grid) |>
     calculate(values = draws)
 ```
 
-Visualize the posterior mean.
+Let's plot the result.
 
 ```{r}
 fit_df <- data.frame(
     time = time_grid,
     flux = colMeans(f_posterior[[1]])
 )
+
 ggplot() +
   geom_line(data = fit_df, aes(time, flux),
             color = "#3bd3ccff", linewidth = 1) +
@@ -178,7 +199,9 @@ ggplot() +
   )
 ```
 
-Hyperparameter posteriors provide domain-relevant interpretation:
+To answer domain questions, we should inspect the posterior over parameters.
+Compared to the earlier periodogram, we can now quantify uncertainty over plausible
+periodicity values.
 
 ```{r}
 data.frame(period = as.numeric(exp(draws[, "logperiod"][[1]]))
@@ -193,5 +216,5 @@ data.frame(decay = as.numeric(exp(draws[, "logdecay"][[1]]))
   ggplot(aes(decay)) +
   scale_y_continuous(expand = c(0, 0)) +
   geom_histogram() +
-  labs(x = "Period", title = "Posterior Decay")
+  labs(x = "Decay", title = "Posterior Decay")
 ```

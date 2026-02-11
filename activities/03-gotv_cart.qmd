@@ -54,7 +54,7 @@ outreach straightforward.
 We'll follow the overall approach in [@Knzel2022], but instead of using linear
 aggregation CART (a method proposed in that paper), we'll use plain CART (they
 also have a more slightly more nuanced causal analysis). Let's load some
-libraries had helper functions.
+libraries and helper functions.
 
 ```{r}
 #| label: setup
