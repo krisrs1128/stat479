@@ -22,7 +22,7 @@ $$
 
 <style>
 .purple { color: #7458d1ff; } /* pastel purple */
-.orange { color: #F4D4A8; } /* pastel orange */
+.orange { color: #fca020; } /* pastel orange */
 .green { color: #3bbe67ff; } /* pastel green */
 .darkblue { color: #4a9ceaff; } /* pastel dark blue */
 .pink { color: #ee6ec3ff; } /* pastel pink */
@@ -286,7 +286,14 @@ are beyond the scope of this class.
 
 ## Cost Complexity Pruning
 
-1. The tree growing algorithm may overfit, producing large trees with poor test performance and interpretability.
+1. The tree growing algorithm may overfit, producing large trees with poor test
+performance and interpretability. The diagram below illustrates this with a
+one-dimensional dataset. Each step adds a split, shown as branching in the tree
+diagram (top) and finer partitions in the function plot (bottom, pink line). The
+last two splits add little value since the function is relatively flat in that
+region.
+
+   ![](figures/iterative_growing_tree.png){width="450px"}
 
 1. We could consider requiring larger improvements in $\Delta\left(l, j,
 s\right)$ before making a split. However, this is not a good idea -- splits
@@ -326,28 +333,36 @@ conservative rule that rejects the first split would miss this signal entirely.
    = 0$, we keep the original tree. When $\alpha$ increases, the optimal subtree
    gets smaller. We tune $\alpha$ with cross-validation.
 
-   ![](figures/leaf_pruning.png){width="400px"}
-
    _Exercise: The figure above shows the tree $T_0$ from the original growing process and a version formed by collapsing at the internal node $t$._
     - _Which of the two trees has larger training error $\sum_{l=1}^{|T|} \sum_{i: x_i \in R_l} (y_i - \bar{y}_{R_l})^2$? If it cannot be determined, explain why._
     - _Which has larger $\left| T\right|$? If it cannot be determined, explain why._
 
 1. $^{\dagger}$ For an internal node $t$ in the tree, define,
-      - $T_t$: The subtree rooted at $t$. I.e., the tree with root $t$ and all its
-   descendants.
+      - $T_t$: The subtree rooted at $t$ (node $t$ and all its
+   descendants).
       - $\text{RSS}\left(t\right)$: The RSS if we collapse $T_t$ into a single leaf $t$,
      $$
    \begin{align*}
    \text{RSS}\left(t\right) &= \sum_{i \in T_{t}} \left(y_i - \bar{y}_{T_t}\right)^{2}
    \end{align*}
      $$
-     where $\bar{y}_{T_{t}}$ is the average response among training samples in the subtree $T_{t}$.
+     where $\bar{y}_{T_{t}}$ is the average response among training samples in
+     the subtree $T_{t}$. Below, this sums over all samples in the orange
+     segment, measuring squared distances from each <span
+     class="purple"/>$y_i$</span> to <span
+     class="orange">$\bar{y}_{T_{t}}$</span>.
      - $\text{RSS}\left(T_t\right)$: The RSS when summing over leaves in the subtree $T_t$,
      $$
    \begin{align*}
    \text{RSS}\left(T_t\right) &= \sum_{l \in T_t}\sum_{i \in R_{l}} \left(y_i - \bar{y}_{R_{l}}\right)^{2}.
    \end{align*}
      $$
+     Below, the outer sum loops over the three pink segments; the inner sum
+     loops over points within each segment, measuring squared distances from
+     each <span class="purple"/>$y_i$</span> to its<span
+     class="pink"/>$\bar{y}_{R_{l}}$</span>.
+
+   ![](figures/rss_tn_cart.png){width="450px"}
 
    _Exercise: For any given $t$, is $RSS\left(t\right) \geq RSS\left(T_t\right)$, $RSS\left(t\right) < RSS\left(T_t\right)$, or "it depends on $t$"?_
 
@@ -357,6 +372,8 @@ conservative rule that rejects the first split would miss this signal entirely.
    $$
    This is the RSS reduction per additional leaf. Nodes with small $\alpha_t$
    provide little benefit relative to their complexity.
+
+   ![](figures/alpha_defn_cart.png){width="500px"}
 
 1. $^{\dagger}$ This suggests the weakest-link pruning algorithm.
    - Compute $\alpha_t$ for each internal node $t$ in the current tree
@@ -368,6 +385,13 @@ conservative rule that rejects the first split would miss this signal entirely.
    $\alpha_{(m)}$, giving thresholds $0 = \alpha_{(0)} < \alpha_{(1)} < \cdots <
    \alpha_{(M)}$. For any penalty $\alpha \in [\alpha_{(m)}, \alpha_{(m+1)})$,
    the optimal subtree minimizing $\mathcal{L}_{\alpha}(T)$ is $T_m$.
+
+1. The link pruning algorithm applies to higher dimensions.  For example, the
+figure below shows how collapsing a subtree simplifies a partition in
+two-dimensions.
+
+   ![](figures/leaf_pruning.png){width="400px"}
+
 
 ## Code Example
 
@@ -436,7 +460,7 @@ ggplot(grid, aes(x1, x2, fill = pred)) +
 
 1. Let's study the influence of $\alpha$.  The `cp` hyperparameter in rpart is $\alpha$ normalized by the root node's RSS; the normalization makes `cp` comparable across datasets. We can see that when cp is small, we are left with a large tree (fine partition), while when cp is large, we have a simpler tree (coarse partition).
 
-```{r}
+   ```{r}
 #| label: cp-eval
 #| fig-width: 9
 #| fig-height: 3
@@ -447,7 +471,7 @@ for (cp_val in c(0.1, 0.01, 0.001)) {
     main = paste("cp =", cp_val)
     )
 }
-```
+   ```
 
    ```{r}
 #| echo: false
