@@ -1,0 +1,436 @@
+---
+title: "Tree Ensembles"
+author: Kris Sankaran
+date: 2026-02-09
+format:
+  html:
+    embed-resources: true
+    html-math-method: katex
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: true
+---
+
+::: {style="display: none;"}
+$$
+\newcommand{\bs}[1]{\mathbf{#1}}
+\newcommand{\reals}[1]{\mathbb{R}}
+$$
+:::
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #fca020; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+
+```{r}
+#| echo: false
+library(DALEX)
+library(ipred)
+library(patchwork)
+library(rpart)
+library(scico)
+library(tidyverse)
+library(xgboost)
+theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
+set.seed(2026)
+```
+
+_Readings: [ISLR Section 8.2.1, 8.2.3](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/08-tree_ensembles.qmd)_
+
+Bullet items with $^{\dagger}$ are not in the reading, so not tested.
+
+## Setup
+
+**Goal.** Our setup is the same as it was in the last lecture ("predict
+continuous or categorical $y_i$ given $N$ training examples $\{\left({x_i,
+y_i}\right)\}_{i = 1}^{N}$") but we want to prioritize strong prediction
+performance over interpretability.
+
+**Requirements.**
+
+  - Though we no longer require a tree structure, we still want to report which
+  features are the most important for performance.
+  - As with ordinary CART, the method should be able to handle (1) continuous
+  and categorical features and (2) interactions between 2+ features.
+  - Simple-to-tune hyperparameters. To get better performance, we'll need more
+  flexible models, but we don't want that to come at the cost of ease-of-use.
+
+**Approach.**
+
+We'll introduce two methods that combine many decision trees to achieve better
+prediction performance.
+
+1. _Bagging_: Use the bootstrap to resample the original training examples.
+Train a separate decision tree model on each bootstrap sample. For a new test
+sample, average the predictions (or take a majority vote) from each of those
+trees.
+
+1. _Boosting_: Train a sequence of models. The model at step $b + 1$ should
+learn to fix the mistakes made by the models up to step $b$.
+
+These methods have a reputation of being good "out-of-the-box" prediction
+models. They require little effort to set up or tune, yet they often get high
+performance. For this reason they are popular in industry ( and also ML
+competitions).
+
+## Weaknesses of CART
+
+1. Our main motivation is to improve prediction performance of CART. To this
+end, let's understand why CART might have poor prediction performance. There are
+several complementary reasons: instability when predictors are correlated, the
+constraint of axis-aligned splits, and inefficiency in representing smooth (or
+even linear) functions.
+
+1. **Instability**. When a pair of features $x_{j}$ and $x_{j'}$ are correlated,
+there might not be much difference between splitting one vs. the other. If this
+happens early in the tree, the entire tree structure might be affected. For this
+reason, when there are correlated feaatures, the tree structures learned by CART
+can be quite sensitive to the particular training sample that we happened to
+draw. This introduces variance in the estimated fitted prediction surface which
+leads to poor test performance.
+
+    (maybe a GIF showing the trees being unstable?)
+
+1. **Axis-aligned splits and smooth functions**. The partitions in decision
+trees are axis-aligned rectangles. When we try to approximate linear decision
+boundaries (classification) or smooth functions (regression), we need many
+splits to get a good fit. This requires deep trees with few training examples
+per leaf, increasing variance and risking overfitting.
+
+## Bagging
+
+1. A basic fact in statistics is that, if $x_1, \dots, x_N$ are independent
+observations each with variance $\sigma^2$, then the average $\bar{x}_{N} :=
+\frac{1}{N}\sum_{n = 1}^{N} x_n$ has variance $\frac{\sigma^2}{N}$. Averaging
+independent observations is an effective variance reduction strategy, and we can
+try to adapt this insight to reduce the variance of our decision trees.
+
+1.  Bagging samples $b = 1, \dots, B$ bootstrapped versions of the training
+data,
+   \begin{align*}
+   \mathcal{D}^{(b)} := \{x_i^{b}, y_i^{b}\}_{i = 1}^{N}
+   \end{align*}
+   and train separate decision trees $\{\hat{f}^{b}\}_{b = 1}^{B}$ using each.
+   (picture of resampling the data to get bootstrap)
+
+1. Consider the regression case. Given a new test sample $x$, we predict,
+\begin{align*}
+\hat{f}_{\text{avg}}(x) &= \frac{1}{B}\sum_{b = 1}^{B}\hat{f}^b(x)
+\end{align*}
+In the classification case, we instead take a majority vote among all the
+$\hat{f}^{b}(x)$. In either case, this process is called bagging, short for
+**b**ootstrap **ag**gregation.
+
+1. Averaging reduces variance and guards against overfitting. Therefore, pruning
+is no longer necessary, and most implementations of bagging skip this step when
+learning the underlying decision trees.
+
+1. One nice property of bagging is that it supports out-of-bag error evaluation.
+This is a method for getting honest estimates of generalization error without
+ever explicitly setting aside a test set or applying cross-validation. For the
+$i^th$ training sample, set
+  $$B^{(-i)} = \{b : (x_i, y_i) \notin \mathcal{D}^{(b)}\}$$
+  i.e., the set of bootstrap resampled datasets that didn't include sample $i$.
+  This means that the predictor,
+  \begin{align*}
+    \hat{f}_{\text{OOB}}(x_i) &= \frac{1}{|B^{(-i)}|} \sum_{b \in B^{(-i)}} \hat{f}^b(x_i)
+  \end{align*}
+  never saw sample $i$, and so is an honest estimate of the generalization
+  performance on that sample. We can apply the same reasoning to every sample to
+  arrive at the out-of-bag error estimate,
+  \begin{align*}
+  \text{MSE}_{\text{OOB}} = \frac{1}{N} \sum_{i=1}^{N} \left(y_i - \hat{f}_{\text{OOB}}^{(-i)}(x_i)\right)^2.
+  \end{align*}
+
+   _Exercise: How would you extend OOB error estimation to the classification case?_
+
+## Variable Importance
+
+1. Even though each of the trees $\hat{f}^{b}$ is interpretable, their average
+is much more complex. We have traded simulatability for prediction perfomance.
+
+1. However, we can still define variable importance. For variable $j$, define,
+\begin{align*}
+I_j = \sum_{b=1}^{B} \sum_{\text{splits on } j \text{ in tree } b} \Delta(l, j, s)
+\end{align*}
+where $\Delta(l, j, s)$ is the RSS reduction (or Gini/Entropy reduction in
+classification) from splitting that node's $R_l$ on variable $j$ at the selected
+threshold $s$, as defined in the CART notes. Intuitively, this captures two
+characteristics of important variables:
+   - Variables that are split many times across the ensemble $\{\hat{f}^b\}$
+   contribute more terms to the sum
+   - Variables whose splits lead to large $\Delta$ values (large decreases in
+   RSS or impurity) get higher scores
+
+   (some picture?)
+
+## Boosting Algorithm
+
+1. One fundamental limitation of bagging is that the trees $\hat{f}^{b}$ are
+trained independently from one another. They have no way of addressing one
+another's weaknesses. To illustrate, consider the (admittedly artificial)
+example below, made by baggign 100 trees with maximum depth = 1. With one split,
+the best we can hope for in any single tree is to split either $x_1$ or $x_2$
+around 0.5. We can average as many of these trees as we want, and we will never
+get better at approximating the diagonal boundary.
+
+1. In contrast, the boosting method we'll describe next makes the trees aware of
+one another. So even when each of underlying trees is a simple single-split
+tree, we can get a good approximation of the diagonal decision boundary.
+
+1. The intuition is to train a sequence of trees, where the next tree is trained
+on the residuals of a blended version of the previous trees. To illustrate,
+suppose we want to learn a regression onto this sinusoidal data.
+
+   ```{r}
+   X <- runif(100, -5, 5)
+   y <- 3 * sin(X) + 0.5 * rnorm(100)
+   df <- data.frame(X = X, y = y)
+   plot(X, y)
+   ```
+
+   In the first step, we fit a shallow depth-2 tree. We scale its predictions by
+   a learning rate `lambda`. This is a "learning rate" that ensures no one tree
+   dominates the final predictions.
+
+   ```{r}
+   lambda <- .9
+   tree_reg1 <- rpart(y ~ X, data = df, control = rpart.control(maxdepth = 2))
+   df$pred1 <- lambda * predict(tree_reg1, df)
+   ```
+
+   Next we compute residuals from the shrunk prediction and fit a new tree onto
+   those residuals.
+
+   ```{r}
+   df$resid1 <- df$y - df$pred1
+   tree_reg2 <- rpart(resid1 ~ X, data = df, control = rpart.control(maxdepth = 2))
+   df$pred2 <- lambda * predict(tree_reg2, df)
+   ```
+
+   We can continue this indefinitely...
+
+   ```{r}
+   df$resid2 <- df$resid1 - df$pred2
+   tree_reg3 <- rpart(resid2 ~ X, data = df, control = rpart.control(maxdepth = 2))
+   df$pred3 <- lambda * predict(tree_reg3, df)
+   ```
+
+   The block below visualizes this entire sequence. Notice that, even though
+   each component `tree_reg` model is simple, the final `df$pred` predictions
+   are good.
+
+   ```{r}
+   #| echo: false
+# Create prediction grids
+x_grid <- seq(-5, 5, length.out = 100)
+pred_grid1 <- lambda * predict(tree_reg1, data.frame(X = x_grid))
+pred_grid2 <- lambda * predict(tree_reg2, data.frame(X = x_grid))
+pred_grid3 <- lambda * predict(tree_reg3, data.frame(X = x_grid))
+
+# Helper function to create residual plot
+plot_residuals <- function(df, resid_col, pred_grid, x_grid, title = NULL) {
+  ggplot(df, aes(X, .data[[resid_col]])) +
+    geom_point(shape = 2, size = 2, col = "#828080") +
+    geom_line(data = data.frame(X = x_grid, pred = pred_grid), aes(X, pred),
+              color = "#5cd3bc", linewidth = 1) +
+    labs(title = title, x = "", y = "")
+}
+
+# Helper function to create ensemble plot
+plot_ensemble <- function(df, pred_grid, x_grid, title = NULL) {
+  ggplot(df, aes(X, y)) +
+    geom_point(color = "#828080ff") +
+    geom_line(data = data.frame(X = x_grid, pred = pred_grid),
+              aes(X, pred), color = "#a4369bff", linewidth = 1) +
+    labs(title = title, x = "", y = "")
+}
+
+   # Create all plots
+   p1 <- plot_residuals(df, "resid1", pred_grid2, x_grid,
+                        title = "Residuals and New Tree")
+   p2 <- plot_ensemble(df, pred_grid1, x_grid,
+                       title = "Boosting Iterations")
+   p3 <- plot_residuals(df, "resid2", pred_grid3, x_grid)
+   p4 <- plot_ensemble(df, pred_grid1 + pred_grid2, x_grid)
+   p5 <- plot_ensemble(df, pred_grid1 + pred_grid2 + pred_grid3, x_grid)
+   p6 <- ggplot()
+   (p2 | p1) / (p4 | p3) / (p5 | p6)
+   ```
+
+   _Exercise: What would happen if we decreased $\lambda$ to 0.1?_
+
+
+1. We generalize this logic in the algorithm below,
+
+   - Initialize $\hat{f}(x) = 0$ and $r_i = y_i$ for all $i$
+   - For $b = 1, 2, \ldots, B$:
+      - Fit a depth-$D$ tree $\hat{f}^b$ to the data $\{x_i, r_i\}_{i = 1}^{N}$
+      - Update: $\hat{f}(x) \leftarrow \hat{f}(x) + \lambda \hat{f}^b(x)$
+      - Update residuals: $r_i \leftarrow y_i - \hat{f}(x_i)$
+   - Output: $\hat{f}(x) = \sum_{b=1}^B \lambda \hat{f}^b(x)$
+
+   This has hyperparameters,
+    - Number of trees $B$: Larger $B$ gives more flexibility, potentially at the
+    risk of overfitting.
+    - Shrinkage $\lambda$: Smaller $\lambda$ grows more slowly. This stabilizes
+    learning and can lead to good final fits, but we might need to keep track of
+    many trees (high memory cost). This is also called the learning rate by some
+    authors.
+
+1. Another hyperparameter is the maximum depth $D$ controls the order of
+interactions that boosting can learn. When $D = 1$, each tree $\hat{f}^{m}$
+splits only a single variable (e.g. $x_j$) and so depends on that variable
+alone. Since the boosted model is
+   \begin{align*}
+   \hat{f}(x) = \sum_{b=1}^{B} \lambda \hat{f}^b(x),
+   \end{align*}
+    it has the form $\hat{f}(x) = \sum_{j=1}^{p} g_j(x_j)$ where each $g_j$
+    aggregates component trees that split on $x_j$. I.e., it is an additive
+    model without any interactions. More generally, a tree of depth $D$ includes
+    at most $D$ variables on any root-to-leaf path, so boosting with that depth
+    can only learn interactions of up to $D$ variables.
+
+## Partial Dependence Plots
+
+1. $\dagger$ Notation. For a sample $\mathbf{x} \in \mathbb{R}^J$, let
+$\mathbf{x}^{j|=z}$ be the vector $\mathbf{x}$ with its $j^{\text{th}}$
+coordinate replaced by $z$.
+
+2. $\dagger$ Ceteris Paribus profiles describe how the prediction changes when
+we vary a single feature while holding all others fixed. For observation
+$\mathbf{x}$ and feature $j$, the CP profile is:
+   $$h_{\mathbf{x}}^{j}(z) := \hat{f}(\mathbf{x}^{j|=z})$$
+   This traces out a curve showing $\hat{f}$'s sensitivity to feature $j$ when
+   starting from $\mathbf{x}$.  Different samples $\mathbf{x}$ produce different
+   curves $h_{\mathbf{x}}^{j}$, since the effect of varying $x_j$ depends on the
+   values of the other features.
+
+4. $\dagger$ Partial Dependence profiles average across all CP profiles in the
+data. For feature $j$, the PD profile is:
+   $$g^{j}(z) := \frac{1}{N} \sum_{i=1}^{N} \hat{f}(\mathbf{x}_i^{j|=z})$$
+   This averages out the observation-specific variation to give a single curve summarizing the marginal effect of feature $j$.
+
+
+1. $\dagger$
+
+## Code Example
+
+1. We'll reuse the same data from our CART notes. Remember that the surface has
+interactions between $x_1$ and $x_2$ and is not piecewise constant.
+
+   ```{r}
+   sim_data <- tibble(
+     x1 = runif(500),
+     x2 = runif(500),
+     y = 10 * sin(pi * x1 * x2) + 20 * (x2 - 0.5)^2 + rnorm(500)
+   )
+
+   grid <- expand_grid(
+     x1 = seq(0, 1, length.out = 100),
+     x2 = seq(0, 1, length.out = 100),
+   ) |>
+  mutate(y_true = 10 * sin(pi * x1 * x2) + 20 * (x2 - 0.5)^2)
+   ```
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 4
+   #| echo: false
+   ggplot(grid, aes(x1, x2)) +
+     geom_tile(aes(fill = y_true)) +
+     geom_point(data = sim_data, col = "black", size = 1.5) +
+     geom_point(data = sim_data, aes(col = y), size = 1) +
+     scale_color_scico(palette = "glasgow", guide = "none") +
+     scale_fill_scico(palette = "glasgow") +
+     scale_x_continuous(expand = c(0, 0)) +
+     scale_y_continuous(expand = c(0, 0)) +
+     labs(fill = "f(x)")
+   ```
+
+1. We fit a bagging model using the `ipred` package. The code below aggregates
+over $B = 100$ trees. We can still see the outlines of a few commonly created
+partition elements. This is consistent with the fact that the trees have no way
+of build off of one another.
+
+   ```{r}
+   bag_fit <- bagging(y ~ x1 + x2, data = sim_data, nbagg = 500)
+   grid$bag_pred <- predict(bag_fit, newdata = grid)
+   ```
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 4
+   #| echo: False
+   ggplot(grid, aes(x1, x2, fill = bag_pred)) +
+     geom_tile() +
+     scale_fill_scico(palette = "glasgow") +
+     scale_x_continuous(expand = c(0, 0)) +
+     scale_y_continuous(expand = c(0, 0)) +
+     labs(fill = expression(hat(f)(x)))
+   ```
+
+1. For boosting we use `xgboost. The `xgb.DMatrix` call combines the features
+and response into a single "dataset" object.
+
+   ```{r}
+   X_train <- as.matrix(sim_data[, c("x1", "x2")])
+   dtrain <- xgb.DMatrix(data = X_train, label = sim_data$y)
+   ```
+
+1. We fit a boosted tree ensemble. The key hyperparameters are `max_depth` (tree
+complexity), `eta` (learning rate $\lambda$), and `nrounds` (number of boosting
+iterations $B$). Notice that we do a much better job of approximating the smooth
+change in the prediction surface -- we can no longer make out any dominant
+partition elements.
+
+   ```{r}
+   boost_fit <- xgb.train(
+     params = list(
+       max_depth = 2,
+       eta = 0.05,
+       objective = "reg:squarederror"
+     ),
+     data = dtrain,
+     nrounds = 500,
+     verbose = 0
+   )
+
+   X_grid <- as.matrix(grid[, c("x1", "x2")])
+   grid$boost_pred <- predict(boost_fit, newdata = X_grid)
+   ```
+
+   ```{r}
+   #| fig-width: 5
+   #| fig-height: 4
+   #| echo: False
+   ggplot(grid, aes(x1, x2, fill = boost_pred)) +
+     geom_tile() +
+     scale_fill_scico(palette = "glasgow") +
+     scale_x_continuous(expand = c(0, 0)) +
+     scale_y_continuous(expand = c(0, 0)) +
+     labs(fill = expression(hat(f)(x)))
+   ```
+
+1. `xgboost` provides variable importances using the same ideas as the $I_j$
+definition above.
+
+   ```{r}
+   xgb.importance(model = boost_fit)
+   ```
+
+1. $\dagger$ We can visualize PD profiles using the `DALEX` package. Each grey
+line corresponds to one sample. The fact that they aren't the same shape shows
+that the boosting model has successfully learned interactions.
+
+   ```{r}
+   explainer <- DALEX::explain(boost_fit, data = X_train, y = sim_data$y, label = "xgboost")
+   pdp <- model_profile(explainer, variables = c("x1", "x2"))
+   plot(pdp, geom = "profiles")
+   ```
