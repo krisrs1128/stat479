@@ -29,9 +29,12 @@ $$
 </style>
 
 ```{r}
+#| label: setup
 #| echo: false
 library(DALEX)
+library(gganimate)
 library(ipred)
+library(MASS)
 library(patchwork)
 library(rpart)
 library(scico)
@@ -86,13 +89,53 @@ tree growing process, the entire downstream structure changes. The result is
 high variance in the fitted surface across independent training datasets, which
 degrades test set performance.
 
-    (maybe a GIF showing the trees being unstable?)
+   ```{r}
+   #| label: fit-replicates
+   #| echo: false
+   #| cache: true
+   source("08-helpers.R")
+   instability <- fit_replicates(B = 10)
+   ```
+
+   ```{r}
+   #| label: instability-animation
+   #| eval: false
+   #| echo: false
+   #| fig-width: 8
+   #| fig-height: 4
+   anim <- ggplot(instability, aes(x1, x2, fill = pred)) +
+     geom_tile() +
+     facet_wrap(~method) +
+     scale_fill_scico(palette = "glasgow") +
+     scale_x_continuous(expand = c(0, 0)) +
+     scale_y_continuous(expand = c(0, 0)) +
+     labs(fill = expression(hat(f)(x))) +
+     theme(
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 24),
+        legend.title = element_text(size = 24),
+        legend.text = element_text(size = 20),
+        strip.text = element_text(size = 24),
+     ) +
+     transition_manual(replicate)
+   p <- animate(anim, nframes = 20, fps = 10, width = 1000, height = 650, res = 100)
+   anim_save(p, file = "figures/cart_instability.gif")
+   ```
+   ![](figures/cart_instability.gif){width=80%}
 
 1. **Axis-aligned splits and smooth functions**. The decision tree partitions
 are axis-aligned rectangles. When we approximate smooth decision boundaries
 (classification) or functions (regression), we need many splits, resulting in
 deep trees with few training examples per leaf. This increases variance and
 risks overfitting.
+
+   ```{r}
+   #| label: axis-aligned
+   #| echo: false
+   #| fig.width: 9
+   #| fig.height: 3.5
+   diagonal_boundary_plot() + smooth_curve_plot()
+   ```
 
 ## Bagging
 
@@ -172,6 +215,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
 1. **1D Example**. Consider learn a regression onto these sinusoidal data.
 
    ```{r}
+   #| label: simulate-sinusoidal
    X <- runif(100, -5, 5)
    y <- 3 * sin(X) + 0.5 * rnorm(100)
    df <- data.frame(X = X, y = y)
@@ -183,6 +227,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
    ensemble.
 
    ```{r}
+   #| label: boost-tree1
    lambda <- .9
    tree_reg1 <- rpart(y ~ X, data = df, control = rpart.control(maxdepth = 2))
    df$pred1 <- lambda * predict(tree_reg1, df)
@@ -191,6 +236,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
    Compute residuals from the shrunk prediction and fit a new tree to them.
 
    ```{r}
+   #| label: boost-tree2
    df$resid1 <- df$y - df$pred1
    tree_reg2 <- rpart(resid1 ~ X, data = df, control = rpart.control(maxdepth = 2))
    df$pred2 <- lambda * predict(tree_reg2, df)
@@ -199,6 +245,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
    Repeat
 
    ```{r}
+   #| label: boost-tree3
    df$resid2 <- df$resid1 - df$pred2
    tree_reg3 <- rpart(resid2 ~ X, data = df, control = rpart.control(maxdepth = 2))
    df$pred3 <- lambda * predict(tree_reg3, df)
@@ -207,6 +254,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
    The block below visualizes the sequence. Each component tree is simple, but their sum approximates the target well.
 
    ```{r}
+   #| label: boosting-visualization
    #| echo: false
 # Create prediction grids
 x_grid <- seq(-5, 5, length.out = 100)
@@ -293,6 +341,7 @@ training data to summarize the marginal effect of feature $j$:
 between $x_1$ and $x_2$ and is not piecewise constant.
 
    ```{r}
+   #| label: simulate-data
    sim_data <- tibble(
      x1 = runif(500),
      x2 = runif(500),
@@ -307,6 +356,7 @@ between $x_1$ and $x_2$ and is not piecewise constant.
    ```
 
    ```{r}
+   #| label: true-surface
    #| fig-width: 5
    #| fig-height: 4
    #| echo: false
@@ -327,11 +377,13 @@ elements, consistent with the fact that the trees are not building on one
 another.
 
    ```{r}
+   #| label: fit-bagging
    bag_fit <- bagging(y ~ x1 + x2, data = sim_data, nbagg = 500)
    grid$bag_pred <- predict(bag_fit, newdata = grid)
    ```
 
    ```{r}
+   #| label: plot-bagging
    #| fig-width: 5
    #| fig-height: 4
    #| echo: False
@@ -347,6 +399,7 @@ another.
 single dataset object.
 
    ```{r}
+   #| label: prepare-xgb
    X_train <- as.matrix(sim_data[, c("x1", "x2")])
    dtrain <- xgb.DMatrix(data = X_train, label = sim_data$y)
    ```
@@ -357,6 +410,7 @@ approximates the true surface much better -- we can no longer make out any
 dominant partition elements.
 
    ```{r}
+   #| label: fit-boosting
    boost_fit <- xgb.train(
      params = list(
        max_depth = 2,
@@ -373,6 +427,7 @@ dominant partition elements.
    ```
 
    ```{r}
+   #| label: plot-boosting
    #| fig-width: 5
    #| fig-height: 4
    #| echo: False
@@ -388,6 +443,7 @@ dominant partition elements.
 above.
 
    ```{r}
+   #| label: variable-importance
    xgb.importance(model = boost_fit)
    ```
 
@@ -396,6 +452,7 @@ sample' CP profile. The fact that they aren't all parallel shows that boosting
 model has learned interactions.
 
    ```{r}
+   #| label: partial-dependence
    explainer <- DALEX::explain(boost_fit, data = X_train, y = sim_data$y, label = "xgboost")
    pdp <- model_profile(explainer, variables = c("x1", "x2"))
    plot(pdp, geom = "profiles")
