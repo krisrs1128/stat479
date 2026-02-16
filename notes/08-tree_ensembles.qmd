@@ -149,7 +149,7 @@ observations reduces variance. Bagging adapts this idea to decision trees.
    \mathcal{D}^{(b)} := \{x_i^{b}, y_i^{b}\}_{i = 1}^{N}
    \end{align*}
    and fit a separate decision tree $\{\hat{f}^{b}\}_{b = 1}^{B}$ to each.
-   ![](figures/bagging_summary.png){width=80%}
+   ![](figures/bagging_summary.png){width=80%}<br/>
    _Exercise: Consider an arbitrary sample $i$. In what fraction of bootstrap samples would you expect it to appear?_
 
 1. For regression, predict by averaging across trees,
@@ -209,9 +209,9 @@ of important variables:
 
 1. Bagging fits the trees $\hat{f}^{b}$ independently from one another. They
 can't address one another's weaknesses. For example, consider bagging 100 trees
-depth-1 trees. With one split, the best we can hope for in any one tree is to
-split one of the variables around 0.5. No amount of averaging will recover the
-diagonal.
+depth-1 trees in the diagonal classification example shown at the top of this
+note. With one split, the best we can hope for in any one tree is to split one
+of the variables around 0.5. No amount of averaging will recover the diagonal.
 
 1. Boosting solves this problem by training trees sequentially. Each new tree
 fits the residuals of the current ensemble.  Even simple single-split trees,
