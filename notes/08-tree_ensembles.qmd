@@ -169,7 +169,7 @@ cross-validation.  For sample $i$, set
   the set of bootstrap samples that didn't include observation $i$.
   Predict using only,
   \begin{align*}
-    \hat{f}_{\text{OOB}}(x_i) &= \frac{1}{|B^{(-i)}|} \sum_{b \in B^{(-i)}} \hat{f}^b(x_i)
+    \hat{f}_{\text{OOB}}^{(-i)}(x_i) &= \frac{1}{|B^{(-i)}|} \sum_{b \in B^{(-i)}} \hat{f}^b(x_i)
   \end{align*}
   Since $\hat{f}_{\text{OOB}}(x_i)$ never trained on sample $i$, it gives an
   honest sense of generalization performance. Averaging across samples gives the
@@ -177,6 +177,8 @@ cross-validation.  For sample $i$, set
   \begin{align*}
   \text{MSE}_{\text{OOB}} = \frac{1}{N} \sum_{i=1}^{N} \left(y_i - \hat{f}_{\text{OOB}}^{(-i)}(x_i)\right)^2.
   \end{align*}
+
+   ![](figures/oob_overview.png){width=90%}
 
    _Exercise: How would you extend OOB error estimation to the classification case?_
 
@@ -199,7 +201,7 @@ of important variables:
    - Variables whose splits lead to large $\Delta$ values (large decreases in
    RSS or impurity) get higher scores
 
-   (some picture?)
+   ![](figures/ensemble_vi.png){width=80%}
 
    _Exercise: TRUE FALSE The variable $j$ can have high importance $I_j$ even if it was never a root split in any tree._
 
