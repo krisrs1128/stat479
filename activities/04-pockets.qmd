@@ -1,7 +1,7 @@
 ---
 title: "Boosting and Pocket Measurements"
 author: Kris Sankaran
-date: 2026-02-11
+date: 2026-02-18
 bibliography: references.bib
 format:
   html:
@@ -31,36 +31,33 @@ set.seed(20260216)
 theme_set(theme_classic())
 ```
 
-This example revisits the delightful analysis in the article
+This example is based on the article
 ["Pockets"](https://pudding.cool/2018/08/pockets/) by Jan Diehm and Amber Thomas
-for the pudding.  Their question -- are pocket sizes systematically too small in
-women's pants?  To this end, they gathered
+for the pudding.  Their question -- are pocket sizes systematically smaller in
+women's pants, to the point that they wouldn't be able to hold common objects
+like wallets or smartphones? They gathered
 [data](https://github.com/the-pudding/data/blob/master/pockets/measurements.csv)
-on pocket characteristics from major brands. Let's take a quick look.
+on pocket characteristics from major brands.
 
 ```{r}
 #| label: load-data
 pockets <- read_csv("https://github.com/the-pudding/data/raw/refs/heads/master/pockets/measurements.csv")
-
 pockets
 ```
 
-The main idea of our analysis is to predict whether the pants are mens or womens
-pants using all the available features. If we can achieve high accuracy, then
-that means the pockets are systematically different, either in their style,
-price, or dimensions. Further, we can look at the most important variables to
-see which of the pocket size variables are important.
+Our approach is to predict whether pockts are men's or women's using all the
+available features. High accuracy would mean that pockets differ systematically
+in style, price, or pocket dimensions. We can then inspect variable importance
+to see which features drive the distinction.
 
 ![](figures/pockets.gif)
 
 ## Data Processing
 
-Boosting works with either numerical or categorical features. But it will
-complain if we pass in character valued columns, so we need to convert those to
-factors. Also, `fabric` and `name` are more like ID variables with many levels,
-so we'll omit them. We'll also omit `maxHeightFront` because it so strongly
-associated with the response that it makes the interpretation steps less
-interesting...
+We will convert character valued columns into to factors for easy encoding later
+on. We omit `fabric` and `name` (ID-like variables with many levels) and
+`maxHeightFront` (so straongly associated with the response that it would
+dominate interpretation and make this example less representative).
 
 ```{r}
 #| label: preprocess
@@ -78,16 +75,13 @@ pockets
 
 ## Hyperparameter Tuning
 
-Next, we define our hyperparameter tuning pipeline. This is quite similar to the
-`03-gotv_cart.qmd` analysis from before, where instead of using `classif.rpart`
-we're using `classif.xgboost` for boosting. We've also modified the
-hyperparameter grid to be relevant to boosting. The most substantial difference
-is that we've added a `po("encode")` step, which adds a preprocessing step for
-converting categorical features into numerical encodings. While in theory
-boosting applies to data of mixed types, the implementation in xgboost only
-allows numeircal predictors. We could have done this manually in our
-preprocessing above, but `mlr3` gives a helper that manages it during the
-modeling pipeline.
+Next, we define our hyperparameter tuning pipeline. The setup resembles the
+`03-gotv_cart.qmd` analysis, but with two changes. First, we use
+`classif.xgboost` to specify that we want a boosting model. Second, we add a
+`po("encode")` preprocessing step to turn categorical features into numerical
+encodings. Although boosting can handle categorical types in theory, the xgboost
+implementation in mlr3 requires numerical predictors. We could do this manually,
+but the mlr3 pipeline manages it for us.
 
 ```{r}
 #| label: tuning-setup
@@ -125,15 +119,15 @@ tuner <- tnr("grid_search", resolution = 3, batch_size = 3)
 tuner$optimize(instance)
 ```
 
-Looking at the cross entropy across hyperparameter choices, we can see that the
-slowly growing trees (but with some interactions) did the best. The
-cross-entropy scale is not as intuitive as overall accuracy, but values near 0
-are perfect classification and near $-\log (0.5) \approx 0.69$ are random
-guessing, so we're doing quite a lot better than that baseline.
+The cross entropy shows that quick growing trees (with some interactions) did
+the best.  Cross-entropy might not be as intuitive as accuracy, but values near
+0 mean perfect classification and near $-\log (0.5) \approx 0.69$ mean random
+guessing. Our model does much better than that baseline.
 
 ```{r}
 #| label: tuning-results
 as.data.table(instance$archive) |>
+  rename_with(~ str_remove(., "classif.xgboost.")) |>
   arrange(classif.ce) |>
   select(1:4)
 ```
@@ -153,10 +147,9 @@ fit <- learner$model
 
 ## Interpretation
 
-One simple check is to compare the predicted probabilities with the actual
-class. Since these probabilities barely overlap, we conclude that the available
-features are strongly associated to the response. The measured features are
-enough to predict men/women pocket type quite reliably.
+A simple check: compare predicted probabilities against the actual class. The
+probabilities barely overlap, meaning that the measured features predict men's
+vs. women's pocket type quite reliably.
 
 ```{r}
 #| label: predicted-probs
@@ -164,13 +157,16 @@ enough to predict men/women pocket type quite reliably.
 data.frame(y_hat = learner$predict_newdata(pockets)$prob[, 1], y = pockets$menWomen) |>
   ggplot(aes(y_hat, fill = y)) +
   geom_histogram(position = "identity", alpha = 0.7) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
   scale_fill_manual(values = c("#3dafaf", "#b7552c")) +
   labs(x = "Prediction Probability", y = "Count")
 ```
 
 The xgboost package gives its own variable importance measure. This looks at the
 variables which were split most often during training, as well as how much they
-increased node purity when they were split. The three
+increased node purity when they were split. We can see tha tthe top four
+variables are all related to the dimensions of hte pocket.
 
 ```{r}
 #| label: variable-importance
@@ -179,17 +175,17 @@ fit <- attr(fit[[1]], "model") # messy, but seems to be only way to access origi
 xgb.importance(model = fit)
 ```
 
-Finally we'll make some partial dependence plots. Each line here is a pocket
-from the dataset. We've used a special feature -- the `predict_function`
-argument --  that let's us study changes in the prediction probabilities rather
-than the raw class labels. In the end, each curve shows how the prediction
-probability for a pocket changes when we intervene on one of the three plotted
-variables. The effect of `minHeightFront` is very clear: as soon as a the
-minimum height of the pocket is above a certain value, our model will predict
-that it's a mens pants pocket.
+Finally, partial dependence plots. Each line represents one pocket from the
+data. By passing a custom `predict_function` argument, we can study changes in
+predicted probabilities rather than just class labels. Each curve shows how a
+pocket's predicted probability shifts when we intervene on the plotted
+variables. The effect of `minHeightFront` is especially clear: once the minimum
+pocket height exceeds about 15, the model predicts men's pocket.
 
 ```{r}
 #| label: partial-dependence
+#| fig-width: 8
+#| fig-height: 3.5
 explainer <- DALEX::explain(
   learner,
   data = pockets,
@@ -199,22 +195,27 @@ explainer <- DALEX::explain(
   }
 )
 
-pdp <- model_profile(explainer, variables = c("minHeightFront", "minWidthFront", "rivetHeightFront", "cutout"))
+pdp <- model_profile(explainer, variables = c("minHeightFront", "minWidthFront", "rivetHeightFront"))
 plot(pdp, geom = "profiles")
 ```
 
-Indeed, if we go back to the raw data, we can see a clear difference in this
-variable between mens and women's pants.
+Indeed, if we go back to the raw data, we can see a clear difference in these
+variables between mens and women's pockets.
 
 ```{r}
 #| label: height-histogram
 #| echo: false
-ggplot(pockets) +
+#| fig-width: 8
+#| fig-height: 3
+pockets |>
+    pivot_longer(c(minHeightFront, minWidthFront, rivetHeightFront), names_to = "variable") |>
+    ggplot() +
     geom_histogram(
-        aes(minHeightFront, fill = menWomen),
+        aes(value, fill = menWomen),
         position = "identity", alpha = 0.7
     ) +
     scale_fill_manual(values = c("#3dafaf", "#b7552c")) +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0))
+    scale_y_continuous(expand = c(0, 0)) +
+    facet_wrap(~variable, scales = "free")
 ```

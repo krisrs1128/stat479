@@ -149,7 +149,8 @@ observations reduces variance. Bagging adapts this idea to decision trees.
    \mathcal{D}^{(b)} := \{x_i^{b}, y_i^{b}\}_{i = 1}^{N}
    \end{align*}
    and fit a separate decision tree $\{\hat{f}^{b}\}_{b = 1}^{B}$ to each.
-   (picture of resampling the data to get bootstrap)
+   ![](figures/bagging_summary.png){width=80%}
+   _Exercise: Consider an arbitrary sample $i$. In what fraction of bootstrap samples would you expect it to appear?_
 
 1. For regression, predict by averaging across trees,
 \begin{align*}
@@ -200,6 +201,8 @@ of important variables:
 
    (some picture?)
 
+   _Exercise: TRUE FALSE The variable $j$ can have high importance $I_j$ even if it was never a root split in any tree._
+
 ## Boosting Algorithm
 
 1. Bagging fits the trees $\hat{f}^{b}$ independently from one another. They
@@ -242,7 +245,7 @@ accumulated over many steps, can approximate the diagonal decision boundary.
    df$pred2 <- lambda * predict(tree_reg2, df)
    ```
 
-   Repeat
+   Repeat.
 
    ```{r}
    #| label: boost-tree3
@@ -309,6 +312,8 @@ plot_ensemble <- function(df, pred_grid, x_grid, title = NULL) {
     - Shrinkage (learning rate) $\lambda$: Smaller values stabilize
     learning and often improve the final fit, but at the cost of requiring more trees ($\to$ high memory).
 
+   _Exercise: TRUE FALSE In boosting, the trees are trained on bootstrap resampled versions of the original data._
+
 1. Another hyperparameter is the maximum depth $D$, which controls the degree of
 learnable interactions.  When $D = 1$, each tree $\hat{f}^{b}$ splits a single
 variable, so the boosted model,
@@ -316,6 +321,10 @@ variable, so the boosted model,
    \hat{f}(x) = \sum_{b=1}^{B} \lambda \hat{f}^b(x),
    \end{align*}
     has the form $\hat{f}(x) = \sum_{j=1}^{J} g_j(x_j)$, an additive model without interactions. More generally, a depth-$D$ tree involves at most $D$ variables on any root-to-leaf path, so the boosted model can only capture interactions of up to $D$ variables.
+
+   ![](figures/ensembles_depth.png){width=90%}
+
+   _Exercise: Imagine working at a company with both very large data and a strong parallel computing infrastructure. Can the trees $\hat{f}^{b}$ in boosting be trained in parallel? What about the $\hat{f}^{b}$ in bagging?_
 
 ## Partial Dependence Plots
 
@@ -330,6 +339,8 @@ $\mathbf{x}$ and feature $j$, the CP profile is:
    starting from $\mathbf{x}$.  Different samples $\mathbf{x}$ produce different
    curves $h_{\mathbf{x}}^{j}$, since the effect of varying $x_j$ depends on the
    values of the other features.
+
+   ![](figures/cp_profile_overview.png){width=70%}
 
 4. $\dagger$ Partial Dependence profiles average CP profiles across the
 training data to summarize the marginal effect of feature $j$:
