@@ -1,0 +1,95 @@
+---
+title: "SHAP Definitions"
+author: Kris Sankaran
+date: 2026-02-23
+format:
+  html:
+    embed-resources: true
+    html-math-method: katex
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: true
+---
+
+::: {style="display: none;"}
+$$
+\newcommand{\bs}[1]{\mathbf{#1}}
+\newcommand{\reals}[1]{\mathbb{R}}
+$$
+:::
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #fca020; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+
+```{r}
+#| label: setup
+#| echo: false
+library(tidyverse)
+theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
+set.seed(2026)
+```
+
+_Readings: [](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/09-shap_definitions.qmd)_
+
+Bullet items with $^{\dagger}$ are not in the reading, so not tested.
+
+## Setup
+
+**Goal.** Given a model $f$ and a sample $x_i \in \reals^{D}$, return a _local feature attribution_ $\varphi_d\left(x_i\right)$ that quantifies the contribution of feature $d$ to the prediction $f\left(x_i\right)$.
+
+**Requirements.**
+
+   - _Local feature attributions_. In contrast to more generic variable importances, attributions $\varphi_d\left(x_i\right)$ are specific to sample $i$. This can be important when a stakeholder cares specifically about sample $x_i$ and wants an explanation for the associated prediction $f(x_i)$.
+
+   - _Model agnostic_. It should be possible to compute attributions $\varphi_d(x_i)$ simply by being able to query $f$. We should make no assumptions about what type of model $f$ is. This will allow the attribution method to apply to arbitrary black boxes.
+
+   - _Mathematically principled._ The attribution measure should be derivable from first principles using a clear set of mathematical axioms.
+
+**Approach.**
+
+SHAP values satisfy all three requirements above. This handout will focus on the
+theoretical development of SHAP values -- we will consider their practical
+computation later. We will develop the method in these steps,
+
+1. _Motivation for local feature attributions._ We will review problems where
+global variable importances are not enough and we need a form of local feature
+attribution.
+
+1. _Game theoretic definition._ The main inspiration for SHAP algorithms in
+machine learning comes from a classic result in the theory of $n$-player games.
+Even though we're not interested in game theory per se, understanding the
+original framing will help us see why there are several defensible ways to apply
+it to machine learning.
+
+1. _Machine learning analogy._ We will develop an analogy between the original
+game theoretic definition and the quantities of interest in local feature
+attribution for machine learning models.
+
+1. _Feature removal._ The most ambiguous part of the game theory $\to$ ML
+analogy is how exactly to implement the "feature removal" step. We will review
+several approaches and the arguments for an dagainst them.
+
+## Local Feature Attributions
+
+1. Algorithmic recourse.
+- model debugging
+- discovery. Why was sample classified for this particular example? The population is heterogeneous, and model might have learned different "reasons" for its predictions in different subpopulation.
+- high stakes decisions. loan application denied, medical diagnosis, credit application.
+-
+
+1.
+
+## Game Theoretic Analogy
+
+1. Axioms
+
+## Machine Learning Formulation
+
+## Feature Removal
