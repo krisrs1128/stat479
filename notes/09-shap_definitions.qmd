@@ -73,10 +73,6 @@ SHAP values satisfy all three requirements above. This handout will focus on the
 theoretical development of SHAP values -- we will consider their practical
 computation later. We will develop the method in these steps,
 
-1. _Motivation for local feature attributions._ We will review problems where
-global variable importances are not enough and we need a form of local feature
-attribution.
-
 1. _Game theory definitions._ The main inspiration for SHAP algorithms in
 machine learning comes from a classic result in the theory of $n$-player games.
 Even though we're not interested in game theory per se, understanding the
@@ -100,15 +96,17 @@ deserve to know the most important features in their particular case.
 
    - A related use case is algorithmic recourse, which refers to when a
    stakeholder wants to know what they can change in order to change a decision
-   made by an algorithm (e.g., could they have changed anything in their CV that
-   would have gotten them a job interview?).
+   made by an algorithm (e.g., could they have changed anything in their
+   application that would have gotten them a job interview?).
 
 1. Another use of local feature attributions is for model debugging. For
 example, we might discover that a particular sample $x$ was classified as a
 husky $f(x)$ because it had snow in the background (large $\varphi_d(x)$ on
 pixels $d$ in the snow region of the image). This is important to know, because
 it means the model has learned a "shortcut" and wouldn't generalize well -- e.g,
-any other dog breed appearing in the snow might get classified as husky.
+a wolf appearing in the snow might get classified as husky [@Ribeiro2016].
+
+   ![](figures/husky.png){width=60%}
 
 1. For scientific discovery, we also often want sample-specific attributions.
 This is because we often work in heterogeneous populations (e.g., different
@@ -127,8 +125,11 @@ value" for agent $d$, denoted by $\varphi_{d}(v)$.
 
 1. Intuitively, we can consider how much agent $d$ would add to each team $S$ by
 comparing the profits $v(S \cup \{d\})$ and $v(S)$ with and without that agent,
-respectively. Taking a weighted average of the "contributions" $C\left(d \vert
-S\right) = v(S \cup \{d\}) - v(S)$, we arrive at agent $d$'s Shapley value,
+respectively. To this end, define the "contributions" of agent $d$ to team $S$:
+$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S)$
+
+1. Taking a weighted average of these contributions across subsets $S$, we
+arrive at agent $d$'s Shapley value,
 
    $$
   \varphi_d(v) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
