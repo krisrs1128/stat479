@@ -11,7 +11,7 @@ execute:
     echo: true
     message: false
     warning: false
-    cache: true
+    cache: false
 ---
 
 ::: {style="display: none;"}
@@ -61,70 +61,60 @@ Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
 
 **Requirements.**
 
-   - _Local feature attributions_. In contrast to more generic variable
-   importances, attributions $\varphi_d\left(x\right)$ are specific to the sample $x$.
-   This can be important when a stakeholder cares specifically about sample
-   $x$ and wants an explanation for the associated prediction $f(x)$.
+   - _Local feature attributions_. Unlike global variable importances,
+   $\varphi_d\left(x\right)$ are specific to sample $x$.  This matters a
+   stakeholder cares specifically about particular prediction $f(x)$ and wants
+   an explanation for it.
 
-   - _Model agnostic_. It should be possible to compute attributions
-   $\varphi_d(x)$ simply by being able to query $f$. We should make no
-   assumptions about what type of model $f$ is -- it could be a black box. This
-   is a continuation of the trend we started last week, where we sacrified the
-   intrinsic interpretability of CART for the predictive accuracy of tree
-   ensembles, but still sought ought variable importance measures to interpret
-   the result.
+   - _Model agnostic_. Attributions should be computable by
+   querying $f$ alone, without any assumptions about what kind of model it is --
+   it could be a black box.
 
-   - _Mathematically principled._ The attribution measure should be derivable
-   from first principles using a clear set of mathematical axioms.
+   - _Principled._ The attribution measure should be derivable from a clear set
+   of mathematical axioms.
 
 **Approach.**
 
-SHAP values satisfy all three requirements above. This handout will focus on the
-theoretical development of SHAP values -- we will consider their practical
-computation later. We will develop the method in these steps,
+SHAP values satisfy all three requirements. This handout focuses on their
+theoretical development. Practical computation comes next week.  We proceed in
+these steps,
 
-1. _Game theory definitions._ The main inspiration for SHAP algorithms in
-machine learning comes from a classic result in the theory of $n$-player games.
-Even though we're not interested in game theory per se, understanding the
-original framing will help us see why there are several defensible ways to apply
-it to machine learning.
+1. _Game theory definitions._ SHAP is inspired by a classic result $n$-player
+game theory.  We're not interested in game theory for its own sake, but this
+framing will help us see why there are several defensible ways to adapt it to
+machine learning.
 
-1. _Machine learning analogy._ We will develop an analogy between the original
-game theoretic definition and the quantities of interest in local feature
-attribution for machine learning models.
+1. _Machine learning analogy._ We develop an analogy between the game theoretic
+definition and quantities of interest in local feature attribution.
 
 1. _Feature removal._ The most ambiguous part of the game theory $\to$ ML
-analogy is how exactly to implement the "feature removal" step. We will review
-several approaches and the arguments for an dagainst them.
+analogy is how implement "feature removal."  Different choices lead to different
+SHAP variants
 
 ## Local Feature Attributions
 
-1. Local feature attributions are potentially useful in high-stakes decision
-making. When individual $i$'s medical diagnosis is made or their insurance claim
-is denied, it's not enough to know the generally most important features. They
-deserve to know the most important features in their particular case.
+1. _High-stakes decisions._ When an individual has a medical diagnosis made or
+an insurance claim denied, knowing the globally most important features isn't
+enough. They deserve an explanation specific to their case.
 
-   - A related use case is algorithmic recourse, which refers to when a
-   stakeholder wants to know what they can change in order to change a decision
-   made by an algorithm (e.g., could they have changed anything in their
-   application that would have gotten them a job interview?).
+   - A related use case is _algorithmic recourse_. What could a stakeholder
+   change to reverse a decision? (e.g., which change to their resume would have
+   gotten them a job interview?)
 
-1. Another use of local feature attributions is for model debugging. For
-example, we might discover that a particular sample $x$ was classified as a
-husky $f(x)$ because it had snow in the background (large $\varphi_d(x)$ on
-pixels $d$ in the snow region of the image). This is important to know, because
-it means the model has learned a "shortcut" and wouldn't generalize well -- e.g,
-a wolf appearing in the snow might get classified as husky [@Ribeiro2016].
+1. _Model debugging._ A model might classify $x$ as a husky because it had snow
+in the background (large $\varphi_d(x)$ on pixels $d$ in the snow region) rather
+than the dog itself. This means the model has learned a "shortcut" and won't
+generalize well -- a wolf in the snow might get misclassified as a husky
+[@Ribeiro2016].
 
    ![](figures/husky.png){width=60%}
 
-1. For scientific discovery, we also often want sample-specific attributions.
-This is because we often work in heterogeneous populations (e.g., different
-disease subtypes), and the model might have learned different "reasons" for
-making a prediction (e.g,. probability of a candidate drug's success) in one
-subpopulation compared to another.
+1. _Scientific discovery_. In heterogeneous populations (e.g., different disease
+subtypes), a model might rely on different sets of features for each
+subpopulation. Local attributions can highlight these differences -- e.g.,
+identifying which features drive drug effectiveness in one subgroup vs. another.
 
-   _Exercise: What is one example (hypothetical, or from your own experience) where a local feature attribution method could be used? What would be the difference vs. obtaining a global variable importance?_
+   _Exercise: Give one example (hypothetical, or from your own experience) where local feature attribution would be useful. How would it differ from global variable importance?_
 
 ## Game Theory Definitions
 
@@ -177,11 +167,12 @@ in practice.
     Intuitively, the total company profit is distributed across all employees,
     and nothing is left over.
 
-   - **Monotonicity**. If an agent always always contributes more in one game
-   than another (intuitively, this could be the profit across two separate
-   years), then they should have higher credit in that game. That is, if
-   $v_1\left(S \cup \{d\}\right) > v_2\left(S \cup \{d\}\right)$ then
-   $\varphi_d(v_1) > \varphi_d(v_2)$.
+   - **Monotonicity**. If an agent's marginal contribution is always at least
+   as large in one game as in another (intuitively, this could be the profit
+   across two separate years), then they should receive at least as much credit
+   in the first game. That is, if $v_1\left(S \cup \{d\}\right) - v_1(S) \geq
+   v_2\left(S \cup \{d\}\right) - v_2(S)$ for all $S$, then $\varphi_d(v_1) \geq
+   \varphi_d(v_2)$.
 
    - **Symmetry**. If a player always contributes the same amount as another player,
    then the two players should get equal credit. That is, if $v(S \cup \{d\}) =
@@ -230,8 +221,8 @@ $$
 where $x_{S}, x_{\bar{S}}$ are used to index the coordinates of $x$ included and
 excluded from the <span class="green">set $S$</span>, respectively. This has the
 interpretation of being a "simplified" version of <span
-class="purple">$f$</span> that ignores any of the real data coordinates in $S$
-and replaces them by a baseline value <span class="darkblue">$x'$</span>.
+class="purple">$f$</span> that uses the real data for coordinates in $S$
+and replaces the remaining coordinates with the baseline <span class="darkblue">$x'$</span>.
 
    ![](figures/baseline_subsets_single.png){width=35%}
 
@@ -250,17 +241,17 @@ and replaces them by a baseline value <span class="darkblue">$x'$</span>.
    ![](figures/shap_baseline_vector.png){width=50%}
 
 1. The downside of this approach is that it depends on the choice of baseline
-$x'$, and it's not obvious what a good choice of $D$ should be.
+$x'$, and it's not obvious what a good choice of $x'$ should be.
 
-   ![](figures/shap_marginal_approach.png){width=90%}
+   ![](figures/shap_baseline_geometry.png){width=90%}
 
 ## Sampling-based Feature Removal
 
 1. The marginal and conditional approach will replace the deterministic baseline
-with expectations over randomly sampled coordinates. Let $X_{S}$ denote a random
-variable defined over the coordinates $S$ (define $X_{\bar{S}}$ similarly).  The
-_marginal_ approach defines $v$ using,
-   $$
+with expectations over randomly sampled coordinates. Consider $X_{\bar{S}}$ is a
+random vector whose coordinates are the features *not* in $S$, drawn from the
+same distribution as the training data. The _marginal_ approach defines $v$
+using, $$
    v(S) = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
    $$ {#eq-marginal}
 
@@ -284,19 +275,16 @@ training data, $x_1, \dots, x_{N}$,
 
    ![](figures/shap_marginal_geometry.png){width=90%}
 
-   _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about C\left(2 \vert \emptyset\right)$?_
+   _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about $C\left(2 \vert \emptyset\right)$?_
 
    _Exercise: Would you expect $\varphi_1(f, x)$ to be larger or smaller than
    $\varphi_2(f, x)$ for the function $f$ and sample $x$ in this visualization?
    Explain your reasoning._
 
-1. A potential downside of this approach is that, if the coordinates $S$ and
-$\bar{S}$ are correlated, then some of the sampled values $f(x_{S},
-X_{\bar{S}})$ might never appear in any real data (since we sample the
-coordinates $\bar{S}$ without referring to the current observation). That is, we
-might accidentally evaluate $f$ in a region of the data space far from any
-actual observations, and the function $f$ might behave unpredictably when we
-extrapolate in this way.
+1. A potential downside of this approach is that, if features are correlated,
+the marginal approach may evaluate $f$ at unrealistic input combinations. This
+is because values $X_{\bar{S}}$ are sampled without reference to the observed
+$x_{S}$.
 
    _Exercise: Can you modify the example in the previous figure to highlight the potential for this extrapolation issue?_
 
@@ -305,7 +293,7 @@ Rather than drawing $X_{\bar{S}}$ from the overall population distribution, we
 condition on the coordinates $x_{S}$ of the sample that we're trying to explain,
 
    $$
-   v(S) = \Esubarg{p\left(X_{\bar{S}} \vert X_{S} = x_{S}\right)}{f(x_{S}, X_{\bar{S}}) \vert X_{S} = x_{S}}.
+   v(S) = \Esubarg{p\left(X_{\bar{S}} \vert X_{S} = x_{S}\right)}{f(x_{S}, X_{\bar{S}})}.
    $$
 
 1. Unfortunately, unlike the marginal approach, there is no obvious estimator to
@@ -325,18 +313,19 @@ perspective, the marginal approach computes the more meaningful expectation.
 data $\tilde{x}$ and prediction algorithm inputs $x$. Denote an intervention
 that sets the input coordinates ${S}$ to $x_{S}$ by $\Earg{f(X_{S}, X_{\bar{S}})
 \vert \text{do}(X_{S} = x_{S})}$. In the literature on causality, this is called
-an _interventional_ conditional distribution. It is different from ordinary
+an _interventional_ conditional distribution.  It is different from ordinary
 conditioning on $X_{S} = x_{s}$, because when we intervene on $X_{S}$ we keep
-the values of $X_{\bar{S}}$ as they were originally (we don't adjust our
-prediction for plausible values over $\bar{S}$ conditional on the newly
-intervened coordinates $S$).
+the values of $X_{\bar{S}}$ as they were originally.  Conditioning asks "What do
+we expect $X_{\bar{S}}$​ to look like, given $X_S = x_S$ ?" In contrast,
+intervening asks "What if we force $X_S = x_S$ and leave everything else
+untouched?
 
 1. $^\dagger$ It turns out that
   $$
    \Esubarg{p(X_{\bar{S}})}{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})} = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
   $$
    The quantity on the right hand side is the marginal expectation we were
-   already using in equation @eq-marginal. The quantify on the left hand side is
+   already using in equation @eq-marginal. The quantity on the left hand side is
    the interventional conditional we just introduced. The takeaway is that the
    marginal approach approximates a causally meaningful quantity which better
    matches what we should seek when we try removing the influence of some
@@ -366,7 +355,7 @@ model = RandomForestClassifier(n_estimators=100)
 model.fit(X, y)
    ```
 
-1. Here, we're explaining the first 50 samples $x_1, \dots, x_50$ using the
+1. Here, we're explaining the first 50 samples $x_1, \dots, x_{50}$ using the
 marginal feature removal approach, as implemented by `KernelExplainer` (we'll go
 over the exact computational algorithm next week). The $N = 2000$ rows in `X`
 are used in computing the marginal expectation @eq-marginal. Notice that the
@@ -400,22 +389,23 @@ shap.plots.waterfall(exp_single)
    ```
 
 1. This is the analogous visualization if we stack those bars on top of one
-another and then compute the same quantify for many samples. The columns are
+another and then compute the same quantity for many samples. The columns are
 sorted so that samples with similar feature attributions go next to one another.
 This visualization is helpful for identifying samples that have different
 attributions, despite having similar predictions.
 
    ```{python}
-#| label: shap-aterfall2
+#| label: shap-force
 #| fig-width: 12
 #| fig-height: 6
+shap.plots.initjs()
 exp_all = shap.Explanation(
     values = sv,
     base_values = explainer.expected_value,
     data = X_explain.values,
     feature_names = X_explain.columns.tolist(),
 )
-shap.plots.waterfall(exp_all)
+shap.plots.force(exp_all)
    ```
 
    _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without using technical jargon. Summarize the main takeaways within context of the salary prediction problem._
@@ -424,7 +414,7 @@ shap.plots.waterfall(exp_all)
   $$
   \varphi_d(v) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
   $$
-  Stepping back, this is actually quite challenging to compute! It involves a
-  large sum, just to explain _a single sample_. In this code example, we've
-  swept this computational challenge under the rug. In our next handout, we'll
-  discuss some practical strategies to computing SHAP values.
+  Stepping back, this is actually challenging to compute! It involves a large
+  sum, just to explain _a single sample_. In this code example, we've swept this
+  computational challenge under the rug. In our next handout, we'll discuss some
+  practical strategies to computing SHAP values.
