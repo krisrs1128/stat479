@@ -142,7 +142,7 @@ across all subsets $S \subseteq{\mathcal{D} - \{d\}}$ excluding agent $d$,
 
    _Exercise: Express the following in terms of $v$. Which of these could appear in the definition of the Shapley value?_
      - _$C(1 \vert 2)$_
-     - _$C(1 \vert \empty)$_
+     - _$C(1 \vert \emptyset)$_
      - _$C(1 \vert 1)$_
      - _$C(3 \vert  \{1, 2\})$_
      - _$C(\{1, 2\} \vert 3)$_
