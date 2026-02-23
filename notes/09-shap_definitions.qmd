@@ -1,11 +1,12 @@
 ---
-title: "SHAP Definitions"
+title: "SHAP Foundations"
 author: Kris Sankaran
 date: 2026-02-23
+bibliography: references.bib
 format:
   html:
     embed-resources: true
-    html-math-method: katex
+    html-math-method: mathjax
 execute:
     echo: true
     message: false
@@ -16,8 +17,11 @@ execute:
 ::: {style="display: none;"}
 $$
 \newcommand{\bs}[1]{\mathbf{#1}}
-\newcommand{\reals}[1]{\mathbb{R}}
+\newcommand{\reals}{\mathbb{R}}
 \newcommand{\widebar}[1]{\overline{#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Earg}[1]{\mathbb{E}\left[{#1}\right]}
+\newcommand{\Esubarg}[2]{\mathbb{E}_{#1}\left[{#2}\right]}
 $$
 :::
 
@@ -150,7 +154,7 @@ in practice.
    - **Efficiency**. The sum of Shapley values is the profit from the "grand
    coaliation" including all agents minus the profit from the empty coalition,
     $$
-    \sum_{d = 1}^{D} \varphi_{d}(v) = v\left(\mathcal{D}\right) - v\left(\empty\right)
+    \sum_{d = 1}^{D} \varphi_{d}(v) = v\left(\mathcal{D}\right) - v\left(\emptyset\right)
     $$
     Intuitively, the total company profit is distributed across all employees,
     and nothing is left over.
@@ -189,12 +193,12 @@ ignore it. Different ways of answering this feature removal question lead to
 different definitions of $C$. But once we have this, we can plug it into
 Equation @eq-shapley to arrive at a local feature attribution for sample $x$.
 
-## Feature Removal
+## Deterministic Feature Removal
 
 1. There are three common proposals for feature removal: baseline, marginal, and
 conditional. We'll review them one by one.
 
-1. Let $x'$ denote a "baseline" value. For example, it could be the vector
+1. Let $x'$ denote a _baseline_ value. For example, it could be the vector
 $\mathbf{0}\in \reals^{D}$, or it could be the average $\bar{x} \in \reals^{D}$.
 Then, we can set,
 $$
@@ -210,7 +214,7 @@ and replaces them by a baseline value $x'$.
    $$
    \begin{align*}
    C(d \vert S) &= v\left(S \cup \{d\}\right) - v(S)\\
-   &= f(x_{S \cup \{d\}}, x'_{\overline{S \cup \{d\}}}) - f(x_{S}, x'_{\bar{S}})
+   &= f\left(x_{S \cup \{d\}}, x'_{\overline{S \cup \{d\}}}\right) - f\left(x_{S}, x'_{\bar{S}}\right)
    \end{align*}
    $$
    which is the change in our prediction when we are allowed to use feature $d$
@@ -220,5 +224,86 @@ and replaces them by a baseline value $x'$.
 1. The downside of this approach is that it depends on the choice of baseline
 $x'$, and it's not obvious what a good choice of $D$ should be.
 
+## Sampling-based Feature Removal
+
+1. The marginal and conditional approach will replace the deterministic baseline
+with expectations over randomly sampled coordinates. Let $X_{S}$ denote a random
+variable defined over the coordinates $S$ (define $X_{\bar{S}}$ similarly).  The
+_marginal_ approach defines $v$ using,
+   $$
+   v(S) = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
+   $$ {#eq-marginal}
+
+   This no longer depends on an arbitrary baseline $x'$, but it still has the
+   interpretation of "simplifying" the original function $f$ so that it only
+   depends on the coordinates $S$. The simplification occurs by computing the
+   average value of $f$ when plugging in random draws of $X_{\bar{S}}$ for the
+   coordinates that we want to remove.
+
+1. This is a theoretical expectation, and in practice it's approximated with the
+training data, $x_1, \dots, x_{N}$,
+
+   $$
+   v(S) = \frac{1}{N} \sum_{i = 1}^{N} f(x_S, x_{i,\bar{S}}).
+   $$
+
+1. A potential downside of this approach is that, if the coordinates $S$ and
+$\bar{S}$ are correlated, then some of the sampled values $f(x_{S},
+X_{\bar{S}})$ might never appear in any real data (since we sample the
+coordinates $\bar{S}$ without referring to the current observation). That is, we
+might accidentally evaluate $f$ in a region of the data space far from any
+actual observations, and the function $f$ might behave unpredictably when we
+extrapolate in this way.
+
+1. The _conditional_ feature removal approach tries to address this problem.
+Rather than drawing $X_{\bar{S}}$ from the overall population distribution, we
+condition on the coordinates $x_{S}$ of the sample that we're trying to explain,
+
+   $$
+   v(S) = \Esubarg{p\left(X_{\bar{S}} \vert X_{S} = x_{S}\right)}{f(x_{S}, X_{\bar{S}}) \vert X_{S} = x_{S}}.
+   $$
+
+1. Unfortunately, unlike the marginal approach, there is no obvious estimator to
+approximate this theoretical value. Under some assumptions (e.g., multivariate
+gaussianity), it might be possible to compute the conditional expectations in
+closed form. Alternatively, some researchers advocate learning a new "surrogate"
+model that is trained to approximate and support sampling from these conditional
+distributions.
+
+## Causal Intervention Perspective
+
+1. $^\dagger$ Some researchers [@janzing20a] have argued that point (3) in the
+previous section is not actually a problem, and that, from a causality
+perspective, the marginal approach computes the more meaningful expectation.
+
+1. $^\dagger$. To see this, we need to notationally distinguish between observed
+data $\tilde{x}$ and prediction algorithm inputs $x$. Denote an intervention
+that sets the input coordinates ${S}$ to $x_{S}$ by $\Earg{f(X_{S}, X_{\bar{S}})
+\vert \text{do}(X_{S} = x_{S})}$. In the literature on causality, this is called
+an _interventional_ conditional distribution. It is different from ordinary
+conditioning on $X_{S} = x_{s}$, because when we intervene on $X_{S}$ we keep
+the values of $X_{\bar{S}}$ as they were originally (we don't adjust our
+prediction for plausible values over $\bar{S}$ conditional on the newly
+intervened coordinates $S$).
+
+1. $^\dagger$ It turns out that
+  $$
+   \Esubarg{p(X_{\bar{S}})}{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})} = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
+  $$
+   The quantity on the right hand side is the marginal expectation we were
+   already using in equation @eq-marginal. The quantify on the left hand side is
+   the interventional conditional we just introduced. The takeaway is that the
+   marginal approach approximates a causally meaningful quantity which better
+   matches what we should seek when we try removing the influence of some
+   features.
 
 ## Code Example
+
+1. Throughout the note, we've been assuming access to quantities like,
+  $$
+  \varphi_d(v) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
+  $$
+  Stepping back, this is actually quite challenging to compute! It involves a
+  large sum, just to explain _a single sample_. In this code example, we've
+  swept this computational challenge under the rug. In our next handout, we'll
+  discuss some practical strategies to computing SHAP values.
