@@ -47,7 +47,7 @@ set.seed(2026)
 #| echo: false
 # includes the SHAP package. Can install it using,
 # > conda env create -f stat479_week6.yml
-# where the yaml file is located at:
+# where the yaml file is located at: https://github.com/krisrs1128/stat479_notes/blob/master/notes/stat479_week6.yml
 use_condaenv("stat479_week6")
 ```
 
@@ -140,6 +140,13 @@ across all subsets $S \subseteq{\mathcal{D} - \{d\}}$ excluding agent $d$,
    included agent $d$, then the definition of the contribution $C(d \vert S)$ of
    $d$ to $S$ wouldn't make sense).
 
+   _Exercise: Express the following in terms of $v$. Which of these could appear in the definition of the Shapley value?_
+     - _$C(1 \vert 2)$_
+     - _$C(1 \vert \empty)$_
+     - _$C(1 \vert 1)$_
+     - _$C(3 \vert  \{1, 2\})$_
+     - _$C(\{1, 2\} \vert 3)$_
+
 1. The weights $1/(D {D - 1 \choose \left|S\right|})$ ensure that the weights
 sum to 1, making $\varphi_{d}(v)$ a proper weighted average of marginal
 contributions. For any coalition of size $s$, there are ${D - 1 \choose s}$
@@ -211,6 +218,8 @@ example, $\mathbf{0}\in \reals^{D}$, or the sample mean $\bar{x} \in
    <span class="darkblue">$x'$</span> elsewhere.
 
    ![](figures/baseline_subsets_single.png){width=35%}
+
+   _Exercise: Suppose that $x$ is an image and that $x'$ is the all zeros image. What would $\left(x_{S}, x'_{\bar{S}}\right)$ look like?_
 
 1. The marginal contributions become,
 
@@ -288,6 +297,8 @@ coordinates ${S}$ to $x_{S}$ while leaving $X_{\bar{S}}$ undisturbed, written as
    what do we expect $X_{\bar{S}}$​ to look like?" In contrast, intervening asks
    "What if we force $X_S = x_S$ and leave everything else untouched?"
 
+   _Exercise: Compare and contrast interventional conditional distributions with CP profiles._
+
 1. $^\dagger$ Conditioning on $X_S = x_S$ can change the distribution of
 $X_{\bar{S}}$ in a way that creates nonzero attributions for any feature $d$
 that is correlated with $X_S$, even even if they aren't in the model.
@@ -317,6 +328,8 @@ indicates whether they make more than $50K/year.
    ```{python}
 #| label: shap-data
 import shap
+import matplotlib.pyplot as plt
+plt.rcParams['figure.autolayout'] = True
 
 X, y = shap.datasets.adult()
 X, y = X.iloc[:2000], y[:2000]   # subsample for speed
@@ -340,14 +353,17 @@ explainer only needs access to the anonymous function `predictor` -- it doesn't
 require any knowledge of the type of model implemented within it.
 
    ```{python}
-   #| label: shap-values
-   X_explain = X.iloc[:50]
-   predictor = lambda X: model.predict_proba(X)[:, 1]
+#| label: shap-values
+#| output: false
+X_explain = X.iloc[:50]
+predictor = lambda X: model.predict_proba(X)[:, 1]
 
-   #explainer  = shap.KernelExplainer(predictor, X) # if you want to run accurate version
-   explainer  = shap.KernelExplainer(predictor, X.sample(100)) # if you want to run the fast version
-   sv = explainer.shap_values(X_explain) # shape: (50 samples, D_features)
+#explainer  = shap.KernelExplainer(predictor, X) # if you want to run accurate version
+explainer  = shap.KernelExplainer(predictor, X.sample(100)) # if you want to run the fast version
+sv = explainer.shap_values(X_explain)
    ```
+
+   _Exercise: What is the dimension of `sv`?_
 
 1. A waterfall plot shows $\varphi_d(f, x)$ for all $d$ features. By the
 efficiency axiom, the sum of these bars is equal to the predicted response.
