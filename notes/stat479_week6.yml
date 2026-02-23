@@ -1,0 +1,9 @@
+name: stat479_week6
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - shap
+  - python
+  - matplotlib
+prefix: /opt/miniconda3/envs/stat479_week6

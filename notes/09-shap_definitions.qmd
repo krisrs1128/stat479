@@ -51,13 +51,13 @@ set.seed(2026)
 use_condaenv("stat479_week6")
 ```
 
-_Readings: [1](https://arxiv.org/abs/2207.07605), [2](https://proceedings.mlr.press/v108/janzing20a.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/09-shap_definitions.qmd)_
+_Readings: [1](https://arxiv.org/abs/2207.07605) (required), [2](https://proceedings.mlr.press/v108/janzing20a.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/09-shap_definitions.qmd)_
 
 Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
 
 ## Setup
 
-**Goal.** Given a model $f$ and a sample $x \in \reals^{D}$, return a _local feature attribution_ $\varphi_d\left(x_i\right)$ that quantifies the contribution of feature $d$ to the prediction $f\left(x\right)$.
+**Goal.** Given a model <span class="purple">$f$</span> and a sample $x \in \reals^{D}$, return a _local feature attribution_ $\varphi_d\left(x\right)$ that quantifies the contribution of <span class="pink">feature $d$</span> to the prediction <span class="purple">$f\left(x\right)$</span>.
 
 **Requirements.**
 
@@ -130,10 +130,11 @@ subpopulation compared to another.
 
 1. The SHAP algorithm is motivated by the credit assignment problem from game
 theory. In this problem, we imagine agents $\mathcal{D} = \{1, \dots, D\}$ and
-imagine that if a subset of agents work on a team $S$, then we observe profit
-$v(S)$. The question is how much of the overall company's profit
-$v(\mathcal{D})$ we should share with agent $d$. Call this amount the "Shapley
-value" for agent $d$, denoted by $\varphi_{d}(v)$.
+imagine that if a subset of agents work on a <span class="green">team
+$S$</span>, then we observe profit $v(S)$. The question is how much of the
+overall company's profit $v(\mathcal{D})$ we should share with agent $d$. Call
+this amount the "Shapley value" for <span class="pink">agent $d$</span>, denoted
+by $\varphi_{d}(v)$.
 
 1. Intuitively, we can consider how much agent $d$ would add to each team $S$ by
 comparing the profits $v(S \cup \{d\})$ and $v(S)$ with and without that agent,
@@ -212,23 +213,25 @@ ignore it. Different ways of answering this feature removal question lead to
 different definitions of $C$. But once we have this, we can plug it into
 Equation @eq-shapley to arrive at a local feature attribution for sample $x$.
 
-   _Exercise: Consider the four axioms for game theoretic SHAP. What do they imply about $\varphi_d(f, x)$?_
+   _Exercise: Pick one of the four axioms for game theoretic SHAP. What does it
+   imply about $\varphi_d(f, x)$?_
 
 ## Deterministic Feature Removal
 
 1. There are three common proposals for feature removal: baseline, marginal, and
 conditional. We'll review them one by one.
 
-1. Let $x'$ denote a _baseline_ value. For example, it could be the vector
-$\mathbf{0}\in \reals^{D}$, or it could be the average $\bar{x} \in \reals^{D}$.
-Then, we can set,
+1. Let <span class="darkblue">$x'$ denote a _baseline_ value</span>. For
+example, it could be the vector $\mathbf{0}\in \reals^{D}$, or it could be the
+average $\bar{x} \in \reals^{D}$.  Then, we can set,
 $$
 v(S) = f(x_{S}, x'_{\bar{S}}) \\
 $$
 where $x_{S}, x_{\bar{S}}$ are used to index the coordinates of $x$ included and
-excluded from the set $S$, respectively. This has the interpretation of being a
-"simplified" version of $f$ that ignores any of the real data coordinates in $S$
-and replaces them by a baseline value $x'$.
+excluded from the <span class="green">set $S$</span>, respectively. This has the
+interpretation of being a "simplified" version of <span
+class="purple">$f$</span> that ignores any of the real data coordinates in $S$
+and replaces them by a baseline value <span class="darkblue">$x'$</span>.
 
    ![](figures/baseline_subsets_single.png){width=35%}
 
@@ -372,12 +375,12 @@ it doesn't require any knowledge of the type of model implemented within it.
 
    ```{python}
    #| label: shap-values
-background = X.sample(100)
-X_explain = X.iloc[:50]
+   X_explain = X.iloc[:50]
+   predictor = lambda X: model.predict_proba(X)[:, 1]
 
-predictor = lambda X: model.predict_proba(X)[:, 1]
-explainer  = shap.KernelExplainer(predictor, X)
-sv = explainer.shap_values(X_explain)   # shape: (50, n_features)
+   #explainer  = shap.KernelExplainer(predictor, X) # if you want to run accurate version
+   explainer  = shap.KernelExplainer(predictor, X.sample(100)) # if you want to run the fast version
+   sv = explainer.shap_values(X_explain) # shape: (50 samples, D_features)
    ```
 
 1. A waterfall plot shows $\varphi_d(f, x)$ for all $d$ features. By the
@@ -385,6 +388,8 @@ efficiency axiom, the sum of these bars is equal to the predicted response.
 
    ```{python}
 #| label: shap-waterfall
+#| fig-width: 8
+#| fig-height: 6
 exp_single = shap.Explanation(
     values = sv[0],
     base_values = explainer.expected_value,
@@ -394,22 +399,23 @@ exp_single = shap.Explanation(
 shap.plots.waterfall(exp_single)
    ```
 
-1. If we stack the waterfall bars on top of one another and then compute the
-same quantify for many samples, we obtain a beeswarm plot. The columns are
+1. This is the analogous visualization if we stack those bars on top of one
+another and then compute the same quantify for many samples. The columns are
 sorted so that samples with similar feature attributions go next to one another.
 This visualization is helpful for identifying samples that have different
 attributions, despite having similar predictions.
 
    ```{python}
-#| label: shap-beeswarm
-# Beeswarm plot: SHAP value distributions across all explained samples.
+#| label: shap-aterfall2
+#| fig-width: 12
+#| fig-height: 6
 exp_all = shap.Explanation(
     values = sv,
     base_values = explainer.expected_value,
     data = X_explain.values,
     feature_names = X_explain.columns.tolist(),
 )
-shap.plots.beeswarm(exp_all)
+shap.plots.waterfall(exp_all)
    ```
 
    _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without using technical jargon. Summarize the main takeaways within context of the salary prediction problem._
