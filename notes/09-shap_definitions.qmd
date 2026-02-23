@@ -246,11 +246,12 @@ training distribution. The _marginal_ approach defines,
    v(S) = \frac{1}{N} \sum_{i = 1}^{N} f(x_S, x_{i,\bar{S}}).
    $$
    ![](figures/shap_marginal_matrices.png){width=50%}
+
    The figure below gives a geometric representation of one term in the SHAP
    sum,
    ![](figures/shap_marginal_geometry.png){width=90%}
 
-   _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about $C\left(2 \vert \emptyset\right)$?_
+   _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about $C\left(1 \vert \emptyset\right)$?_
 
    _Exercise: Would you expect $\varphi_1(f, x)$ to be larger or smaller than $\varphi_2(f, x)$ for the $f$ and $x$ shown? Explain your reasoning._
 
@@ -285,16 +286,27 @@ coordinates ${S}$ to $x_{S}$ while leaving $X_{\bar{S}}$ undisturbed, written as
    $$\Earg{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})}$$
    This differs from ordinary conditioning, which asks "given $X_{S} = x_{S}$,
    what do we expect $X_{\bar{S}}$​ to look like?" In contrast, intervening asks
-   "What if we force $X_S = x_S$ and leave everything else untouched?
+   "What if we force $X_S = x_S$ and leave everything else untouched?"
+
+1. $^\dagger$ Conditioning on $X_S = x_S$ can change the distribution of
+$X_{\bar{S}}$ in a way that creates nonzero attributions for any feature $d$
+that is correlated with $X_S$, even even if they aren't in the model.
+Interventions avoid this because they leave $X_{\bar{S}}$ unchanged.
+
+1. $^\dagger$ To make this concrete, suppose $X_1$ is a thermometer measurement,
+$X_2$ is the actual temperature, and $f(X_1, X_2) = X_2$ only depends on the
+actual temperature. Since the two variables are correlated, $\Esubarg{p(X_2
+\vert X_1 = x_1)}{X_2} \neq \Earg{X_2}$, so $C(1 \vert \emptyset) \neq 0$ and we
+get a nonzero attribution for $X_1$, even though it isn't in the model^[In full detail,
+    $C(1 \vert \emptyset) = v(\{1\}) - v(\emptyset) = \Esubarg{p(X_2 \vert X_1 = x_1)}{X_2} - \Esubarg{p(X_1, X_2)}{X_2} \neq 0$ and $C(1 \vert 2) = v(\{1, 2\}) - v(\{2\}) = f(x_1, x_2) - \Esubarg{p(X_1 \vert X_2 = x_2)}{f(X_1, x_2)} = x_2 - x_2 = 0$ where in the last step we used the fact that $f(X_1, x_2) = x_2$ deterministically. Therefore the terms don't cancel and we obtain a nonzero Shapley value.].
 
 1. $^\dagger$ It turns out that
-  $$
+   $$
    \Esubarg{p(X_{\bar{S}})}{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})} = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
-  $$
-   The right hand side is exactly the marginal expectation from equation
-   @eq-marginal. So, the marginal approach is not just a computational
-   convenience, it approximates a causally meaningful quantity that refelcts
-   what it means to remove a feature's influence.
+   $$
+   The right hand side is exactly the marginal expectation from @eq-marginal.
+   So, the marginal approach matches a causally meaningful quantity that
+   reflects what it means to remove a feature's influence.
 
 ## Code Example
 
