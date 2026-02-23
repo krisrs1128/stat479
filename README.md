@@ -8,3 +8,5 @@
 - [Get Out the Vote Case Study](https://krisrs1128.github.io/stat479_notes/activities/03-gotv_cart.html)
 - [Tree Ensembles](https://krisrs1128.github.io/stat479_notes/notes/08-tree_ensembles.html)
 - [Boosting and Pocket Measurements](https://krisrs1128.github.io/stat479_notes/activities/04-pockets.html)
+- [SHAP Foundations](https://krisrs1128.github.io/stat479_notes/notes/09-shap_definitions.html)
+- [Drosophila Case Study](https://krisrs1128.github.io/stat479_notes/activities/05-drosophila.html)
