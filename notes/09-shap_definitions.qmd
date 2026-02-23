@@ -118,23 +118,20 @@ identifying which features drive drug effectiveness in one subgroup vs. another.
 
 ## Game Theory Definitions
 
-1. The SHAP algorithm is motivated by the credit assignment problem from game
-theory. In this problem, we imagine agents $\mathcal{D} = \{1, \dots, D\}$ and
-imagine that if a subset of agents work on a <span class="green">team
-$S$</span>, then we observe profit $v(S)$. The question is how much of the
-overall company's profit $v(\mathcal{D})$ we should share with agent $d$. Call
-this amount the "Shapley value" for <span class="pink">agent $d$</span>, denoted
-by $\varphi_{d}(v)$.
+1. SHAP is motivated by the credit assignment problem from game theory. Imagine
+agents $\mathcal{D} = \{1, \dots, D\}$ and imagine where any <span
+class="green">subset $S$</span> earns profit $v(S)$. How much of the total
+profit $v(\mathcal{D})$ should agent $d$ receive?  This share is the **Shapley
+value** $\varphi_{d}(v)$.
 
-1. Intuitively, we can consider how much agent $d$ would add to each team $S$ by
-comparing the profits $v(S \cup \{d\})$ and $v(S)$ with and without that agent,
-respectively. To this end, define the "contributions" of agent $d$ to team $S$:
-$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S)$
+1. Intuitively, agent $d$'s contribution depends on how much they add to each
+team $S$.  Define the marginal contributions of agent $d$ to team $S$ as,
+   $$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S)$$
 
    ![](figures/c_d_s_defn.png){width=50%}
 
-1. Taking a weighted average of these contributions across subsets $S$, we
-arrive at agent $d$'s Shapley value,
+1. The Shapley value is a weighted average of these marginal contributions
+across all subsets $S \subseteq{\mathcal{D} - \{d\}}$ excluding agent $d$,
 
    $$
   \varphi_d(v) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
@@ -143,90 +140,79 @@ arrive at agent $d$'s Shapley value,
    included agent $d$, then the definition of the contribution $C(d \vert S)$ of
    $d$ to $S$ wouldn't make sense).
 
-1. Where does the coefficient $1/(D {D - 1 \choose \left|S\right|})$ come
-from? The idea is that it makes the SHAP value a weighted average where the
-weights sum to 1. To see this, note that for any given size $s$, there are ${D -
-1 \choose s}$ coalitions of that size (that exclude agent $d$). The number of
-possible coalitions sizes is $s = 0, \dots, D - 1$ (again because we exclude
-agent $d$). Therefore, the total weight across all coalitions under
-consideration is,
+1. The weights $1/(D {D - 1 \choose \left|S\right|})$ ensure that the weights
+sum to 1, making $\varphi_{d}(v)$ a proper weighted average of marginal
+contributions. For any coalition of size $s$, there are ${D - 1 \choose s}$
+subsets with that size, so the total weight is,
 
    $$\sum_{s=0}^{D-1} \binom{D-1}{s} \frac{1}{D\binom{D-1}{s}} = \sum_{s=0}^{D-1} \frac{1}{D} = 1.$$
 
    ![](figures/shap_subsets_enumerate.png){width=70%}
 
-1. It turns out that this value is the solution to this problem that satisfies
-the following axioms. This fact is often used to justify using this definition
-in practice.
+1. The Shapley value is the unique solution satisfying the axioms below, giving
+this approach a principled justification,
 
-   - **Efficiency**. The sum of Shapley values is the profit from the "grand
-   coaliation" including all agents minus the profit from the empty coalition,
+   - **Efficiency**. Shapley values sum to the total profit:
     $$
     \sum_{d = 1}^{D} \varphi_{d}(v) = v\left(\mathcal{D}\right) - v\left(\emptyset\right)
     $$
-    Intuitively, the total company profit is distributed across all employees,
-    and nothing is left over.
+    All profit is distributed and nothing is left over.
 
-   - **Monotonicity**. If an agent's marginal contribution is always at least
-   as large in one game as in another (intuitively, this could be the profit
-   across two separate years), then they should receive at least as much credit
-   in the first game. That is, if $v_1\left(S \cup \{d\}\right) - v_1(S) \geq
-   v_2\left(S \cup \{d\}\right) - v_2(S)$ for all $S$, then $\varphi_d(v_1) \geq
-   \varphi_d(v_2)$.
+   - **Monotonicity**. If agent $d$ contributes at least as much in game $v_1$
+   as in $v_2$ for every coalition^[That is, if $v_1\left(S \cup \{d\}\right) -
+   v_1(S) \geq v_2\left(S \cup \{d\}\right) - v_2(S)$.], then $\varphi_d(v_1)
+   \geq \varphi_d(v_2)$.
 
-   - **Symmetry**. If a player always contributes the same amount as another player,
-   then the two players should get equal credit. That is, if $v(S \cup \{d\}) =
-   v(S \cup \{d'\})$ for every $S$, then $\varphi_d(v) = \varphi_{d'}(v)$.
+   - **Symmetry**. Equal contributors receive equal credit.  That is, if $v(S
+   \cup \{d\}) = v(S \cup \{d'\})$ for every $S$, then $\varphi_d(v) =
+   \varphi_{d'}(v)$.
 
-   - **Missingness**. If agent $d$ never contributes, they should get no credit.
-   That is, if $v\left(S \cup \{d\}\right) = v\left(S\right)$ for every team
-   $S$, then $\varphi_d(v) = 0$.
+   - **Missingness**. An agent that never contributes receives nothing.  That
+   is, if $v\left(S \cup \{d\}\right) = v\left(S\right)$ for every $S$, then
+   $\varphi_d(v) = 0$.
 
 ## Machine Learning Analogy
 
-1. It's not at all obvious that this has anything to do with machine learning.
-But viewed from the right angle, this turns out to give a natural solution to
-the local feature attribution problem. Consider,
+1. The key insight is that we can map this game theoretic setup to the local
+feature attribution problem:
 
-   - "profit $v(\mathcal{D})$" $\to$ "prediction $f(x)$ on sample $x$."
+   - "profit $v(\mathcal{D})$" $\to$ "prediction $f(x)$"
    - "agent $d$" $\to$ "feature $d$."
-   - "team $\mathcal{S} \subset \mathcal{D}$" $\to$ "subset of features $S \subset \mathcal{D}$."
+   - "team $S$" $\to$ "subset of features $S \subset \mathcal{D}$."
 
-   Instead of distributing profit $v(\mathcal{D})$ across agents, we attribute a
-   prediction $f(x)$ across features. We denote the associated attribution
-   $\varphi_d(f, x)$
+   Instead of distributing profit across agents, we attribute a prediction
+   $f(x)$ across features. We denote this attribution $\varphi_d(f, x)$
 
    ![](figures/game_theory_ml_analogy.png){width=60%}
 
-1. At a high-level, we want to define $C(d \vert S)$ to represent the change in
-our predictions when we are allowed to use feature $d$ vs. when we are forced to
-ignore it. Different ways of answering this feature removal question lead to
-different definitions of $C$. But once we have this, we can plug it into
-Equation @eq-shapley to arrive at a local feature attribution for sample $x$.
+1. For this to work, we need to define $C(d \vert S)$ as the change in
+prediction feature $d$ is included vs. removed.  Different answers to this
+feature removal question lead to different Shap values. But once $C$ is defined,
+we can substitute it into Equation @eq-shapley to get a local feature
+attribution for sample $x$.
 
    _Exercise: Pick one of the four axioms for game theoretic SHAP. What does it
    imply about $\varphi_d(f, x)$?_
 
 ## Deterministic Feature Removal
 
-1. There are three common proposals for feature removal: baseline, marginal, and
-conditional. We'll review them one by one.
+1. There are three common approaches to feature removal: baseline, marginal, and
+conditional. We'll review each in turn.
 
 1. Let <span class="darkblue">$x'$ denote a _baseline_ value</span>. For
-example, it could be the vector $\mathbf{0}\in \reals^{D}$, or it could be the
-average $\bar{x} \in \reals^{D}$.  Then, we can set,
-$$
-v(S) = f(x_{S}, x'_{\bar{S}}) \\
-$$
-where $x_{S}, x_{\bar{S}}$ are used to index the coordinates of $x$ included and
-excluded from the <span class="green">set $S$</span>, respectively. This has the
-interpretation of being a "simplified" version of <span
-class="purple">$f$</span> that uses the real data for coordinates in $S$
-and replaces the remaining coordinates with the baseline <span class="darkblue">$x'$</span>.
+example, $\mathbf{0}\in \reals^{D}$, or the sample mean $\bar{x} \in
+\reals^{D}$.  Define
+   $$
+   v(S) = f(x_{S}, x'_{\bar{S}}) \\
+   $$
+   where $x_{S}$ and $x_{\bar{S}}$ index the coordinates of $x$ included and
+   excluded from <span class="green">$S$</span>. This uses the real feature
+   values from sample $x$ for coordinates in $S$ and substitutes the baseline
+   <span class="darkblue">$x'$</span> elsewhere.
 
    ![](figures/baseline_subsets_single.png){width=35%}
 
-1. The associated contributions have the form:
+1. The marginal contributions become,
 
    $$
    \begin{align*}
@@ -234,74 +220,58 @@ and replaces the remaining coordinates with the baseline <span class="darkblue">
    &= f\left(x_{S \cup \{d\}}, x'_{\overline{S \cup \{d\}}}\right) - f\left(x_{S}, x'_{\bar{S}}\right)
    \end{align*}
    $$
-   which is the change in our prediction when we are allowed to use feature $d$
-   (left hand side) vs. when we remove it and replace it with a baseline value
-   (right hand side).
+   This is the change in prediction when feature $d$ is included (left) vs.
+   replaced by the baseline (right).
 
    ![](figures/shap_baseline_vector.png){width=50%}
 
 1. The downside of this approach is that it depends on the choice of baseline
-$x'$, and it's not obvious what a good choice of $x'$ should be.
+$x'$, and there is no obvious principled way to choose it.
 
    ![](figures/shap_baseline_geometry.png){width=90%}
 
 ## Sampling-based Feature Removal
 
-1. The marginal and conditional approach will replace the deterministic baseline
-with expectations over randomly sampled coordinates. Consider $X_{\bar{S}}$ is a
-random vector whose coordinates are the features *not* in $S$, drawn from the
-same distribution as the training data. The _marginal_ approach defines $v$
-using, $$
+1. Both the marginal and conditional approaches replace the deterministic
+baseline with an expectation over randomly sampled coordinates. Let
+$X_{\bar{S}}$ be a random vector of the features *not* in $S$, drawn from the
+training distribution. The _marginal_ approach defines,
+   $$
    v(S) = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
    $$ {#eq-marginal}
 
-   This no longer depends on an arbitrary baseline $x'$, but it still has the
-   interpretation of "simplifying" the original function $f$ so that it only
-   depends on the coordinates $S$. The simplification occurs by computing the
-   average value of $f$ when plugging in random draws of $X_{\bar{S}}$ for the
-   coordinates that we want to remove.
-
-1. This is a theoretical expectation, and in practice it's approximated with the
-training data, $x_1, \dots, x_{N}$,
-
+1. In practice, this expectation can be approximated by the training data, $x_1,
+\dots, x_{N}$,
    $$
    v(S) = \frac{1}{N} \sum_{i = 1}^{N} f(x_S, x_{i,\bar{S}}).
    $$
-
    ![](figures/shap_marginal_matrices.png){width=50%}
-
-   Here is a geometric representation for one of the terms in the SHAP
-   definition.
-
+   The figure below gives a geometric representation of one term in the SHAP
+   sum,
    ![](figures/shap_marginal_geometry.png){width=90%}
 
    _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about $C\left(2 \vert \emptyset\right)$?_
 
-   _Exercise: Would you expect $\varphi_1(f, x)$ to be larger or smaller than
-   $\varphi_2(f, x)$ for the function $f$ and sample $x$ in this visualization?
-   Explain your reasoning._
+   _Exercise: Would you expect $\varphi_1(f, x)$ to be larger or smaller than $\varphi_2(f, x)$ for the $f$ and $x$ shown? Explain your reasoning._
 
 1. A potential downside of this approach is that, if features are correlated,
 the marginal approach may evaluate $f$ at unrealistic input combinations. This
-is because values $X_{\bar{S}}$ are sampled without reference to the observed
-$x_{S}$.
+is because $X_{\bar{S}}$ is sampled independently from the observed $x_{S}$.
 
-   _Exercise: Can you modify the example in the previous figure to highlight the potential for this extrapolation issue?_
+   _Exercise: Modify the previous figure to illustrate this extrapolation issue._
 
-1. The _conditional_ feature removal approach tries to address this problem.
-Rather than drawing $X_{\bar{S}}$ from the overall population distribution, we
-condition on the coordinates $x_{S}$ of the sample that we're trying to explain,
+1. The _conditional_ approach addresses this by drawing $X_{\bar{S}}$ from the
+distribution conditioned on the observed $x_{S}$,
 
    $$
    v(S) = \Esubarg{p\left(X_{\bar{S}} \vert X_{S} = x_{S}\right)}{f(x_{S}, X_{\bar{S}})}.
    $$
 
-1. Unfortunately, unlike the marginal approach, there is no obvious estimator to
-approximate this theoretical value. Under some assumptions (e.g., multivariate
-gaussianity), it might be possible to compute the conditional expectations in
-closed form. Alternatively, some researchers advocate learning a new "surrogate"
-model that is trained to approximate and support sampling from these conditional
-distributions.
+1. Unlike the marginal approach, there is no generic estimator for this
+conditional expectation.  Under some assumptions (e.g., multivariate
+gaussianity), it might be available in closed form. Alternatively, one approach
+is to train a surrogate model to approximate and sample from the required
+conditional distributions.
 
 ## Causal Intervention Perspective
 
@@ -309,33 +279,28 @@ distributions.
 previous section is not actually a problem, and that, from a causality
 perspective, the marginal approach computes the more meaningful expectation.
 
-1. $^\dagger$. To see this, we need to notationally distinguish between observed
-data $\tilde{x}$ and prediction algorithm inputs $x$. Denote an intervention
-that sets the input coordinates ${S}$ to $x_{S}$ by $\Earg{f(X_{S}, X_{\bar{S}})
-\vert \text{do}(X_{S} = x_{S})}$. In the literature on causality, this is called
-an _interventional_ conditional distribution.  It is different from ordinary
-conditioning on $X_{S} = x_{s}$, because when we intervene on $X_{S}$ we keep
-the values of $X_{\bar{S}}$ as they were originally.  Conditioning asks "What do
-we expect $X_{\bar{S}}$​ to look like, given $X_S = x_S$ ?" In contrast,
-intervening asks "What if we force $X_S = x_S$ and leave everything else
-untouched?
+1. $^\dagger$. To see this, we distinguish between observed data $\tilde{x}$ and
+model inputs $x$. An intervention conditional distribution sets the input
+coordinates ${S}$ to $x_{S}$ while leaving $X_{\bar{S}}$ undisturbed, written as
+   $$\Earg{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})}$$
+   This differs from ordinary conditioning, which asks "given $X_{S} = x_{S}$,
+   what do we expect $X_{\bar{S}}$​ to look like?" In contrast, intervening asks
+   "What if we force $X_S = x_S$ and leave everything else untouched?
 
 1. $^\dagger$ It turns out that
   $$
    \Esubarg{p(X_{\bar{S}})}{f(X_{S}, X_{\bar{S}}) \vert \text{do}(X_{S} = x_{S})} = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})}
   $$
-   The quantity on the right hand side is the marginal expectation we were
-   already using in equation @eq-marginal. The quantity on the left hand side is
-   the interventional conditional we just introduced. The takeaway is that the
-   marginal approach approximates a causally meaningful quantity which better
-   matches what we should seek when we try removing the influence of some
-   features.
+   The right hand side is exactly the marginal expectation from equation
+   @eq-marginal. So, the marginal approach is not just a computational
+   convenience, it approximates a causally meaningful quantity that refelcts
+   what it means to remove a feature's influence.
 
 ## Code Example
 
 1. Let's apply the `shap` python package to identify important variables in the
-`adult` dataset included in the package. Each $x_i$ gives survey responses for
-person $i$, and $y_i$ is an indicator of whether they make more than $50K/year.
+`adult` dataset. Each $x_i$ is a survey response for person $i$, and $y_i$
+indicates whether they make more than $50K/year.
 
    ```{python}
 #| label: shap-data
@@ -358,9 +323,9 @@ model.fit(X, y)
 1. Here, we're explaining the first 50 samples $x_1, \dots, x_{50}$ using the
 marginal feature removal approach, as implemented by `KernelExplainer` (we'll go
 over the exact computational algorithm next week). The $N = 2000$ rows in `X`
-are used in computing the marginal expectation @eq-marginal. Notice that the
-explanation function only needs access to the anonymous function `predictor` --
-it doesn't require any knowledge of the type of model implemented within it.
+are used in estimating the marginal expectation @eq-marginal. Notice that the
+explainer only needs access to the anonymous function `predictor` -- it doesn't
+require any knowledge of the type of model implemented within it.
 
    ```{python}
    #| label: shap-values
@@ -377,7 +342,7 @@ efficiency axiom, the sum of these bars is equal to the predicted response.
 
    ```{python}
 #| label: shap-waterfall
-#| fig-width: 8
+#| fig-width: 12
 #| fig-height: 6
 exp_single = shap.Explanation(
     values = sv[0],
@@ -388,7 +353,7 @@ exp_single = shap.Explanation(
 shap.plots.waterfall(exp_single)
    ```
 
-1. This is the analogous visualization if we stack those bars on top of one
+1. This is the analogous visualization if we stack the bars on top of one
 another and then compute the same quantity for many samples. The columns are
 sorted so that samples with similar feature attributions go next to one another.
 This visualization is helpful for identifying samples that have different
@@ -408,13 +373,13 @@ exp_all = shap.Explanation(
 shap.plots.force(exp_all)
    ```
 
-   _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without using technical jargon. Summarize the main takeaways within context of the salary prediction problem._
+   _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without jargon and summarize the main takeaways within the salary prediction context._
 
-1. Throughout the note, we've been assuming access to quantities like,
-  $$
+1. Throughout these notes, we've assumed we can easily compute,
+    $$
   \varphi_d(v) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
-  $$
-  Stepping back, this is actually challenging to compute! It involves a large
-  sum, just to explain _a single sample_. In this code example, we've swept this
-  computational challenge under the rug. In our next handout, we'll discuss some
-  practical strategies to computing SHAP values.
+    $$
+    This is actually challenging to compute! It runs over exponentially many
+    subsets _just to explain a single sample_. So far, we've swept this
+    computational challenge under the rug. Next week we'll discuss practical
+    strategies to computing SHAP values efficiently.
