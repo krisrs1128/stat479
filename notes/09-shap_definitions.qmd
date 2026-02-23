@@ -353,24 +353,15 @@ exp_single = shap.Explanation(
 shap.plots.waterfall(exp_single)
    ```
 
-1. This is the analogous visualization if we stack the bars on top of one
-another and then compute the same quantity for many samples. The columns are
-sorted so that samples with similar feature attributions go next to one another.
-This visualization is helpful for identifying samples that have different
-attributions, despite having similar predictions.
+1. Here is an alternative visualization well-suited for visualizing attributions
+for multiple samples (lines) simultaneously.  This visualization is helpful for
+identifying clusters of samples with similar feature attributions.
 
    ```{python}
 #| label: shap-force
 #| fig-width: 12
 #| fig-height: 6
-shap.plots.initjs()
-exp_all = shap.Explanation(
-    values = sv,
-    base_values = explainer.expected_value,
-    data = X_explain.values,
-    feature_names = X_explain.columns.tolist(),
-)
-shap.plots.force(exp_all)
+shap.decision_plot(explainer.expected_value, sv, X_explain)
    ```
 
    _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without jargon and summarize the main takeaways within the salary prediction context._
