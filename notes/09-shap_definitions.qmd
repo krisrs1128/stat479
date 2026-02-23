@@ -37,13 +37,23 @@ $$
 #| label: setup
 #| echo: false
 library(tidyverse)
+library(reticulate)
 theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
 set.seed(2026)
 ```
 
-_Readings: [](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/09-shap_definitions.qmd)_
+```{r}
+#| label: python-setup
+#| echo: false
+# includes the SHAP package. Can install it using,
+# > conda env create -f stat479_week6.yml
+# where the yaml file is located at:
+use_condaenv("stat479_week6")
+```
 
-Bullet items with $^{\dagger}$ are not in the reading, so not tested.
+_Readings: [1](https://arxiv.org/abs/2207.07605), [2](https://proceedings.mlr.press/v108/janzing20a.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/09-shap_definitions.qmd)_
+
+Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
 
 ## Setup
 
@@ -114,6 +124,8 @@ disease subtypes), and the model might have learned different "reasons" for
 making a prediction (e.g,. probability of a candidate drug's success) in one
 subpopulation compared to another.
 
+   _Exercise: What is one example (hypothetical, or from your own experience) where a local feature attribution method could be used? What would be the difference vs. obtaining a global variable importance?_
+
 ## Game Theory Definitions
 
 1. The SHAP algorithm is motivated by the credit assignment problem from game
@@ -127,6 +139,8 @@ value" for agent $d$, denoted by $\varphi_{d}(v)$.
 comparing the profits $v(S \cup \{d\})$ and $v(S)$ with and without that agent,
 respectively. To this end, define the "contributions" of agent $d$ to team $S$:
 $C\left(d \vert S\right) = v(S \cup \{d\}) - v(S)$
+
+   ![](figures/c_d_s_defn.png){width=50%}
 
 1. Taking a weighted average of these contributions across subsets $S$, we
 arrive at agent $d$'s Shapley value,
@@ -147,6 +161,8 @@ agent $d$). Therefore, the total weight across all coalitions under
 consideration is,
 
    $$\sum_{s=0}^{D-1} \binom{D-1}{s} \frac{1}{D\binom{D-1}{s}} = \sum_{s=0}^{D-1} \frac{1}{D} = 1.$$
+
+   ![](figures/shap_subsets_enumerate.png){width=70%}
 
 1. It turns out that this value is the solution to this problem that satisfies
 the following axioms. This fact is often used to justify using this definition
@@ -188,11 +204,15 @@ the local feature attribution problem. Consider,
    prediction $f(x)$ across features. We denote the associated attribution
    $\varphi_d(f, x)$
 
+   ![](figures/game_theory_ml_analogy.png){width=60%}
+
 1. At a high-level, we want to define $C(d \vert S)$ to represent the change in
 our predictions when we are allowed to use feature $d$ vs. when we are forced to
 ignore it. Different ways of answering this feature removal question lead to
 different definitions of $C$. But once we have this, we can plug it into
 Equation @eq-shapley to arrive at a local feature attribution for sample $x$.
+
+   _Exercise: Consider the four axioms for game theoretic SHAP. What do they imply about $\varphi_d(f, x)$?_
 
 ## Deterministic Feature Removal
 
@@ -210,6 +230,8 @@ excluded from the set $S$, respectively. This has the interpretation of being a
 "simplified" version of $f$ that ignores any of the real data coordinates in $S$
 and replaces them by a baseline value $x'$.
 
+   ![](figures/baseline_subsets_single.png){width=35%}
+
 1. The associated contributions have the form:
 
    $$
@@ -222,8 +244,12 @@ and replaces them by a baseline value $x'$.
    (left hand side) vs. when we remove it and replace it with a baseline value
    (right hand side).
 
+   ![](figures/shap_baseline_vector.png){width=50%}
+
 1. The downside of this approach is that it depends on the choice of baseline
 $x'$, and it's not obvious what a good choice of $D$ should be.
+
+   ![](figures/shap_marginal_approach.png){width=90%}
 
 ## Sampling-based Feature Removal
 
@@ -248,6 +274,19 @@ training data, $x_1, \dots, x_{N}$,
    v(S) = \frac{1}{N} \sum_{i = 1}^{N} f(x_S, x_{i,\bar{S}}).
    $$
 
+   ![](figures/shap_marginal_matrices.png){width=50%}
+
+   Here is a geometric representation for one of the terms in the SHAP
+   definition.
+
+   ![](figures/shap_marginal_geometry.png){width=90%}
+
+   _Exercise: What would $C\left(1 \vert 2\right)$ look like in this figure? What about C\left(2 \vert \emptyset\right)$?_
+
+   _Exercise: Would you expect $\varphi_1(f, x)$ to be larger or smaller than
+   $\varphi_2(f, x)$ for the function $f$ and sample $x$ in this visualization?
+   Explain your reasoning._
+
 1. A potential downside of this approach is that, if the coordinates $S$ and
 $\bar{S}$ are correlated, then some of the sampled values $f(x_{S},
 X_{\bar{S}})$ might never appear in any real data (since we sample the
@@ -255,6 +294,8 @@ coordinates $\bar{S}$ without referring to the current observation). That is, we
 might accidentally evaluate $f$ in a region of the data space far from any
 actual observations, and the function $f$ might behave unpredictably when we
 extrapolate in this way.
+
+   _Exercise: Can you modify the example in the previous figure to highlight the potential for this extrapolation issue?_
 
 1. The _conditional_ feature removal approach tries to address this problem.
 Rather than drawing $X_{\bar{S}}$ from the overall population distribution, we
@@ -299,6 +340,79 @@ intervened coordinates $S$).
    features.
 
 ## Code Example
+
+1. Let's apply the `shap` python package to identify important variables in the
+`adult` dataset included in the package. Each $x_i$ gives survey responses for
+person $i$, and $y_i$ is an indicator of whether they make more than $50K/year.
+
+   ```{python}
+#| label: shap-data
+import shap
+
+X, y = shap.datasets.adult()
+X, y = X.iloc[:2000], y[:2000]   # subsample for speed
+X
+   ```
+
+1. We train a random forest model to these data using the `sklearn` package.
+
+   ```{python}
+#| label: shap-model
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X, y)
+   ```
+
+1. Here, we're explaining the first 50 samples $x_1, \dots, x_50$ using the
+marginal feature removal approach, as implemented by `KernelExplainer` (we'll go
+over the exact computational algorithm next week). The $N = 2000$ rows in `X`
+are used in computing the marginal expectation @eq-marginal. Notice that the
+explanation function only needs access to the anonymous function `predictor` --
+it doesn't require any knowledge of the type of model implemented within it.
+
+   ```{python}
+   #| label: shap-values
+background = X.sample(100)
+X_explain = X.iloc[:50]
+
+predictor = lambda X: model.predict_proba(X)[:, 1]
+explainer  = shap.KernelExplainer(predictor, X)
+sv = explainer.shap_values(X_explain)   # shape: (50, n_features)
+   ```
+
+1. A waterfall plot shows $\varphi_d(f, x)$ for all $d$ features. By the
+efficiency axiom, the sum of these bars is equal to the predicted response.
+
+   ```{python}
+#| label: shap-waterfall
+exp_single = shap.Explanation(
+    values = sv[0],
+    base_values = explainer.expected_value,
+    data = X_explain.iloc[0].values,
+    feature_names = X_explain.columns.tolist(),
+)
+shap.plots.waterfall(exp_single)
+   ```
+
+1. If we stack the waterfall bars on top of one another and then compute the
+same quantify for many samples, we obtain a beeswarm plot. The columns are
+sorted so that samples with similar feature attributions go next to one another.
+This visualization is helpful for identifying samples that have different
+attributions, despite having similar predictions.
+
+   ```{python}
+#| label: shap-beeswarm
+# Beeswarm plot: SHAP value distributions across all explained samples.
+exp_all = shap.Explanation(
+    values = sv,
+    base_values = explainer.expected_value,
+    data = X_explain.values,
+    feature_names = X_explain.columns.tolist(),
+)
+shap.plots.beeswarm(exp_all)
+   ```
+
+   _Exercise: Imagine explaining this visualization to a non-data scientist. Describe each component without using technical jargon. Summarize the main takeaways within context of the salary prediction problem._
 
 1. Throughout the note, we've been assuming access to quantities like,
   $$
