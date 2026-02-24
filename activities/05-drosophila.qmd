@@ -2,6 +2,16 @@
 title: SHAP analysis of Drosophila Development
 ---
 
+## Problem Formulation
+
+1. Enhancers are stretches of the genome that coordinate the expression of many
+downstream genes. Their status is determined by combinations of binding
+transcription factors and chromatin marks
+
+1. Understanding these interactions explains genotype $\to$ phenotype.
+
+<img src="figures/drosophila.gif"/>
+
 ```{r}
 library(fastshap)
 library(mboost)
@@ -16,8 +26,12 @@ set.seed(20251227)
 ```
 
 ```{r}
-load("data/enhancer.Rdata")
+f <- tempfile()
+download.file("https://zenodo.org/records/18371236/files/enhancer.Rdata?download=1", f)
+load(f)
+
 enhancer <- bind_cols(X, y = as.factor(Y))
+enhancer
 ```
 
 ```{r}
@@ -41,31 +55,34 @@ tuner$optimize(instance)
 ```{r}
 fit <- glmboost(y ~ ., data = enhancer, control = boost_control(nu = instance$result$nu, mstop = instance$result$mstop), family = Binomial())
 
-tibble(y_hat = predict(fit), y = factor(Y)) |>
+tibble(y_hat = predict(fit, type = "link"), y = factor(Y)) |>
     ggplot() +
         geom_histogram(aes(y_hat, fill = y)) +
         facet_grid(y ~ ., scales = "free_y")
 ```
 
 ```{r}
-enhancer <- enhancer[1:1000, ] # for faster computation
-
+ix <- 1:200 # for faster computation
 explainer <- fastshap::explain(
   object = fit,
-  X = enhancer,
-  pred_wrapper = \(fit, newdata) predict(fit, newdata, type = "response")[, 1]
+  X = enhancer[ix, ],
+  pred_wrapper = \(fit, newdata) predict(fit, newdata, type = "link")[, 1],
+  nsim = 5
 )
+
+y_hat <- predict(fit, type = "link")[ix, 1]
+baseline <- mean(y_hat)
+plot(rowSums(explainer) + baseline, y_hat)
 ```
 
 ### Global Plots
 
 ```{r}
-viz_setup <- shapviz(explainer, X = enhancer)
+viz_setup <- shapviz(explainer, X = enhancer[ix, ])
 sv_importance(viz_setup, kind = "bee")
 ```
 
 ```{r}
-sv_dependence(viz_setup, "bcd2")
 sv_dependence(viz_setup, "twi2")
 ```
 
@@ -73,18 +90,14 @@ sv_dependence(viz_setup, "twi2")
 enhancer |>
     ggplot() +
     geom_jitter(aes(log1p(twi2), y, col = y), size = .5, alpha = 0.5)
-
-enhancer |>
-    ggplot() +
-    geom_jitter(aes(log1p(bcd2), y, col = y), size = .5, alpha = 0.5)
 ```
 
 ### Local Plots
 
 ```{r}
 plots <- list()
-for (i in seq_len(10)) {
-    plots[[i]] <- sv_force(viz_setup, max_display = 5, row = i)
+for (i in seq_len(5)) {
+    plots[[i]] <- sv_waterfall(viz_setup, max_display = 5, row = i)
 }
 reduce(plots, `+`)
 ```
@@ -93,13 +106,44 @@ reduce(plots, `+`)
 important_vars <- c("twi2", "H4K5ac_c14c", "H3_c14c", "med2", "bcd2", "gt2", "H3K18ac_c14c", "sna1")
 cluster_order <- hclust(dist(explainer[, important_vars]))$order
 
+predictions <- tibble(
+    id = factor(seq_along(y_hat), levels = cluster_order),
+    y_hat = y_hat
+)
+
 explainer |>
-    as_tibble() |>
-    select(any_of(important_vars)) |>
-    mutate(id = factor(row_number(), levels = cluster_order)) |>
-    sample_n(150) |>
-    pivot_longer(-id) |>
+    data.frame() |>
+    mutate(
+        id = factor(row_number(), levels = cluster_order),
+        pred = y_hat - baseline
+        ) |>
+    pivot_longer(cols = -c(id, pred)) |>
+    mutate(
+        name = ifelse(name %in% important_vars, name, NA)
+    ) |>
+    group_by(id, pos = value >= 0) |>
+    mutate(
+        cumsum_before = lag(cumsum(value), default = 0),
+        ymin = pred + cumsum_before + pmin(value, 0),
+        ymax = pred + cumsum_before + pmax(value, 0),
+        xpos = as.integer(id)
+    ) |>
+    ungroup() |>
     ggplot() +
-        geom_col(aes(value, id, fill = name)) +
-        scale_fill_brewer(palette = "Set2")
+        geom_hline(yintercept = 0) +
+        geom_rect(aes(xmin = xpos - 0.45, xmax = xpos + 0.45, ymin = ymin, ymax = ymax, fill = name, col = name)) +
+        geom_point(
+            data = mutate(predictions, xpos = as.integer(id)),
+            aes(xpos, y_hat - baseline),
+            inherit.aes = FALSE,
+            size = 3,
+            shape = "x"
+        ) +
+        labs(y = "Prediction (Link Scale)", x = "Samples ", fill = "Feature", col = "Feature") +
+        scale_fill_brewer(palette = "Set3", na.value = "#dcdcdc") +
+        scale_color_brewer(palette = "Set3", na.value = "#dcdcdc") +
+        theme(
+            axis.ticks = element_blank(),
+            axis.text.x = element_blank(),
+        )
 ```
