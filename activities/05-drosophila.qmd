@@ -16,42 +16,39 @@ execute:
 
 ## Problem Formulation
 
-1. Enhancers are stretches of the genome that coordinate the expression of many
-downstream genes. Their status is determined by other genome elements, like
-binding transcription factors and chromatin marks.
+1. Enhancers are DNA sequences that coordinate downstream gene expression.
+Their activity depends on genome state, like transcription factor binding and
+chromatin state.
 
    ![](figures/enhancer.jpg){width=60%}
 
-1. We care about them because they explain how genotype becomes phenotype.  This
-is a complex question! So we study it in simple organisms, like fruit flies. We
-know a lot about how enhancer (and other genome element) activity changes across
-stages of embryo development.
+1. Understanding enhancers means understanding how genotype becomes phenotype, a
+fundamental problem in biology.  To make the problem tractable, we usually study
+it in simple organisms, like the fruit fly _Drosophila melanogaster_, often during embryo development.
 
    ![](figures/drosophila.gif){width=60%}
 
-1. [@Basu2018] considered a more precise question: if we knew the state of the
-genome at a given time of fruit fly embryo development, could we predict whether
-a particular enhancer was active? Specifically, they work with genome-wide
-measurements from blastoderm (stage 5) fruit fly embryos:
+1. [@Basu2018] asked a precise question: given the genomic state of a fruit fly
+embryo at a fixed developmental stage, can we predict whether a given enhancer
+is active? They used genome-wide measurements from blastoderm (stage 5) embryos:
 
     - DNA occupancy for 23 transcription factors
     - Activity for 13 chromatin markers
-    - Binary labels indicating enhancer activity for genomic regions
+    - Binary enhancer activity labels
 
-   Each observation is a genomic sequence with associated regulatory features.
-
-1. They formulate this as a binary classification problem,
+1. This is a binary classification problem.
+   Each observation is a genomic region with associated regulatory features.
 
    - Enhancer status: $y \in \{0,1\}$
-   - Predictors: $x = (x_1, \ldots, x_D)$ (transcription factor binding intensities and chromatin signals)
+   - Predictors: $x = (x_1, \ldots, x_D)$ transcription factor binding intensities and chromatin signals
    - Model: $f(x_i) = \mathbb{P}(y_i = 1 \mid x_i)$
 
-   We'll use SHAP to quantify each feature's contribution to $f(x_i)$.
+   SHAP quantifies each feature's contribution to $f(x_i)$.
 
 ## Setup
 
-These are the packages we need for today. It looks like a lot, but the first
-three are just to run a boosting model.
+The first three packages below train the boosting model. The rest are for
+visualization and SHAP explanation.
 
 ```{r}
 #| label: setup
@@ -67,8 +64,7 @@ set.seed(20251227)
 options(mlr3.store_backends = TRUE)
 ```
 
-This block downloads and displays the data. We want to predict enhancer
-activity, stored in the first column `y`.
+This block downloads the data. Enhancer is stored in the first column `y`.
 
 ```{r}
 #| label: load-data
@@ -82,9 +78,9 @@ enhancer
 
 ## Model Training
 
-We'll train a boosting classifier using nearly the same code as the pockets
-classification example from last week. As then, the first step is to define the
-machine learning task and hyperparameter ranges.
+We train a boosting classifier on the enhancer data. The tuning grid considers
+the number of trees `nrounds` and learning ratae `eta`, selecting
+hyperparameters using three fold CV.
 
 ```{r}
 #| label: tune-setup
@@ -100,7 +96,7 @@ instance <- ti(
 )
 ```
 
-Next, we search over the number-of-trees and learning rate hyperparameters.
+We run the hyperparameter tuning next.
 
 ```{r}
 #| label: tune
@@ -108,7 +104,7 @@ tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
 tuner$optimize(instance)
 ```
 
-Let's refit the model with these tuned parameters.
+Let's refit the model with the optimized hyperparameters.
 
 ```{r}
 #| label: fit
@@ -117,11 +113,10 @@ task <- as_task_classif(enhancer, target = "y", id = "enhancer")
 learner$train(task)
 ```
 
-The plot below compares the predicted probabilities to the true class. Most data
-belong to class 0 (inactive enhancers), and these are correctly given low
-probabilities. The active enhancers are rarer, and still sometimes difficult to
-detect (peak on the left). But for many of these enhancers, we correctly have
-higher probabilities of belonging to class 1.
+The histogram of predicted probabilities shows that the model behaves as
+expected: inactive enhancers (class 0) clusters near zero probability, and
+active enhancers (class 1) is more spread to high probability regions. Though,
+there is still noticeable overlap.
 
 ```{r}
 #| label: predictions
@@ -135,8 +130,8 @@ tibble(p_hat = learner$predict_newdata(enhancer)$prob[, 2], y = enhancer$y) |>
 
 ## Interpretation Setup
 
-The $i^{th}$ row and $d^{th}$ column of `shp$S` below contains the attribution
-$\varphi_d(x_i)$.
+Entry $(i, d)$ of `shp$S` is the SHAP attribution $\varphi_d(x_i)$, feature
+$d$'s contribution to $f(x_i)$.
 
 ```{r}
 #| label: shap-setup
@@ -147,9 +142,10 @@ shp <- shapviz(learner$model, X_pred = X_mat)
 shp$S[1:5, 1:8]
 ```
 
-The efficiency axiom is satisfied, though on a log-odds scale (since we are
-doing classification, not regression). While there are many definitions of local
-feature importance, most do not provide this sum-to-prediction property.
+The efficiency axiom holds, though on a log-odds scale: $\sum_d \varphi_d(x_i) +
+\varphi_0 = \text{logit}^{-1}\mathbb{P}(y \vert x_i)$. Most feature importances
+measures lack this sum-to-prediction property; this is something that helps SHAP
+stand out.
 
 ```{r}
 #| label: shap-efficiency
@@ -168,13 +164,11 @@ tibble(y_hat = y_hat, sum_phi = rowSums(shp$S) + shp$baseline) |>
 
 ### Variable-Level Pltos
 
-We first visualize the features $d$ with the largest
-$\left|\varphi_d(x_i)\right|$. We can see that across many samples, the
-`wt_ZLD`, `input_c14c`, and `sna` stand out. For most samples, the attributions
-for any given feature $d$ have a consistent sign, but there are tails that
-switch the sign of the effect of that feature -- the model has learned that the
-contribution of a feature to a prediction might be either positive or negative
-depending on the particular feature value/context.
+The beeswarm plot ranks features using $\left|\varphi_d(x_i)\right|$. Across
+many samples, the `wt_ZLD`, `input_c14c`, and `sna` features stand out. For most
+features, the attributions have consistent signs across samples, but the tails
+show that the sign can flip, perhaps when the feature has an unusual
+value/context.
 
 ```{r}
 #| label: importance
@@ -183,8 +177,8 @@ depending on the particular feature value/context.
 sv_importance(shp, kind = "bee")
 ```
 
-We can look at the attributions plotted against the original feature value.
-Whenever we have larger values of sna`, the attribution scores are negative.
+The dependence plot for `sna1` shows that high `sna1` TF binding leads to
+negative attribution.
 
 ```{r}
 #| label: dependence
@@ -193,9 +187,9 @@ Whenever we have larger values of sna`, the attribution scores are negative.
 sv_dependence(shp, "sna1")
 ```
 
-If you check the original data, large values of
-[`sna1`](https://en.wikipedia.org/wiki/SNAI1) are related to reduced enhancer
-activity.
+This is consistent with the data, where large `sna1` suppresses enhancer
+activity.  The [`sna1`](https://en.wikipedia.org/wiki/SNAI1) gene is a
+transcriptional repressor, so this makes sense biologically.
 
 ```{r}
 ```{r}
@@ -210,11 +204,10 @@ tibble(p_hat = predict(learner$model, X_mat, outputmargin = TRUE), y = enhancer$
 
 ### Sample-Level Plots
 
-Alternatively, we can plot the most important features for specific samples of
-interest. The waterfall plot below is read exactly like the example from the
-conceptual handout. Each panel is a feature, horizontal bar is a feature, and by
-following the starting/ending points across bars, we can track how individual
-features lead to the final prediction.
+Alternatively, waterfall plots break a single prediction down into feature
+contributions. Each bar is one feature, and tracking the endpoints across bars
+shows how the model arrives at the output by weighing evidence across many
+features.
 
 ```{r}
 #| label: waterfall
@@ -224,10 +217,14 @@ map(seq_len(6), \(i) sv_waterfall(shp, max_display = 8, row = i)) |>
     reduce(`+`)
 ```
 
-A downside of the waterfall plots is that they only make it possible to study a
-few features at a time. We can study many more if we stack both features and
-samples close to one another. It's important to sort the samples so that those
-with similar attributions are placed with one another. The block below calls our
+Waterfall plots don't scale well to many samples. A stacked bar alternative
+solves this issue -- each vertical bar below is one sample, colored by SHAP
+attributions for the 11 most improtant features. Samples are sorted so that
+those with similar attribution profiles are side-by-side. The "x" marks  give
+the actual log-odds predictions, and features above or below indicate positive
+or negative attributions, respectively.
+
+The block below calls our
 helper functions (in
 [05-helpers.R](https://github.com/krisrs1128/stat479_notes/blob/master/activities/05-helpers.R))
 to perform this ordering.
@@ -243,15 +240,10 @@ shap_bars <- shap_to_long(shp$S[ix, ], y_hat[ix], shp$baseline, important_vars) 
     add_waterfall_offsets()
 ```
 
-The way to read this plot is that each vertical slice is one sample, and its
-colors are its attributions. We only show color for the 11 globally most
-important features. The actual predictions are given by the "x" marks, and
-features below the "x" are negative attributions and those above are positive
-attributions. The use of this plot is that it highlights samples that, though
-they may have similar predictions, have different reasons for getting their
-predictions. For example `kr1` appears to be an important feature for flagging
-one group of sequences (near the left) as enhancer, but it is not an important
-feature for most other sequences.
+This view shows that samples with nearly identical predictions can have
+different reasons for those predictions. For example, `kr1` drives high
+predictions for a cluster of sequences near the left, but has barely any
+influence elsewhere.
 
 ```{r}
 #| label: waterfall-custom
