@@ -1,149 +1,277 @@
 ---
 title: SHAP analysis of Drosophila Development
+author: Kris Sankaran
+date: 2026-02-25
+bibliography: references.bib
+format:
+  html:
+    embed-resources: true
+    html-math-method: katex
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: false
 ---
 
 ## Problem Formulation
 
 1. Enhancers are stretches of the genome that coordinate the expression of many
-downstream genes. Their status is determined by combinations of binding
-transcription factors and chromatin marks
+downstream genes. Their status is determined by other genome elements, like
+binding transcription factors and chromatin marks.
 
-1. Understanding these interactions explains genotype $\to$ phenotype.
+   ![](figures/enhancer.jpg){width=60%}
 
-<img src="figures/drosophila.gif"/>
+1. We care about them because they explain how genotype becomes phenotype.  This
+is a complex question! So we study it in simple organisms, like fruit flies. We
+know a lot about how enhancer (and other genome element) activity changes across
+stages of embryo development.
+
+   ![](figures/drosophila.gif){width=60%}
+
+1. [@Basu2018] considered a more precise question: if we knew the state of the
+genome at a given time of fruit fly embryo development, could we predict whether
+a particular enhancer was active? Specifically, they work with genome-wide
+measurements from blastoderm (stage 5) fruit fly embryos:
+
+    - DNA occupancy for 23 transcription factors
+    - Activity for 13 chromatin markers
+    - Binary labels indicating enhancer activity for genomic regions
+
+   Each observation is a genomic sequence with associated regulatory features.
+
+1. They formulate this as a binary classification problem,
+
+   - Enhancer status: $y \in \{0,1\}$
+   - Predictors: $x = (x_1, \ldots, x_D)$ (transcription factor binding intensities and chromatin signals)
+   - Model: $f(x_i) = \mathbb{P}(y_i = 1 \mid x_i)$
+
+   We'll use SHAP to quantify each feature's contribution to $f(x_i)$.
+
+## Setup
+
+These are the packages we need for today. It looks like a lot, but the first
+three are just to run a boosting model.
 
 ```{r}
-library(fastshap)
-library(mboost)
+#| label: setup
+source("05-helpers.R")
 library(mlr3)
-library(mlr3extralearners)
+library(mlr3learners)
 library(mlr3tuning)
 library(patchwork)
 library(shapviz)
 library(tidyverse)
 theme_set(theme_classic())
 set.seed(20251227)
+options(mlr3.store_backends = TRUE)
 ```
 
+This block downloads and displays the data. We want to predict enhancer
+activity, stored in the first column `y`.
+
 ```{r}
+#| label: load-data
 f <- tempfile()
 download.file("https://zenodo.org/records/18371236/files/enhancer.Rdata?download=1", f)
 load(f)
 
-enhancer <- bind_cols(X, y = as.factor(Y))
+enhancer <- bind_cols(y = as.factor(Y), X)
 enhancer
 ```
 
+## Model Training
+
+We'll train a boosting classifier using nearly the same code as the pockets
+classification example from last week. As then, the first step is to define the
+machine learning task and hyperparameter ranges.
+
 ```{r}
+#| label: tune-setup
 task <- as_task_classif(enhancer, target = "y", id = "enhancer")
-learner <- lrn("classif.glmboost", nu = to_tune(0.001, 0.5), mstop=to_tune(50, 200), predict_type = "prob")
+learner <- lrn("classif.xgboost", nrounds = to_tune(100, 200), eta = to_tune(1e-3, 0.1), predict_type = "prob")
 
 instance <- ti(
-  task = task,
-  learner = learner,
-  resampling = rsmp("cv", folds = 3),
-  measures = msr("classif.auc"),
-  terminator = trm("none")
+    task = task,
+    learner = learner,
+    resampling = rsmp("cv", folds = 3),
+    measures = msr("classif.auc"),
+    terminator = trm("none")
 )
 ```
 
+Next, we search over the number-of-trees and learning rate hyperparameters.
+
 ```{r}
+#| label: tune
 tuner <- tnr("grid_search", resolution = 5, batch_size = 5)
 tuner$optimize(instance)
 ```
 
-```{r}
-fit <- glmboost(y ~ ., data = enhancer, control = boost_control(nu = instance$result$nu, mstop = instance$result$mstop), family = Binomial())
+Let's refit the model with these tuned parameters.
 
-tibble(y_hat = predict(fit, type = "link"), y = factor(Y)) |>
+```{r}
+#| label: fit
+learner$param_set$values <- instance$result_learner_param_vals
+task <- as_task_classif(enhancer, target = "y", id = "enhancer")
+learner$train(task)
+```
+
+The plot below compares the predicted probabilities to the true class. Most data
+belong to class 0 (inactive enhancers), and these are correctly given low
+probabilities. The active enhancers are rarer, and still sometimes difficult to
+detect (peak on the left). But for many of these enhancers, we correctly have
+higher probabilities of belonging to class 1.
+
+```{r}
+#| label: predictions
+#| fig-height: 4
+#| fig-width: 6
+tibble(p_hat = learner$predict_newdata(enhancer)$prob[, 2], y = enhancer$y) |>
     ggplot() +
-        geom_histogram(aes(y_hat, fill = y)) +
-        facet_grid(y ~ ., scales = "free_y")
+    geom_histogram(aes(p_hat, fill = y)) +
+    facet_grid(y ~ ., scales = "free_y")
 ```
 
-```{r}
-ix <- 1:200 # for faster computation
-explainer <- fastshap::explain(
-  object = fit,
-  X = enhancer[ix, ],
-  pred_wrapper = \(fit, newdata) predict(fit, newdata, type = "link")[, 1],
-  nsim = 5
-)
+## Interpretation Setup
 
-y_hat <- predict(fit, type = "link")[ix, 1]
-baseline <- mean(y_hat)
-plot(rowSums(explainer) + baseline, y_hat)
+The $i^{th}$ row and $d^{th}$ column of `shp$S` below contains the attribution
+$\varphi_d(x_i)$.
+
+```{r}
+#| label: shap-setup
+#| fig-height: 4
+#| fig-width: 4
+X_mat <- as.matrix(X)
+shp <- shapviz(learner$model, X_pred = X_mat)
+shp$S[1:5, 1:8]
 ```
 
-### Global Plots
+The efficiency axiom is satisfied, though on a log-odds scale (since we are
+doing classification, not regression). While there are many definitions of local
+feature importance, most do not provide this sum-to-prediction property.
 
 ```{r}
-viz_setup <- shapviz(explainer, X = enhancer[ix, ])
-sv_importance(viz_setup, kind = "bee")
-```
+#| label: shap-efficiency
+#| fig-height: 2.5
+#| fig-width: 2.5
+y_hat <- predict(learner$model, X_mat, outputmargin = TRUE)
 
-```{r}
-sv_dependence(viz_setup, "twi2")
-```
-
-```{r}
-enhancer |>
+tibble(y_hat = y_hat, sum_phi = rowSums(shp$S) + shp$baseline) |>
     ggplot() +
-    geom_jitter(aes(log1p(twi2), y, col = y), size = .5, alpha = 0.5)
+    geom_point(aes(y_hat, sum_phi)) +
+    labs(
+        x = "Model Prediction (Log-Odds)",
+        y = "Sum of SHAP Attributions"
+    )
 ```
 
-### Local Plots
+### Variable-Level Pltos
+
+We first visualize the features $d$ with the largest
+$\left|\varphi_d(x_i)\right|$. We can see that across many samples, the
+`wt_ZLD`, `input_c14c`, and `sna` stand out. For most samples, the attributions
+for any given feature $d$ have a consistent sign, but there are tails that
+switch the sign of the effect of that feature -- the model has learned that the
+contribution of a feature to a prediction might be either positive or negative
+depending on the particular feature value/context.
 
 ```{r}
-plots <- list()
-for (i in seq_len(5)) {
-    plots[[i]] <- sv_waterfall(viz_setup, max_display = 5, row = i)
-}
-reduce(plots, `+`)
+#| label: importance
+#| fig-height: 5
+#| fig-width: 5
+sv_importance(shp, kind = "bee")
 ```
 
+We can look at the attributions plotted against the original feature value.
+Whenever we have larger values of sna`, the attribution scores are negative.
+
 ```{r}
-important_vars <- c("twi2", "H4K5ac_c14c", "H3_c14c", "med2", "bcd2", "gt2", "H3K18ac_c14c", "sna1")
-cluster_order <- hclust(dist(explainer[, important_vars]))$order
+#| label: dependence
+#| fig-height: 4
+#| fig-width: 6
+sv_dependence(shp, "sna1")
+```
 
-predictions <- tibble(
-    id = factor(seq_along(y_hat), levels = cluster_order),
-    y_hat = y_hat
-)
+If you check the original data, large values of
+[`sna1`](https://en.wikipedia.org/wiki/SNAI1) are related to reduced enhancer
+activity.
 
-explainer |>
-    data.frame() |>
-    mutate(
-        id = factor(row_number(), levels = cluster_order),
-        pred = y_hat - baseline
-        ) |>
-    pivot_longer(cols = -c(id, pred)) |>
-    mutate(
-        name = ifelse(name %in% important_vars, name, NA)
-    ) |>
-    group_by(id, pos = value >= 0) |>
-    mutate(
-        cumsum_before = lag(cumsum(value), default = 0),
-        ymin = pred + cumsum_before + pmin(value, 0),
-        ymax = pred + cumsum_before + pmax(value, 0),
-        xpos = as.integer(id)
-    ) |>
-    ungroup() |>
+```{r}
+```{r}
+#| label: sna1-detail
+#| fig-height: 4
+#| fig-width: 6
+tibble(p_hat = predict(learner$model, X_mat, outputmargin = TRUE), y = enhancer$y, x= enhancer$sna1) |>
     ggplot() +
-        geom_hline(yintercept = 0) +
-        geom_rect(aes(xmin = xpos - 0.45, xmax = xpos + 0.45, ymin = ymin, ymax = ymax, fill = name, col = name)) +
-        geom_point(
-            data = mutate(predictions, xpos = as.integer(id)),
-            aes(xpos, y_hat - baseline),
-            inherit.aes = FALSE,
-            size = 3,
-            shape = "x"
-        ) +
-        labs(y = "Prediction (Link Scale)", x = "Samples ", fill = "Feature", col = "Feature") +
-        scale_fill_brewer(palette = "Set3", na.value = "#dcdcdc") +
-        scale_color_brewer(palette = "Set3", na.value = "#dcdcdc") +
-        theme(
-            axis.ticks = element_blank(),
-            axis.text.x = element_blank(),
-        )
+    geom_point(aes(x, p_hat, col = y)) +
+    labs(x = "Value of SNA1 Feature", y = "Log-Odds", col = "True Class")
+```
+
+### Sample-Level Plots
+
+Alternatively, we can plot the most important features for specific samples of
+interest. The waterfall plot below is read exactly like the example from the
+conceptual handout. Each panel is a feature, horizontal bar is a feature, and by
+following the starting/ending points across bars, we can track how individual
+features lead to the final prediction.
+
+```{r}
+#| label: waterfall
+#| fig-height: 5
+#| fig-width: 6
+map(seq_len(6), \(i) sv_waterfall(shp, max_display = 8, row = i)) |>
+    reduce(`+`)
+```
+
+A downside of the waterfall plots is that they only make it possible to study a
+few features at a time. We can study many more if we stack both features and
+samples close to one another. It's important to sort the samples so that those
+with similar attributions are placed with one another. The block below calls our
+helper functions (in
+[05-helpers.R](https://github.com/krisrs1128/stat479_notes/blob/master/activities/05-helpers.R))
+to perform this ordering.
+
+```{r}
+#| label: shap-bars
+var_order <- order(abs(colSums(shp$S)), decreasing = TRUE)
+important_vars <- colnames(shp$S)[var_order] |>
+    head(11)
+
+ix <- sample(1:nrow(enhancer), 500)
+shap_bars <- shap_to_long(shp$S[ix, ], y_hat[ix], shp$baseline, important_vars) |>
+    add_waterfall_offsets()
+```
+
+The way to read this plot is that each vertical slice is one sample, and its
+colors are its attributions. We only show color for the 11 globally most
+important features. The actual predictions are given by the "x" marks, and
+features below the "x" are negative attributions and those above are positive
+attributions. The use of this plot is that it highlights samples that, though
+they may have similar predictions, have different reasons for getting their
+predictions. For example `kr1` appears to be an important feature for flagging
+one group of sequences (near the left) as enhancer, but it is not an important
+feature for most other sequences.
+
+```{r}
+#| label: waterfall-custom
+#| fig-height: 4
+#| fig-width: 8
+ggplot(shap_bars) +
+    geom_hline(yintercept = 0) +
+    geom_rect(aes(xmin = xpos - 0.45, xmax = xpos + 0.45, ymin = ymin, ymax = ymax, fill = name, col = name)) +
+    geom_point(
+        data = distinct(shap_bars, xpos, pred),
+        aes(xpos, pred),
+        size = 3,
+        shape = "x"
+    ) +
+    labs(y = "Prediction relative to E[f(x)]", x = "Samples", fill = "Feature", col = "Feature") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_fill_brewer(palette = "Set3", na.value = "#dcdcdc") +
+    scale_color_brewer(palette = "Set3", na.value = "#dcdcdc") +
+    theme(
+        axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+    )
 ```
