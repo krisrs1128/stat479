@@ -1,9 +1,207 @@
-# Homework 3
+---
+title: "STAT 479: HW3"
+author: Spring 2026
+format: pdf
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: false
+---
 
-1. diagram tree <-> partition
+# Submission Details
 
-1. GP marginal likelihood
+Upload your solution to Gradescope as a PDF document. Include all relevant
+figures within your explanations. Include all relevant code. You may use either
+R or python.
 
-1. boosting from scratch
+## Evaluation Criteria
 
-1. linear shap derivation
+**Technical accuracy**: Definitions used correctly, claims stated precisely.
+
+**Completeness**: Assertions grounded in readings, lectures, or original code.
+
+**Clarity**: Well-formatted, grammatically correct prose (not bullet fragments). No wordiness.
+
+**Code quality**: Modular functions, meaningful variable names.
+
+```{r}
+#| label: libraries
+#| echo: false
+library(DALEX)
+library(mlr3)
+library(mlr3learners)
+library(shapviz)
+library(tidyverse)
+library(xgboost)
+set.seed(479)
+theme_set(theme_classic())
+```
+
+# Problem 1 [Tree Ensemble Short Answer]
+
+a. Imagine working on a large dataset at a company strong parallel computing
+infrastructure. Can the trees $f^{b}$ in boosting be trained in parallel? What
+about bagging?
+
+b. As you increase the number of trees $B$, do you expect the model to overfit,
+underfit, or "it depends"? Answer for both boosting and bagging.
+
+# Problem 2 [Tree Ensemble Variable Importance]
+
+You are working with a colleague on a classification problem using boosting.
+This is the data:
+
+```{r}
+#| label: boosting-show
+df <- read_csv("https://github.com/krisrs1128/stat479_notes/raw/refs/heads/master/data/boosting_data.csv")
+ix <- sample(nrow(df), 1600)
+train <- df[ix, ]
+test <- df[-ix, ]
+```
+
+You run an initial experiment on the dataset below and find these
+variable importances.
+
+```{r boosting-full}
+#| fig-width: 4
+#| fig-height: 2
+task <- as_task_classif(train, target = "y")
+learner <- lrn("classif.xgboost", nrounds = 100)
+learner$train(task)
+xgb.importance(model = learner$model) |>
+    ggplot(aes(Gain, reorder(Feature, Gain))) +
+    geom_col() +
+    labs(x = "Gain", y = "Importance")
+```
+
+Your colleague runs the same experiment, but accidentally omitted `x1`, the
+variable with the highest importance. You compare the test classification
+error for both models.
+
+```{r boosting-reduced}
+task_colleague <- as_task_classif(select(train, -x1), target = "y")
+learner_colleague <- lrn("classif.xgboost", nrounds = 100)
+learner_colleague$train(task_colleague)
+tibble(
+    model = c("full", "colleague"),
+    classif.ce = c(
+        learner$predict_newdata(test)$score(msr("classif.ce")),
+        learner_colleague$predict_newdata(select(test, -x1))$score(msr("classif.ce"))
+    )
+)
+```
+
+Surprisingly, the performance has gone up! What do you think is going on, and
+what are the interpretability implications?
+
+# Problem 3 [LinearSHAP Derivation]
+
+For certain models $f$ and choices of $v$, SHAP values have closed-form expressions. Suppose $f$ is linear and $v$ uses baseline feature removal:
+$$f(x) = \beta_0 + \sum_{j=1}^J \beta_j x_j, \qquad v(S) = f(x_S, x'_{\bar{S}})$$
+
+a. Express $v(S)$ in terms of the $\beta_j$, the observed features $x_j$, and
+the baseline features $x_j'$.
+
+b. Use your answer from (a) to find an expression for the marginal contribution
+$C(j \mid S)$.
+
+c. Show that $\phi_j(f, x) = \beta_j(x_j - x_j')$.
+
+d. Interpret this result. How does the attribution depend on the baseline? Why
+might some observations $x$ have larger attributions for feature $j$ than
+others?
+
+# Problem 4 [Bikesharing Demand]
+
+The bike demand dataset records hourly rentals along with weather, time-of-day,
+and seasonality features. The goal here is to predict hourly demand (`cnt`) and
+interpret the resulting models.
+
+```{r bike-setup}
+f <- tempfile()
+download.file("https://github.com/krisrs1128/treelapse/raw/master/data/bike.rda", f)
+bike <- get(load(f)) |>
+select(-dteday) |>
+    mutate(
+    across(where(is.character), as.factor)
+)
+```
+
+a. Setup a boosting model pipeline that supports tuning over `nrounds`,
+`max_depth`, and `eta`. Use the ranges: `nrounds` $\in \left[50, 500\right]$,
+`max_depth` $\in \left[1, 6 \right]$, and `eta` $\in \left[0.01, 0.3\right]$.
+Report the best configuration and its cross-validated RMSE. *(Note: Because these data were gathered over time, temporal cross-validation would be more accurate, but we're setting that aside since it's outside the scope of the
+class.)*
+
+b. Retrain using the full data and the selected hyperparameters. Plot predicted
+vs. actual demand. Comment on any systematic patterns you notice.
+
+c. Has the model captured a temperature effect (`temp`)? An interaction between
+`hr` and `weekend`? Answer both questions using CP profiles or SHAP
+attributions. Support your answer with 1 - 2 figures.
+
+d. Fit an alternative model (e.g., lasso, CART, or bagging) to the same training
+data. You do not need to tune hyperparameters, but compute either CP profiles or
+SHAP attributions on your fit. Where do the models agree/disagree?
+
+# Problem 5 [CP vs. SHAP Visualizations]
+
+Both CP profiles and SHAP dependence plots show how a single feature relates to
+model predictions, but using different mathematical machinery. This problem
+compares the approaches using the [census income
+dataset](https://archive.ics.uci.edu/dataset/2/adult). As in our notes, we'll
+train a boosting classifier to predict whether a person earns more than
+\$50K/year.
+
+```{r census-setup}
+census <- read_csv("https://github.com/krisrs1128/stat479_notes/raw/refs/heads/master/data/census_processed.csv")
+task <- as_task_classif(census, target = "income")
+task$positive <- ">50K"
+
+learner <- lrn("classif.xgboost",
+    nrounds = 200, eta = 0.05, max_depth = 3, predict_type = "prob"
+)
+learner$train(task)
+```
+
+The figures below show CP profiles and a SHAP dependence plot for `age`.
+
+```{r census-cp}
+#| fig-width: 5
+#| fig-height: 3
+#| out-width: 60%
+#| echo: false
+explainer <- DALEX::explain(
+    learner,
+    data = census,
+    y = as.integer(census$income == ">50K"),
+    predict_function = \(model, newdata) model$predict_newdata(newdata)$prob[, 1],
+    verbose = FALSE
+)
+cp <- predict_profile(explainer, slice_sample(census, n = 100), variables = "age")
+plot(cp, variables = "age")
+```
+
+```{r census-shap}
+#| fig-width: 6
+#| fig-height: 4
+#| out-width: 60%
+#| echo: false
+X_mat <- census |> select(-income) |> as.matrix()
+shp <- shapviz(learner$model, X_pred = X_mat)
+sv_dependence(shp, "age", color_var = c())
+```
+
+a. In the CP plot, what quantity does each curve trace out as `age` varies? In
+the SHAP plot, what does each point represent? Answer using notation from the
+lecture notes.
+
+b. How does the efficiency axiom constrain the attributions you see in the SHAP
+dependence plot? Compared to the CP plot, does this change how you would explain
+the age-income effect to a non-statistical stakeholder?
+
+c. Using either CP or SHAP, produce one additional interpretability plot for
+this model. It shoudn't just be the same code applied to a new feature. Include
+the figure and briefly discuss its strengths and weaknesses relative to the two
+plots above.
