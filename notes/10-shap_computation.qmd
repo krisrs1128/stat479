@@ -86,8 +86,9 @@ the main quantities of interest,
    $$ {#eq-shapley}
    where $C\left(d \vert S\right)$ is the contribution of $d$ to coalition $S$,
    $$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S).$$
-   This depends on both $f$ and $x$, but we're suppressing it from the
-    notation.
+   This depends on both $f$ and $x$, but we're suppressing it from the notation.
+   We'll also write $\varphi_{d}(x)$ instead of $\varphi_{d}(f, x)$ since the
+   function to explain is fixed throughout these notes.
 
    * The functions $v$ were defined by calling $f$ on a version of $x$ where the features in coordinates $\bar{S}$ had been removed. There were three approaches,
 
@@ -113,7 +114,7 @@ grows exponentially in $D$.
 probabilities, since they are nonnegative and sum to one. From this point of
 view,
    $$
-   \varphi_d(f, x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
+   \varphi_d(x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
    &= \Esubarg{\mathbb{P}(S)}{C(d \vert S)} \\
    &= \Esubarg{\mathbb{P}{S}}{\text{Contribution of feature } d \text{ to coalition} S}.
    $$ {#eq-distribution}
@@ -121,10 +122,10 @@ view,
    subsets to get the exact expectation, we could sample random subsets
    according to $S_{m} \sim \pi(S)$ and then estimate,
    $$
-   \hat{\varphi}_{d}(f, x) = \sum_{m = 1}^{M} C(d \vert S_{m})
+   \hat{\varphi}_{d}(x) = \sum_{m = 1}^{M} C(d \vert S_{m})
    $$ {#eq-sampling}
    By the identity above, this is an unbiased estimator,
-   $$\Esubarg{\mathbb{P}(S)}{\hat{\varphi}_{d}(f, x)} = \varphi_{d}(f, x)$$
+   $$\Esubarg{\mathbb{P}(S)}{\hat{\varphi}_{d}(x)} = \varphi_{d}(x)$$
    and the larger the $M$, the better an approximation we obtain.
 
 1. To draw $S_{m} \sim \mathbb{P}(S)$ in practice, we usually use permutations.
@@ -161,11 +162,11 @@ we could use,
 of higher computation.
 
 1. _Adaptive sampling_. The terms $C\left(d \vert S_{m}\right)$ are random
-variables with mean $\varphi_{d}(f, x\right)$.  (picture of their histograms
+variables with mean $\varphi_{d}(x\right)$.  (picture of their histograms
 across $d$) For some choices of $d$, $C\left(d \vert S_{m}\right)$ may have low
 variance (this is especially true if a feature isn't relevant to the prediction
 and all the contributions are near zero).  In this case, even averaging a small
-number of $M$ yields a good approximation of $\varphi_{d}(f, x)$.  Adaptive
+number of $M$ yields a good approximation of $\varphi_{d}(x)$.  Adaptive
 sampling keeps track of the variance in $C(d \vert S_{m}\right)$ across $d$ and
 allocates more samples to the features with higher variance.
 
@@ -200,10 +201,15 @@ representation that also suggests a natural approximation to the SHAP value. A
 classic result in game theory [@Charnes1988] shows that SHAP values can be
 expressed as the solution to a weighted least squares problem.
    $$
-    \begin{bmatrix} \varphi_{1}\left(f, x\right) \\ \vdots \\ \varphi_{D}\left(f, x\right) \end{bmatrix}&=
+    \varphi\left(x\right) &=
     \arg \min_{beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d})
+   $$ {#eq-kernelshap}
+   where the regression weights are given by $W(S) = (D - 1) / ({D \choose
+   \left|S\right|})(|S|(|D| - |S|))$ and we're writing the vector of SHAP values
+   as,
    $$
-   where the regression weights are given by $W(S) = (D - 1) / ({D \choose \left|S\right|})(|S|(|D| - |S|))$.
+   \varphi(x) &= \begin{bmatrix} \varphi_{1}\left(x\right) \\ \vdots \\ \varphi_{D}\left(x\right) \end{bmatrix}
+   $$
 
 1. For example, suppose that we had only two features. The regression has the
 form,
@@ -214,7 +220,7 @@ form,
 suggests an approximation: Sample random subsets $S$ and run the regression onto
 the reduced design matrix. This approximate version of weighted lienar regression is called "KernelSHAP."
 
-1. Let's walk through a toy implementation of this approach. First we initialize
+1. Let's walk through a toy implementation of this approach. Next we initialize
 `mask_matrix`, a matrix whose rows will include random subsets $S_m$ stored as a
 binary masmk.
 
@@ -231,8 +237,10 @@ binary masmk.
    synth_data <- data[rep(seq_len(N), nsamples), ]
    ```
 
+   Next, we construct the random subsets $S_{m}$ (variable `mask`) and
+   associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
+
    ```{r}
-   # keep values at random subsets of features
    for (i in seq_len(nsamples)) {
      mask <- sample(0:1, M, replace = TRUE)
      mask_matrix[i, ] <- mask
@@ -240,23 +248,64 @@ binary masmk.
      synth_data[rows, mask == 1] <- x[1, mask == 1]
      kernel_weights[i] <- (M - sum(mask)) * sum(mask)
    }
+   ```
 
-   # model predictions on masked data
+   The formulation @eq-kernelshap asks for the model evaluated on each of these
+   feature-removed versions of the data.
+   ```{r}
    model_out <- model(synth_data)
    f <- rowMeans(matrix(model_out, nrow = nsamples, ncol = N, byrow = TRUE)) - f_bar
+   ```
 
-   # weighted regression on adjusted f
+   Finally, we can run the weighted regression. We treat $\beta_{0}$ differently
+   from the other terms, since it can be computed in closed form before solving
+   the rest of the optimization.
+
+   ```{r}
    last_col <- mask_matrix[, M]
    X <- mask_matrix - last_col
    y <- f - last_col * (model(x) - f_bar)
    lm_fit <- lm.wfit(x = X, y = y, w = kernel_weights)
    ```
 
+## Amortization
 
-## Local Shapley
+1. So far, we've only considered explaining a single observation $x$. In
+practice, we often want to explain many observations $\{x_i\}_{i =1}^{N}. To
+speed this up, one insight is that the feature attributions across observations
+are often related, and we should be able to pool across $x_i$. This will allow
+us to use very rough approximations for each individual $x_i$ and still end up
+with good estimates $\varphi_{d}(x_i)$ after sharing evidence.
 
+1. This leads to the idea of _amortization_. This frames parameter estimation as
+a supervised learning problem. For concreteness, imagine we've made initial estimates
+   $$
+   \hat{\vaphi}_d^{M}(x_i) &= \arg \min_{beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d})
+   $$
+   we'll assume $M$ is small, so these are noisy estimates. Then, consider the objective,
+   $$
+   L\left(\theta\right) &= \sum_{i = 1}^{N} \left(\hat{\varphi}^{M}(x_i) - a_{\theta}(x_i)\right)^{2}
+   $$
+   where $a_{\theta}: \reals^{D} \to \reals$ is some model parameterized by
+   $\theta$ (e.g., a linear model or neural network). This is now like a
+   supervised learning problem where the "labels" are
+  $\hat{\varphi}^{M}(x_i)$ and the input features are $x_i$.
 
-## Stochastic Amortization
+1. We can apply standard optimization tools to find
+  $$\hat{\theta} = \arg \min_{\theta \in \Theta} L\left(\theta\right)$$
+ Once this has been found, we can very quickly get attributions for arbitrary
+ test samples $x^\ast$ by just calling $a_{\hat{\theta}}(x^\ast)$. We don't even
+ need to sample any subsets $S_m$ or compute any $v(S_m)$. Moreover, the
+ $a_{\theta}(x^\ast)$ might be closer to the true $\varphi(x^\ast)$ than
+ $\hat{\varphi}^{M}(x^\ast)$, because the regression model has learned to
+ "smooth over" the noise in those initial, sample-specific estimates.
 
+1. It's not immediately obvious that this approach is useful, because (1)
+training the neural network $a_{\theta}$ can be slow and (2) if the "labels" are
+too noisy, we might not learn an accurate mapping to the true $\varphi(x)$. The
+research is still early, but it seems that even with moderate $M$ and simple
+$a_\theta$, we might be able to learn $\varphi(x)$ with high fidelity.
 
 ## Model-Specific Versions
+
+1.
