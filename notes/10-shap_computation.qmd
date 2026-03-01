@@ -206,43 +206,30 @@ regression on this reduced design. This is "KernelSHAP."
 1.  Let $z_{md} = \mathbf{1}[d \in S_m]$ be the associated design matrix. The
 regression suggests,
   $$
-  v(S_m) - v(\emptyset) \approx \sum_d z_{md}\beta_d
+  v(S_m) - v(\emptyset) \approx \sum_{d = 1}^{D} z_{md}\beta_d
   $$
   The efficiency constraint becomes,
-   \begin{align*}
-   \sum_d \beta_d &= v(\mathcal{D}) - v(\emptyset) \\
-   &= \hat{f}(x) - \mathbb{E}[\hat{f}(X)] \\
-   &=: \Delta
-   \end{align*}
+  $$
+   v(\mathcal{D}) - v(\emptyset) \approx \sum_{d = 1}^{D} \beta_d := \Delta\\
+  $$
+  and $v(\emptyset) \approx \beta_0$. We can improve the quality of our
+  approximation by enforcing these constraints, substituting $v(\emptyset) =
+  \Esubarg{p(x)}{f(X)} \approx \frac{1}{N}\sum_{i = 1}^{N} f(x_i)$ and $v(\mathcal{D}) = f(x).$
 
-1. One subtlety is that $v(\emptyset) = \Esubarg{p(X)}{f(X)}$ by
-definition^[Under marginal feature removal.], which is also $\beta_0$ in this
-regression.  Rather than estimating this parameter freely, we fix $\hat{\beta}_0
-= \frac{1}{N}f(x_i)$ and regress with this term removed.
-
-1. Let's walk through a toy implementation of this approach. The code example at
-the bottom of the notebook validates that this is equivalent to the official
-implementation. The block below initializes `mask_matrix`, a matrix whose rows
-will include random subsets $S_m$ stored as a binary masmk.
+1. $^\dagger$ To see this concretely, let's try a code implementation (validated
+against the `shap` package below). First, initialize the binary mask matrix
+$z_{md}$, kernel weights, and feature-removed inputs:
 
    ```{python}
    #| label: mask-init
    #| eval: false
    mask_matrix = np.zeros((M, D))
-   ```
-
-   We'll store our weights $W$ in `kernel_weights` and the feature-removed
-   version of the sample $x$ in `synth_data`.
-
-   ```{python}
-   #| label: data-init
-   #| eval: false
    kernel_weights = np.zeros(M)
    synth_data = np.tile(data, (M, 1))
    ```
 
-1. Next, we construct the random subsets $S_{m}$ (variable `mask`) and
-associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
+1. $^\dagger$ Next we draw random subsets $S_m$ and the corresponding feature-removed data
+$(x_{S_m}, x_{\bar{S}_m})$:
 
    ```{python}
    #| label: subset-sampling
@@ -253,10 +240,8 @@ associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
         synth_data[i * N:(i + 1) * N, mask == 1] = x[0, mask == 1]
         kernel_weights[i] = (D - np.sum(mask)) * np.sum(mask)
    ```
-
-   The formulation @eq-kernelshap asks for the model evaluated on each of these
-   feature-removed versions of the data. The variable `f_bar` is the estimate of
-   $v\left(\emptyset\right)$ discussed above.
+   We evaluate $f$ on the feature-removed data. Here `f_bar` estimates
+   $v(\emptyset)$.
    ```{python}
    #| label: model-eval
    #| eval: false
@@ -265,16 +250,13 @@ associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
     v = np.mean(f.reshape(M, N, -1), axis=1)
    ```
 
-1. Finally, we can run the weighted regression. But there are subtleties related
-to the efficiency constraint. Notice that by the effiency constraint, $\beta_D = \Delta - \sum_{d<D} \beta_d$. This allows us to substitute into our earlier approximation,
-    $$
-    v(S_m) - v(\emptyset) \approx \sum_d z_{md}\beta_d \\
-    $$
-   to get
+1. $^\dagger$ Finally, we run the weighted regression. We incorporate efficiency
+constraints from point (3). Since $\beta_D = \Delta - \sum_{d<D} \beta_d$, we
+can substitute,
    $$
-   v(S_m) - v(\emptyset) - z_{mD}\Delta$ \approx \sum_{d = 1}^{D - 1}z_{md}\beta_{d}
+   v(S_m) - v(\emptyset) - z_{mD}\Delta \approx \sum_{d = 1}^{D - 1}z_{md}\beta_{d}
    $$
-   The left hand side is `y` in the code below and the RHS is `X`.
+   The left hand side is `y` below and the right hand side is `X`.
    ```{python}
    #| label: weighted-regression
    #| eval: false
@@ -290,74 +272,67 @@ to the efficiency constraint. Notice that by the effiency constraint, $\beta_D =
 
 ## Amortization
 
-1. $^\dagger$ So far, we've only considered explaining a single observation $x$. In
-practice, we often want to explain many observations $\{x_i\}_{i =1}^{N}$. To
-speed this up, one insight is that the feature attributions across observations
-are often related, and we should be able to pool across $x_i$. This will allow
-us to use very rough approximations for each individual $x_i$ and still end up
-with good estimates $\varphi_{d}(x_i)$ after sharing evidence.
+1. $^\dagger$ So far, we've only explained a single observation $x$. In
+practice, we want attributions for many $\{x_i\}_{i =1}^{N}$.  An important
+insight is that attributions across observations are often related, so we can
+pool our estimates across all samples. This lets us tolerate rougher estimates
+for each individual sample.
 
-1. $^\dagger$ This leads to the idea of _amortization_. This frames parameter estimation as
-a supervised learning problem. For concreteness, imagine we've made initial estimates
+1. $^\dagger$ _Amortization_ frames parameter estimation as
+supervised learning. For concreteness, consider noisy KernelSHAP estimates using small $M$,
    $$
    \hat{\varphi}_d^{M}(x_i) = \arg \min_{beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d}\right)
    $$
-   we'll assume $M$ is small, so these are noisy estimates. Then, consider the objective,
+   Then train a model $a_\theta : \reals^D \to \reals^D$ (e.g. linear or neural
+   network) to predict these estimates,
    $$
-   L\left(\theta\right) = \sum_{i = 1}^{N} \left(\hat{\varphi}^{M}(x_i) - a_{\theta}(x_i)\right)^{2}
+  \hat{\theta} = \arg\min_{\theta \in \Theta} \sum_{i=1}^{N}
+  \left\|\hat{\varphi}^M(x_i) - a_\theta(x_i)\right\|^2.
    $$
-   where $a_{\theta}: \reals^{D} \to \reals$ is some model parameterized by
-   $\theta$ (e.g., a linear model or neural network). This is now like a
-   supervised learning problem where the "labels" are
-  $\hat{\varphi}^{M}(x_i)$ and the input features are $x_i$.
+   This is now like a supervised learning problem where the "labels" are
+   $\hat{\varphi}^{M}(x_i)$ and the input features are $x_i$.
 
-1. $^\dagger$ We can apply standard optimization tools to find
-  $$\hat{\theta} = \arg \min_{\theta \in \Theta} L\left(\theta\right)$$
- Once this has been found, we can very quickly get attributions for arbitrary
- test samples $x^\ast$ by just calling $a_{\hat{\theta}}(x^\ast)$. We don't even
- need to sample any subsets $S_m$ or compute any $v(S_m)$. Moreover, the
- $a_{\theta}(x^\ast)$ might be closer to the true $\varphi(x^\ast)$ than
- $\hat{\varphi}^{M}(x^\ast)$, because the regression model has learned to
- "smooth over" the noise in those initial, sample-specific estimates.
+1. $^\dagger$ Once $\hat{\theta}$ has been found, we can very quickly get
+attributions for a new sample $x^\ast$ by just calling
+$a_{\hat{\theta}}(x^\ast)$. We don't even need to sample any subsets $S_m$ or
+evaluate any $v(S_m)$. Moreover, the learned model can smooth over the noise in
+the per-sample estimates, leading to $a_{\hat{\theta}}(x^*)$ that approximates
+$\varphi(x^*)$ more accurately than $\hat{\varphi}^M(x^*)$.
 
-1. $^\dagger$ It's not immediately obvious that this approach is useful, because (1)
-training the neural network $a_{\theta}$ can be slow and (2) if the "labels" are
-too noisy, we might not learn an accurate mapping to the true $\varphi(x)$. The
-research is still early, but it seems that even with moderate $M$ and simple
-$a_\theta$, we might be able to learn $\varphi(x)$ with high fidelity.
+1. $^\dagger$ Some caveats. Training $a_{\theta}$ can itself be computationally
+intensive. Also, if the labels $\hat{\varphi}^M(x_i)$ are too noisy, the learned
+mapping may be inaccurate. Nonetheless, early research suggests that even
+moderate $M$ and practical $a_{\theta}$ can learn $\varphi(x)$ with high
+fidelity.
 
 ## Model-Specific Versions
 
-1. Within specific model classes, it's possible to derive formulas for
-$\varphi_{d}(x_i)$ that are efficient to compute. For example, in your HW3, you
-will show that
+1. Within specific model classes, we can derive closed-form SHAP formulas that
+bypass enumeration over subsets. For example, in your HW3, you will show that
+for linear models $f(x) = \beta_0 + \sum_{d} \beta_{d}x_{d}$ with baseline
+removal,
    $$
    \varphi_{d}(x) = \beta_{d}\left(x_{d} - x_{d}'\right)
    $$
-   for SHAP when using baseline feature removal with baseline $x_{d}'$. The
-   attribution only depends on the $d^{th}$ feature. For example, if we used the
-   baseline $x' = \bar{x}$ then having a feature value $x_{d}$ that's one unit
-   larger than the mean gives an attribution $\beta_{d}$. If it's one unit less
-   than the mean, then feature $d$ contributes in the opposite direction, and
-   the attribution becomes $-\beta_{d}$.
-
-   A similar derivation shows that for marginal feature removal,
+   The
+   attribution only depends on feature $d$'s deviation from the baseline and
+   coefficient $\beta_d$. A similar derivation shows that for marginal feature
+   removal,
    $$
     \varphi_{d}(x) = \beta_{d}\left(x_{d} - \Esubarg{p(x_d)}{X_{d}}\right)
    $$
-   so using the marginal approach is equivalent to using a baseline equal to the
-   sample average in this particular case.
+   so using the marginal removal is the same as using the sample mean as a
+   baseline.
 
-1. There are two other important cases in practice,
+1. There are two other important model-sepcific methods,
 
-   - TreeSHAP: This gives SHAP values for models bsaed on trees, like CART,
-   bagging, boosting, and random forest. It's implemented by the `TreeExplainer`
-   class in the `shap` python package and the `treeshap` R package.
-   - DeepSHAP: This derives an approximation specific to deep learning models.
-   Unlke TreeSHAP, it doesn't give exact SHAP values, but it has lower variance
-   than model-agnostic approaches in the deep learning case. It is implemented
-   by the `DeepExplainer` class in the `shap` python package and the `DeepSHAP`
-   class in the `innsight` R package.
+   - TreeSHAP: This gives exact SHAP values tree-based model (CART,
+   bagging, boosting, random forest). It's available as `TreeExplainer`
+   in the `shap` python package and the `treeshap` R package.
+   - DeepSHAP: This is an approximation for deep learning models.  It's not
+   exact, but has lower variance than model-agnostic approaches. It is available
+   through the `DeepExplainer` class in `shap` and the `DeepSHAP` class in the
+   `innsight` R package.
 
 ## Code Example
 
@@ -440,10 +415,7 @@ We've copied our code into the `explain` method in the class below.
    official_shap_values = official_explainer.shap_values(X, nsamples=1000, silent=True)
    ```
 
-   Their code runs a bit faster because they have extra optimizations using
-   sparse rather than dense matrices to represent the mask. Nonetheless, they
-   are both _much_ faster than the naive enumeration over all subsets, and their
-   values roughly agree.
+   There's randomness in the estimates, but they're close.
 
    ```{python}
    #| label: compare-shap
