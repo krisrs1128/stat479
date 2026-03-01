@@ -68,74 +68,69 @@ prediction $f(x)$.
 
 There are two general strategies for efficient Shapley values computation,
 
-   - Model-agnostic: Without making any assumptions about the model $f$, find a
-   way of approximating $\varphi_{d}(x)$ that trade-offs statistical accuracy
-   with computational efficiency.
-   - Model-specific: Assuming a particular form for $f$ (e.g., linearity or tree
-   ensemble), derive a model-specific formula for Shapley attributions that
-   bypasses the enumeration over subsets required in the general case. This can
-   often be much more accurate, but of course makes stronger assumptions.
+   - Model-agnostic: Avoid assumptions about the model $f$. Approximate
+   $\varphi_{d}(x)$ in a way that trades-off statistical accuracy for
+   computation speed.
+   - Model-specific: Assume a particular form for $f$ (e.g., linear or tree
+   ensemble) and derive a closed-form formula that bypasses costly enumerations.
+   This is often more accurate but is less general.
 
 ## Challenge
 
-1. Before we try speeding up SHAP computation, let's see why it's slow.  Recall
-the main quantities of interest,
+1. Let's first see why naive SHAP computation is slow. Recall the key quantities,
 
    * Feature $d$'s attribution,
    $$
    \varphi_d(f, x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
    $$ {#eq-shapley}
-   where $C\left(d \vert S\right)$ is the contribution of $d$ to coalition $S$,
-   $$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S).$$
-   This depends on both $f$ and $x$, but we're suppressing it from the notation.
-   We'll also write $\varphi_{d}(x)$ instead of $\varphi_{d}(f, x)$ since the
-   function to explain is fixed throughout these notes.
+   where $C(d \mid S) = v(S \cup \{d\}) - v(S)$ is the marginal contribution of
+   $d$ to coalition $S$. Both $C$ and $v$ depend on $f$ and $x$, but we suppress this from
+   our notation. We also write $\varphi_d(x)$ instead of $\varphi_d(f, x)$, since $f$ is
+   fixed in these notes.
 
-   * The functions $v$ were defined by calling $f$ on a version of $x$ where the features in coordinates $\bar{S}$ had been removed. There were three approaches,
-
-        - Baseline removal: $v(S) = f(x_{S}, x'_{\bar{S}})$
-        - Marginal removal^[We're allowing for subsamples M < N in our approximation.]: $v(S) = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})} \approx \frac{1}{M}\sum_{i = 1}^{M} f\left(x_S, x_{i,\bar{S}}\right)$.
-        - Conditional removal^[We'll ignore this approach for the rest of the lecture, since there is no universal approach to approximating this conditional expectation.]: $v(S) = \Esubarg{p(X_{\bar{S}} \vert X_{S} = x_{S})}{f(x_{S}, X_{\bar{S}})}$
+   - The value function $v(S)$ evaluates $f$ on $x$ after "removing" features
+   outside of $S$ removed. We covered three removal strategies:
+     - Baseline $v(S) = f(x_S, x'_{\bar{S}})$
+     - Marginal^[Compared to our earlier notes, we're allowing for subsamples M < N.]: $v(S) = \mathbb{E}_{p(X_{\bar{S}})}[f(x_S, X_{\bar{S}})] \approx \frac{1}{M}\sum_{i=1}^{M} f(x_S, x_{i,\bar{S}})$
+     - Conditional: $v(S) = \mathbb{E}_{p(X_{\bar{S}} \mid X_S = x_S)}[f(x_S, X_{\bar{S}})]$
 
 1. To compute all $D$ attributions for one sample, we need $v(S)$ for every $S
-\subseteq \mathcal{D}$, and each $v(S)$ costs $M$ evaluations of $f$, supposing
-marginal feature removal. Let's try a Fermi calculation. Consider $N = 100, D =
-10, M = 100$. To get attributions across all $N$ samples and $D$ features, we'll
-need $10 ^ 2 \text{ samples} \times 10 ^ 2 \text{ calls} \times 2^{D} \text{
-subsets} \approx 10 ^ 7$ function calls. If each call takes 1ms, then this would
-take $\approx 3$ hours. This is only 100 samples and 10 features. More
-generally, marginal feature removal requires $N M 2^D$ evaluations, so the cost
-grows exponentially in $D$.
+\subseteq \mathcal{D}$. Using marginal feature removal, each $v(S)$ costs $M$
+evaluations of $f$.  Let's try a Fermi calculation. Take $N = 100, D = 10, M =
+100$. Attribution across all samples and features requires
+   $$10^2 \text{ samples} \times 2^{10} \text{ subsets} \times 10^2 \text{ calls per subset} \approx 10^7 \text{ evaluations}.$$
+Supposing 1ms per call, this takes $\approx 3$ hours (and this is only 100
+samples with 10 features). More generally, marginal removal costs $NM\,2^D$
+evaluations: exponential in $D$.
 
    _Exercise: How many evaluations of $f$ does $v(S)$ cost when using baseline feature removal?_
 
-## Sampling Subsets
+## Sampling Perspective
 
-1. We can interpret the weights in @eq-shapley as weights,
+1. The weights in @eq-shapley define a probability distribution,
    $$
-   \mathbb{P}\left(S\right) = 1/({D {D - 1 \choose \left|S\right|}})
+   \mathbb{P}(S) = \frac{1}{D \binom{D-1}{|S|}},
    $$
-  since they are nonnegative and sum to one. From this point of view,
+   because they are nonnegative and sum to one. This lets us rewrite
+   $\varphi_d(x)$ as an expectation,
    \begin{align}
    \label{eq-distribution}
-   \varphi_d(x) &= \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
-   &= \Esubarg{\mathbb{P}(S)}{C(d \vert S)} \\
-   &= \text{``Expected contribution of feature } d \text{ to a random coalition''}.
+   \varphi_d(x) &= \sum_{S \subseteq \mathcal{D} \setminus \{d\}} \mathbb{P}(S)\, C(d \mid S) = \mathbb{E}_{\mathbb{P}(S)}[C(d \mid S)].
    \end{align}
-   Instead of enumerating over all subsets to get the exact expectation, we
-   could sample random subsets according to $S_{m} \sim \mathbb{P}(S)$ and then
-   estimate,
-   $$
-   \hat{\varphi}_{d}(x) = \sum_{m = 1}^{M} C(d \vert S_{m})
-   $$ {#eq-sampling}
-   By the derivation in @eq-distribution, this is an unbiased estimator, meaning,
-   $$\Esubarg{\mathbb{P}(S)}{\hat{\varphi}_{d}(x)} = \varphi_{d}(x)$$
-   and the larger the $M$, the better an approximation we obtain.
+   i.e., the Shapley value is the expected contribution of feature $d$ to a
+   random coalition.
 
-1. To draw $S_{m} \sim \mathbb{P}(S)$ in practice, we usually use permutations.
-Specifically, consider a permutation over features $\pi : \{1, \dots, D\} \to
-\{1, \dots, D\}$ drawn uniformly at random. For example, if we had 10 features,
-we could use,
+   Instead of enumerating all $2^{D-1}$ subsets to get the exact expectation, we
+   sample $S_1, \dots, S_M \sim \mathbb{P}(S)$ and estimate
+   $$
+   \hat{\varphi}_d(x) = \frac{1}{M}\sum_{m=1}^{M} C(d \mid S_m).
+   $$ {#eq-sampling}
+   This is unbiased ($\mathbb{E}[\hat{\varphi}_d(x)] = \varphi_d(x)$) and
+   ncreasing $M$ improves the approximation.
+
+1. To draw $S_{m} \sim \mathbb{P}(S)$ in practice, we use random permutations.
+Draw $\pi : \{1, \dots, D\} \to \{1, \dots, D\}$ drawn uniformly at random. For
+example, for 10 features we could use,
 
    ```{r}
    #| label: example-perm
@@ -143,17 +138,16 @@ we could use,
    pi
    ```
 
-   Let $\text{Pre}^{d}\left(\pi\right)$ be the items in the permutation up until
-   the $d^{th}$ feature shows up. For example, for $d = 4$, we would consider,
+   Let $\text{Pre}^{d}\left(\pi\right)$ the features appearing before $d$ in
+   $\pi$. E.g., for $d = 4$,
    ```{r}
    #| label: perm-to-set
     pi[seq_len(match(4, pi) - 1)]
    ```
-   It's not obvious, but the set $\text{Pre}^d\left(\pi\right)$ gives a draw
-   from $\mathbb{P}\left(S\right)$.
+   It's not obvious, but $\text{Pre}^d\left(\pi\right)$ gives a sample from
+   $\mathbb{P}\left(S\right)$.
 
 1. To summarize, the procedure is,
-
    ```
    for m = 1, ..., M:
      sample a random permutation π_m over D features
@@ -161,66 +155,70 @@ we could use,
      compute C(d | S_m)
    return average of C(d | S_m) over m
    ```
-
-   This is often called the Interactions-base
-
-1. Sampling more permutations $M$ leads to a better approximation, at the cost
-of higher computation.
+   This is often called IME (``Interactions-based Method for Explanation'').
+   Larger $M$ gives better approximations but at higher computing cost.
 
 1. _Adaptive sampling_. The terms $C\left(d \vert S_{m}\right)$ are random
-variables with mean $\varphi_{d}\left(x\right)$.  (picture of their histograms
-across $d$) For some choices of $d$, $C\left(d \vert S_{m}\right)$ may have low
-variance (this is especially true if a feature isn't relevant to the prediction
-and all the contributions are near zero).  In this case, even averaging a small
-number of $M$ yields a good approximation of $\varphi_{d}(x)$.  Adaptive
-sampling keeps track of the variance in $C\left(d \vert S_{m}\right)$ across $d$ and
-allocates more samples to the features with higher variance.
+variables with mean $\varphi_{d}\left(x\right)$.
 
-1. _Antithetic sampling_. Remember from probability, that the variance of a sum of two variables is,
-   $$
-   \text{Var}(Z_1, Z_2) = \text{Var}(Z_1) + \text{Var}(Z_2) + \text{Cov}(Z_1, Z_2).
-   $$
-   The implication is that we can reduce the variance of a sum by choosing the
-   variables so that they are negatively correlated.
+(picture of their histograms across $d$)
 
-   _Exercise: If $\text{Cor}(Z_1, Z_2) = -1$, what is the variance of the sum?_
+   For features that are irrelevant, the contributions are tightly clustered
+   near zero, so even small values of $M$ are enough. Inspired by this
+   observation, adaptive sampling tracks the variance of $C(d \mid S_m)$ across
+   features and allocates more samples to high-variance features.
 
-   This holds for larger sums too. For general $M$,
+1. _Antithetic sampling_. Recall that
    $$
-    \text{Var}\left(\sum_{m = 1}^{M} Z_{m}\right) = \sum_{m = 1}^{M}\text{Var}(Z_m) + \sum_{m \neq m'} \text{Cov}(Z_m, Z_{m'})
+   \text{Var}(Z_1 + Z_2) = \text{Var}(Z_1) + \text{Var}(Z_2) + 2\text{Cov}(Z_1, Z_2).
    $$
-   and again we can reduce the variance of the sum by choosing the $Z_m$ with negative pairwise correlations.
+   so negative correlated terms reduce the variance of the sum.
 
-1. This approach can be applied to @eq-sampling. To create negative correlation
-between the terms $C\left(d \vert S_m\right)$ and $C\left(d \vert S_{m'}\right)$, we pairs each
+   _Exercise: If $\text{Cor}(Z_1, Z_2) = -1$, what is $\text{Var}(Z_1 + Z_2)$?_
+
+   More generally, $\text{Var}\!\left(\sum_{m=1}^M Z_m\right) = \sum_m
+   \text{Var}(Z_m) + \sum_{m \neq m'} \text{Cov}(Z_m, Z_{m'})$, so again
+   negative pairwise correlations reduce variance.
+
+1. Applying this to @eq-sampling, we can induce negative correlation between
+$C\left(d \vert S_m\right)$ and $C\left(d \vert S_{m'}\right)$ by pairing each
 $S_m$ with its complement,
 
    - Sample $S_m \mathbb{P}(S)$
-   - Set $S_{m'} = \bar{S}_{m}$ the complement of $S$ among the features $\{1, \dots, D\}$.
+   - Set $S_{m'} = \bar{S}_{m}$ the complement of $S$ in $\{1, \dots, D\}$.
 
-   Though this is simple, it yields large improvements.
+   Despite its simplicity, this yields large variance reduction.
 
 ## Weighted Least Squares
 
-1. So far, we've relied on the representation @eq-distribution. There is another
-representation that also suggests a natural approximation to the SHAP value. A
-classic result in game theory [@Charnes1988] shows that SHAP values can be
-expressed as the solution to a weighted least squares problem.
+1. A classical result in game theory [@Charnes1988] shows that SHAP values can
+be characterized through a weighted least squares problem,
    $$
     \varphi\left(x\right) =
     \arg \min_{\beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d}\right)
    $$ {#eq-kernelshap}
-   where the regression weights are given by $w(S) = \left[{D \choose
-   \left|S\right|} \left|S\right|\left(D - \left|S\right|\right)\right]^{-1}$
-   and we're concatenating the SHAP values into,
-   $$
-   \varphi(x) = \begin{bmatrix} \varphi_{1}\left(x\right) \\ \vdots \\ \varphi_{D}\left(x\right) \end{bmatrix}
-   $$
+    where $w(S) = \left[\binom{D}{|S|} |S|(D - |S|)\right]^{-1}$ and $\varphi(x) = (\varphi_1(x), \dots, \varphi_D(x))^\top$.
 
-1. This theoretical result relies on all subsets $S \subset \mathcal{D}$, but it
-suggests an approximation: Sample random subsets $S_m$ and run the regression
-onto the reduced design matrix. This approximate version of weighted linear
-regression is called "KernelSHAP."
+1. This characterization still enumerates $2^D$ subsets, but it suggests an
+approximation: sample random subsets $S_1, \dots, S_M$ and solve the weighted
+regression on this reduced design. This is "KernelSHAP."
+
+1.  Let $z_{md} = \mathbf{1}[d \in S_m]$ be the associated design matrix. The
+regression suggests,
+  $$
+  v(S_m) - v(\emptyset) \approx \sum_d z_{md}\beta_d
+  $$
+  The efficiency constraint becomes,
+   \begin{align*}
+   \sum_d \beta_d &= v(\mathcal{D}) - v(\emptyset) \\
+   &= \hat{f}(x) - \mathbb{E}[\hat{f}(X)] \\
+   &=: \Delta
+   \end{align*}
+
+1. One subtlety is that $v(\emptyset) = \Esubarg{p(X)}{f(X)}$ by
+definition^[Under marginal feature removal.], which is also $\beta_0$ in this
+regression.  Rather than estimating this parameter freely, we fix $\hat{\beta}_0
+= \frac{1}{N}f(x_i)$ and regress with this term removed.
 
 1. Let's walk through a toy implementation of this approach. The code example at
 the bottom of the notebook validates that this is equivalent to the official
@@ -257,7 +255,8 @@ associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
    ```
 
    The formulation @eq-kernelshap asks for the model evaluated on each of these
-   feature-removed versions of the data.
+   feature-removed versions of the data. The variable `f_bar` is the estimate of
+   $v\left(\emptyset\right)$ discussed above.
    ```{python}
    #| label: model-eval
    #| eval: false
@@ -266,15 +265,21 @@ associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
     v = np.mean(f.reshape(M, N, -1), axis=1)
    ```
 
-1. Finally, we can run the weighted regression. By definition,
-$\varphi_{\emptyset}$ is the mean of $\hat{f}(x_i)$ over $i$, so we fix that
-effect before running the regression.
-
+1. Finally, we can run the weighted regression. But there are subtleties related
+to the efficiency constraint. Notice that by the effiency constraint, $\beta_D = \Delta - \sum_{d<D} \beta_d$. This allows us to substitute into our earlier approximation,
+    $$
+    v(S_m) - v(\emptyset) \approx \sum_d z_{md}\beta_d \\
+    $$
+   to get
+   $$
+   v(S_m) - v(\emptyset) - z_{mD}\Delta$ \approx \sum_{d = 1}^{D - 1}z_{md}\beta_{d}
+   $$
+   The left hand side is `y` in the code below and the RHS is `X`.
    ```{python}
    #| label: weighted-regression
    #| eval: false
-   X = mask_matrix - mask_matrix[:, -1][:, None]
    y = (v - f_bar).flatten() - mask_matrix[:, -1] * (model(x) - f_bar)
+   X = mask_matrix - mask_matrix[:, -1][:, None]
    lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
 
    # final shapley values
