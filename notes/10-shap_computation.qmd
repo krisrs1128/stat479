@@ -12,6 +12,7 @@ execute:
     message: false
     warning: false
     cache: false
+    eval: false
 ---
 
 ::: {style="display: none;"}
@@ -53,27 +54,27 @@ use_condaenv("stat479_week6")
 
 _Readings: [1](https://arxiv.org/abs/2207.07605) (required), [2](https://proceedings.neurips.cc/paper_files/paper/2024/hash/084252ec5f05f13bf565843c1873686d-Abstract-Conference.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/10-shap_computation.qmd)_
 
-Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
+Items marked $^{\dagger}$ are not in the required reading and will not be
+tested.  The required reading also covers methods beyond this handout, those
+also won't be tested.
 
 ## Setup
 
 **Goal.** Given a model $f$ and a sample $x\in\reals^{D}$, efficiently compute
-the SHAP value $\varphi_d(x, f)$ of the contribution of feature $d$ to the
+the SHAP value $\varphi_d(x, f)$, the contribution of feature $d$ to the
 prediction $f(x)$.
 
 **Approach.**
 
-At a high-level, there are two approaches to efficiently calculating Shapley
-attributions.
+There are two general strategies for efficient Shapley values computation,
 
-   - Model-agnostic: Without making any assumptions about the model $f$, find a way of approximating $\varphi_{d}(x)$ that trade-offs statistical accuracy with computational efficiency.
-    - Model-specific: Assuming a particular form for $f$ (e.g., linearity or
-    tree ensemble), derive a model-specific formula for Shapley attributions
-    that bypasses the enumeration over subsets required in the general case.
-
-The basic trade-off is,
-   - Model-agnostic: Works on any model, but only approximates $\varphi_{d}(x)$
-   - Model-specific: Works only on narrow model classes, but gives exact $\varphi_{d}(x)$.
+   - Model-agnostic: Without making any assumptions about the model $f$, find a
+   way of approximating $\varphi_{d}(x)$ that trade-offs statistical accuracy
+   with computational efficiency.
+   - Model-specific: Assuming a particular form for $f$ (e.g., linearity or tree
+   ensemble), derive a model-specific formula for Shapley attributions that
+   bypasses the enumeration over subsets required in the general case. This can
+   often be much more accurate, but of course makes stronger assumptions.
 
 ## Challenge
 
@@ -110,21 +111,24 @@ grows exponentially in $D$.
 
 ## Sampling Subsets
 
-1. We can interpret the weights $\frac{1}{D {D - 1 \choose \left|S\right|}}$ as
-probabilities, since they are nonnegative and sum to one. From this point of
-view,
+1. We can interpret the weights in @eq-shapley as weights,
    $$
-   \varphi_d(x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
+   \mathbb{P}\left(S\right) = 1/({D {D - 1 \choose \left|S\right|}})
+   $$
+  since they are nonnegative and sum to one. From this point of view,
+   \begin{align}
+   \label{eq-distribution}
+   \varphi_d(x) &= \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
    &= \Esubarg{\mathbb{P}(S)}{C(d \vert S)} \\
-   &= \Esubarg{\mathbb{P}{S}}{\text{Contribution of feature } d \text{ to coalition} S}.
-   $$ {#eq-distribution}
-   for a distribution $\mathbb{P}$ over subsets. Instead of enumerating over all
-   subsets to get the exact expectation, we could sample random subsets
-   according to $S_{m} \sim \pi(S)$ and then estimate,
+   &= \text{``Expected contribution of feature } d \text{ to a random coalition''}.
+   \end{align}
+   Instead of enumerating over all subsets to get the exact expectation, we
+   could sample random subsets according to $S_{m} \sim \mathbb{P}(S)$ and then
+   estimate,
    $$
    \hat{\varphi}_{d}(x) = \sum_{m = 1}^{M} C(d \vert S_{m})
    $$ {#eq-sampling}
-   By the identity above, this is an unbiased estimator,
+   By the derivation in @eq-distribution, this is an unbiased estimator, meaning,
    $$\Esubarg{\mathbb{P}(S)}{\hat{\varphi}_{d}(x)} = \varphi_{d}(x)$$
    and the larger the $M$, the better an approximation we obtain.
 
@@ -134,13 +138,15 @@ Specifically, consider a permutation over features $\pi : \{1, \dots, D\} \to
 we could use,
 
    ```{r}
+   #| label: example-perm
    pi <- sample(1:10)
    pi
    ```
 
    Let $\text{Pre}^{d}\left(\pi\right)$ be the items in the permutation up until
-   the $d^th$ feature shows up. For example, for $d = 4$, we would consider,
+   the $d^{th}$ feature shows up. For example, for $d = 4$, we would consider,
    ```{r}
+   #| label: perm-to-set
     pi[seq_len(match(4, pi) - 1)]
    ```
    It's not obvious, but the set $\text{Pre}^d\left(\pi\right)$ gives a draw
@@ -162,12 +168,12 @@ we could use,
 of higher computation.
 
 1. _Adaptive sampling_. The terms $C\left(d \vert S_{m}\right)$ are random
-variables with mean $\varphi_{d}(x\right)$.  (picture of their histograms
+variables with mean $\varphi_{d}\left(x\right)$.  (picture of their histograms
 across $d$) For some choices of $d$, $C\left(d \vert S_{m}\right)$ may have low
 variance (this is especially true if a feature isn't relevant to the prediction
 and all the contributions are near zero).  In this case, even averaging a small
 number of $M$ yields a good approximation of $\varphi_{d}(x)$.  Adaptive
-sampling keeps track of the variance in $C(d \vert S_{m}\right)$ across $d$ and
+sampling keeps track of the variance in $C\left(d \vert S_{m}\right)$ across $d$ and
 allocates more samples to the features with higher variance.
 
 1. _Antithetic sampling_. Remember from probability, that the variance of a sum of two variables is,
@@ -186,13 +192,13 @@ allocates more samples to the features with higher variance.
    and again we can reduce the variance of the sum by choosing the $Z_m$ with negative pairwise correlations.
 
 1. This approach can be applied to @eq-sampling. To create negative correlation
-between the terms $C(d \vert S_m)$ and $C(d \vert S_{m'}\right)$, we pairs each
+between the terms $C\left(d \vert S_m\right)$ and $C\left(d \vert S_{m'}\right)$, we pairs each
 $S_m$ with its complement,
 
    - Sample $S_m \mathbb{P}(S)$
-   - Set $S_{m'} &= \bar{S}_{m}$ the complement of $S$ among the features $\{1, \dots, D\}$.
+   - Set $S_{m'} = \bar{S}_{m}$ the complement of $S$ among the features $\{1, \dots, D\}$.
 
-   Though this is simple, it yields competitive performance in practice.
+   Though this is simple, it yields large improvements.
 
 ## Weighted Least Squares
 
@@ -201,97 +207,106 @@ representation that also suggests a natural approximation to the SHAP value. A
 classic result in game theory [@Charnes1988] shows that SHAP values can be
 expressed as the solution to a weighted least squares problem.
    $$
-    \varphi\left(x\right) &=
-    \arg \min_{beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d})
+    \varphi\left(x\right) =
+    \arg \min_{\beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d}\right)
    $$ {#eq-kernelshap}
-   where the regression weights are given by $W(S) = (D - 1) / ({D \choose
-   \left|S\right|})(|S|(|D| - |S|))$ and we're writing the vector of SHAP values
-   as,
+   where the regression weights are given by $w(S) = \left[{D \choose
+   \left|S\right|} \left|S\right|\left(D - \left|S\right|\right)\right]^{-1}$
+   and we're concatenating the SHAP values into,
    $$
-   \varphi(x) &= \begin{bmatrix} \varphi_{1}\left(x\right) \\ \vdots \\ \varphi_{D}\left(x\right) \end{bmatrix}
+   \varphi(x) = \begin{bmatrix} \varphi_{1}\left(x\right) \\ \vdots \\ \varphi_{D}\left(x\right) \end{bmatrix}
    $$
-
-1. For example, suppose that we had only two features. The regression has the
-form,
-
-   More generally,
 
 1. This theoretical result relies on all subsets $S \subset \mathcal{D}$, but it
-suggests an approximation: Sample random subsets $S$ and run the regression onto
-the reduced design matrix. This approximate version of weighted lienar regression is called "KernelSHAP."
+suggests an approximation: Sample random subsets $S_m$ and run the regression
+onto the reduced design matrix. This approximate version of weighted linear
+regression is called "KernelSHAP."
 
-1. Let's walk through a toy implementation of this approach. Next we initialize
-`mask_matrix`, a matrix whose rows will include random subsets $S_m$ stored as a
-binary masmk.
+1. Let's walk through a toy implementation of this approach. The code example at
+the bottom of the notebook validates that this is equivalent to the official
+implementation. The block below initializes `mask_matrix`, a matrix whose rows
+will include random subsets $S_m$ stored as a binary masmk.
 
-   ```{r, eval=FALSE}
-   # initialize data structures
-   mask_matrix <- matrix(0, nrow = nsamples, ncol = M)
+   ```{python}
+   #| label: mask-init
+   #| eval: false
+   mask_matrix = np.zeros((M, D))
    ```
 
    We'll store our weights $W$ in `kernel_weights` and the feature-removed
    version of the sample $x$ in `synth_data`.
 
-   ```{r}
-   kernel_weights <- numeric(nsamples)
-   synth_data <- data[rep(seq_len(N), nsamples), ]
+   ```{python}
+   #| label: data-init
+   #| eval: false
+   kernel_weights = np.zeros(M)
+   synth_data = np.tile(data, (M, 1))
    ```
 
-   Next, we construct the random subsets $S_{m}$ (variable `mask`) and
-   associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
+1. Next, we construct the random subsets $S_{m}$ (variable `mask`) and
+associated feature-removed data $(x_{S_m}, x_{\bar{S}_{m}})$.
 
-   ```{r}
-   for (i in seq_len(nsamples)) {
-     mask <- sample(0:1, M, replace = TRUE)
-     mask_matrix[i, ] <- mask
-     rows <- seq((i - 1) * N + 1, i * N)
-     synth_data[rows, mask == 1] <- x[1, mask == 1]
-     kernel_weights[i] <- (M - sum(mask)) * sum(mask)
-   }
+   ```{python}
+   #| label: subset-sampling
+   #| eval: false
+   for i in range(M):
+        mask = np.random.choice([0, 1], size=D)
+        mask_matrix[i] = mask
+        synth_data[i * N:(i + 1) * N, mask == 1] = x[0, mask == 1]
+        kernel_weights[i] = (D - np.sum(mask)) * np.sum(mask)
    ```
 
    The formulation @eq-kernelshap asks for the model evaluated on each of these
    feature-removed versions of the data.
-   ```{r}
-   model_out <- model(synth_data)
-   f <- rowMeans(matrix(model_out, nrow = nsamples, ncol = N, byrow = TRUE)) - f_bar
+   ```{python}
+   #| label: model-eval
+   #| eval: false
+    f_bar = np.mean(model(data))
+    f = model(synth_data)
+    v = np.mean(f.reshape(M, N, -1), axis=1)
    ```
 
-   Finally, we can run the weighted regression. We treat $\beta_{0}$ differently
-   from the other terms, since it can be computed in closed form before solving
-   the rest of the optimization.
+1. Finally, we can run the weighted regression. By definition,
+$\varphi_{\emptyset}$ is the mean of $\hat{f}(x_i)$ over $i$, so we fix that
+effect before running the regression.
 
-   ```{r}
-   last_col <- mask_matrix[, M]
-   X <- mask_matrix - last_col
-   y <- f - last_col * (model(x) - f_bar)
-   lm_fit <- lm.wfit(x = X, y = y, w = kernel_weights)
+   ```{python}
+   #| label: weighted-regression
+   #| eval: false
+   X = mask_matrix - mask_matrix[:, -1][:, None]
+   y = (v - f_bar).flatten() - mask_matrix[:, -1] * (model(x) - f_bar)
+   lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
+
+   # final shapley values
+   phi = np.zeros(D)
+   phi[:-1] = lm.coef_[:-1]
+   phi[-1] = (model(x) - f_bar) - np.sum(lm.coef_)
    ```
 
 ## Amortization
 
-1. So far, we've only considered explaining a single observation $x$. In
-practice, we often want to explain many observations $\{x_i\}_{i =1}^{N}. To
+1. $^\dagger$ So far, we've only considered explaining a single observation $x$. In
+practice, we often want to explain many observations $\{x_i\}_{i =1}^{N}$. To
 speed this up, one insight is that the feature attributions across observations
 are often related, and we should be able to pool across $x_i$. This will allow
 us to use very rough approximations for each individual $x_i$ and still end up
 with good estimates $\varphi_{d}(x_i)$ after sharing evidence.
 
-1. This leads to the idea of _amortization_. This frames parameter estimation as
+1. $^\dagger$ This leads to the idea of _amortization_. This frames parameter estimation as
 a supervised learning problem. For concreteness, imagine we've made initial estimates
    $$
-   \hat{\vaphi}_d^{M}(x_i) &= \arg \min_{beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d})
+   \hat{\varphi}_d^{M}(x_i) = \arg \min_{beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d}\right)
    $$
    we'll assume $M$ is small, so these are noisy estimates. Then, consider the objective,
    $$
-   L\left(\theta\right) &= \sum_{i = 1}^{N} \left(\hat{\varphi}^{M}(x_i) - a_{\theta}(x_i)\right)^{2}
+   L\left(\theta\right) = \sum_{i = 1}^{N} \left(\hat{\varphi}^{M}(x_i) - a_{\theta}(x_i)\right)^{2}
    $$
    where $a_{\theta}: \reals^{D} \to \reals$ is some model parameterized by
    $\theta$ (e.g., a linear model or neural network). This is now like a
    supervised learning problem where the "labels" are
   $\hat{\varphi}^{M}(x_i)$ and the input features are $x_i$.
 
-1. We can apply standard optimization tools to find
+1. $^\dagger$ We can apply standard optimization tools to find
   $$\hat{\theta} = \arg \min_{\theta \in \Theta} L\left(\theta\right)$$
  Once this has been found, we can very quickly get attributions for arbitrary
  test samples $x^\ast$ by just calling $a_{\hat{\theta}}(x^\ast)$. We don't even
@@ -300,7 +315,7 @@ a supervised learning problem. For concreteness, imagine we've made initial esti
  $\hat{\varphi}^{M}(x^\ast)$, because the regression model has learned to
  "smooth over" the noise in those initial, sample-specific estimates.
 
-1. It's not immediately obvious that this approach is useful, because (1)
+1. $^\dagger$ It's not immediately obvious that this approach is useful, because (1)
 training the neural network $a_{\theta}$ can be slow and (2) if the "labels" are
 too noisy, we might not learn an accurate mapping to the true $\varphi(x)$. The
 research is still early, but it seems that even with moderate $M$ and simple
@@ -308,4 +323,126 @@ $a_\theta$, we might be able to learn $\varphi(x)$ with high fidelity.
 
 ## Model-Specific Versions
 
-1.
+1. Within specific model classes, it's possible to derive formulas for
+$\varphi_{d}(x_i)$ that are efficient to compute. For example, in your HW3, you
+will show that
+   $$
+   \varphi_{d}(x) = \beta_{d}\left(x_{d} - x_{d}'\right)
+   $$
+   for SHAP when using baseline feature removal with baseline $x_{d}'$. The
+   attribution only depends on the $d^{th}$ feature. For example, if we used the
+   baseline $x' = \bar{x}$ then having a feature value $x_{d}$ that's one unit
+   larger than the mean gives an attribution $\beta_{d}$. If it's one unit less
+   than the mean, then feature $d$ contributes in the opposite direction, and
+   the attribution becomes $-\beta_{d}$.
+
+   A similar derivation shows that for marginal feature removal,
+   $$
+    \varphi_{d}(x) = \beta_{d}\left(x_{d} - \Esubarg{p(x_d)}{X_{d}}\right)
+   $$
+   so using the marginal approach is equivalent to using a baseline equal to the
+   sample average in this particular case.
+
+1. There are two other important cases in practice,
+
+   - TreeSHAP: This gives SHAP values for models bsaed on trees, like CART,
+   bagging, boosting, and random forest. It's implemented by the `TreeExplainer`
+   class in the `shap` python package and the `treeshap` R package.
+   - DeepSHAP: This derives an approximation specific to deep learning models.
+   Unlke TreeSHAP, it doesn't give exact SHAP values, but it has lower variance
+   than model-agnostic approaches in the deep learning case. It is implemented
+   by the `DeepExplainer` class in the `shap` python package and the `DeepSHAP`
+   class in the `innsight` R package.
+
+## Code Example
+
+1. This example shows that the `KernelSHAP` sketch above indeed agrees with the
+[official
+implementation](https://github.com/shap/shap/blob/61f0f8e3e0168aba1ca8f40bb8f352c37ad1519e/shap/explainers/_kernel.py#L41).
+We've copied our code into the `explain` method in the class below.
+`shap_values` simply loops `explain` over many samples.
+
+   ```{python}
+   #| label: kernel-explainer
+   import numpy as np
+   from sklearn.linear_model import LinearRegression
+
+   class SimpleKernelExplainer:
+       def __init__(self, model, data):
+           self.model = model
+           self.data = data
+           self.N, self.D = data.shape
+           self.f_bar = np.mean(model(data))
+
+       def shap_values(self, X, M):
+           explanations = []
+           for i in range(X.shape[0]):
+               explanations.append(self.explain(X[i:(i + 1)], M))
+           return np.array(explanations)
+
+       def explain(self, x, M):
+           # initialize data structures
+           mask_matrix = np.zeros((M, self.D))
+           kernel_weights = np.zeros(M)
+           synth_data = np.tile(self.data, (M, 1))
+
+           # sample random subsets
+           for i in range(M):
+               mask = np.random.choice([0, 1], size=self.D)
+               mask_matrix[i] = mask
+               synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
+               kernel_weights[i] = (self.D - np.sum(mask)) * np.sum(mask)
+
+           # model predictions on the synthetic data
+           model_out = self.model(synth_data)
+           v = np.mean(model_out.reshape(M, self.N, -1), axis=1)
+
+           # weighted linear regression on adjusted f
+           X = mask_matrix - mask_matrix[:, -1][:, None]
+           y = (v - self.f_bar).flatten() - mask_matrix[:, -1] * (self.model(x) - self.f_bar)
+           lm = LinearRegression(fit_intercept=False).fit(X, y, sample_weight=kernel_weights)
+
+           # return shapley approximation
+           phi = np.zeros(self.D)
+           phi[:-1] = lm.coef_[:-1]
+           phi[-1] = (self.model(x) - self.f_bar) - np.sum(lm.coef_)
+           return phi
+   ```
+
+1. We'll test using a random forest model trained to fit the toy dataset
+`make_friedman1` from [@Friedman1991].
+
+   ```{python}
+   #| label: fit-model
+   from sklearn.ensemble import RandomForestRegressor
+   from sklearn.datasets import make_friedman1
+
+   X, y = make_friedman1(n_samples=100, n_features=5, noise=0.1)
+   model = RandomForestRegressor(n_estimators=100)
+   model.fit(X, y)
+   ```
+
+1. We run both our simple and the official explainer in the block below.
+
+   ```{python}
+   #| label: our-shap
+   import shap
+
+   explainer = SimpleKernelExplainer(model.predict, X)
+   official_explainer = shap.KernelExplainer(model.predict, X)
+
+   shap_values = explainer.shap_values(X, M=1000)
+   official_shap_values = official_explainer.shap_values(X, nsamples=1000, silent=True)
+   ```
+
+   Their code runs a bit faster because they have extra optimizations using
+   sparse rather than dense matrices to represent the mask. Nonetheless, they
+   are both _much_ faster than the naive enumeration over all subsets, and their
+   values roughly agree.
+
+   ```{python}
+   #| label: compare-shap
+
+   print("Package: ", np.round(official_shap_values[:5], 4))
+   print("Ours: ", np.round(shap_values[:5], 4))
+   ```
