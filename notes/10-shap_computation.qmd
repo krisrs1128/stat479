@@ -61,17 +61,24 @@ Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
 the SHAP value $\varphi_d(x, f)$ of the contribution of feature $d$ to the
 prediction $f(x)$.
 
-**Requirements.**
+**Approach.**
 
-There is no single approach to speeding up computation of Shapley values in
-machine learning. We'll survey five of the methods discussed in the reading and
-list the requirements for that particular method once we reach it.
+At a high-level, there are two approaches to efficiently calculating Shapley
+attributions.
+
+   - Model-agnostic: Without making any assumptions about the model $f$, find a way of approximating $\varphi_{d}(x)$ that trade-offs statistical accuracy with computational efficiency.
+    - Model-specific: Assuming a particular form for $f$ (e.g., linearity or
+    tree ensemble), derive a model-specific formula for Shapley attributions
+    that bypasses the enumeration over subsets required in the general case.
+
+The basic trade-off is,
+   - Model-agnostic: Works on any model, but only approximates $\varphi_{d}(x)$
+   - Model-specific: Works only on narrow model classes, but gives exact $\varphi_{d}(x)$.
 
 ## Challenge
 
-1. Before we try speeding up SHAP computation, let's see how bad a naive
-approach can be. First, let's review the key quantities in applying SHAP for
-machine learning.
+1. Before we try speeding up SHAP computation, let's see why it's slow.  Recall
+the main quantities of interest,
 
    * Feature $d$'s attribution,
    $$
@@ -102,20 +109,154 @@ grows exponentially in $D$.
 
 ## Sampling Subsets
 
-**Requirements.**
+1. We can interpret the weights $\frac{1}{D {D - 1 \choose \left|S\right|}}$ as
+probabilities, since they are nonnegative and sum to one. From this point of
+view,
+   $$
+   \varphi_d(f, x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \mathbb{P}\left(S\right) C(d \vert S) \\
+   &= \Esubarg{\mathbb{P}(S)}{C(d \vert S)} \\
+   &= \Esubarg{\mathbb{P}{S}}{\text{Contribution of feature } d \text{ to coalition} S}.
+   $$ {#eq-distribution}
+   for a distribution $\mathbb{P}$ over subsets. Instead of enumerating over all
+   subsets to get the exact expectation, we could sample random subsets
+   according to $S_{m} \sim \pi(S)$ and then estimate,
+   $$
+   \hat{\varphi}_{d}(f, x) = \sum_{m = 1}^{M} C(d \vert S_{m})
+   $$ {#eq-sampling}
+   By the identity above, this is an unbiased estimator,
+   $$\Esubarg{\mathbb{P}(S)}{\hat{\varphi}_{d}(f, x)} = \varphi_{d}(f, x)$$
+   and the larger the $M$, the better an approximation we obtain.
+
+1. To draw $S_{m} \sim \mathbb{P}(S)$ in practice, we usually use permutations.
+Specifically, consider a permutation over features $\pi : \{1, \dots, D\} \to
+\{1, \dots, D\}$ drawn uniformly at random. For example, if we had 10 features,
+we could use,
+
+   ```{r}
+   pi <- sample(1:10)
+   pi
+   ```
+
+   Let $\text{Pre}^{d}\left(\pi\right)$ be the items in the permutation up until
+   the $d^th$ feature shows up. For example, for $d = 4$, we would consider,
+   ```{r}
+    pi[seq_len(match(4, pi) - 1)]
+   ```
+   It's not obvious, but the set $\text{Pre}^d\left(\pi\right)$ gives a draw
+   from $\mathbb{P}\left(S\right)$.
+
+1. To summarize, the procedure is,
+
+   ```
+   for m = 1, ..., M:
+     sample a random permutation π_m over D features
+     set S_m = Pre^d(π_m)
+     compute C(d | S_m)
+   return average of C(d | S_m) over m
+   ```
+
+   This is often called the Interactions-base
+
+1. Sampling more permutations $M$ leads to a better approximation, at the cost
+of higher computation.
+
+1. _Adaptive sampling_. The terms $C\left(d \vert S_{m}\right)$ are random
+variables with mean $\varphi_{d}(f, x\right)$.  (picture of their histograms
+across $d$) For some choices of $d$, $C\left(d \vert S_{m}\right)$ may have low
+variance (this is especially true if a feature isn't relevant to the prediction
+and all the contributions are near zero).  In this case, even averaging a small
+number of $M$ yields a good approximation of $\varphi_{d}(f, x)$.  Adaptive
+sampling keeps track of the variance in $C(d \vert S_{m}\right)$ across $d$ and
+allocates more samples to the features with higher variance.
+
+1. _Antithetic sampling_. Remember from probability, that the variance of a sum of two variables is,
+   $$
+   \text{Var}(Z_1, Z_2) = \text{Var}(Z_1) + \text{Var}(Z_2) + \text{Cov}(Z_1, Z_2).
+   $$
+   The implication is that we can reduce the variance of a sum by choosing the
+   variables so that they are negatively correlated.
+
+   _Exercise: If $\text{Cor}(Z_1, Z_2) = -1$, what is the variance of the sum?_
+
+   This holds for larger sums too. For general $M$,
+   $$
+    \text{Var}\left(\sum_{m = 1}^{M} Z_{m}\right) = \sum_{m = 1}^{M}\text{Var}(Z_m) + \sum_{m \neq m'} \text{Cov}(Z_m, Z_{m'})
+   $$
+   and again we can reduce the variance of the sum by choosing the $Z_m$ with negative pairwise correlations.
+
+1. This approach can be applied to @eq-sampling. To create negative correlation
+between the terms $C(d \vert S_m)$ and $C(d \vert S_{m'}\right)$, we pairs each
+$S_m$ with its complement,
+
+   - Sample $S_m \mathbb{P}(S)$
+   - Set $S_{m'} &= \bar{S}_{m}$ the complement of $S$ among the features $\{1, \dots, D\}$.
+
+   Though this is simple, it yields competitive performance in practice.
 
 ## Weighted Least Squares
 
-**Requirements.**
+1. So far, we've relied on the representation @eq-distribution. There is another
+representation that also suggests a natural approximation to the SHAP value. A
+classic result in game theory [@Charnes1988] shows that SHAP values can be
+expressed as the solution to a weighted least squares problem.
+   $$
+    \begin{bmatrix} \varphi_{1}\left(f, x\right) \\ \vdots \\ \varphi_{D}\left(f, x\right) \end{bmatrix}&=
+    \arg \min_{beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d})
+   $$
+   where the regression weights are given by $W(S) = (D - 1) / ({D \choose \left|S\right|})(|S|(|D| - |S|))$.
+
+1. For example, suppose that we had only two features. The regression has the
+form,
+
+   More generally,
+
+1. This theoretical result relies on all subsets $S \subset \mathcal{D}$, but it
+suggests an approximation: Sample random subsets $S$ and run the regression onto
+the reduced design matrix. This approximate version of weighted lienar regression is called "KernelSHAP."
+
+1. Let's walk through a toy implementation of this approach. First we initialize
+`mask_matrix`, a matrix whose rows will include random subsets $S_m$ stored as a
+binary masmk.
+
+   ```{r, eval=FALSE}
+   # initialize data structures
+   mask_matrix <- matrix(0, nrow = nsamples, ncol = M)
+   ```
+
+   We'll store our weights $W$ in `kernel_weights` and the feature-removed
+   version of the sample $x$ in `synth_data`.
+
+   ```{r}
+   kernel_weights <- numeric(nsamples)
+   synth_data <- data[rep(seq_len(N), nsamples), ]
+   ```
+
+   ```{r}
+   # keep values at random subsets of features
+   for (i in seq_len(nsamples)) {
+     mask <- sample(0:1, M, replace = TRUE)
+     mask_matrix[i, ] <- mask
+     rows <- seq((i - 1) * N + 1, i * N)
+     synth_data[rows, mask == 1] <- x[1, mask == 1]
+     kernel_weights[i] <- (M - sum(mask)) * sum(mask)
+   }
+
+   # model predictions on masked data
+   model_out <- model(synth_data)
+   f <- rowMeans(matrix(model_out, nrow = nsamples, ncol = N, byrow = TRUE)) - f_bar
+
+   # weighted regression on adjusted f
+   last_col <- mask_matrix[, M]
+   X <- mask_matrix - last_col
+   y <- f - last_col * (model(x) - f_bar)
+   lm_fit <- lm.wfit(x = X, y = y, w = kernel_weights)
+   ```
+
 
 ## Local Shapley
 
-**Requirements.**
 
 ## Stochastic Amortization
 
-**Requirements.**
 
 ## Model-Specific Versions
-
-**Requirements.**
