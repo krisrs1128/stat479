@@ -1,0 +1,121 @@
+---
+title: "SHAP Computation"
+author: Kris Sankaran
+date: 2026-03-02
+bibliography: references.bib
+format:
+  html:
+    embed-resources: true
+    html-math-method: mathjax
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: false
+---
+
+::: {style="display: none;"}
+$$
+\newcommand{\bs}[1]{\mathbf{#1}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\widebar}[1]{\overline{#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Earg}[1]{\mathbb{E}\left[{#1}\right]}
+\newcommand{\Esubarg}[2]{\mathbb{E}_{#1}\left[{#2}\right]}
+$$
+:::
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #fca020; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+
+```{r}
+#| label: setup
+#| echo: false
+library(tidyverse)
+library(reticulate)
+theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
+set.seed(2026)
+```
+
+```{r}
+#| label: python-setup
+#| echo: false
+# includes the SHAP package. Can install it using,
+# > conda env create -f stat479_week6.yml
+# where the yaml file is located at: https://github.com/krisrs1128/stat479_notes/blob/master/notes/stat479_week6.yml
+use_condaenv("stat479_week6")
+```
+
+_Readings: [1](https://arxiv.org/abs/2207.07605) (required), [2](https://proceedings.neurips.cc/paper_files/paper/2024/hash/084252ec5f05f13bf565843c1873686d-Abstract-Conference.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/10-shap_computation.qmd)_
+
+Bullet items with $^{\dagger}$ are not in the required reading, so not tested.
+
+## Setup
+
+**Goal.** Given a model $f$ and a sample $x\in\reals^{D}$, efficiently compute
+the SHAP value $\varphi_d(x, f)$ of the contribution of feature $d$ to the
+prediction $f(x)$.
+
+**Requirements.**
+
+There is no single approach to speeding up computation of Shapley values in
+machine learning. We'll survey five of the methods discussed in the reading and
+list the requirements for that particular method once we reach it.
+
+## Challenge
+
+1. Before we try speeding up SHAP computation, let's see how bad a naive
+approach can be. First, let's review the key quantities in applying SHAP for
+machine learning.
+
+   * Feature $d$'s attribution,
+   $$
+   \varphi_d(f, x) = \sum_{S \subseteq \mathcal{D} - \{d\}} \frac{1}{D {D - 1 \choose \left|S\right|}} C(d \vert S)
+   $$ {#eq-shapley}
+   where $C\left(d \vert S\right)$ is the contribution of $d$ to coalition $S$,
+   $$C\left(d \vert S\right) = v(S \cup \{d\}) - v(S).$$
+   This depends on both $f$ and $x$, but we're suppressing it from the
+    notation.
+
+   * The functions $v$ were defined by calling $f$ on a version of $x$ where the features in coordinates $\bar{S}$ had been removed. There were three approaches,
+
+        - Baseline removal: $v(S) = f(x_{S}, x'_{\bar{S}})$
+        - Marginal removal^[We're allowing for subsamples M < N in our approximation.]: $v(S) = \Esubarg{p(X_{\bar{S}})}{f(x_{S}, X_{\bar{S}})} \approx \frac{1}{M}\sum_{i = 1}^{M} f\left(x_S, x_{i,\bar{S}}\right)$.
+        - Conditional removal^[We'll ignore this approach for the rest of the lecture, since there is no universal approach to approximating this conditional expectation.]: $v(S) = \Esubarg{p(X_{\bar{S}} \vert X_{S} = x_{S})}{f(x_{S}, X_{\bar{S}})}$
+
+1. To compute all $D$ attributions for one sample, we need $v(S)$ for every $S
+\subseteq \mathcal{D}$, and each $v(S)$ costs $M$ evaluations of $f$, supposing
+marginal feature removal. Let's try a Fermi calculation. Consider $N = 100, D =
+10, M = 100$. To get attributions across all $N$ samples and $D$ features, we'll
+need $10 ^ 2 \text{ samples} \times 10 ^ 2 \text{ calls} \times 2^{D} \text{
+subsets} \approx 10 ^ 7$ function calls. If each call takes 1ms, then this would
+take $\approx 3$ hours. This is only 100 samples and 10 features. More
+generally, marginal feature removal requires $N M 2^D$ evaluations, so the cost
+grows exponentially in $D$.
+
+   _Exercise: How many evaluations of $f$ does $v(S)$ cost when using baseline feature removal?_
+
+## Sampling Subsets
+
+**Requirements.**
+
+## Weighted Least Squares
+
+**Requirements.**
+
+## Local Shapley
+
+**Requirements.**
+
+## Stochastic Amortization
+
+**Requirements.**
+
+## Model-Specific Versions
+
+**Requirements.**
