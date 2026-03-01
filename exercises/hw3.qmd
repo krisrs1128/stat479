@@ -13,7 +13,7 @@ execute:
 
 Upload your solution to Gradescope as a PDF document. Include all relevant
 figures within your explanations. Include all relevant code. You may use either
-R or python.
+R or python. You may review this assignment's source code [here](https://github.com/krisrs1128/stat479_notes/blob/master/exercises/hw3.qmd).
 
 ## Evaluation Criteria
 
