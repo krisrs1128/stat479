@@ -224,7 +224,7 @@ regression suggests $v(\emptyset) \approx \beta_0$ and
    We can improve the quality of our approximation by enforcing these
    constraints, substituting $v(\emptyset) = \Esubarg{p(x)}{f(X)} \approx \frac{1}{N}\sum_{i = 1}^{N} f(x_i)$ and $v(\mathcal{D}) = f(x).$
 
-   _Exercise: Explain why $v\left(\emptyset\right) \approx \beta_0$._
+   _Exercise: In fact, the regression objective ensures that $v\left(\emptyset\right) = \beta_0$ and $v(\mathcal{D}) - v(\emptyset) = \Delta$ hold exactly. Can you see why?_
 
    ![](figures/regression_perspective.png){width=65%}
 
