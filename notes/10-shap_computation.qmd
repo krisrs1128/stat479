@@ -101,9 +101,9 @@ evaluations of $f$.  Let's try a Fermi calculation. Take $N = 100, D = 10, M =
    $$10^2 \text{ samples} \times 2^{10} \text{ subsets} \times 10^2 \text{ calls per subset} \approx 10^7 \text{ evaluations}.$$
 Supposing 1ms per call, this takes $\approx 3$ hours (and this is only 100
 samples with 10 features). More generally, marginal removal costs $NM\,2^D$
-evaluations: exponential in $D$.
+evaluations.
 
-   _Exercise: How many evaluations of $f$ does $v(S)$ cost when using baseline feature removal?_
+   _Exercise: What are the relative costs of marginal vs. baseline feature removal?_
 
 ## Sampling Perspective
 
@@ -126,10 +126,12 @@ evaluations: exponential in $D$.
    \hat{\varphi}_d(x) = \frac{1}{M}\sum_{m=1}^{M} C(d \mid S_m).
    $$ {#eq-sampling}
    This is unbiased ($\mathbb{E}[\hat{\varphi}_d(x)] = \varphi_d(x)$) and
-   ncreasing $M$ improves the approximation.
+   increasing $M$ improves the approximation.
+
+   _Exercise: Suppose $\mathcal{D} = \{1, \dots, 4\}$ and $d = 1$. What are the $\mathbb{P}(S)$ for the sets in @eq-shapley? _
 
 1. To draw $S_{m} \sim \mathbb{P}(S)$ in practice, we use random permutations.
-Draw $\pi : \{1, \dots, D\} \to \{1, \dots, D\}$ drawn uniformly at random. For
+Draw $\pi : \{1, \dots, D\} \to \{1, \dots, D\}$ uniformly at random. For
 example, for 10 features we could use,
 
    ```{r}
@@ -155,13 +157,13 @@ example, for 10 features we could use,
      compute C(d | S_m)
    return average of C(d | S_m) over m
    ```
-   This is often called IME (``Interactions-based Method for Explanation'').
+   This is often called IME ("Interactions-based Method for Explanation").
    Larger $M$ gives better approximations but at higher computing cost.
 
 1. _Adaptive sampling_. The terms $C\left(d \vert S_{m}\right)$ are random
 variables with mean $\varphi_{d}\left(x\right)$.
 
-(picture of their histograms across $d$)
+   (picture of their histograms across $d$)
 
    For features that are irrelevant, the contributions are tightly clustered
    near zero, so even small values of $M$ are enough. Inspired by this
@@ -174,20 +176,22 @@ variables with mean $\varphi_{d}\left(x\right)$.
    $$
    so negative correlated terms reduce the variance of the sum.
 
-   _Exercise: If $\text{Cor}(Z_1, Z_2) = -1$, what is $\text{Var}(Z_1 + Z_2)$?_
+   _Exercise: If $\text{Cor}(Z_1, Z_2) = -1$ and $Z_1, Z_2$ have the same variance, what is $\text{Var}(Z_1 + Z_2)$?_
 
-   More generally, $\text{Var}\!\left(\sum_{m=1}^M Z_m\right) = \sum_m
-   \text{Var}(Z_m) + \sum_{m \neq m'} \text{Cov}(Z_m, Z_{m'})$, so again
-   negative pairwise correlations reduce variance.
+   More generally,
+   $$\text{Var}\!\left(\sum_{m=1}^M Z_m\right) = \sum_m
+   \text{Var}(Z_m) + \sum_{m \neq m'} \text{Cov}(Z_m, Z_{m'}),$$
+   so again negative pairwise correlations reduce variance.
 
 1. Applying this to @eq-sampling, we can induce negative correlation between
 $C\left(d \vert S_m\right)$ and $C\left(d \vert S_{m'}\right)$ by pairing each
 $S_m$ with its complement,
 
-   - Sample $S_m \mathbb{P}(S)$
-   - Set $S_{m'} = \bar{S}_{m}$ the complement of $S$ in $\{1, \dots, D\}$.
+   - Sample $S_m \sim \mathbb{P}(S)$
+   - Set $S_{m'} = \bar{S}_{m}$ the complement of $S_m$ in $\{1, \dots, D\}$.
 
-   Despite its simplicity, this yields large variance reduction.
+   Despite its simplicity, this yields state-of-the-art variance reductions
+   [@mitchell2022].
 
 ## Weighted Least Squares
 
@@ -195,26 +199,27 @@ $S_m$ with its complement,
 be characterized through a weighted least squares problem,
    $$
     \varphi\left(x\right) =
-    \arg \min_{\beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d}\right)
+    \arg \min_{\beta \in \reals^{D + 1}} \sum_{S \subset \mathcal{D}} w(S) \left(v(S) - \beta_0 - \sum_{d \in S}\beta_{d}\right)^2
    $$ {#eq-kernelshap}
     where $w(S) = \left[\binom{D}{|S|} |S|(D - |S|)\right]^{-1}$ and $\varphi(x) = (\varphi_1(x), \dots, \varphi_D(x))^\top$.
 
 1. This characterization still enumerates $2^D$ subsets, but it suggests an
 approximation: sample random subsets $S_1, \dots, S_M$ and solve the weighted
-regression on this reduced design. This is "KernelSHAP."
+regression on the reduced design. This is "KernelSHAP."
 
-1.  Let $z_{md} = \mathbf{1}[d \in S_m]$ be the associated design matrix. The
-regression suggests,
-  $$
-  v(S_m) - v(\emptyset) \approx \sum_{d = 1}^{D} z_{md}\beta_d
-  $$
-  The efficiency constraint becomes,
-  $$
+1. let $z_{md} = \mathbf{1}[d \in s_m]$ be the associated design matrix. the
+regression suggests $v(\emptyset) \approx \beta_0$ and
+   $$
+   v(S_m) - v(\emptyset) \approx \sum_{d = 1}^{D} z_{md}\beta_d.
+   $$ {#eq-constraint}
+   The efficiency constraint becomes,
+   $$
    v(\mathcal{D}) - v(\emptyset) \approx \sum_{d = 1}^{D} \beta_d := \Delta\\
-  $$
-  and $v(\emptyset) \approx \beta_0$. We can improve the quality of our
-  approximation by enforcing these constraints, substituting $v(\emptyset) =
-  \Esubarg{p(x)}{f(X)} \approx \frac{1}{N}\sum_{i = 1}^{N} f(x_i)$ and $v(\mathcal{D}) = f(x).$
+   $$
+   We can improve the quality of our approximation by enforcing these
+   constraints, substituting $v(\emptyset) = \Esubarg{p(x)}{f(X)} \approx \frac{1}{N}\sum_{i = 1}^{N} f(x_i)$ and $v(\mathcal{D}) = f(x).$
+
+   _Exercise: Explain why $v\left(\emptyset\right) \approx \beta_0$._
 
 1. $^\dagger$ To see this concretely, let's try a code implementation (validated
 against the `shap` package below). First, initialize the binary mask matrix
@@ -229,7 +234,7 @@ $z_{md}$, kernel weights, and feature-removed inputs:
    ```
 
 1. $^\dagger$ Next we draw random subsets $S_m$ and the corresponding feature-removed data
-$(x_{S_m}, x_{\bar{S}_m})$:
+$(x_{S_m}, x_{i,\bar{S}_m})$:
 
    ```{python}
    #| label: subset-sampling
@@ -237,7 +242,7 @@ $(x_{S_m}, x_{\bar{S}_m})$:
    for i in range(M):
         mask = np.random.choice([0, 1], size=D)
         mask_matrix[i] = mask
-        synth_data[i * N:(i + 1) * N, mask == 1] = x[0, mask == 1]
+        synth_data[i * N:(i + 1) * N, mask == 1] = x[0, mask == 1] # explaining x[0]
         kernel_weights[i] = (D - np.sum(mask)) * np.sum(mask)
    ```
    We evaluate $f$ on the feature-removed data. Here `f_bar` estimates
@@ -250,11 +255,13 @@ $(x_{S_m}, x_{\bar{S}_m})$:
     v = np.mean(f.reshape(M, N, -1), axis=1)
    ```
 
+   _Exercise: In the line `synth_data[i, ...]`, how many entries of `synth_data` get modified? What is the interpretation?_
+
 1. $^\dagger$ Finally, we run the weighted regression. We incorporate efficiency
-constraints from point (3). Since $\beta_D = \Delta - \sum_{d<D} \beta_d$, we
-can substitute,
+constraints from point (3). Since $\beta_D = \Delta - \sum_{d= 1}^{D - 1}
+\beta_d$, we can substitute into @eq-constraint,
    $$
-   v(S_m) - v(\emptyset) - z_{mD}\Delta \approx \sum_{d = 1}^{D - 1}z_{md}\beta_{d}
+   v(S_m) - v(\emptyset) - z_{mD}\Delta \approx \sum_{d = 1}^{D - 1}\left(z_{md}- z_{mD}\right)\beta_{d}
    $$
    The left hand side is `y` below and the right hand side is `X`.
    ```{python}
@@ -278,10 +285,12 @@ insight is that attributions across observations are often related, so we can
 pool our estimates across all samples. This lets us tolerate rougher estimates
 for each individual sample.
 
+   ![Notice that many samples have similar attributions.](figures/drosophila_attributions.png){width=60%}
+
 1. $^\dagger$ _Amortization_ frames parameter estimation as
 supervised learning. For concreteness, consider noisy KernelSHAP estimates using small $M$,
    $$
-   \hat{\varphi}_d^{M}(x_i) = \arg \min_{beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d}\right)
+   \hat{\varphi}_d^{M}(x_i) = \arg \min_{\beta \in \reals^{D + 1}} \sum_{m = 1}^{M} w(S_m) \left(v(S_m) - \beta_0 - \sum_{d \in S_m}\beta_{d}\right)^{2}
    $$
    Then train a model $a_\theta : \reals^D \to \reals^D$ (e.g. linear or neural
    network) to predict these estimates,
@@ -305,12 +314,14 @@ mapping may be inaccurate. Nonetheless, early research suggests that even
 moderate $M$ and practical $a_{\theta}$ can learn $\varphi(x)$ with high
 fidelity.
 
+   ![](figures/amortized_shap_denoising.png){width=60%}
+
 ## Model-Specific Versions
 
 1. Within specific model classes, we can derive closed-form SHAP formulas that
 bypass enumeration over subsets. For example, in your HW3, you will show that
-for linear models $f(x) = \beta_0 + \sum_{d} \beta_{d}x_{d}$ with baseline
-removal,
+linear models $f(x) = \beta_0 + \sum_{d} \beta_{d}x_{d}$ with baseline removal
+satisfy,
    $$
    \varphi_{d}(x) = \beta_{d}\left(x_{d} - x_{d}'\right)
    $$
@@ -319,7 +330,7 @@ removal,
    coefficient $\beta_d$. A similar derivation shows that for marginal feature
    removal,
    $$
-    \varphi_{d}(x) = \beta_{d}\left(x_{d} - \Esubarg{p(x_d)}{X_{d}}\right)
+    \varphi_{d}(x) = \beta_{d}\left(x_{d} - \Esubarg{p(x)}{X_{d}}\right)
    $$
    so using the marginal removal is the same as using the sample mean as a
    baseline.
@@ -389,8 +400,8 @@ We've copied our code into the `explain` method in the class below.
            return phi
    ```
 
-1. We'll test using a random forest model trained to fit the toy dataset
-`make_friedman1` from [@Friedman1991].
+1. We'll test this implementation using a random forest model trained on the
+`make_friedman1` dataset [@Friedman1991].
 
    ```{python}
    #| label: fit-model
