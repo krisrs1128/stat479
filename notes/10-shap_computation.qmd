@@ -7,12 +7,13 @@ format:
   html:
     embed-resources: true
     html-math-method: mathjax
+    fig-align: center
 execute:
     echo: true
     message: false
     warning: false
     cache: false
-    eval: false
+    eval: true
 ---
 
 ::: {style="display: none;"}
@@ -55,7 +56,7 @@ use_condaenv("stat479_week6")
 _Readings: [1](https://arxiv.org/abs/2207.07605) (required), [2](https://proceedings.neurips.cc/paper_files/paper/2024/hash/084252ec5f05f13bf565843c1873686d-Abstract-Conference.html) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/10-shap_computation.qmd)_
 
 Items marked $^{\dagger}$ are not in the required reading and will not be
-tested.  The required reading also covers methods beyond this handout, those
+tested.  The required reading covers some methods beyond this handout, those
 also won't be tested.
 
 ## Setup
@@ -91,16 +92,16 @@ There are two general strategies for efficient Shapley values computation,
    - The value function $v(S)$ evaluates $f$ on $x$ after "removing" features
    outside of $S$ removed. We covered three removal strategies:
      - Baseline $v(S) = f(x_S, x'_{\bar{S}})$
-     - Marginal^[Compared to our earlier notes, we're allowing for subsamples M < N.]: $v(S) = \mathbb{E}_{p(X_{\bar{S}})}[f(x_S, X_{\bar{S}})] \approx \frac{1}{M}\sum_{i=1}^{M} f(x_S, x_{i,\bar{S}})$
+     - Marginal^[Compared to our earlier notes, we're allowing for background subsamples B < N.]: $v(S) = \mathbb{E}_{p(X_{\bar{S}})}[f(x_S, X_{\bar{S}})] \approx \frac{1}{B}\sum_{i=1}^{B} f(x_S, x_{i,\bar{S}})$
      - Conditional: $v(S) = \mathbb{E}_{p(X_{\bar{S}} \mid X_S = x_S)}[f(x_S, X_{\bar{S}})]$
 
 1. To compute all $D$ attributions for one sample, we need $v(S)$ for every $S
-\subseteq \mathcal{D}$. Using marginal feature removal, each $v(S)$ costs $M$
-evaluations of $f$.  Let's try a Fermi calculation. Take $N = 100, D = 10, M =
+\subseteq \mathcal{D}$. Using marginal feature removal, each $v(S)$ costs $B$
+evaluations of $f$.  Let's try a Fermi calculation. Take $N = 100, D = 10, B =
 100$. Attribution across all samples and features requires
    $$10^2 \text{ samples} \times 2^{10} \text{ subsets} \times 10^2 \text{ calls per subset} \approx 10^7 \text{ evaluations}.$$
 Supposing 1ms per call, this takes $\approx 3$ hours (and this is only 100
-samples with 10 features). More generally, marginal removal costs $NM\,2^D$
+samples with 10 features). More generally, marginal removal costs $NB\,2^D$
 evaluations.
 
    _Exercise: What are the relative costs of marginal vs. baseline feature removal?_
@@ -170,6 +171,8 @@ variables with mean $\varphi_{d}\left(x\right)$.
    observation, adaptive sampling tracks the variance of $C(d \mid S_m)$ across
    features and allocates more samples to high-variance features.
 
+   ![](figures/adaptive_sampling.png){width=40%}
+
 1. _Antithetic sampling_. Recall that
    $$
    \text{Var}(Z_1 + Z_2) = \text{Var}(Z_1) + \text{Var}(Z_2) + 2\text{Cov}(Z_1, Z_2).
@@ -192,6 +195,8 @@ $S_m$ with its complement,
 
    Despite its simplicity, this yields state-of-the-art variance reductions
    [@mitchell2022].
+
+   ![](figures/antithetic.png){width=40%}
 
 ## Weighted Least Squares
 
@@ -221,6 +226,8 @@ regression suggests $v(\emptyset) \approx \beta_0$ and
 
    _Exercise: Explain why $v\left(\emptyset\right) \approx \beta_0$._
 
+   ![](figures/regression_perspective.png){width=65%}
+
 1. $^\dagger$ To see this concretely, let's try a code implementation (validated
 against the `shap` package below). First, initialize the binary mask matrix
 $z_{md}$, kernel weights, and feature-removed inputs:
@@ -243,8 +250,10 @@ $(x_{S_m}, x_{i,\bar{S}_m})$:
         mask = np.random.choice([0, 1], size=D)
         mask_matrix[i] = mask
         synth_data[i * N:(i + 1) * N, mask == 1] = x[0, mask == 1] # explaining x[0]
-        kernel_weights[i] = (D - np.sum(mask)) * np.sum(mask)
+        kernel_weights[i] = 1 / (comb(self.D, mask.sum()) * mask.sum() * (self.D - mask.sum()))
    ```
+   ![](figures/synth_data.png){width=65%}
+
    We evaluate $f$ on the feature-removed data. Here `f_bar` estimates
    $v(\emptyset)$.
    ```{python}
@@ -335,7 +344,9 @@ satisfy,
    so using the marginal removal is the same as using the sample mean as a
    baseline.
 
-1. There are two other important model-sepcific methods,
+   ![](figures/linear_model_shap.png){width=55%}
+
+1. There are two other important model-specific methods,
 
    - TreeSHAP: This gives exact SHAP values tree-based model (CART,
    bagging, boosting, random forest). It's available as `TreeExplainer`
@@ -356,6 +367,7 @@ We've copied our code into the `explain` method in the class below.
    ```{python}
    #| label: kernel-explainer
    import numpy as np
+   from math import comb
    from sklearn.linear_model import LinearRegression
 
    class SimpleKernelExplainer:
@@ -382,7 +394,10 @@ We've copied our code into the `explain` method in the class below.
                mask = np.random.choice([0, 1], size=self.D)
                mask_matrix[i] = mask
                synth_data[i * self.N:(i + 1) * self.N, mask == 1] = x[0, mask == 1]
-               kernel_weights[i] = (self.D - np.sum(mask)) * np.sum(mask)
+
+               # edge 0 and self.D handled by constraints
+               if 0 < mask.sum() < self.D:
+                   kernel_weights[i] = 1 / (comb(self.D, mask.sum()) * mask.sum() * (self.D - mask.sum()))
 
            # model predictions on the synthetic data
            model_out = self.model(synth_data)
