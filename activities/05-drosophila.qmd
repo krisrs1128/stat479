@@ -84,7 +84,7 @@ hyperparameters using three fold CV.
 
 ```{r}
 #| label: tune-setup
-task <- as_task_classif(enhancer, target = "y", id = "enhancer")
+task <- as_task_classif(enhancer, target = "y", id = "enhancer", positive = "1")
 learner <- lrn("classif.xgboost", nrounds = to_tune(100, 200), eta = to_tune(1e-3, 0.1), predict_type = "prob")
 
 instance <- ti(
@@ -109,7 +109,7 @@ Let's refit the model with the optimized hyperparameters.
 ```{r}
 #| label: fit
 learner$param_set$values <- instance$result_learner_param_vals
-task <- as_task_classif(enhancer, target = "y", id = "enhancer")
+task <- as_task_classif(enhancer, target = "y", id = "enhancer", positive = "1")
 learner$train(task)
 ```
 
@@ -122,7 +122,7 @@ there is still noticeable overlap.
 #| label: predictions
 #| fig-height: 4
 #| fig-width: 6
-tibble(p_hat = learner$predict_newdata(enhancer)$prob[, 2], y = enhancer$y) |>
+tibble(p_hat = learner$predict_newdata(enhancer)$prob[, 1], y = enhancer$y) |>
     ggplot() +
     geom_histogram(aes(p_hat, fill = y)) +
     facet_grid(y ~ ., scales = "free_y")
@@ -165,7 +165,7 @@ tibble(y_hat = y_hat, sum_phi = rowSums(shp$S) + shp$baseline) |>
 ### Variable-Level Pltos
 
 The beeswarm plot ranks features using $\left|\varphi_d(x_i)\right|$. Across
-many samples, the `wt_ZLD`, `input_c14c`, and `sna` features stand out. For most
+many samples, the `wt_ZLD`, `input_c14c`, and `sna1` features stand out. For most
 features, the attributions have consistent signs across samples, but the tails
 show that the sign can flip, perhaps when the feature has an unusual
 value/context.
@@ -178,7 +178,7 @@ sv_importance(shp, kind = "bee")
 ```
 
 The dependence plot for `sna1` shows that high `sna1` TF binding leads to
-negative attribution.
+positive attribution.
 
 ```{r}
 #| label: dependence
@@ -187,9 +187,10 @@ negative attribution.
 sv_dependence(shp, "sna1")
 ```
 
-This is consistent with the data, where large `sna1` suppresses enhancer
-activity.  The [`sna1`](https://en.wikipedia.org/wiki/SNAI1) gene is a
-transcriptional repressor, so this makes sense biologically.
+This is consistent with the data, where large `sna1` increases enhancer
+activity. The [`sna1`](https://en.wikipedia.org/wiki/SNAI1) gene is generally a
+transcriptional repressor, but in these data, it seems that when `sna1` is
+present at a location, the enhancer is more likely to be active.
 
 ```{r}
 ```{r}
