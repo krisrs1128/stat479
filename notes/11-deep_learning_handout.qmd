@@ -1,0 +1,131 @@
+---
+title: "Introduction to Deep Learning"
+author: Kris Sankaran
+date: 2026-03-16
+bibliography: references.bib
+format:
+  html:
+    embed-resources: true
+    html-math-method: mathjax
+    fig-align: center
+execute:
+    echo: true
+    message: false
+    warning: false
+    cache: false
+    eval: true
+---
+
+::: {style="display: none;"}
+$$
+\newcommand{\bs}[1]{\mathbf{#1}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\widebar}[1]{\overline{#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Earg}[1]{\mathbb{E}\left[{#1}\right]}
+\newcommand{\Esubarg}[2]{\mathbb{E}_{#1}\left[{#2}\right]}
+$$
+:::
+
+<style>
+.purple { color: #7458d1ff; } /* pastel purple */
+.orange { color: #fca020; } /* pastel orange */
+.green { color: #3bbe67ff; } /* pastel green */
+.darkblue { color: #4a9ceaff; } /* pastel dark blue */
+.pink { color: #ee6ec3ff; } /* pastel pink */
+</style>
+
+```{r}
+#| label: setup
+#| echo: false
+library(tidyverse)
+library(reticulate)
+theme_set(theme_classic() + theme(panel.border= element_rect(fill = NA, linewidth = .5)))
+set.seed(2026)
+```
+
+```{r}
+#| label: python-setup
+#| echo: false
+# includes the SHAP package. Can install it using,
+# > conda env create -f stat479_week6.yml
+# where the yaml file is located at: https://github.com/krisrs1128/stat479_notes/blob/master/notes/stat479_week9.yml
+#use_condaenv("stat479_week9")
+```
+
+_Readings: [1](https://visionbook.mit.edu/neural_nets.html) (sections 12.1 - 12.7, but skip 12.5.2 - 12.5.3), [2](https://docs.pytorch.org/tutorials/beginner/basics/intro.html#learn-the-basics) (optional)_, _[Code](https://github.com/krisrs1128/stat479_notes/blob/master/notes/11-deep_learning_overview.qmd)_
+
+Items marked $^{\dagger}$ are not in the required reading and will not be
+tested.  The required reading covers some methods beyond this handout, those
+also won't be tested.
+
+## Setup
+
+**Goal.** Given data $\{\left({x_i, y_i}\right)\}_{i = 1}^{N}$, develop a predictor $f$ for $y_{i}$.
+
+  - More importantly, create a generic recipe for learning predictors $f$ that works as soon as we have enough examples $x_i$ and $y_i$, with as little manual effort as possible.
+
+**Requirements.**
+
+- The recipe should apply to a variety of data structures out-of-the-box. See the table below.
+- The method must handle highly nonlinear relationships.
+- The method must scale to very large $N$.
+
+| Task | $x_i$ | $y_i$ | Example |
+|---|---|---| --- | --- |
+| Image Classification | image | label | |
+| Object Detection | image | label and bounding box | |
+| Language Modeling | sequence of words | next word | |
+| Sentence Translation | sequence of words | sequence of words | |
+| Style Transfer | image | new image | |
+
+
+**Approach.** We represent data as generic $D$-dimensional tensors and define parameterized modules $f_l(\cdot; \theta_l)$ that process them. Composing these modules creates architectures whose intermediate representations $h_l$ link the inputs $x$ with outputs $y$. Parameters $\theta_l$ are fit by optimizing a loss function.
+
+## Tensor Data Structures
+
+1. To represent very general types of data, we rely on $D$-dimensional tensors
+(multidimensional arrays).  Vectors and matrices are special 1 and 2D cases of
+tensors. Classes $y_i \{1, \dots, K\}$ can be viewed as one-hot encoded vectors.
+Therefore, deep learning immediately applies to the data considered in more
+traditional statistics problems.
+
+1. Images and video can be viwed as 3 and 4D tensors, respectively. An RGB image
+has dimensions Height $\times$ Width $\times$ Color Channel. A video adds an
+extra Time dimension.
+
+1. A document can be viewed as a one-hot encoded tensor with dimensions Vocabulary Size $\times$ Document Length. Notice that since documents can have different lengths, a typical dataset will include many tensors with different sizes.
+
+1. We can stack tensors into "batches" of data points $x_i$. Often, these will
+themselves form tensors. For example, a batch of 10 RGB images, each of which is
+16 pixels tall and wide, can be written as a $10 \times 16 \times 16 \times 3$
+tensor. This property is helpful for accelerating computation. Since GPUs can
+perform tensor arithmetic in parallel, we'll be able to optimize over entire
+batches very efficiently.
+
+## Perceptrons
+
+1. We'll eventually want flexible modules for mapping tensors from input to
+output. Optimizing over those modules will allow us to achieve our prediction
+objective.  But for now, let's consider how to map a vecor $x \in \reals^{D}$ to
+a binary label $y \in \{0, 1\}$ using the classic perceptron algorithm.
+
+1.
+
+## Multilayer Networks
+
+## Parameters and Activations
+
+## Types of Layers
+
+1. **Linear Layers**.
+
+1. **Activation Layers**
+
+1. **Normalization Layers**
+
+1. **Output Layers**
+
+## Learning Representations
+
+## Code Example
